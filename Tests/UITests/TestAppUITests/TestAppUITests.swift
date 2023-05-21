@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import XCTestExtensions
 
 
 class TestAppUITests: XCTestCase {
@@ -14,12 +15,33 @@ class TestAppUITests: XCTestCase {
         try super.setUpWithError()
         
         continueAfterFailure = false
+        
+        let app = XCUIApplication()
+        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
     }
     
     
     func testSpeziML() throws {
         let app = XCUIApplication()
+        
+        XCTAssert(app.staticTexts["Your token is: "].waitForExistence(timeout: 2))
+        XCTAssert(app.staticTexts["Your choice of model is: gpt-3.5-turbo"].waitForExistence(timeout: 2))
+        
+        app.buttons["Test Token Change"].tap()
+        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
+        
+        app.buttons["Test Model Change"].tap()
+        XCTAssert(app.staticTexts["Your choice of model is: gpt-4"].waitForExistence(timeout: 2))
+        
+        app.terminate()
         app.launch()
-        XCTAssert(app.staticTexts["Stanford University"].waitForExistence(timeout: 0.1))
+        
+        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
+        XCTAssert(app.staticTexts["Your choice of model is: gpt-4"].waitForExistence(timeout: 2))
+        
+        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
+        
+        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
+        XCTAssert(app.staticTexts["Your choice of model is: gpt-3.5-turbo"].waitForExistence(timeout: 2))
     }
 }
