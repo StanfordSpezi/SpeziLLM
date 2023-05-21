@@ -11,6 +11,11 @@ SPDX-License-Identifier: MIT
 # Spezi ML
 
 [![Build and Test](https://github.com/StanfordSpezi/SpeziML/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordSpezi/SpeziML/actions/workflows/build-and-test.yml)
+[![codecov](https://codecov.io/gh/StanfordSpezi/SpeziML/branch/main/graph/badge.svg?token=pptLyqtoNR)](https://codecov.io/gh/StanfordSpezi/SpeziML)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7954213.svg)](https://doi.org/10.5281/zenodo.7954213)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziML%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/StanfordSpezi/SpeziML)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziML%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziML)
+
 
 The Spezi machine learning module simplifies the integration to incorporate machine learning-related functionality in their Spezi-based applications.
 
