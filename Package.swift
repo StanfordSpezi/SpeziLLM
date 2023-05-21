@@ -17,16 +17,27 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .library(name: "SpeziML", targets: ["SpeziML"])
+        .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"])
+    ],
+    dependencies: [
+        .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.1")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.5.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.3.1"))
     ],
     targets: [
         .target(
-            name: "SpeziML"
+            name: "SpeziOpenAI",
+            dependencies: [
+                .product(name: "OpenAI", package: "OpenAI"),
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
+                .product(name: "SpeziSecureStorage", package: "SpeziStorage")
+            ]
         ),
         .testTarget(
-            name: "SpeziMLTests",
+            name: "SpeziOpenAITests",
             dependencies: [
-                .target(name: "SpeziML")
+                .target(name: "SpeziOpenAI")
             ]
         )
     ]

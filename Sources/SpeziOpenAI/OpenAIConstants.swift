@@ -6,13 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-@testable import SpeziML
-import XCTest
 
-
-final class SpeziMLTests: XCTestCase {
-    func testSpeziML() throws {
-        let speziML = SpeziML()
-        XCTAssertEqual(speziML.stanford, "Stanford University")
-    }
+enum OpenAIConstants {
+    static let modelStorageKey = "OpenAIGPT.Model"
+    static let credentialsServer = "openapi.org"
+    static let credentialsUsername = "OpenAIGPT"
 }

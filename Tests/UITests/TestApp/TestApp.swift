@@ -6,15 +6,18 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziML
 import SwiftUI
 
 
 @main
 struct UITestsApp: App {
+    @UIApplicationDelegateAdaptor(TestAppDelegate.self) var appDelegate
+    
+    
     var body: some Scene {
         WindowGroup {
-            Text(SpeziML().stanford)
+            ContentView()
+                .spezi(appDelegate)
         }
     }
 }
