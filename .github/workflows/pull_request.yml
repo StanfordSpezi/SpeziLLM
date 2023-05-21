@@ -1,0 +1,21 @@
+#
+# This source file is part of the TemplatePackage open source project
+#
+# SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+#
+# SPDX-License-Identifier: MIT
+#
+
+name: Pull Request
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  reuse_action:
+    name: REUSE Compliance Check
+    uses: StanfordBDHG/.github/.github/workflows/reuse.yml@v2
+  swiftlint:
+    name: SwiftLint
+    uses: StanfordBDHG/.github/.github/workflows/swiftlint.yml@v2
