@@ -1,7 +1,7 @@
 // swift-tools-version:5.7
 
 //
-// This source file is part of the TemplatePackage open source project
+// This source file is part of the Stanford Spezi open source project
 // 
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 // 
@@ -12,21 +12,21 @@ import PackageDescription
 
 
 let package = Package(
-    name: "TemplatePackage",
+    name: "SpeziML",
     platforms: [
         .iOS(.v16)
     ],
     products: [
-        .library(name: "TemplatePackage", targets: ["TemplatePackage"])
+        .library(name: "SpeziML", targets: ["SpeziML"])
     ],
     targets: [
         .target(
-            name: "TemplatePackage"
+            name: "SpeziML"
         ),
         .testTarget(
-            name: "TemplatePackageTests",
+            name: "SpeziMLTests",
             dependencies: [
-                .target(name: "TemplatePackage")
+                .target(name: "SpeziML")
             ]
         )
     ]

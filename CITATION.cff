@@ -1,5 +1,5 @@
 #
-# This source file is part of the TemplatePackage open source project
+# This source file is part of the Stanford Spezi open source project
 #
 # SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 #
@@ -12,6 +12,6 @@ authors:
 - family-names: "Schmiedmayer"
   given-names: "Paul"
   orcid: "https://orcid.org/0000-0002-8607-9148"
-title: "TemplatePackage"
+title: "SpeziML"
 doi: 10.5281/zenodo.7538165
-url: "https://github.com/StanfordBDHG/SwiftPackageTemplate"
+url: "https://github.com/StanfordSpezi/SpeziML"
