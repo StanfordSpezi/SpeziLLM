@@ -1,5 +1,5 @@
 //
-// This source file is part of the TemplatePackage open-source project
+// This source file is part of the SpeziML open-source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -17,7 +17,7 @@ class TestAppUITests: XCTestCase {
     }
     
     
-    func testTemplatePackage() throws {
+    func testSpeziML() throws {
         let app = XCUIApplication()
         app.launch()
         XCTAssert(app.staticTexts["Stanford University"].waitForExistence(timeout: 0.1))

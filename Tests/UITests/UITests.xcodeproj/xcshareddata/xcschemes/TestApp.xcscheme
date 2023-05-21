@@ -31,9 +31,9 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TemplatePackage"
-            BuildableName = "TemplatePackage"
-            BlueprintName = "TemplatePackage"
+            BlueprintIdentifier = "SpeziML"
+            BuildableName = "SpeziML"
+            BlueprintName = "SpeziML"
             ReferencedContainer = "container:../..">
          </BuildableReference>
       </CodeCoverageTargets>
