@@ -25,12 +25,24 @@ class ExampleDelegate: SpeziAppDelegate {
 }
 ```
 
-You can provide a default API token or model configuration to the OpenAPI component in the configuration.
+You can provide a default API token or model configuration to the OpenAI component's ``OpenAIComponent/init(apiToken:openAIModel:)`` initializer in the configuration.
 The choice of model and the API key are persisted across application launches.
 
 
 ## Usage
 
+The ``OpenAIComponent`` can subsequentially be used in a SwiftUI View using the environment dependency injection mechanism.
+
+```
+struct ExampleOpenAIView: View {
+    @EnvironmentObject var openAI: OpenAIComponent</* ... */>
+
+    // ...
+}
+```
+
+The ``OpenAIComponent``'s ``OpenAIComponent/apiToken`` and ``OpenAIComponent/openAIModel`` can be accessed and changed at runtime.
+The ``OpenAIComponent/queryAPI(withChat:)`` function allows the interaction with the GPT-based OpenAI models.
 
 
 ## Types
