@@ -24,24 +24,26 @@ class TestAppUITests: XCTestCase {
     func testSpeziML() throws {
         let app = XCUIApplication()
         
-        XCTAssert(app.staticTexts["Your token is: "].waitForExistence(timeout: 2))
-        XCTAssert(app.staticTexts["Your choice of model is: gpt-3.5-turbo"].waitForExistence(timeout: 2))
+        try app.textFields["OpenAI API Key"].enter(value: "New Token")
+        app.buttons["Next"].tap()
         
-        app.buttons["Test Token Change"].tap()
-        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4")
+        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
         
-        app.buttons["Test Model Change"].tap()
-        XCTAssert(app.staticTexts["Your choice of model is: gpt-4"].waitForExistence(timeout: 2))
+        app.buttons["Next"].tap()
+        XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         
         app.terminate()
         app.launch()
         
-        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
-        XCTAssert(app.staticTexts["Your choice of model is: gpt-4"].waitForExistence(timeout: 2))
+        XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
+        app.buttons["Next"].tap()
+        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
         
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
-        XCTAssert(app.staticTexts["Your token is: New Token"].waitForExistence(timeout: 2))
-        XCTAssert(app.staticTexts["Your choice of model is: gpt-3.5-turbo"].waitForExistence(timeout: 2))
+        XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
+        app.buttons["Next"].tap()
+        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
     }
 }

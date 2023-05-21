@@ -1,0 +1,18 @@
+//
+// This source file is part of the Stanford Spezi open-source project
+//
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
+//
+
+// MARK: Consent View
+"CONSENT_ACTION" = "Ich Stimme Zu";
+
+
+// MARK: Sequential Onboarding
+"SEQUENTIAL_ONBOARDING_NEXT" = "Nächster Schritt";
+
+
+// MARK: Signature View
+"SIGNATURE_VIEW_UNDO" = "Rückgängig Machen";
