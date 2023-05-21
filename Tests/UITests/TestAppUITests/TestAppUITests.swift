@@ -44,6 +44,6 @@ class TestAppUITests: XCTestCase {
         
         XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
-        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
     }
 }
