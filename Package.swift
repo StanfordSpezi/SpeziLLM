@@ -13,6 +13,7 @@ import PackageDescription
 
 let package = Package(
     name: "SpeziML",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v16)
     ],
@@ -22,7 +23,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.1")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.5.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.3.1"))
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.3.1")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.3.0"))
     ],
     targets: [
         .target(
@@ -31,7 +33,8 @@ let package = Package(
                 .product(name: "OpenAI", package: "OpenAI"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
-                .product(name: "SpeziSecureStorage", package: "SpeziStorage")
+                .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ]
         ),
         .testTarget(

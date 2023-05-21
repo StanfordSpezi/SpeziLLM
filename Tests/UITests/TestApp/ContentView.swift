@@ -12,17 +12,27 @@ import XCTSpezi
 
 
 struct ContentView: View {
-    @EnvironmentObject var openAI: OpenAIComponent<TestAppStandard>
+    enum Step: String, Codable {
+        case modelSelection
+    }
+
     
+    @State private var steps: [Step] = []
+
     
     var body: some View {
-        Text("Your token is: \(openAI.apiToken ?? "")")
-        Text("Your choice of model is: \(openAI.openAIModel)")
-        Button("Test Token Change") {
-            openAI.apiToken = "New Token"
-        }
-        Button("Test Model Change") {
-            openAI.openAIModel = .gpt4
+        NavigationStack(path: $steps) {
+            OpenAIAPIKeyOnboardingStep<TestAppStandard> {
+                steps.append(.modelSelection)
+            }
+                .navigationDestination(for: Step.self) { step in
+                    switch step {
+                    case .modelSelection:
+                        OpenAIModelSelectionOnboardingStep<TestAppStandard> {
+                            steps.removeLast()
+                        }
+                    }
+                }
         }
     }
 }
