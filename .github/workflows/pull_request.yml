@@ -15,7 +15,7 @@ on:
 jobs:
   reuse_action:
     name: REUSE Compliance Check
-    uses: StanfordBDHG/.github/.github/workflows/reuse.yml@v2
+    uses: StanfordSpezi/.github/.github/workflows/reuse.yml@v2
   swiftlint:
     name: SwiftLint
-    uses: StanfordBDHG/.github/.github/workflows/swiftlint.yml@v2
+    uses: StanfordSpezi/.github/.github/workflows/swiftlint.yml@v2
