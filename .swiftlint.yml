@@ -75,7 +75,7 @@ only_rules:
   # Dictionary literals with duplicated keys will crash in runtime.
   - duplicated_key_in_dictionary_literal
   # Duplicate Imports
-  - duplicate_imports
+  # - duplicate_imports
   # Avoid using 'dynamic' and '@inline(__always)' together.
   - dynamic_inline
   # Prefer checking isEmpty over comparing collection to an empty array or dictionary literal.
