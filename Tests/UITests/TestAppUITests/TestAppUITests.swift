@@ -65,8 +65,8 @@ class TestAppUITests: XCTestCase {
         XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
                 
-        app.textFields["Ask LLM on FHIR ..."].tap()
-        typeText("New Message!")
+        app.textViews["Ask LLM on FHIR ..."].tap()
+        app.textViews["Ask LLM on FHIR ..."].typeText("New Message!")
         app.buttons["Arrow Up Circle"].tap()
                 
         XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))
