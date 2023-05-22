@@ -15,25 +15,34 @@ import SwiftUI
 public struct ChatView: View {
     @Binding var chat: [Chat]
     @Binding var disableInput: Bool
+    @State var messageInputHeight: CGFloat = 0
     
     
     public var body: some View {
-        VStack {
-            MessagesView($chat)
-                .gesture(
-                    TapGesture().onEnded {
-                        UIApplication.shared.sendAction(
-                            #selector(
-                                UIResponder.resignFirstResponder
-                            ),
-                            to: nil,
-                            from: nil,
-                            for: nil
-                        )
+        ZStack {
+            VStack {
+                MessagesView($chat, bottomPadding: $messageInputHeight)
+                    .gesture(
+                        TapGesture().onEnded {
+                            UIApplication.shared.sendAction(
+                                #selector(
+                                    UIResponder.resignFirstResponder
+                                ),
+                                to: nil,
+                                from: nil,
+                                for: nil
+                            )
+                        }
+                    )
+            }
+            VStack {
+                Spacer()
+                MessageInputView($chat)
+                    .disabled(disableInput)
+                    .onPreferenceChange(MessageInputViewHeightKey.self) { newValue in
+                        messageInputHeight = newValue
                     }
-                )
-            MessageInputView($chat)
-                .disabled(disableInput)
+            }
         }
     }
     

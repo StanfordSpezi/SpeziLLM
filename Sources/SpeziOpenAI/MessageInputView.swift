@@ -14,23 +14,28 @@ import SwiftUI
 public struct MessageInputView: View {
     @Binding var chat: [Chat]
     @State var message: String = ""
+    @State var messageViewHeight: CGFloat = 0
     
     
     public var body: some View {
-        HStack {
+        HStack(alignment: .bottom) {
             TextField(
                 "Ask LLM on FHIR ...",
                 text: $message,
                 axis: .vertical
             )
                 .frame(maxWidth: .infinity) // , minHeight: 32
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color(.secondarySystemBackground), lineWidth: 1)
+                .background {
+                    RoundedRectangle(cornerRadius: 24)
+                        .stroke(Color(UIColor.systemGray2), lineWidth: 0.2)
+                        .background {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.white.opacity(0.2))
+                        }
                         .padding(.trailing, -30)
-                )
+                }
                 .lineLimit(1...5)
             Button(
                 action: {
@@ -39,16 +44,33 @@ public struct MessageInputView: View {
                 },
                 label: {
                     Image(systemName: "arrow.up.circle.fill")
-                        .font(.title2)
-                        .padding(.horizontal, -8)
+                        .font(.title)
+                        .padding(.horizontal, -14)
                         .foregroundColor(
-                            message.isEmpty ? Color(.systemGray6) : .accentColor
+                            message.isEmpty ? Color(.systemGray5) : .accentColor
                         )
                 }
             )
                 .padding(.trailing, -40)
+                .padding(.bottom, 3)
         }
             .padding(.trailing, 23)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
+            .background(.white.opacity(0.4))
+            .background(.thinMaterial)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            messageViewHeight = proxy.size.height
+                        }
+                        .onChange(of: message) { _ in
+                            messageViewHeight = proxy.size.height
+                        }
+                }
+            }
+            .messageInputViewHeight(messageViewHeight)
     }
     
     
@@ -70,9 +92,16 @@ struct MessageInputView_Previews: PreviewProvider {
     
     
     static var previews: some View {
-        VStack {
-            MessagesView($chat)
-            MessageInputView($chat)
+        ZStack {
+            Color(.secondarySystemBackground)
+                .ignoresSafeArea()
+            VStack {
+                MessagesView($chat)
+                MessageInputView($chat)
+            }
+                .onPreferenceChange(MessageInputViewHeightKey.self) { newValue in
+                    print("New MessageView height: \(newValue)")
+                }
         }
     }
 }
