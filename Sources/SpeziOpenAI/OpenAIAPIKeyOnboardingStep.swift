@@ -38,14 +38,28 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
         OnboardingView(
             titleView: {
                 OnboardingTitleView(
-                    title: String(localized: "OPENAI_API_KEY_TITLE", bundle: .module),
-                    subtitle: String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module)
+                    title: String(localized: "OPENAI_API_KEY_TITLE", bundle: .module)
                 )
             },
             contentView: {
-                TextField(String(localized: "OPENAI_API_KEY_PROMT", bundle: .module), text: apiToken)
-                    .padding()
-                    .textFieldStyle(.roundedBorder)
+                ScrollView {
+                    VStack {
+                        Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
+                            .multilineTextAlignment(.center)
+                        Text((try? AttributedString(
+                            markdown: String(
+                                localized: "OPENAI_API_KEY_SUBTITLE_HINT",
+                                bundle: .module
+                            )
+                        )) ?? "")
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 16)
+                        TextField(String(localized: "OPENAI_API_KEY_PROMT", bundle: .module), text: apiToken)
+                            .frame(height: 50)
+                            .padding(.vertical)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                }
             },
             actionView: {
                 OnboardingActionsView(
@@ -54,6 +68,7 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
                         action()
                     }
                 )
+                    .disabled(apiToken.wrappedValue.isEmpty)
             }
         )
     }
