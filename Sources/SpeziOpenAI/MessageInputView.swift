@@ -28,10 +28,10 @@ public struct MessageInputView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background {
-                    RoundedRectangle(cornerRadius: 24)
+                    RoundedRectangle(cornerRadius: 20)
                         .stroke(Color(UIColor.systemGray2), lineWidth: 0.2)
                         .background {
-                            RoundedRectangle(cornerRadius: 24)
+                            RoundedRectangle(cornerRadius: 20)
                                 .fill(.white.opacity(0.2))
                         }
                         .padding(.trailing, -30)
@@ -51,7 +51,7 @@ public struct MessageInputView: View {
                         )
                 }
             )
-                .padding(.trailing, -40)
+                .padding(.trailing, -38)
                 .padding(.bottom, 3)
         }
             .padding(.trailing, 23)
