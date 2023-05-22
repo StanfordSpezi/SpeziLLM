@@ -23,7 +23,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ChatView($chat)
-                .padding(.horizontal, 8)
                 .navigationTitle("Spezi ML")
                 .toolbar {
                     ToolbarItem {
