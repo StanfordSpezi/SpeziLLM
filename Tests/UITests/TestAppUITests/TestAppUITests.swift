@@ -21,8 +21,16 @@ class TestAppUITests: XCTestCase {
     }
     
     
-    func testSpeziML() throws {
+    func testSpeziMLOnboarding() throws {
         let app = XCUIApplication()
+        
+        
+        let elementsQuery = XCUIApplication().scrollViews.otherElements
+        elementsQuery.staticTexts["User Message!"].tap()
+        elementsQuery.staticTexts["Assistant Message!"].tap()
+        
+        
+        app.buttons["Onboarding"].tap()
         
         try app.textFields["OpenAI API Key"].enter(value: "New Token")
         app.buttons["Next"].tap()
@@ -36,14 +44,31 @@ class TestAppUITests: XCTestCase {
         app.terminate()
         app.launch()
         
+        app.buttons["Onboarding"].tap()
+        
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
         
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
+        app.buttons["Onboarding"].tap()
+        
         XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
+    }
+    
+    func testSpeziMLChat() throws {
+        let app = XCUIApplication()
+        
+        XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
+        XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
+                
+        app.textFields["Ask LLM on FHIR ..."].tap()
+        typeText("New Message!")
+        app.buttons["Arrow Up Circle"].tap()
+                
+        XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))
     }
 }
