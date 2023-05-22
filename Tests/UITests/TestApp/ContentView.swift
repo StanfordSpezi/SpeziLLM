@@ -8,31 +8,33 @@
 
 import SpeziOpenAI
 import SwiftUI
-import XCTSpezi
 
 
 struct ContentView: View {
-    enum Step: String, Codable {
-        case modelSelection
-    }
-
+    @State var chat: [Chat] = [
+        Chat(role: .system, content: "System Message!"),
+        Chat(role: .system, content: "System Message (hidden)!"),
+        Chat(role: .user, content: "User Message!"),
+        Chat(role: .assistant, content: "Assistant Message!")
+    ]
+    @State var showOnboarding = false
     
-    @State private var steps: [Step] = []
-
     
     var body: some View {
-        NavigationStack(path: $steps) {
-            OpenAIAPIKeyOnboardingStep<TestAppStandard> {
-                steps.append(.modelSelection)
-            }
-                .navigationDestination(for: Step.self) { step in
-                    switch step {
-                    case .modelSelection:
-                        OpenAIModelSelectionOnboardingStep<TestAppStandard> {
-                            steps.removeLast()
+        NavigationStack {
+            ChatView($chat)
+                .padding(.horizontal, 8)
+                .navigationTitle("Spezi ML")
+                .toolbar {
+                    ToolbarItem {
+                        Button("Onboarding") {
+                            showOnboarding.toggle()
                         }
                     }
                 }
         }
+            .sheet(isPresented: $showOnboarding) {
+                OnboardingView()
+            }
     }
 }

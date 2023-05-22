@@ -8,6 +8,8 @@
 
 
 import OpenAI
+@_exported import struct OpenAI.Model
+@_exported import struct OpenAI.ChatStreamResult
 import Spezi
 import SpeziLocalStorage
 import SpeziSecureStorage
