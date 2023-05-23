@@ -15,7 +15,9 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
     @EnvironmentObject private var openAI: OpenAIComponent<ComponentStandard>
+    private let actionText: String
     private let action: () -> Void
+    
     
     private var apiToken: Binding<String> {
         Binding(
@@ -32,7 +34,6 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
             }
         )
     }
-    
     
     public var body: some View {
         OnboardingView(
@@ -63,7 +64,7 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
             },
             actionView: {
                 OnboardingActionsView(
-                    String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
+                    actionText,
                     action: {
                         action()
                     }
@@ -74,7 +75,14 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
     }
     
     
-    public init(_ action: @escaping () -> Void) {
+    /// - Parameters:
+    ///   - actionText: Text that should appear on the action button.
+    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    public init(
+        actionText: String? = nil,
+        _ action: @escaping () -> Void
+    ) {
+        self.actionText = actionText ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module)
         self.action = action
     }
 }

@@ -15,6 +15,7 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct OpenAIModelSelectionOnboardingStep<ComponentStandard: Standard>: View {
     @EnvironmentObject private var openAI: OpenAIComponent<ComponentStandard>
+    private let actionText: String
     private let action: () -> Void
     
     
@@ -38,7 +39,7 @@ public struct OpenAIModelSelectionOnboardingStep<ComponentStandard: Standard>: V
             },
             actionView: {
                 OnboardingActionsView(
-                    String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
+                    actionText,
                     action: {
                         action()
                     }
@@ -48,7 +49,14 @@ public struct OpenAIModelSelectionOnboardingStep<ComponentStandard: Standard>: V
     }
     
     
-    public init(_ action: @escaping () -> Void) {
+    /// - Parameters:
+    ///   - actionText: Text that should appear on the action button.
+    ///   - action: Action that should be performed after the openAI model selection has been persisted.
+    public init(
+        actionText: String? = nil,
+        _ action: @escaping () -> Void
+    ) {
+        self.actionText = actionText ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module)
         self.action = action
     }
 }
