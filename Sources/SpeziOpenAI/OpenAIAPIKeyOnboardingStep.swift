@@ -43,21 +43,21 @@ public struct OpenAIAPIKeyOnboardingStep<ComponentStandard: Standard>: View {
             },
             contentView: {
                 ScrollView {
-                    VStack {
+                    VStack(spacing: 0) {
                         Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
                             .multilineTextAlignment(.center)
+                        TextField(String(localized: "OPENAI_API_KEY_PROMT", bundle: .module), text: apiToken)
+                            .frame(height: 50)
+                            .textFieldStyle(.roundedBorder)
+                            .padding(.vertical, 16)
                         Text((try? AttributedString(
                             markdown: String(
                                 localized: "OPENAI_API_KEY_SUBTITLE_HINT",
                                 bundle: .module
                             )
                         )) ?? "")
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 16)
-                        TextField(String(localized: "OPENAI_API_KEY_PROMT", bundle: .module), text: apiToken)
-                            .frame(height: 50)
-                            .padding(.vertical)
-                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .font(.caption)
                     }
                 }
             },
