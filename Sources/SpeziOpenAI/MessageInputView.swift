@@ -21,11 +21,7 @@ public struct MessageInputView: View {
     
     public var body: some View {
         HStack(alignment: .bottom) {
-            TextField(
-                messagePlaceholder,
-                text: $message,
-                axis: .vertical
-            )
+            TextField(messagePlaceholder, text: $message, axis: .vertical)
                 .accessibilityLabel("Message Input Textfield")
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
@@ -80,12 +76,13 @@ public struct MessageInputView: View {
     
     /// - Parameters:
     ///   - chat: The chat that should be appended to.
+    ///   - messagePlaceholder: Placeholder text that should be added in the input field
     public init(
-        messagePlaceholder: String? = nil,
-        _ chat: Binding<[Chat]>
+        _ chat: Binding<[Chat]>,
+        messagePlaceholder: String? = nil
     ) {
-        self.messagePlaceholder = messagePlaceholder ?? "Message"
         self._chat = chat
+        self.messagePlaceholder = messagePlaceholder ?? "Message"
     }
 }
 
