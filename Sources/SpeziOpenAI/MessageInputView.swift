@@ -53,6 +53,7 @@ public struct MessageInputView: View {
             )
                 .padding(.trailing, -38)
                 .padding(.bottom, 3)
+                .disabled(message.isEmpty)
         }
             .padding(.trailing, 23)
             .padding(.horizontal, 16)

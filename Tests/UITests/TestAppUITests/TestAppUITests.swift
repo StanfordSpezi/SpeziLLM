@@ -70,16 +70,22 @@ class TestAppUITests: XCTestCase {
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
     }
     
-    func testSpeziMLChat() throws {
+    @MainActor
+    func testSpeziMLChat() async throws {
         let app = XCUIApplication()
         
         XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
-                
-        app.textViews["Ask LLM on FHIR ..."].tap()
-        app.textViews["Ask LLM on FHIR ..."].typeText("New Message!")
+        XCTAssert(app.buttons["Arrow Up Circle"].waitForExistence(timeout: 2))
         
-        sleep(1)
+        XCTAssertFalse(app.buttons["Arrow Up Circle"].isEnabled)
+        
+        app.textViews["Ask LLM on FHIR ..."].tap()
+        try await Task.sleep(for: .seconds(1))
+        app.textViews["Ask LLM on FHIR ..."].typeText("New Message!")
+        XCTAssert(app.buttons["Arrow Up Circle"].isEnabled)
+        
+        try await Task.sleep(for: .seconds(1))
         app.buttons["Arrow Up Circle"].tap()
                 
         XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))
