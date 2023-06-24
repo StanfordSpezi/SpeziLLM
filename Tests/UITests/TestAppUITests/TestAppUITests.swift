@@ -78,10 +78,10 @@ class TestAppUITests: XCTestCase {
         XCTAssert(app.buttons["Arrow Up Circle"].waitForExistence(timeout: 2))
         
         XCTAssertFalse(app.buttons["Arrow Up Circle"].isEnabled)
-        try app.textViews["Ask LLM on FHIR ..."].enter(value: "New Message!", dismissKeyboard: false)
+        try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
         XCTAssert(app.buttons["Arrow Up Circle"].isEnabled)
         
-        sleep()
+        sleep(1)
         app.buttons["Arrow Up Circle"].tap()
                 
         XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))

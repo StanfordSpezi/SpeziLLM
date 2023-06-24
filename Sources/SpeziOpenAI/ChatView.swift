@@ -13,6 +13,8 @@ import SwiftUI
 
 /// A view to display an OpenAI-based chat view.
 public struct ChatView: View {
+    let messagePlaceholder: String?
+    
     @Binding var chat: [Chat]
     @Binding var disableInput: Bool
     @State var messageInputHeight: CGFloat = 0
@@ -37,7 +39,7 @@ public struct ChatView: View {
             }
             VStack {
                 Spacer()
-                MessageInputView($chat)
+                MessageInputView(messagePlaceholder: messagePlaceholder, $chat)
                     .disabled(disableInput)
                     .onPreferenceChange(MessageInputViewHeightKey.self) { newValue in
                         messageInputHeight = newValue
@@ -51,9 +53,11 @@ public struct ChatView: View {
     ///   - chat: The chat that should be displayed.
     ///   - disableInput: Flag if the input view should be disabled.
     public init(
+        messagePlaceholder: String? = nil,
         _ chat: Binding<[Chat]>,
         disableInput: Binding<Bool> = .constant(false)
     ) {
+        self.messagePlaceholder = messagePlaceholder
         self._chat = chat
         self._disableInput = disableInput
     }

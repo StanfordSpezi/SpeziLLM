@@ -12,6 +12,8 @@ import SwiftUI
 
 /// Displays a textfield to append a message to a chat.
 public struct MessageInputView: View {
+    let messagePlaceholder: String
+    
     @Binding var chat: [Chat]
     @State var message: String = ""
     @State var messageViewHeight: CGFloat = 0
@@ -20,11 +22,12 @@ public struct MessageInputView: View {
     public var body: some View {
         HStack(alignment: .bottom) {
             TextField(
-                "Ask LLM on FHIR ...",
+                messagePlaceholder,
                 text: $message,
                 axis: .vertical
             )
-                .frame(maxWidth: .infinity) // , minHeight: 32
+                .accessibilityLabel("Message Input Textfield")
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background {
@@ -77,7 +80,11 @@ public struct MessageInputView: View {
     
     /// - Parameters:
     ///   - chat: The chat that should be appended to.
-    public init(_ chat: Binding<[Chat]>) {
+    public init(
+        messagePlaceholder: String? = nil,
+        _ chat: Binding<[Chat]>
+    ) {
+        self.messagePlaceholder = messagePlaceholder ?? "Message"
         self._chat = chat
     }
 }
