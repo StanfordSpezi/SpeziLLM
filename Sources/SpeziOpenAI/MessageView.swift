@@ -38,12 +38,12 @@ public struct MessageView: View {
     
     
     public var body: some View {
-        if chat.role != .system || (chat.role == .system && !hideSystemMessages) {
+        if chat.role != .system || (chat.role == .system && !hideSystemMessages), let content = chat.content {
             HStack {
                 if chat.allignment == .trailing {
                     Spacer(minLength: 32)
                 }
-                Text(chat.content)
+                Text(content)
                     .multilineTextAlignment(multilineTextAllignment)
                     .frame(idealWidth: .infinity)
                     .padding(.horizontal, 10)

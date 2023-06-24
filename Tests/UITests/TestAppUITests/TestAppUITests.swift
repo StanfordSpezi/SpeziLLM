@@ -33,11 +33,16 @@ class TestAppUITests: XCTestCase {
         app.buttons["Onboarding"].tap()
         
         try app.textFields["OpenAI API Key"].enter(value: "New Token")
+        sleep(1)
+        
+        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4")
         XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
+        sleep(1)
         
+        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         
@@ -47,6 +52,9 @@ class TestAppUITests: XCTestCase {
         app.buttons["Onboarding"].tap()
         
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
+        sleep(1)
+        
+        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
         
@@ -55,7 +63,10 @@ class TestAppUITests: XCTestCase {
         app.buttons["Onboarding"].tap()
         
         XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
+        
+        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
+        
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
     }
     
@@ -64,9 +75,13 @@ class TestAppUITests: XCTestCase {
         
         XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
-                
-        app.textViews["Ask LLM on FHIR ..."].tap()
-        app.textViews["Ask LLM on FHIR ..."].typeText("New Message!")
+        XCTAssert(app.buttons["Arrow Up Circle"].waitForExistence(timeout: 2))
+        
+        XCTAssertFalse(app.buttons["Arrow Up Circle"].isEnabled)
+        try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        XCTAssert(app.buttons["Arrow Up Circle"].isEnabled)
+        
+        sleep(1)
         app.buttons["Arrow Up Circle"].tap()
                 
         XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))

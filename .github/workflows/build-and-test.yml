@@ -23,6 +23,12 @@ jobs:
       artifactname: SpeziML.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziML
+  build:
+    name: Build Swift Package on Xcode 14
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    with:
+      runsonlabels: '["macos-13"]'
+      scheme: SpeziML
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
