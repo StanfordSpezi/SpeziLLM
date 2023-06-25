@@ -11,4 +11,4 @@ builder:
   configs:
     - platform: ios
       documentation_targets:
-      - SpeziML
+      - SpeziOpenAI
