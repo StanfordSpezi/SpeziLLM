@@ -28,7 +28,7 @@ actor SpeechRecognizer: ObservableObject {
     private let recognizer: SFSpeechRecognizer?
     
     init() {
-        recognizer = SFSpeechRecognizer()
+        recognizer = SFSpeechRecognizer(locale: Locale(identifier: Locale.preferredLanguages[0]))
         guard recognizer != nil else {
             transcribe(RecognizerError.nilRecognizer)
             return
