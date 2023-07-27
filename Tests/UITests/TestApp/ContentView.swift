@@ -19,11 +19,15 @@ struct ContentView: View {
     ]
     @State var showOnboarding = false
     
-    
     var body: some View {
         NavigationStack {
             ChatView($chat)
                 .navigationTitle("Spezi ML")
+                .onChange(of: chat) { newValue in
+                    if newValue.last?.role == .user {
+                        chat.append(Chat(role: .assistant, content: "This is a response"))
+                    }
+                }
                 .toolbar {
                     ToolbarItem {
                         Button("Onboarding") {
