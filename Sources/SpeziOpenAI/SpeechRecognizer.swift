@@ -1,5 +1,5 @@
-import Foundation
 import AVFoundation
+import Foundation
 import Speech
 import SwiftUI
 
@@ -48,21 +48,31 @@ actor SpeechRecognizer: ObservableObject {
         }
     }
     
-    @MainActor func startTranscribing() {
+    @MainActor
+    func startTranscribing() {
         Task {
             await transcribe()
         }
     }
     
-    @MainActor func resetTranscript() {
+    @MainActor
+    func resetTranscript() {
         Task {
             await reset()
         }
     }
     
-    @MainActor func stopTranscribing() {
+    @MainActor
+    func stopTranscribing() {
         Task {
             await reset()
+        }
+    }
+    
+    @MainActor
+    func resetText() {
+        Task {
+            await resetTranscriptText()
         }
     }
 
@@ -91,12 +101,6 @@ actor SpeechRecognizer: ObservableObject {
         audioEngine = nil
         request = nil
         task = nil
-    }
-    
-    @MainActor func resetText() {
-        Task {
-            await resetTranscriptText()
-        }
     }
 
     private func resetTranscriptText() {
