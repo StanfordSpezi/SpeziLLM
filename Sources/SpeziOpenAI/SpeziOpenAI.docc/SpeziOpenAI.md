@@ -17,7 +17,7 @@ Module to interact with the OpenAI API to interact with GPT-based large language
 ```
 class ExampleDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: /* ... */) {
+        Configuration {
             OpenAIComponent()
             // ...
         }

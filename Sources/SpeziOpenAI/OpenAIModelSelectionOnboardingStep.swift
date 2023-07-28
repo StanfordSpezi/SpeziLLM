@@ -13,8 +13,8 @@ import SwiftUI
 
 
 /// View to display an onboarding step for the user to enter change the OpenAI model.
-public struct OpenAIModelSelectionOnboardingStep<ComponentStandard: Standard>: View {
-    @EnvironmentObject private var openAI: OpenAIComponent<ComponentStandard>
+public struct OpenAIModelSelectionOnboardingStep: View {
+    @EnvironmentObject private var openAI: OpenAIComponent
     private let actionText: String
     private let action: () -> Void
     

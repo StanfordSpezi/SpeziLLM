@@ -22,13 +22,13 @@ struct OnboardingView: View {
     
     var body: some View {
         NavigationStack(path: $steps) {
-            OpenAIAPIKeyOnboardingStep<TestAppStandard> {
+            OpenAIAPIKeyOnboardingStep {
                 steps.append(.modelSelection)
             }
                 .navigationDestination(for: Step.self) { step in
                     switch step {
                     case .modelSelection:
-                        OpenAIModelSelectionOnboardingStep<TestAppStandard> {
+                        OpenAIModelSelectionOnboardingStep {
                             steps.removeLast()
                         }
                     }

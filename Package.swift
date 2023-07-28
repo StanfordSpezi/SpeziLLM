@@ -22,8 +22,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.2")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.5.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.3.1")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.7.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.3.0"))
     ],
     targets: [
