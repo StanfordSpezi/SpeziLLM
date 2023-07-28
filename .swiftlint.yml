@@ -375,6 +375,9 @@ deployment_target: # Availability checks or attributes shouldn’t be using olde
   iOSApplicationExtension_deployment_target: 16.0
   iOS_deployment_target: 16.0
 
+attributes:
+  attributes_with_arguments_always_on_line_above: false
+
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - .build
   - .swiftpm
