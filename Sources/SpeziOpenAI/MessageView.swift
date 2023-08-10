@@ -39,7 +39,10 @@ public struct MessageView: View {
     
     
     public var body: some View {
-        if chat.role != .system || (chat.role == .system && !hideSystemMessages) || (chat.role == .function && !hideFunctionMessages), let content = chat.content {
+        if chat.role != .system ||
+           (chat.role == .system && !hideSystemMessages) ||
+           (chat.role == .function && !hideFunctionMessages),
+           let content = chat.content {
             HStack {
                 if chat.allignment == .trailing {
                     Spacer(minLength: 32)
