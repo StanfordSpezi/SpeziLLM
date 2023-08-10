@@ -19,6 +19,7 @@ public struct MessagesView: View {
     @Binding var chat: [Chat]
     @Binding var bottomPadding: CGFloat
     let hideSystemMessages: Bool
+    let hideFunctionMessages: Bool
     
     
     private var keyboardPublisher: AnyPublisher<Bool, Never> {
@@ -68,14 +69,17 @@ public struct MessagesView: View {
     ///   - chat: The chat messages that should be displayed.
     ///   - bottomPadding: A fixed bottom padding for the messages view.
     ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
+    ///   - hideFunctionMessages: If function messages should be hidden from the chat overview.
     public init(
         _ chat: [Chat],
         bottomPadding: CGFloat = 0,
-        hideSystemMessages: Bool = true
+        hideSystemMessages: Bool = true,
+        hideFunctionMessages: Bool = true
     ) {
         self._chat = .constant(chat)
         self._bottomPadding = .constant(bottomPadding)
         self.hideSystemMessages = hideSystemMessages
+        self.hideFunctionMessages = hideFunctionMessages
     }
     
     
@@ -83,14 +87,17 @@ public struct MessagesView: View {
     ///   - chat: The chat messages that should be displayed.
     ///   - bottomPadding: A bottom padding for the messages view.
     ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
+    ///   - hideFunctionMessages: If function messages should be hidden from the chat overview.
     public init(
         _ chat: Binding<[Chat]>,
         bottomPadding: Binding<CGFloat> = .constant(0),
-        hideSystemMessages: Bool = true
+        hideSystemMessages: Bool = true,
+        hideFunctionMessages: Bool = true
     ) {
         self._chat = chat
         self._bottomPadding = bottomPadding
         self.hideSystemMessages = hideSystemMessages
+        self.hideFunctionMessages = hideFunctionMessages
     }
     
     

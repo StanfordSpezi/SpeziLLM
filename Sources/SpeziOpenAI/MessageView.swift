@@ -14,6 +14,7 @@ import SwiftUI
 public struct MessageView: View {
     let chat: Chat
     let hideSystemMessages: Bool
+    let hideFunctionMessages: Bool
     
     
     private var foregroundColor: Color {
@@ -38,7 +39,7 @@ public struct MessageView: View {
     
     
     public var body: some View {
-        if chat.role != .system || (chat.role == .system && !hideSystemMessages), let content = chat.content {
+        if chat.role != .system || (chat.role == .system && !hideSystemMessages) || (chat.role == .function && !hideFunctionMessages), let content = chat.content {
             HStack {
                 if chat.allignment == .trailing {
                     Spacer(minLength: 32)
@@ -71,9 +72,10 @@ public struct MessageView: View {
     /// - Parameters:
     ///   - chat: The chat message that should be displayed.
     ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
-    public init(_ chat: Chat, hideSystemMessages: Bool = true) {
+    public init(_ chat: Chat, hideSystemMessages: Bool = true, hideFunctionMessages: Bool = true) {
         self.chat = chat
         self.hideSystemMessages = hideSystemMessages
+        self.hideFunctionMessages = hideFunctionMessages
     }
 }
 
