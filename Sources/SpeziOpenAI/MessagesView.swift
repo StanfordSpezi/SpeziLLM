@@ -15,11 +15,9 @@ import SwiftUI
 public struct MessagesView: View {
     private static let bottomSpacerIdentifier = "Bottom Spacer"
     
-    
     @Binding var chat: [Chat]
     @Binding var bottomPadding: CGFloat
-    let hideSystemMessages: Bool
-    let hideFunctionMessages: Bool
+    let hideMessagesWithRoles: Set<Chat.Role>
     
     
     private var keyboardPublisher: AnyPublisher<Bool, Never> {
@@ -44,7 +42,7 @@ public struct MessagesView: View {
             ScrollView {
                 VStack {
                     ForEach(Array(chat.enumerated()), id: \.offset) { _, message in
-                        MessageView(message)
+                        MessageView(message, hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
                     }
                     Spacer()
                         .frame(height: bottomPadding)
@@ -68,38 +66,31 @@ public struct MessagesView: View {
     /// - Parameters:
     ///   - chat: The chat messages that should be displayed.
     ///   - bottomPadding: A fixed bottom padding for the messages view.
-    ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
-    ///   - hideFunctionMessages: If function messages should be hidden from the chat overview.
+    ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
     public init(
         _ chat: [Chat],
         bottomPadding: CGFloat = 0,
-        hideSystemMessages: Bool = true,
-        hideFunctionMessages: Bool = true
+        hideMessagesWithRoles: Set<Chat.Role>
     ) {
         self._chat = .constant(chat)
         self._bottomPadding = .constant(bottomPadding)
-        self.hideSystemMessages = hideSystemMessages
-        self.hideFunctionMessages = hideFunctionMessages
+        self.hideMessagesWithRoles = hideMessagesWithRoles
     }
-    
-    
+
     /// - Parameters:
     ///   - chat: The chat messages that should be displayed.
-    ///   - bottomPadding: A bottom padding for the messages view.
-    ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
-    ///   - hideFunctionMessages: If function messages should be hidden from the chat overview.
+    ///   - bottomPadding: A fixed bottom padding for the messages view.
+    ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
     public init(
         _ chat: Binding<[Chat]>,
         bottomPadding: Binding<CGFloat> = .constant(0),
-        hideSystemMessages: Bool = true,
-        hideFunctionMessages: Bool = true
+        hideMessagesWithRoles: Set<Chat.Role>
     ) {
         self._chat = chat
         self._bottomPadding = bottomPadding
-        self.hideSystemMessages = hideSystemMessages
-        self.hideFunctionMessages = hideFunctionMessages
+        self.hideMessagesWithRoles = hideMessagesWithRoles
     }
-    
+
     
     private func scrollToBottom(_ scrollViewProxy: ScrollViewProxy) {
         withAnimation(.easeOut) {
@@ -115,9 +106,10 @@ struct MessagesView_Previews: PreviewProvider {
             [
                 Chat(role: .system, content: "System Message!"),
                 Chat(role: .system, content: "System Message (hidden)!"),
+                Chat(role: .function, content: "Function Message!"),
                 Chat(role: .user, content: "User Message!"),
                 Chat(role: .assistant, content: "Assistant Message!")
-            ]
+            ], hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles
         )
     }
 }

@@ -23,7 +23,7 @@ public struct ChatView: View {
     public var body: some View {
         ZStack {
             VStack {
-                MessagesView($chat, bottomPadding: $messageInputHeight)
+                MessagesView($chat, bottomPadding: $messageInputHeight, hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
                     .gesture(
                         TapGesture().onEnded {
                             UIApplication.shared.sendAction(
@@ -68,7 +68,8 @@ struct ChatView_Previews: PreviewProvider {
         Chat(role: .system, content: "System Message!"),
         Chat(role: .system, content: "System Message (hidden)!"),
         Chat(role: .user, content: "User Message!"),
-        Chat(role: .assistant, content: "Assistant Message!")
+        Chat(role: .assistant, content: "Assistant Message!"),
+        Chat(role: .function, content: "Function Message!")
     ]
     
     

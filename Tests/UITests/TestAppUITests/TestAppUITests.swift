@@ -77,6 +77,9 @@ class TestAppUITests: XCTestCase {
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.buttons["Arrow Up Circle"].waitForExistence(timeout: 2))
         
+        XCTAssertFalse(app.staticTexts["System Message!"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.staticTexts["Function Message!"].waitForExistence(timeout: 2))
+        
         XCTAssertFalse(app.buttons["Arrow Up Circle"].isEnabled)
         try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
         XCTAssert(app.buttons["Arrow Up Circle"].isEnabled)
