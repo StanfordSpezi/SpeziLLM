@@ -14,10 +14,6 @@ public struct MessageView: View {
     let chat: Chat
     let hideMessagesWithRoles: Set<Chat.Role>
     
-    public enum Defaults {
-        static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
-    }
-    
     private var foregroundColor: Color {
         chat.allignment == .leading ? .primary : .white
     }
@@ -65,6 +61,10 @@ public struct MessageView: View {
                 }
             }
         }
+    }
+    
+    public enum Defaults {
+        static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
     }
     
     public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role>) {
