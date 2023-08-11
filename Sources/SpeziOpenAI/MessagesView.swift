@@ -42,7 +42,7 @@ public struct MessagesView: View {
             ScrollView {
                 VStack {
                     ForEach(Array(chat.enumerated()), id: \.offset) { _, message in
-                        MessageView(message, hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                        MessageView(message, hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
                     }
                     Spacer()
                         .frame(height: bottomPadding)

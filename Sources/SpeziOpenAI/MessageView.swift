@@ -67,7 +67,7 @@ public struct MessageView: View {
         }
     }
     
-    public init(_ chat: Chat, hideMessageWithRoles: Set<Chat.Role>) {
+    public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role>) {
         self.chat = chat
         self.hideMessagesWithRoles = MessageView.Defaults.hideMessagesWithRoles
     }
@@ -77,11 +77,11 @@ struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack {
-                MessageView(Chat(role: .system, content: "System Message!"), hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .system, content: "System Message (hidden)!"), hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .function, content: "Function Message!"), hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .user, content: "User Message!"), hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .assistant, content: "User Message!"), hideMessageWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .system, content: "System Message (hidden)!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .user, content: "User Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .assistant, content: "User Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
             }
             .padding()
         }
