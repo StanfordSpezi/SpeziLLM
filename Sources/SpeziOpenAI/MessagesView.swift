@@ -69,12 +69,12 @@ public struct MessagesView: View {
     ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
     public init(
         _ chat: [Chat],
-        bottomPadding: CGFloat = 0,
-        hideMessagesWithRoles: Set<Chat.Role>
+        hideMessagesWithRoles: Set<Chat.Role>,
+        bottomPadding: CGFloat = 0
     ) {
         self._chat = .constant(chat)
-        self._bottomPadding = .constant(bottomPadding)
         self.hideMessagesWithRoles = hideMessagesWithRoles
+        self._bottomPadding = .constant(bottomPadding)
     }
 
     /// - Parameters:
@@ -83,12 +83,12 @@ public struct MessagesView: View {
     ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
     public init(
         _ chat: Binding<[Chat]>,
-        bottomPadding: Binding<CGFloat> = .constant(0),
-        hideMessagesWithRoles: Set<Chat.Role>
+        hideMessagesWithRoles: Set<Chat.Role>,
+        bottomPadding: Binding<CGFloat> = .constant(0)
     ) {
         self._chat = chat
-        self._bottomPadding = bottomPadding
         self.hideMessagesWithRoles = hideMessagesWithRoles
+        self._bottomPadding = bottomPadding
     }
 
     
