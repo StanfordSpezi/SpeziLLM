@@ -12,7 +12,6 @@ import SwiftUI
 
 /// Displays the content of a `Chat` message in a message bubble
 public struct MessageView: View {
-    
     public enum Defaults {
         public static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
     }
