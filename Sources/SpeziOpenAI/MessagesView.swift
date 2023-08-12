@@ -17,7 +17,7 @@ public struct MessagesView: View {
     
     @Binding var chat: [Chat]
     @Binding var bottomPadding: CGFloat
-    let hideMessagesWithRoles: Set<Chat.Role>
+    private let hideMessagesWithRoles: Set<Chat.Role>
     
     
     private var keyboardPublisher: AnyPublisher<Bool, Never> {
@@ -42,7 +42,7 @@ public struct MessagesView: View {
             ScrollView {
                 VStack {
                     ForEach(Array(chat.enumerated()), id: \.offset) { _, message in
-                        MessageView(message, hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                        MessageView(message, hideMessagesWithRoles: hideMessagesWithRoles)
                     }
                     Spacer()
                         .frame(height: bottomPadding)
@@ -66,10 +66,10 @@ public struct MessagesView: View {
     /// - Parameters:
     ///   - chat: The chat messages that should be displayed.
     ///   - bottomPadding: A fixed bottom padding for the messages view.
-    ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
+    ///   - hideMessagesWithRoles: The .system and .function roles are hidden from message view
     public init(
         _ chat: [Chat],
-        hideMessagesWithRoles: Set<Chat.Role>,
+        hideMessagesWithRoles: Set<Chat.Role> = [.system, .function],
         bottomPadding: CGFloat = 0
     ) {
         self._chat = .constant(chat)
@@ -79,11 +79,11 @@ public struct MessagesView: View {
 
     /// - Parameters:
     ///   - chat: The chat messages that should be displayed.
-    ///   - bottomPadding: A fixed bottom padding for the messages view.
-    ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from view.
+    ///   - bottomPadding: A bottom padding for the messages view.
+    ///   - hideMessagesWithRoles: Defines which messages should be hidden based on the passed in message roles.
     public init(
         _ chat: Binding<[Chat]>,
-        hideMessagesWithRoles: Set<Chat.Role>,
+        hideMessagesWithRoles: Set<Chat.Role> = [.system, .function],
         bottomPadding: Binding<CGFloat> = .constant(0)
     ) {
         self._chat = chat

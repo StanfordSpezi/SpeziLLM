@@ -9,10 +9,16 @@
 import OpenAI
 import SwiftUI
 
+
 /// Displays the content of a `Chat` message in a message bubble
 public struct MessageView: View {
+    
+    public enum Defaults {
+        public static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
+    }
+    
     let chat: Chat
-    let hideMessagesWithRoles: Set<Chat.Role>
+    private let hideMessagesWithRoles: Set<Chat.Role>
     
     private var foregroundColor: Color {
         chat.allignment == .leading ? .primary : .white
@@ -63,25 +69,22 @@ public struct MessageView: View {
         }
     }
     
-    public enum Defaults {
-        static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
-    }
-    
-    public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role>) {
+    public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role> = MessageView.Defaults.hideMessagesWithRoles) {
         self.chat = chat
-        self.hideMessagesWithRoles = MessageView.Defaults.hideMessagesWithRoles
+        self.hideMessagesWithRoles = hideMessagesWithRoles
     }
 }
+
 
 struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack {
-                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .system, content: "System Message (hidden)!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .user, content: "User Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
-                MessageView(Chat(role: .assistant, content: "User Message!"), hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: [.system])
+                MessageView(Chat(role: .system, content: "System Message (hidden)!"), hideMessagesWithRoles: [.system])
+                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: [.function])
+                MessageView(Chat(role: .user, content: "User Message!"), hideMessagesWithRoles: [.user])
+                MessageView(Chat(role: .assistant, content: "User Message!"), hideMessagesWithRoles: [.user])
             }
             .padding()
         }

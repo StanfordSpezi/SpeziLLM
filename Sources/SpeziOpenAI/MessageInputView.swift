@@ -102,7 +102,7 @@ struct MessageInputView_Previews: PreviewProvider {
             Color(.secondarySystemBackground)
                 .ignoresSafeArea()
             VStack {
-                MessagesView($chat, hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles)
+                MessagesView($chat)
                 MessageInputView($chat)
             }
                 .onPreferenceChange(MessageInputViewHeightKey.self) { newValue in
