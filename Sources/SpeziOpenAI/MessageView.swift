@@ -16,6 +16,7 @@ public struct MessageView: View {
         public static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
     }
     
+    
     let chat: Chat
     private let hideMessagesWithRoles: Set<Chat.Role>
     
