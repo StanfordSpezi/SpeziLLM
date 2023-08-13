@@ -71,13 +71,16 @@ public class OpenAIComponent: Component, ObservableObject, ObservableObjectProvi
     ///   - messages: A collection of chat  messages used in the conversation.
     ///
     /// - Returns: The content of the response from the API.
-    public func queryAPI(withChat chat: [Chat]) async throws -> AsyncThrowingStream<ChatStreamResult, Error> {
+    public func queryAPI(
+        withChat chat: [Chat],
+        withFunction chatFunctionDeclaration: [ChatFunctionDeclaration] = []
+    ) async throws -> AsyncThrowingStream<ChatStreamResult, Error> {
         guard let apiToken, !apiToken.isEmpty else {
             throw OpenAIError.noAPIToken
         }
 
         let openAIClient = OpenAI(apiToken: apiToken)
-        let query = ChatQuery(model: openAIModel, messages: chat)
+        let query = ChatQuery(model: openAIModel, messages: chat, functions: chatFunctionDeclaration)
         return openAIClient.chatsStream(query: query)
     }
 }

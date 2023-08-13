@@ -91,6 +91,7 @@ struct MessageInputView_Previews: PreviewProvider {
     @State static var chat = [
         Chat(role: .system, content: "System Message!"),
         Chat(role: .system, content: "System Message (hidden)!"),
+        Chat(role: .function, content: "Function Message!"),
         Chat(role: .user, content: "User Message!"),
         Chat(role: .assistant, content: "Assistant Message!")
     ]

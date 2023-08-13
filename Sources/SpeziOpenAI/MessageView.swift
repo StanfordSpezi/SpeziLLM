@@ -12,9 +12,14 @@ import SwiftUI
 
 /// Displays the content of a `Chat` message in a message bubble
 public struct MessageView: View {
-    let chat: Chat
-    let hideSystemMessages: Bool
+    public enum Defaults {
+        public static let hideMessagesWithRoles: Set<Chat.Role> = [.system, .function]
+    }
     
+    
+    private let chat: Chat
+    private let hideMessagesWithRoles: Set<Chat.Role>
+
     
     private var foregroundColor: Color {
         chat.allignment == .leading ? .primary : .white
@@ -36,9 +41,8 @@ public struct MessageView: View {
         chat.allignment == .leading ? -7 : 7
     }
     
-    
     public var body: some View {
-        if chat.role != .system || (chat.role == .system && !hideSystemMessages), let content = chat.content {
+        if !hideMessagesWithRoles.contains(chat.role), let content = chat.content {
             HStack {
                 if chat.allignment == .trailing {
                     Spacer(minLength: 32)
@@ -55,8 +59,7 @@ public struct MessageView: View {
                         Image(systemName: "arrowtriangle.left.fill")
                             .foregroundColor(backgroundColor)
                             .rotationEffect(arrowRotation)
-                            .offset(x: arrowAllignment)
-                        ,
+                            .offset(x: arrowAllignment),
                         alignment: chat.allignment == .leading ? .bottomLeading : .bottomTrailing
                     )
                     .padding(.horizontal, 4)
@@ -70,10 +73,10 @@ public struct MessageView: View {
     
     /// - Parameters:
     ///   - chat: The chat message that should be displayed.
-    ///   - hideSystemMessages: If system messages should be hidden from the chat overview.
-    public init(_ chat: Chat, hideSystemMessages: Bool = true) {
+    ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from the chat overview.
+    public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role> = MessageView.Defaults.hideMessagesWithRoles) {
         self.chat = chat
-        self.hideSystemMessages = hideSystemMessages
+        self.hideMessagesWithRoles = hideMessagesWithRoles
     }
 }
 
@@ -82,12 +85,13 @@ struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack {
-                MessageView(Chat(role: .system, content: "System Message!"), hideSystemMessages: false)
+                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: [])
                 MessageView(Chat(role: .system, content: "System Message (hidden)!"))
+                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: [.system])
                 MessageView(Chat(role: .user, content: "User Message!"))
                 MessageView(Chat(role: .assistant, content: "Assistant Message!"))
             }
-                .padding()
+            .padding()
         }
     }
 }
