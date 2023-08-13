@@ -19,6 +19,7 @@ public struct MessageView: View {
     
     private let chat: Chat
     private let hideMessagesWithRoles: Set<Chat.Role>
+
     
     private var foregroundColor: Color {
         chat.allignment == .leading ? .primary : .white
@@ -69,10 +70,10 @@ public struct MessageView: View {
         }
     }
     
+    
     /// - Parameters:
     ///   - chat: The chat message that should be displayed.
     ///   - hideMessagesWithRoles: If .system and/or .function messages should be hidden from the chat overview.
-    
     public init(_ chat: Chat, hideMessagesWithRoles: Set<Chat.Role> = MessageView.Defaults.hideMessagesWithRoles) {
         self.chat = chat
         self.hideMessagesWithRoles = hideMessagesWithRoles
