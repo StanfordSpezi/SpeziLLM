@@ -80,11 +80,11 @@ struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack {
-                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: [.system])
-                MessageView(Chat(role: .system, content: "System Message (hidden)!"), hideMessagesWithRoles: [.system])
-                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: [.function])
-                MessageView(Chat(role: .user, content: "User Message!"), hideMessagesWithRoles: [.user])
-                MessageView(Chat(role: .assistant, content: "User Message!"), hideMessagesWithRoles: [.user])
+                MessageView(Chat(role: .system, content: "System Message!"), hideMessagesWithRoles: [])
+                MessageView(Chat(role: .system, content: "System Message (hidden)!"))
+                MessageView(Chat(role: .function, content: "Function Message!"), hideMessagesWithRoles: [.system])
+                MessageView(Chat(role: .user, content: "User Message!"))
+                MessageView(Chat(role: .assistant, content: "Assistant Message!"))
             }
             .padding()
         }
