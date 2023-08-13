@@ -15,8 +15,8 @@ import SwiftUI
 public struct MessagesView: View {
     private static let bottomSpacerIdentifier = "Bottom Spacer"
     
-    @Binding var chat: [Chat]
-    @Binding var bottomPadding: CGFloat
+    @Binding private var chat: [Chat]
+    @Binding private var bottomPadding: CGFloat
     private let hideMessagesWithRoles: Set<Chat.Role>
     
     
