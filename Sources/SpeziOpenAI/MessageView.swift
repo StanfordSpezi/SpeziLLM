@@ -17,7 +17,7 @@ public struct MessageView: View {
     }
     
     
-    let chat: Chat
+    private let chat: Chat
     private let hideMessagesWithRoles: Set<Chat.Role>
     
     private var foregroundColor: Color {
