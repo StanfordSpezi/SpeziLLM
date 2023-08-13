@@ -83,7 +83,7 @@ public struct MessagesView: View {
     ///   - hideMessagesWithRoles: Defines which messages should be hidden based on the passed in message roles.
     public init(
         _ chat: Binding<[Chat]>,
-        hideMessagesWithRoles: Set<Chat.Role> = [.system, .function],
+        hideMessagesWithRoles: Set<Chat.Role> = MessageView.Defaults.hideMessagesWithRoles,
         bottomPadding: Binding<CGFloat> = .constant(0)
     ) {
         self._chat = chat
