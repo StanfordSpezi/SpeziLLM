@@ -109,7 +109,7 @@ struct MessagesView_Previews: PreviewProvider {
                 Chat(role: .function, content: "Function Message!"),
                 Chat(role: .user, content: "User Message!"),
                 Chat(role: .assistant, content: "Assistant Message!")
-            ], hideMessagesWithRoles: MessageView.Defaults.hideMessagesWithRoles
+            ]
         )
     }
 }
