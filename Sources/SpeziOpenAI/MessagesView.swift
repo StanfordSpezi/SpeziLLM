@@ -69,7 +69,7 @@ public struct MessagesView: View {
     ///   - hideMessagesWithRoles: The .system and .function roles are hidden from message view
     public init(
         _ chat: [Chat],
-        hideMessagesWithRoles: Set<Chat.Role> = [.system, .function],
+        hideMessagesWithRoles: Set<Chat.Role> = MessageView.Defaults.hideMessagesWithRoles,
         bottomPadding: CGFloat = 0
     ) {
         self._chat = .constant(chat)
