@@ -14,25 +14,40 @@ import SwiftUI
 
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct OpenAIModelSelectionOnboardingStep: View {
+    public enum Default {
+        public static let models = [Model.gpt3_5Turbo, Model.gpt4]
+    }
+    
+    fileprivate struct ModelSelection: Identifiable {
+        fileprivate let id: String
+        
+        
+        fileprivate var description: String {
+            id.replacing("gpt", with: "GPT").replacing("-", with: " ").uppercased()
+        }
+    }
+    
+    
     @EnvironmentObject private var openAI: OpenAIComponent
     private let actionText: String
     private let action: () -> Void
+    private let models: [ModelSelection]
     
     
     public var body: some View {
         OnboardingView(
             titleView: {
                 OnboardingTitleView(
-                    title: String(localized: "OPENAI_MODEL_SELECTION_TITLE", bundle: .module),
-                    subtitle: String(localized: "OPENAI_MODEL_SELECTION_SUBTITLE", bundle: .module)
+                    title: LocalizedStringResource("OPENAI_MODEL_SELECTION_TITLE", bundle: .atURL(from: .module)),
+                    subtitle: LocalizedStringResource("OPENAI_MODEL_SELECTION_SUBTITLE", bundle: .atURL(from: .module))
                 )
             },
             contentView: {
                 Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $openAI.openAIModel) {
-                    Text("GPT 3.5 Turbo")
-                        .tag(Model.gpt3_5Turbo)
-                    Text("GPT 4")
-                        .tag(Model.gpt4)
+                    ForEach(models) { model in
+                        Text(model.description)
+                            .tag(model.id)
+                    }
                 }
                     .pickerStyle(.wheel)
                     .accessibilityIdentifier("modelPicker")
@@ -48,15 +63,31 @@ public struct OpenAIModelSelectionOnboardingStep: View {
         )
     }
     
-    
     /// - Parameters:
-    ///   - actionText: Text that should appear on the action button.
+    ///   - actionText: Localized text that should appear on the action button.
     ///   - action: Action that should be performed after the openAI model selection has been persisted.
     public init(
-        actionText: String? = nil,
+        actionText: LocalizedStringResource? = nil,
+        models: [Model] = Default.models,
         _ action: @escaping () -> Void
     ) {
-        self.actionText = actionText ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module)
+        self.init(
+            actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
+            models: models,
+            action
+        )
+    }
+    
+    /// - Parameters:
+    ///   - actionText: Text that should appear on the action button without localization.
+    ///   - action: Action that should be performed after the openAI model selection has been persisted.
+    public init<ActionText: StringProtocol>(
+        actionText: ActionText,
+        models: [Model] = Default.models,
+        _ action: @escaping () -> Void
+    ) {
+        self.actionText = String(actionText)
+        self.models = models.map { ModelSelection(id: $0) }
         self.action = action
     }
 }
