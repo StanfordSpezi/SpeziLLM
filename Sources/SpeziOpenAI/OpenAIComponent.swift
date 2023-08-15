@@ -80,9 +80,11 @@ public class OpenAIComponent: Component, ObservableObject, ObservableObjectProvi
         guard let apiToken, !apiToken.isEmpty else {
             throw OpenAIError.noAPIToken
         }
+        
+        let functions = chatFunctionDeclaration.isEmpty ? nil : chatFunctionDeclaration
 
         let openAIClient = OpenAI(apiToken: apiToken)
-        let query = ChatQuery(model: openAIModel, messages: chat, functions: chatFunctionDeclaration)
+        let query = ChatQuery(model: openAIModel, messages: chat, functions: functions)
         return openAIClient.chatsStream(query: query)
     }
 }
