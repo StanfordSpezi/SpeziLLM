@@ -76,13 +76,27 @@ public struct OpenAIAPIKeyOnboardingStep: View {
     
     
     /// - Parameters:
-    ///   - actionText: Text that should appear on the action button.
+    ///   - actionText: Localized text that should appear on the action button.
     ///   - action: Action that should be performed after the openAI API key has been persisted.
     public init(
-        actionText: String? = nil,
+        actionText: LocalizedStringResource? = nil,
         _ action: @escaping () -> Void
     ) {
-        self.actionText = actionText ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module)
+        self.init(
+            actionText: actionText?.localizedString() ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
+            action
+        )
+    }
+    
+    /// - Parameters:
+    ///   - actionText: Text that should appear on the action button without localization.
+    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    @_disfavoredOverload
+    public init<ActionText: StringProtocol>(
+        actionText: ActionText,
+        _ action: @escaping () -> Void
+    ) {
+        self.actionText = String(actionText)
         self.action = action
     }
 }

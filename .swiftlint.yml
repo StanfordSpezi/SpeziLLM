@@ -141,8 +141,6 @@ only_rules:
   - implicitly_unwrapped_optional
   # Identifiers should use inclusive language that avoids discrimination against groups of people based on race, gender, or socioeconomic status
   - inclusive_language
-  # If defer is at the end of its parent scope, it will be executed right where it is anyway.
-  - inert_defer
   # Prefer using Set.isDisjoint(with:) over Set.intersection(_:).isEmpty.
   - is_disjoint
   # Discouraged explicit usage of the default separator.
@@ -329,8 +327,6 @@ only_rules:
   - unowned_variable_capture
   # Catch statements should not declare error variables without type casting.
   - untyped_error_in_catch
-  # Unused reference in a capture list should be removed.
-  - unused_capture_list
   # Unused parameter in a closure should be replaced with _.
   - unused_closure_parameter
   # Unused control flow label should be removed.
@@ -381,6 +377,8 @@ attributes:
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - .build
   - .swiftpm
+  - .derivedData
+  - Tests/UITests/.derivedData
 
 closure_body_length: # Closure bodies should not span too many lines.
   - 35 # warning - default: 20
