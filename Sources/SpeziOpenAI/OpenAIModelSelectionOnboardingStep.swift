@@ -65,6 +65,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
+    ///   - models: The models that should be displayed in the picker user interface.
     ///   - action: Action that should be performed after the openAI model selection has been persisted.
     public init(
         actionText: LocalizedStringResource? = nil,
@@ -80,7 +81,9 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     
     /// - Parameters:
     ///   - actionText: Text that should appear on the action button without localization.
+    ///   - models: The models that should be displayed in the picker user interface.
     ///   - action: Action that should be performed after the openAI model selection has been persisted.
+    @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
         models: [Model] = Default.models,

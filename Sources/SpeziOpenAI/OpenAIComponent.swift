@@ -25,6 +25,7 @@ public class OpenAIComponent: Component, ObservableObject, ObservableObjectProvi
     @AppStorage(OpenAIConstants.modelStorageKey) public var openAIModel: Model = .gpt3_5Turbo
     private var defaultAPIToken: String?
     
+    
     /// The API token used to interact with the OpenAI API
     public var apiToken: String? {
         get {
@@ -66,9 +67,10 @@ public class OpenAIComponent: Component, ObservableObject, ObservableObjectProvi
     
 
     /// Queries the OpenAI API using the provided messages.
-    ///
+    /// 
     /// - Parameters:
-    ///   - messages: A collection of chat  messages used in the conversation.
+    ///   - chat: A collection of chat  messages used in the conversation.
+    ///   - chatFunctionDeclaration: OpenAI functions that should be injected in the OpenAI query.
     ///
     /// - Returns: The content of the response from the API.
     public func queryAPI(
