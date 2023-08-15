@@ -23,7 +23,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
         
         
         fileprivate var description: String {
-            id.replacing("gpt", with: "GPT").replacing("-", with: " ").uppercased()
+            id.replacing("-", with: " ").capitalized.replacing("Gpt", with: "GPT")
         }
     }
     

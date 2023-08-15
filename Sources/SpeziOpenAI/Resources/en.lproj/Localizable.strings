@@ -16,6 +16,6 @@
 
 // MARK: OpenAIModelSelectionOnboardingStep
 "OPENAI_MODEL_SELECTION_TITLE" = "Select an OpenAI Model";
-"OPENAI_MODEL_SELECTION_SUBTITLE" = "If you have access to GPT4, you may select it below. Otherwise select GPT 3.5 Turbo.";
+"OPENAI_MODEL_SELECTION_SUBTITLE" = "Select the OpenAI model that you want to use. Ensure that your API key has proper access to the model you select.";
 "OPENAI_MODEL_SELECTION_DESCRIPTION" = "OpenAI GPT Model";
 "OPENAI_MODEL_SELECTION_SAVE_BUTTON" = "Next";
