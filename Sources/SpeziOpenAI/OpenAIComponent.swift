@@ -17,7 +17,7 @@ import SwiftUI
 
 
 /// `OpenAIComponent` is a module responsible for to coordinate the interactions with the OpenAI GPT API.
-public class OpenAIComponent: Component, DefaultInitializable,ObservableObject, ObservableObjectProvider {
+public class OpenAIComponent: Component, DefaultInitializable, ObservableObject, ObservableObjectProvider {
     @Dependency private var localStorage: LocalStorage
     @Dependency private var secureStorage: SecureStorage
     
