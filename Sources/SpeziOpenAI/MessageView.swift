@@ -57,6 +57,7 @@ public struct MessageView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(
                         Image(systemName: "arrowtriangle.left.fill")
+                            .accessibilityHidden(true)
                             .foregroundColor(backgroundColor)
                             .rotationEffect(arrowRotation)
                             .offset(x: arrowAllignment),

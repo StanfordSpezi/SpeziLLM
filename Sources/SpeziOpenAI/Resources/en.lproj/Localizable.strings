@@ -19,3 +19,8 @@
 "OPENAI_MODEL_SELECTION_SUBTITLE" = "Select the OpenAI model that you want to use. Ensure that your API key has proper access to the model you select.";
 "OPENAI_MODEL_SELECTION_DESCRIPTION" = "OpenAI GPT Model";
 "OPENAI_MODEL_SELECTION_SAVE_BUTTON" = "Next";
+
+
+// MARK: Message Views
+"MESSAGE_INPUT_TEXTFIELD" = "Message Input Textfield";
+"SEND_MESSAGE" = "Send Message";

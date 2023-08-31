@@ -22,7 +22,7 @@ public struct MessageInputView: View {
     public var body: some View {
         HStack(alignment: .bottom) {
             TextField(messagePlaceholder, text: $message, axis: .vertical)
-                .accessibilityLabel("Message Input Textfield")
+                .accessibilityLabel("MESSAGE_INPUT_TEXTFIELD")
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -43,6 +43,7 @@ public struct MessageInputView: View {
                 },
                 label: {
                     Image(systemName: "arrow.up.circle.fill")
+                        .accessibilityLabel("SEND_MESSAGE")
                         .font(.title)
                         .padding(.horizontal, -14)
                         .foregroundColor(
