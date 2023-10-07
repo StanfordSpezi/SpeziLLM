@@ -18,7 +18,8 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"])
+        .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"]),
+        .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"])
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.3")),
@@ -30,12 +31,16 @@ let package = Package(
         .target(
             name: "SpeziOpenAI",
             dependencies: [
+                .target(name: "SpeziSpeechRecognizer"),
                 .product(name: "OpenAI", package: "OpenAI"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ]
+        ),
+        .target(
+            name: "SpeziSpeechRecognizer"
         ),
         .testTarget(
             name: "SpeziOpenAITests",
