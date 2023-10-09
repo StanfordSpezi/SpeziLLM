@@ -8,9 +8,10 @@
 
 import AVFoundation
 import OpenAI
-import SpeziSpeechRecognizer
 import Speech
+import SpeziSpeechRecognizer
 import SwiftUI
+
 
 /// Displays a textfield to append a message to a chat.
 public struct MessageInputView: View {
@@ -90,6 +91,7 @@ public struct MessageInputView: View {
                     .foregroundColor(speechRecognizer.isRecording ? Color.red : Color.blue)
                     .frame(width: 44, height: 44)
                 Image(systemName: "mic.fill")
+                    .accessibilityLabel(String(localized: "MICROPHONE_BUTTON", bundle: .module))
                     .foregroundColor(.white)
                     .font(.title)
                     .frame(width: 44, height: 44)
