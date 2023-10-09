@@ -6,12 +6,11 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
-import SwiftUI
 import AVFoundation
-import Speech
+import OpenAI
 import SpeziSpeechRecognizer
-
+import Speech
+import SwiftUI
 
 /// Displays a textfield to append a message to a chat.
 public struct MessageInputView: View {
@@ -58,35 +57,7 @@ public struct MessageInputView: View {
                 .padding(.bottom, 3)
                 .disabled(message.isEmpty)
             if speechRecognizer.isAvailable {
-                Button(
-                    action: {
-                        microphoneButtonPressed()
-                    }
-                ) {
-                    ZStack {
-                        Circle()
-                            .foregroundColor(speechRecognizer.isRecording ? Color.red : Color.blue)
-                            .frame(width: 44, height: 44)
-                        Image(systemName: "mic.fill")
-                            .foregroundColor(.white)
-                            .font(.title)
-                            .frame(width: 44, height: 44)
-                            .background(Color.clear)
-                            .alignmentGuide(HorizontalAlignment.center, computeValue: { dimension in
-                                dimension[HorizontalAlignment.center]
-                            })
-                            .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in
-                                dimension[VerticalAlignment.center]
-                            })
-                            .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1.0)
-                            .opacity(speechRecognizer.isRecording ? 0.7 : 1.0)
-                            .animation(
-                                speechRecognizer.isRecording ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default,
-                                value: speechRecognizer.isRecording
-                            )
-                    }
-                }
-                .padding(EdgeInsets(top: 5, leading: 20, bottom: 0, trailing: 0))
+                customButton
             }
         }
             .padding(.trailing, 23)
@@ -108,6 +79,37 @@ public struct MessageInputView: View {
             .messageInputViewHeight(messageViewHeight)
     }
     
+    private var customButton: some View {
+        Button(
+            action: {
+                microphoneButtonPressed()
+            }
+        ) {
+            ZStack {
+                Circle()
+                    .foregroundColor(speechRecognizer.isRecording ? Color.red : Color.blue)
+                    .frame(width: 44, height: 44)
+                Image(systemName: "mic.fill")
+                    .foregroundColor(.white)
+                    .font(.title)
+                    .frame(width: 44, height: 44)
+                    .background(Color.clear)
+                    .alignmentGuide(HorizontalAlignment.center, computeValue: { dimension in
+                        dimension[HorizontalAlignment.center]
+                    })
+                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in
+                        dimension[VerticalAlignment.center]
+                    })
+                    .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1.0)
+                    .opacity(speechRecognizer.isRecording ? 0.7 : 1.0)
+                    .animation(
+                        speechRecognizer.isRecording ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default,
+                        value: speechRecognizer.isRecording
+                    )
+            }
+        }
+        .padding(EdgeInsets(top: 5, leading: 20, bottom: 0, trailing: 0))
+    }
 
     /// - Parameters:
     ///   - chat: The chat that should be appended to.
@@ -141,7 +143,7 @@ public struct MessageInputView: View {
                         }
                     }
                 } catch {
-                    #warning("TODO: Handle Errors in the UI, e.g. using an alert")
+                    let alert = Alert(title: Text("Error"), message: Text(error.localizedDescription), dismissButton: .default(Text("OK")))
                 }
             }
         }

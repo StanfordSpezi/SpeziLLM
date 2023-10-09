@@ -8,22 +8,21 @@
 
 import Speech
 
-
-#warning("TODO: Add Documentation")
+// Speech recognizer class for enabling voice-based interaction
 public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDelegate {
     private let speechRecognizer: SFSpeechRecognizer?
     private let audioEngine: AVAudioEngine?
     
-    #warning("TODO: Add Documentation")
+    // If recording is in progress
     @Published public private(set) var isRecording = false
-    #warning("TODO: Add Documentation")
+    // If speech recognition is available based on iOS
     @Published public private(set) var isAvailable: Bool
     
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     
     
-    #warning("TODO: Add Documentation")
+    // Setup speech recognizer using user locale
     public init(locale: Locale = .current) {
         if let speechRecognizer = SFSpeechRecognizer(locale: locale) {
             self.speechRecognizer = speechRecognizer
@@ -41,7 +40,7 @@ public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDel
     }
     
     
-    #warning("TODO: Add Documentation")
+    // Start recording functionality
     public func start() -> AsyncThrowingStream<SFSpeechRecognitionResult, Error> { // swiftlint:disable:this function_body_length
         // We allow a larger function and closure length as the function provides a clear encapsulated functionality and the closue is mainly the function
         // wrapped in a continuation.
@@ -110,7 +109,7 @@ public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDel
         }
     }
     
-    #warning("TODO: Add Documentation")
+    // Stop recording functionality
     public func stop() {
         guard isAvailable && isRecording else {
             return
