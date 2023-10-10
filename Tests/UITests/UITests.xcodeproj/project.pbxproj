@@ -12,6 +12,7 @@
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F8A431329130A8C005D2B8F /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
+		2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */; };
 		2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */; };
 		2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590482A19E4AE00153BE4 /* Spezi */; };
 		2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD5904A2A19E4AE00153BE4 /* XCTSpezi */; };
@@ -52,6 +53,7 @@
 				2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */,
 				2FD5904D2A19E54C00153BE4 /* SpeziOpenAI in Frameworks */,
 				2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */,
+				2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +138,7 @@
 				2FD5904A2A19E4AE00153BE4 /* XCTSpezi */,
 				2FD5904C2A19E54C00153BE4 /* SpeziOpenAI */,
 				2F554CB62AD2036D0062CCA1 /* SpeziSpeechRecognizer */,
+				2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -665,6 +668,10 @@
 		2F554CB62AD2036D0062CCA1 /* SpeziSpeechRecognizer */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziSpeechRecognizer;
+		};
+		2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziSpeechSynthesizer;
 		};
 		2FD590482A19E4AE00153BE4 /* Spezi */ = {
 			isa = XCSwiftPackageProductDependency;

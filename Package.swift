@@ -19,7 +19,8 @@ let package = Package(
     ],
     products: [
         .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"]),
-        .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"])
+        .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"]),
+        .library(name: "SpeziSpeechSynthesizer", targets: ["SpeziSpeechSynthesizer"])
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.3")),
@@ -41,6 +42,9 @@ let package = Package(
         ),
         .target(
             name: "SpeziSpeechRecognizer"
+        ),
+        .target(
+            name: "SpeziSpeechSynthesizer"
         ),
         .testTarget(
             name: "SpeziOpenAITests",
