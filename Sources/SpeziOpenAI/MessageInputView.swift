@@ -37,34 +37,21 @@ public struct MessageInputView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .fill(.white.opacity(0.2))
                         }
-                        .padding(.trailing, -30)
+                        .padding(.trailing, -42)
                 }
                 .lineLimit(1...5)
-            Button(
-                action: {
-                    sendMessageButtonPressed()
-                },
-                label: {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .accessibilityLabel(String(localized: "SEND_MESSAGE", bundle: .module))
-                        .font(.title)
-                        .padding(.horizontal, -14)
-                        .foregroundColor(
-                            message.isEmpty ? Color(.systemGray5) : .accentColor
-                        )
+            Group {
+                if speechRecognizer.isAvailable && (message.isEmpty || speechRecognizer.isRecording) {
+                    microphoneButton
+                } else {
+                    sendButton
+                        .disabled(message.isEmpty)
                 }
-            )
-                .padding(.trailing, -38)
-                .padding(.bottom, 3)
-                .disabled(message.isEmpty)
-            if speechRecognizer.isAvailable {
-                customButton
             }
+                .frame(minWidth: 33)
         }
-            .padding(.trailing, 23)
             .padding(.horizontal, 16)
             .padding(.vertical, 6)
-            .background(.white.opacity(0.4))
             .background(.thinMaterial)
             .background {
                 GeometryReader { proxy in
@@ -80,28 +67,35 @@ public struct MessageInputView: View {
             .messageInputViewHeight(messageViewHeight)
     }
     
-    private var customButton: some View {
+    private var sendButton: some View {
+        Button(
+            action: {
+                sendMessageButtonPressed()
+            },
+            label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .accessibilityLabel(String(localized: "SEND_MESSAGE", bundle: .module))
+                    .font(.title)
+                    .foregroundColor(
+                        message.isEmpty ? Color(.systemGray5) : .accentColor
+                    )
+            }
+        )
+            .offset(x: -2, y: -3)
+    }
+    
+    private var microphoneButton: some View {
         Button(
             action: {
                 microphoneButtonPressed()
-            }
-        ) {
-            ZStack {
-                Circle()
-                    .foregroundColor(speechRecognizer.isRecording ? Color.red : Color.blue)
-                    .frame(width: 44, height: 44)
+            },
+            label: {
                 Image(systemName: "mic.fill")
                     .accessibilityLabel(String(localized: "MICROPHONE_BUTTON", bundle: .module))
-                    .foregroundColor(.white)
-                    .font(.title)
-                    .frame(width: 44, height: 44)
-                    .background(Color.clear)
-                    .alignmentGuide(HorizontalAlignment.center, computeValue: { dimension in
-                        dimension[HorizontalAlignment.center]
-                    })
-                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in
-                        dimension[VerticalAlignment.center]
-                    })
+                    .font(.title2)
+                    .foregroundColor(
+                        speechRecognizer.isRecording ? .red : Color(.systemGray2)
+                    )
                     .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1.0)
                     .opacity(speechRecognizer.isRecording ? 0.7 : 1.0)
                     .animation(
@@ -109,10 +103,11 @@ public struct MessageInputView: View {
                         value: speechRecognizer.isRecording
                     )
             }
-        }
-        .padding(EdgeInsets(top: 5, leading: 20, bottom: 0, trailing: 0))
+        )
+            .offset(x: -4, y: -6)
     }
-
+    
+    
     /// - Parameters:
     ///   - chat: The chat that should be appended to.
     ///   - messagePlaceholder: Placeholder text that should be added in the input field
@@ -144,8 +139,6 @@ public struct MessageInputView: View {
                             message = result.bestTranscription.formattedString
                         }
                     }
-                } catch {
-                    let alert = Alert(title: Text("Error"), message: Text(error.localizedDescription), dismissButton: .default(Text("OK")))
                 }
             }
         }

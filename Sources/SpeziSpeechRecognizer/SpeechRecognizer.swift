@@ -8,21 +8,25 @@
 
 import Speech
 
-// Speech recognizer class for enabling voice-based interaction
+/// Encapsulates the functionality of the `SFSpeechRecognizer`.
+///
+/// It provides methods to start and stop voice recognition, and publishes the state of recognition and its availability.
 public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDelegate {
     private let speechRecognizer: SFSpeechRecognizer?
     private let audioEngine: AVAudioEngine?
     
-    // If recording is in progress
+    /// Indicates whether the speech recognition is currently in progress.
     @Published public private(set) var isRecording = false
-    // If speech recognition is available based on iOS
+    /// Indicates the availability of the speech recognition service.
     @Published public private(set) var isAvailable: Bool
     
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     
     
-    // Setup speech recognizer using user locale
+    /// Initializes a new instance of `SpeechRecognizer`.
+    ///
+    /// - Parameter locale: The locale for the speech recognition. Defaults to the current locale.
     public init(locale: Locale = .current) {
         if let speechRecognizer = SFSpeechRecognizer(locale: locale) {
             self.speechRecognizer = speechRecognizer
@@ -40,7 +44,9 @@ public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDel
     }
     
     
-    // Start recording functionality
+    /// Starts the speech recognition process.
+    ///
+    /// - Returns: An asynchronous stream of speech recognition results.
     public func start() -> AsyncThrowingStream<SFSpeechRecognitionResult, Error> { // swiftlint:disable:this function_body_length
         // We allow a larger function and closure length as the function provides a clear encapsulated functionality and the closue is mainly the function
         // wrapped in a continuation.
@@ -109,7 +115,7 @@ public class SpeechRecognizer: NSObject, ObservableObject, SFSpeechRecognizerDel
         }
     }
     
-    // Stop recording functionality
+    /// Stops the current speech recognition session.
     public func stop() {
         guard isAvailable && isRecording else {
             return
