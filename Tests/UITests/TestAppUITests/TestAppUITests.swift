@@ -75,12 +75,12 @@ class TestAppUITests: XCTestCase {
         
         XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
-        XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
+        XCTAssert(app.buttons["Record Message"].waitForExistence(timeout: 2))
         
         XCTAssertFalse(app.staticTexts["System Message!"].waitForExistence(timeout: 2))
         XCTAssertFalse(app.staticTexts["Function Message!"].waitForExistence(timeout: 2))
         
-        XCTAssertFalse(app.buttons["Send Message"].isEnabled)
+        XCTAssert(app.buttons["Record Message"].isEnabled)
         try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
         XCTAssert(app.buttons["Send Message"].isEnabled)
         

@@ -6,17 +6,21 @@
 // SPDX-License-Identifier: MIT
 //
 
+import AVFoundation
 import OpenAI
+import Speech
+import SpeziSpeechRecognizer
 import SwiftUI
 
 
 /// Displays a textfield to append a message to a chat.
 public struct MessageInputView: View {
-    let messagePlaceholder: String
+    private let messagePlaceholder: String
+    @StateObject private var speechRecognizer = SpeechRecognizer()
     
-    @Binding var chat: [Chat]
-    @State var message: String = ""
-    @State var messageViewHeight: CGFloat = 0
+    @Binding private var chat: [Chat]
+    @State private var message: String = ""
+    @State private var messageViewHeight: CGFloat = 0
     
     
     public var body: some View {
@@ -33,32 +37,21 @@ public struct MessageInputView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .fill(.white.opacity(0.2))
                         }
-                        .padding(.trailing, -30)
+                        .padding(.trailing, -42)
                 }
                 .lineLimit(1...5)
-            Button(
-                action: {
-                    chat.append(Chat(role: .user, content: message))
-                    message = ""
-                },
-                label: {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .accessibilityLabel(String(localized: "SEND_MESSAGE", bundle: .module))
-                        .font(.title)
-                        .padding(.horizontal, -14)
-                        .foregroundColor(
-                            message.isEmpty ? Color(.systemGray5) : .accentColor
-                        )
+            Group {
+                if speechRecognizer.isAvailable && (message.isEmpty || speechRecognizer.isRecording) {
+                    microphoneButton
+                } else {
+                    sendButton
+                        .disabled(message.isEmpty)
                 }
-            )
-                .padding(.trailing, -38)
-                .padding(.bottom, 3)
-                .disabled(message.isEmpty)
+            }
+                .frame(minWidth: 33)
         }
-            .padding(.trailing, 23)
             .padding(.horizontal, 16)
             .padding(.vertical, 6)
-            .background(.white.opacity(0.4))
             .background(.thinMaterial)
             .background {
                 GeometryReader { proxy in
@@ -74,6 +67,46 @@ public struct MessageInputView: View {
             .messageInputViewHeight(messageViewHeight)
     }
     
+    private var sendButton: some View {
+        Button(
+            action: {
+                sendMessageButtonPressed()
+            },
+            label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .accessibilityLabel(String(localized: "SEND_MESSAGE", bundle: .module))
+                    .font(.title)
+                    .foregroundColor(
+                        message.isEmpty ? Color(.systemGray5) : .accentColor
+                    )
+            }
+        )
+            .offset(x: -2, y: -3)
+    }
+    
+    private var microphoneButton: some View {
+        Button(
+            action: {
+                microphoneButtonPressed()
+            },
+            label: {
+                Image(systemName: "mic.fill")
+                    .accessibilityLabel(String(localized: "MICROPHONE_BUTTON", bundle: .module))
+                    .font(.title2)
+                    .foregroundColor(
+                        speechRecognizer.isRecording ? .red : Color(.systemGray2)
+                    )
+                    .scaleEffect(speechRecognizer.isRecording ? 1.2 : 1.0)
+                    .opacity(speechRecognizer.isRecording ? 0.7 : 1.0)
+                    .animation(
+                        speechRecognizer.isRecording ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default,
+                        value: speechRecognizer.isRecording
+                    )
+            }
+        )
+            .offset(x: -4, y: -6)
+    }
+    
     
     /// - Parameters:
     ///   - chat: The chat that should be appended to.
@@ -84,6 +117,31 @@ public struct MessageInputView: View {
     ) {
         self._chat = chat
         self.messagePlaceholder = messagePlaceholder ?? "Message"
+    }
+    
+    
+    private func sendMessageButtonPressed() {
+        speechRecognizer.stop()
+        chat.append(Chat(role: .user, content: message))
+        message = ""
+    }
+    
+    private func microphoneButtonPressed() {
+        if speechRecognizer.isRecording {
+            speechRecognizer.stop()
+        } else {
+            Task {
+                do {
+                    for try await result in speechRecognizer.start() {
+                        if result.bestTranscription.formattedString.contains("send") {
+                            sendMessageButtonPressed()
+                        } else {
+                            message = result.bestTranscription.formattedString
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -23,4 +23,5 @@
 
 // MARK: Message Views
 "MESSAGE_INPUT_TEXTFIELD" = "Message Input Textfield";
+"MICROPHONE_BUTTON" = "Record Message";
 "SEND_MESSAGE" = "Send Message";

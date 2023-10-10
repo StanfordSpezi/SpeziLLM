@@ -20,20 +20,13 @@ jobs:
     name: Build and Test Swift Package
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: SpeziML.xcresult
+      artifactname: SpeziML-Package.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziML
-  build:
-    name: Build Swift Package on Xcode 14
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      runsonlabels: '["macos-13"]'
-      scheme: SpeziML
+      scheme: SpeziML-Package
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      xcodeversion: latest
       artifactname: TestApp.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
@@ -43,4 +36,4 @@ jobs:
     needs: [buildandtest, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziML.xcresult TestApp.xcresult
+      coveragereports: SpeziML-Package.xcresult TestApp.xcresult
