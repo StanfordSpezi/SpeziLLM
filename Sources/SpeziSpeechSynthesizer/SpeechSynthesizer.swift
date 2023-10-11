@@ -12,11 +12,20 @@ import AVFoundation
 /// An object that produces synthesized speech from text utterances.
 ///
 /// Encapsulates the functionality of the `AVSpeechSynthesizer`.
-public class SpeechSynthesizer: ObservableObject {
-    private lazy var avSpeechSynthesizer = AVSpeechSynthesizer()
+public class SpeechSynthesizer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    private let avSpeechSynthesizer = AVSpeechSynthesizer()
     
     
-    public init() { }
+    /// A Boolean value that indicates whether the speech synthesizer is speaking or is in a paused state and has utterances to speak.
+    @Published public private(set) var isSpeaking = false
+    /// A Boolean value that indicates whether a speech synthesizer is in a paused state.
+    @Published public private(set) var isPaused = false
+    
+    
+    override public init() {
+        super.init()
+        avSpeechSynthesizer.delegate = self
+    }
     
     
     /// Adds the text to the speech synthesizer’s queue.
@@ -37,5 +46,37 @@ public class SpeechSynthesizer: ObservableObject {
     /// - Parameter utterance: An `AVSpeechUtterance` instance that contains text to speak.
     public func speak(_ utterance: AVSpeechUtterance) {
         avSpeechSynthesizer.speak(utterance)
+    }
+    
+    
+    // MARK: - AVSpeechSynthesizerDelegate
+    @_documentation(visibility: internal)
+    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        isSpeaking = true
+        isPaused = false
+    }
+    
+    @_documentation(visibility: internal)
+    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didPause utterance: AVSpeechUtterance) {
+        isSpeaking = false
+        isPaused = true
+    }
+    
+    @_documentation(visibility: internal)
+    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didContinue utterance: AVSpeechUtterance) {
+        isSpeaking = true
+        isPaused = false
+    }
+    
+    @_documentation(visibility: internal)
+    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        isSpeaking = false
+        isPaused = false
+    }
+    
+    @_documentation(visibility: internal)
+    public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        isSpeaking = false
+        isPaused = false
     }
 }
