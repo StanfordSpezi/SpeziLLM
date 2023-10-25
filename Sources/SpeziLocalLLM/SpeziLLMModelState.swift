@@ -23,7 +23,7 @@ public enum SpeziLLMModelState: CustomStringConvertible, Equatable {
         case .loading: "loading"
         case .ready: "ready"
         case .inferring: "inferring"
-        case .error(_): "error"
+        case .error: "error"
         }
     }
 }
