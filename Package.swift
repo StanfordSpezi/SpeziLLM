@@ -20,10 +20,12 @@ let package = Package(
     products: [
         .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"]),
         .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"]),
-        .library(name: "SpeziSpeechSynthesizer", targets: ["SpeziSpeechSynthesizer"])
+        .library(name: "SpeziSpeechSynthesizer", targets: ["SpeziSpeechSynthesizer"]),
+        .library(name: "SpeziLocalLLM", targets: ["SpeziLocalLLM"])
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
+        .package(url: "https://github.com/ggerganov/llama.cpp", branch: "b1422"),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.5.0"))
@@ -45,6 +47,13 @@ let package = Package(
         ),
         .target(
             name: "SpeziSpeechSynthesizer"
+        ),
+        .target(
+            name: "SpeziLocalLLM",
+            dependencies: [
+                .product(name: "llama", package: "llama.cpp"),
+                .product(name: "Spezi", package: "Spezi")
+            ]
         ),
         .testTarget(
             name: "SpeziOpenAITests",
