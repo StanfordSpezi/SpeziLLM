@@ -21,8 +21,7 @@ struct LocalLLMDownloadView: View {
         
         /// Tiny LLama2 1B model (~700MB)
         static var TinyLLama2ModelUrl: URL {
-            //URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!   // swiftlint:disable:this force_unwrapping
-            URL(string: "https://github.com/yourkin/fileupload-fastapi/raw/a85a697cab2f887780b3278059a0dd52847d80f3/tests/data/test-10mb.bin")!
+            URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!   // swiftlint:disable:this force_unwrapping
         }
     }
     
@@ -70,7 +69,7 @@ struct LocalLLMDownloadView: View {
                 OnboardingActionsView("LLM_DOWNLOAD_NEXT_BUTTON") {
                     onboardingNavigationPath.nextStep()
                 }
-                    .disabled(downloadManager.state != .downloaded && modelAlreadyExists)
+                    .disabled(!modelAlreadyExists)
             }
         )
             .navigationBarBackButtonHidden(isDownloading)
