@@ -10,6 +10,7 @@ import SpeziOnboarding
 import SwiftUI
 
 
+/// Onboarding Welcome view for the Local LLM example application.
 struct Welcome: View {
     @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
     

@@ -11,13 +11,13 @@ import SwiftUI
 
 @main
 struct LocalLLMExecutionDemoApp: App {
-    @UIApplicationDelegateAdaptor(LocalLLMAppDelegate.self) var appDelegate
+    @UIApplicationDelegateAdaptor(LocalLLMAppDelegate.self) private var appDelegate
     
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .spezi(appDelegate)
+                .spezi(appDelegate) /// `.spezi(_)` modifier initializing the Spezi framework
         }
     }
 }

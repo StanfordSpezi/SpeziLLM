@@ -11,14 +11,15 @@ import SpeziOnboarding
 import SpeziViews
 
 
+/// Onboarding LLM Download view for the Local LLM example application.
 struct LocalLLMDownloadView: View {
     enum Defaults {
+        /// Regular LLama 2 7B model in its chat variation (~3.5GB)
         static var Llama2ChatModelUrl: URL {
-            // Regular LLama (~3.5GB)
             URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf")!
         }
         
-        // Tiny LLama2 (~700MB)
+        /// Tiny LLama2 1B model (~700MB)
         static var TinyLLama2ModelUrl: URL {
             URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!
         }
@@ -26,8 +27,7 @@ struct LocalLLMDownloadView: View {
     
     
     @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
-    @StateObject var downloadManager = LocalLLMDownloadManager()
-    @State private var isButtonDisabled = false
+    @StateObject private var downloadManager = LocalLLMDownloadManager()
     
     
     var body: some View {
@@ -49,20 +49,20 @@ struct LocalLLMDownloadView: View {
                     
                     if !modelAlreadyExists {
                         Button("LLM_DOWNLOAD_BUTTON") {
-                            isButtonDisabled = true
                             Task {
                                 withAnimation {
+                                    /// By default, download the regular LLama 2 model
                                     downloadManager.startDownload(url: Defaults.TinyLLama2ModelUrl)
                                 }
                             }
                         }
                             .buttonStyle(.borderedProminent)
-                            .disabled(isButtonDisabled)
+                            .disabled(isDownloading)
                             .padding()
                         
                         if isDownloading {
                             VStack {
-                                ProgressView("Downloading...", value: downloadProgress, total: 100)
+                                ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100)
                                     .progressViewStyle(LinearProgressViewStyle())
                                     .padding()
                                 
@@ -94,6 +94,7 @@ struct LocalLLMDownloadView: View {
             .navigationBarBackButtonHidden(isDownloading)
     }
     
+    /// A `Bool` flag indicating if the model is currently being downloaded
     private var isDownloading: Bool {
         if case .downloading(_) = self.downloadManager.state {
             return true
@@ -102,6 +103,7 @@ struct LocalLLMDownloadView: View {
         return false
     }
     
+    /// Represents the download progress of the model in percent (from 0 to 100)
     private var downloadProgress: Double {
         if case .downloading(let progress) = self.downloadManager.state {
             return progress
@@ -112,8 +114,9 @@ struct LocalLLMDownloadView: View {
         return 0.0
     }
     
+    /// A `Bool` flag indicating if the model already exists on the device
     private var modelAlreadyExists: Bool {
-        FileManager.default.fileExists(atPath: URL.applicationDirectory.appending(path: "llm.gguf").path())
+        FileManager.default.fileExists(atPath: LocalLLMDownloadManager.downloadModelLocation.path())
     }
 }
 

@@ -1,10 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Downloaded %@%% of 100%%" : {
-
+    "CHAT_VIEW_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spezi Local LLM Chat"
+          }
+        }
+      }
     },
-    "Downloading..." : {
+    "Downloaded %@%% of 100%%" : {
 
     },
     "LLM_ALREADY_DOWNLOAD_DESCRIPTION" : {
@@ -73,8 +81,16 @@
         }
       }
     },
-    "Spezi Local LLM Chat" : {
-
+    "LLM_DOWNLOADING_PROGRESS_TEXT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading..."
+          }
+        }
+      }
     },
     "WELCOME_AREA1_DESCRIPTION" : {
       "extractionState" : "manual",

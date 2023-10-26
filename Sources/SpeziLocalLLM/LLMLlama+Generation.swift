@@ -10,25 +10,31 @@ import Foundation
 import llama
 
 
-extension SpeziLLMModelLlama {
-    typealias LlamaToken = llama_token
+/// Extension of ``LLMLlama`` handling the text generation.
+extension LLMLlama {
+    /// Typealias for the llama.cpp `llama_token`.
+    typealias LLMLlamaToken = llama_token
     
     
+    /// Based on the input prompt, generate the output with llama.cpp
+    ///
+    /// - Parameters:
+    ///   - prompt: The input `String` prompt.
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     // swiftlint:disable:next identifier_name function_body_length
     func _generate(
         prompt: String,
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) {
-        self.state = .inferring
+        self.state = .generating
         
         let tokens = tokenize(text: prompt)
-        // TODO: Get rid of a fixed size n_length (output length) -> needs to be dynamic!
-        let nKVReq = UInt32(tokens.count) + UInt32((self.modelParameters.nLength - Int(tokens.count)))
+        let nKVReq = UInt32(tokens.count) + UInt32((self.parameters.nLength - Int(tokens.count)))
         
         let context = llama_new_context_with_model(model, self.contextParameters.wrapped)
         guard context != nil else {
             print("Failed to initialize context")
-            continuation.finish(throwing: SpeziLLMError.failedToEval)
+            continuation.finish(throwing: LLMError.generationError)
             return
         }
         defer {
@@ -37,16 +43,16 @@ extension SpeziLLMModelLlama {
 
         let nCtx = llama_n_ctx(context)
         
-        print("\n_length = \(self.modelParameters.nLength), n_ctx = \(nCtx), n_batch = \(self.contextParameters.nBatch), n_kv_req = \(nKVReq)\n")
+        print("\n_length = \(self.parameters.nLength), n_ctx = \(nCtx), n_batch = \(self.contextParameters.nBatch), n_kv_req = \(nKVReq)\n")
 
         if nKVReq > nCtx {
             print("error: n_kv_req (%d) > n_ctx, the required KV cache size is not big enough\n", nKVReq)
-            continuation.finish(throwing: SpeziLLMError.failedToEval)
+            continuation.finish(throwing: LLMError.generationError)
             return
         }
         
         var buffer: [CChar] = []
-        for id: LlamaToken in tokens {
+        for id: LLMLlamaToken in tokens {
             print(token_to_piece(token: id, buffer: &buffer) ?? "", terminator: "")
         }
         
@@ -73,7 +79,7 @@ extension SpeziLLMModelLlama {
         
         if llama_decode(context, batch) != 0 {
             print("llama_decode() failed")
-            continuation.finish(throwing: SpeziLLMError.failedToEval)
+            continuation.finish(throwing: LLMError.generationError)
             return
         }
         
@@ -84,7 +90,7 @@ extension SpeziLLMModelLlama {
 
         let startTime = ggml_time_us()
         
-        while nCur <= self.modelParameters.nLength {
+        while nCur <= self.parameters.nLength {
             let nVocab = llama_n_vocab(model)
             let logits = llama_get_logits_ith(context, batch.n_tokens - 1)
             
@@ -105,7 +111,6 @@ extension SpeziLLMModelLlama {
             let topP: Float = 0.9
             let temp: Float = 0.7
             
-            // TODO: Can one sample multiple times?!
             llama_sample_top_k(context, &candidatesP, topK, 1)
             llama_sample_top_p(context, &candidatesP, topP, 1)
             llama_sample_temp(context, &candidatesP, temp)
@@ -114,7 +119,7 @@ extension SpeziLLMModelLlama {
             // Greedy sampeling
             // let nextTokenId = llama_sample_token_greedy(context, &candidates_p)
             
-            if nextTokenId == llama_token_eos(self.model) || nCur == self.modelParameters.nLength {
+            if nextTokenId == llama_token_eos(self.model) || nCur == self.parameters.nLength {
                 print("\n")
                 self.state = .ready
                 continuation.finish()
@@ -144,8 +149,8 @@ extension SpeziLLMModelLlama {
             let decodeOutput = llama_decode(context, batch)
             if decodeOutput != 0 {      // = 0 Success, > 0 Warning, < 0 Error
                 print("llama_decode() failed: Return \(decodeOutput)")
-                self.state = .error(error: .failedToEval)
-                continuation.finish(throwing: SpeziLLMError.generationError)
+                self.state = .error(error: .generationError)
+                continuation.finish(throwing: LLMError.generationError)
                 return
             }
         }

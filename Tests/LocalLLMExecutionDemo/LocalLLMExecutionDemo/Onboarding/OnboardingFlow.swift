@@ -10,7 +10,7 @@ import SpeziOnboarding
 import SwiftUI
 
 
-/// Displays an multi-step onboarding flow for the example local LLM application.
+/// Displays a multi-step onboarding flow for the Local LLM example application.
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
     

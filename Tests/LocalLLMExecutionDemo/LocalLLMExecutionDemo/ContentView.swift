@@ -11,11 +11,12 @@ import SpeziOnboarding
 
 
 struct ContentView: View {
-    @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
+    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
     
     
     var body: some View {
         LocalLLMChatView()
+            /// Presents an onboarding flow at startup, responsible for downloading the model
             .sheet(isPresented: !$completedOnboardingFlow) {
                 OnboardingFlow()
             }
