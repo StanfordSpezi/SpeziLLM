@@ -21,10 +21,10 @@ extension LLMLlama {
     /// - Parameters:
     ///   - prompt: The input `String` prompt.
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate(
+    func _generate( // swiftlint:disable:this identifier_name function_body_length
         prompt: String,
         continuation: AsyncThrowingStream<String, Error>.Continuation
-    ) { // swiftlint:disable:this identifier_name function_body_length
+    ) {
         self.state = .generating
         
         let tokens = tokenize(text: prompt)

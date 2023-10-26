@@ -45,7 +45,13 @@ final class LocalLLMDownloadManager: NSObject, ObservableObject, Sendable, URLSe
     
     // MARK: URLSessionDownloadDelegate
     /// Indicates the progress of the current model download.
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64)
+    {
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
         Task { @MainActor in
             self.state = .downloading(progress: progress)
