@@ -1,0 +1,180 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Downloaded %@%% of 100%%" : {
+
+    },
+    "Downloading..." : {
+
+    },
+    "LLM_ALREADY_DOWNLOAD_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLama 2 7B model is already downloaded."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download the LLama 2 7B model"
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_NEXT_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish setup"
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_SUBTITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In order to locally execute a LLM, first download a model."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model Download"
+          }
+        }
+      }
+    },
+    "Spezi Local LLM Chat" : {
+
+    },
+    "WELCOME_AREA1_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locally execute LLMs directly on your phone."
+          }
+        }
+      }
+    },
+    "WELCOME_AREA1_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLMs on an iPhone"
+          }
+        }
+      }
+    },
+    "WELCOME_AREA2_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM execution is provided by a module available through the Swift Package Manager."
+          }
+        }
+      }
+    },
+    "WELCOME_AREA2_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swift Package Manager"
+          }
+        }
+      }
+    },
+    "WELCOME_AREA3_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This application is built on top of the Stanford Spezi ecosystem."
+          }
+        }
+      }
+    },
+    "WELCOME_AREA3_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Stanford Spezi ecosystem"
+          }
+        }
+      }
+    },
+    "WELCOME_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "WELCOME_SUBTITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This application demonstrates the local execution of a Large Language Model on an iPhone."
+          }
+        }
+      }
+    },
+    "WELCOME_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local LLM Execution Demo Application"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

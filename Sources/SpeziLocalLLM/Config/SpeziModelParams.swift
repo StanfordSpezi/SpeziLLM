@@ -119,8 +119,9 @@ public struct SpeziModelParams: Sendable {
         // Overwrite nGpuLayers in case of a simulator target environment
         #if targetEnvironment(simulator)
         self.nGpuLayers = 0     // Disable Metal on simulator as crash otherwise
-        #endif
+        #else
         self.nGpuLayers = nGpuLayers
+        #endif
         self.mainGpu = mainGpu
         self.tensorSplit = tensorSplit
         self.progressCallback = progressCallback
