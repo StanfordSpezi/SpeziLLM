@@ -50,8 +50,8 @@ final class LocalLLMDownloadManager: NSObject, ObservableObject, Sendable, URLSe
         downloadTask: URLSessionDownloadTask,
         didWriteData bytesWritten: Int64,
         totalBytesWritten: Int64,
-        totalBytesExpectedToWrite: Int64)
-    {
+        totalBytesExpectedToWrite: Int64
+    ) {
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
         Task { @MainActor in
             self.state = .downloading(progress: progress)
