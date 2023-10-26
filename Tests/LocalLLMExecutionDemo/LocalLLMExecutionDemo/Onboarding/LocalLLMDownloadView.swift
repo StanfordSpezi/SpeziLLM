@@ -47,13 +47,13 @@ struct LocalLLMDownloadView: View {
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 16)
                     
-                    if !modelAlreadyExists {
+                    if !modelExists {
                         downloadButton
                         
                         if isDownloading {
                             downloadProgressView
                         }
-                    } else if modelAlreadyExists && downloadManager.state != .downloaded {
+                    } else if modelExists && downloadManager.state != .downloaded {
                         Text("LLM_ALREADY_DOWNLOAD_DESCRIPTION")
                             .multilineTextAlignment(.center)
                             .padding(.vertical, 16)
@@ -69,7 +69,7 @@ struct LocalLLMDownloadView: View {
                 OnboardingActionsView("LLM_DOWNLOAD_NEXT_BUTTON") {
                     onboardingNavigationPath.nextStep()
                 }
-                    .disabled(!modelAlreadyExists)
+                    .disabled(!modelExists)
             }
         )
             .navigationBarBackButtonHidden(isDownloading)
@@ -80,7 +80,7 @@ struct LocalLLMDownloadView: View {
             Task {
                 withAnimation {
                     /// By default, download the regular LLama 2 model
-                    downloadManager.startDownload(url: Defaults.TinyLLama2ModelUrl)
+                    downloadManager.startDownload(url: Defaults.Llama2ChatModelUrl)
                 }
             }
         }
@@ -123,7 +123,7 @@ struct LocalLLMDownloadView: View {
     }
     
     /// A `Bool` flag indicating if the model already exists on the device
-    private var modelAlreadyExists: Bool {
+    private var modelExists: Bool {
         FileManager.default.fileExists(atPath: LocalLLMDownloadManager.downloadModelLocation.path())
     }
 }
