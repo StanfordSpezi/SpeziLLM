@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
 import SpeziOnboarding
+import SwiftUI
 
 
 struct ContentView: View {

@@ -6,8 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
-import BackgroundAssets
+import Foundation
 
 
 /// Manages the download of the LLM to the local device.

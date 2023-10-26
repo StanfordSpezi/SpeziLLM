@@ -6,9 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
 import SpeziOnboarding
 import SpeziViews
+import SwiftUI
 
 
 /// Onboarding LLM Download view for the Local LLM example application.
@@ -16,12 +16,12 @@ struct LocalLLMDownloadView: View {
     enum Defaults {
         /// Regular LLama 2 7B model in its chat variation (~3.5GB)
         static var Llama2ChatModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf")!
+            URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf")! // swiftlint:disable:this force_unwrapping
         }
         
         /// Tiny LLama2 1B model (~700MB)
         static var TinyLLama2ModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!
+            URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!   // swiftlint:disable:this force_unwrapping
         }
     }
     
@@ -48,29 +48,10 @@ struct LocalLLMDownloadView: View {
                         .padding(.vertical, 16)
                     
                     if !modelAlreadyExists {
-                        Button("LLM_DOWNLOAD_BUTTON") {
-                            Task {
-                                withAnimation {
-                                    /// By default, download the regular LLama 2 model
-                                    downloadManager.startDownload(url: Defaults.TinyLLama2ModelUrl)
-                                }
-                            }
-                        }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(isDownloading)
-                            .padding()
+                        downloadButton
                         
                         if isDownloading {
-                            VStack {
-                                ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100)
-                                    .progressViewStyle(LinearProgressViewStyle())
-                                    .padding()
-                                
-                                Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%")
-                                    .padding(.top, 5)
-                            }
-                                .transition(.opacity)
-                                .animation(.easeInOut, value: isDownloading)
+                            downloadProgressView
                         }
                     } else {
                         Text("LLM_ALREADY_DOWNLOAD_DESCRIPTION")
@@ -94,9 +75,36 @@ struct LocalLLMDownloadView: View {
             .navigationBarBackButtonHidden(isDownloading)
     }
     
+    private var downloadButton: some View {
+        Button("LLM_DOWNLOAD_BUTTON") {
+            Task {
+                withAnimation {
+                    /// By default, download the regular LLama 2 model
+                    downloadManager.startDownload(url: Defaults.TinyLLama2ModelUrl)
+                }
+            }
+        }
+            .buttonStyle(.borderedProminent)
+            .disabled(isDownloading)
+            .padding()
+    }
+    
+    private var downloadProgressView: some View {
+        VStack {
+            ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100)
+                .progressViewStyle(LinearProgressViewStyle())
+                .padding()
+            
+            Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%")
+                .padding(.top, 5)
+        }
+            .transition(.opacity)
+            .animation(.easeInOut, value: isDownloading)
+    }
+    
     /// A `Bool` flag indicating if the model is currently being downloaded
     private var isDownloading: Bool {
-        if case .downloading(_) = self.downloadManager.state {
+        if case .downloading = self.downloadManager.state {
             return true
         }
         
