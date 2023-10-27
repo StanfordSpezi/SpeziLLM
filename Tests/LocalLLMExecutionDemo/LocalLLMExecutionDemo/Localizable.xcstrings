@@ -21,7 +21,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The LLama 2 7B model is already downloaded."
+            "value" : "The LLama 2 7B model is downloaded."
           }
         }
       }

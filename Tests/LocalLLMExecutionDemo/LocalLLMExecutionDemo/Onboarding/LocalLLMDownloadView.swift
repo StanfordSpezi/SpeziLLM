@@ -65,6 +65,8 @@ struct LocalLLMDownloadView: View {
                     
                     Spacer()
                 }
+                    .transition(.opacity)
+                    .animation(.easeInOut, value: isDownloading || modelExists)
             }, actionView: {
                 OnboardingActionsView("LLM_DOWNLOAD_NEXT_BUTTON") {
                     onboardingNavigationPath.nextStep()
@@ -91,15 +93,13 @@ struct LocalLLMDownloadView: View {
     
     private var downloadProgressView: some View {
         VStack {
-            ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100)
+            ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100.0)
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
             
             Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%")
                 .padding(.top, 5)
         }
-            .transition(.opacity)
-            .animation(.easeInOut, value: isDownloading)
     }
     
     /// A `Bool` flag indicating if the model is currently being downloaded
