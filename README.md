@@ -34,7 +34,7 @@ First, you will need to add the SpeziML Swift package to
 ### 2. Register the Open AI Component
 
 > [!IMPORTANT]
-> If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/setup) to set up the core Spezi infrastructure.
+> If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
 
 You can configure the `OpenAIComponent` in the `SpeziAppDelegate` as follows.
 
