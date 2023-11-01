@@ -2,7 +2,7 @@
                   
 This source file is part of the Stanford Spezi open source project
 
-SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+SPDX-FileCopyrightText: 2023 Stanford University and the project authors (see CONTRIBUTORS.md)
 
 SPDX-License-Identifier: MIT
              
@@ -27,7 +27,7 @@ A module that allows you to interact with GPT-based large language models (LLMs)
 
 |![Screenshot displaying the OpenAI API Key Onboarding  view from Spezi OpenAI.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboarding.png#gh-light-mode-only) ![Screenshot displaying the OpenAI API Key onboarding  view.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboarding~dark.png#gh-dark-mode-only)|![Screenshot displaying the Chat View from Spezi OpenAI.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView.png#gh-light-mode-only) ![Screenshot displaying the Chat View.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView~dark.png#gh-dark-mode-only)|
 |:--:|:--:|
-|`OpenAIAPIKeyOnboarding`|`ChatView`|
+|`OpenAIAPIKeyOnboardingStep`|`ChatView`|
 
 
 ## Setup
@@ -83,26 +83,26 @@ struct OpenAIChatView: View {
     
     var body: some View {
         ChatView($chat)
-    }
-    .onChange(of: chat) { _ in
-        let chatStreamResults = try await openAIComponent.queryAPI(withChat: chat)
-        
-        for try await chatStreamResult in chatStreamResults {
-            for choice in chatStreamResult.choices {
-                guard let newContent = choice.delta.content else {
-                    continue
-                }
+            .onChange(of: chat) { _ in
+                let chatStreamResults = try await openAIComponent.queryAPI(withChat: chat)
                 
-                if chat.last?.role == .assistent, let previousContent = chat.last?.content {
-                    chat[chat.count - 1] = Chat(
-                        role: .assistant,
-                        content: previousContent + newContent
-                    )
-                } else {
-                    chat.append(Chat(role: .assistent, content: newContent))
+                for try await chatStreamResult in chatStreamResults {
+                    for choice in chatStreamResult.choices {
+                        guard let newContent = choice.delta.content else {
+                            continue
+                        }
+                        
+                        if chat.last?.role == .assistent, let previousContent = chat.last?.content {
+                            chat[chat.count - 1] = Chat(
+                                role: .assistant,
+                                content: previousContent + newContent
+                            )
+                        } else {
+                            chat.append(Chat(role: .assistent, content: newContent))
+                        }
+                    }
                 }
             }
-        }
     }
 }
 ```
