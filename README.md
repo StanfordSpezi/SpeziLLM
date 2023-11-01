@@ -17,11 +17,18 @@ SPDX-License-Identifier: MIT
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziML%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziML)
 
 
+# Overview
+
 The Spezi ML Swift Package includes modules that are helpful to integrate ML-related functionality in your application.
 
 # Spezi Open AI
 
 A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.
+
+|![Screenshot displaying the OpenAI API Key Onboarding  view from Spezi OpenAI.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboarding.png#gh-light-mode-only) ![Screenshot displaying the OpenAI API Key onboarding  view.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboarding~dark.png#gh-dark-mode-only)|![Screenshot displaying the Chat View from Spezi OpenAI.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView.png#gh-light-mode-only) ![Screenshot displaying the Chat View.](Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView~dark.png#gh-dark-mode-only)|
+|:--:|:--:|
+|`OpenAIAPIKeyOnboarding`|`ChatView`|
+
 
 ## Setup
 
