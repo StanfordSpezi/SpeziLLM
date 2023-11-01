@@ -21,6 +21,11 @@ A module that allows you to interact with GPT-based large language models (LLMs)
         }
     }
     @Column {
+        @Image(source: "OpenAIModelSelectionOnboardingStep", alt: "Screenshot displaying the Open AI Model Selection Onboarding Step"){
+            ``OpenAIModelSelectionOnboardingStep``
+        }
+    }
+    @Column {
         @Image(source: "ChatView", alt: "Screenshot displaying the Chat View."){
             ``ChatView``
         }
