@@ -16,7 +16,7 @@ A module that allows you to interact with GPT-based large language models (LLMs)
 
 @Row {
     @Column {
-        @Image(source: "OpenAIAPIKeyOnboarding", alt: "Screenshot displaying the OpenAI API Key Onboarding view from Spezi OpenAI") {
+        @Image(source: "OpenAIAPIKeyOnboardingStep", alt: "Screenshot displaying the OpenAI API Key Onboarding view from Spezi OpenAI") {
             ``OpenAIAPIKeyOnboardingStep``
         }
     }
