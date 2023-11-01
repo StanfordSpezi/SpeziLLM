@@ -52,7 +52,7 @@ extension LLMLlama {
         
         var buffer: [CChar] = []
         for id: LLMLlamaToken in tokens {
-            print(token_to_piece(token: id, buffer: &buffer) ?? "", terminator: "")
+            print(tokenToPiece(token: id, buffer: &buffer) ?? "", terminator: "")
         }
         
         print("\n")
@@ -125,7 +125,7 @@ extension LLMLlama {
                 return
             }
             
-            let nextStringPiece = token_to_piece(token: nextTokenId, buffer: &streamBuffer) ?? ""
+            let nextStringPiece = tokenToPiece(token: nextTokenId, buffer: &streamBuffer) ?? ""
             print(nextStringPiece, terminator: "")
             continuation.yield(nextStringPiece)
             

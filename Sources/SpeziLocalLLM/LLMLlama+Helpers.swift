@@ -39,7 +39,7 @@ extension LLMLlama {
     ///   - buffer: A buffer helping with the conversion.
     ///
     /// - Returns: The textual `String` of the `LLMLlamaToken`.
-    func token_to_piece(token: LLMLlamaToken, buffer: inout [CChar]) -> String? {
+    func tokenToPiece(token: LLMLlamaToken, buffer: inout [CChar]) -> String? {
         var result = [CChar](repeating: 0, count: 8)
         let nTokens = llama_token_to_piece(model, token, &result, Int32(result.count))
         if nTokens < 0 {

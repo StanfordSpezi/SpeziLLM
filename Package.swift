@@ -25,7 +25,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
-        .package(url: "https://github.com/ggerganov/llama.cpp", branch: "b1422"),
+        .package(url: "https://github.com/ggerganov/llama.cpp", branch: "b1456"),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.4.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.6.0"))
