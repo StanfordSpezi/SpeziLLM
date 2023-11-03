@@ -9,18 +9,21 @@
 import Foundation
 
 
-/// The ``LLMGenerationTask`` is a `LLMTask` with the specific responsibility to handle LLM generation tasks.
+/// The ``LLMGenerationTask`` with the specific responsibility to handle LLM generation tasks.
 /// It wraps a Spezi ``LLM`` and performs management overhead tasks.
 ///
 /// A code example on how to use ``LLMGenerationTask`` in combination with the ``LLMRunner`` can be
 /// found in the documentation of the ``LLMRunner``.
-public actor LLMGenerationTask: LLMTask {
+public actor LLMGenerationTask {
     /// The ``LLM`` which is executed by the ``LLMGenerationTask``.
     let model: any LLM
+    /// The configuration of the ``LLMRunner``.
     let runnerConfig: LLMRunnerConfiguration
+    /// A task managing the ``LLM` output generation.
     var task: Task<(), Never>?
     
     
+    /// The `LLMTaskIdentifier` of the ``LLMGenerationTask``.
     var id: LLMTaskIdentifier {
         get async {
             .init(fromModel: model)

@@ -49,6 +49,6 @@ struct Welcome: View {
 #Preview {
     OnboardingStack {
         Welcome()
-        LocalLLMDownloadView()
+        LLMDownloadView()
     }
 }

@@ -11,26 +11,13 @@ import SpeziViews
 import SwiftUI
 
 
-/// Onboarding LLM Download view for the Local LLM example application.
-struct LocalLLMDownloadView: View {
-    enum Defaults {
-        /// Regular LLama 2 7B model in its chat variation (~3.5GB)
-        static var Llama2ChatModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf")! // swiftlint:disable:this force_unwrapping
-        }
-        
-        /// Tiny LLama2 1B model (~700MB)
-        static var TinyLLama2ModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!   // swiftlint:disable:this force_unwrapping
-        }
-    }
+/// Onboarding LLM Download view
+public struct LLMLocalDownloadView: View {
+    @StateObject private var downloadManager: LLMLocalDownloadManager
+    private let action: () async throws -> Void
     
     
-    @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
-    @StateObject private var downloadManager = LocalLLMDownloadManager()
-    
-    
-    var body: some View {
+    public var body: some View {
         OnboardingView(
             contentView: {
                 VStack {
@@ -69,7 +56,7 @@ struct LocalLLMDownloadView: View {
                     .animation(.easeInOut, value: isDownloading || modelExists)
             }, actionView: {
                 OnboardingActionsView("LLM_DOWNLOAD_NEXT_BUTTON") {
-                    onboardingNavigationPath.nextStep()
+                    try await self.action()
                 }
                     .disabled(!modelExists)
             }
@@ -81,8 +68,7 @@ struct LocalLLMDownloadView: View {
         Button("LLM_DOWNLOAD_BUTTON") {
             Task {
                 withAnimation {
-                    /// By default, download the regular LLama 2 model
-                    downloadManager.startDownload(url: Defaults.Llama2ChatModelUrl)
+                    downloadManager.startDownload()
                 }
             }
         }
@@ -97,7 +83,9 @@ struct LocalLLMDownloadView: View {
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
             
-            Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%")
+            Group {
+                Text("LLM_DOWNLOADING_PROGRESS_STATE_START") + Text(" \(String(format: "%.2f", downloadProgress))") + Text("LLM_DOWNLOADING_PROGRESS_STATE_END")
+            }
                 .padding(.top, 5)
         }
     }
@@ -124,13 +112,36 @@ struct LocalLLMDownloadView: View {
     
     /// A `Bool` flag indicating if the model already exists on the device
     private var modelExists: Bool {
-        FileManager.default.fileExists(atPath: LocalLLMDownloadManager.downloadModelLocation.path())
+        FileManager.default.fileExists(
+            atPath: self.downloadManager.llmStorageUrl.path()
+        )
+    }
+    
+    
+    /// Creates a ``LLMLocalDownloadView`` that presents an onboarding view that helps with downloading the necessary LLM files from remote servers.
+    ///
+    /// - Parameters:
+    ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
+    ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
+    ///   - action: The action that should be performed when pressing the primary button of the view.
+    public init(
+        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlsDefaults.Llama2ChatModelUrl,
+        llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
+        action: @escaping () async throws -> Void
+    ) {
+        self._downloadManager = StateObject(
+            wrappedValue: LLMLocalDownloadManager(
+                llmDownloadUrl: llmDownloadUrl,
+                llmStorageUrl: llmStorageUrl
+            )
+        )
+        self.action = action
     }
 }
 
 
 #Preview {
     OnboardingStack {
-        LocalLLMDownloadView()
+        LLMLocalDownloadView(action: {})
     }
 }

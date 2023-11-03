@@ -18,7 +18,7 @@ struct OnboardingFlow: View {
     var body: some View {
         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
             Welcome()
-            LocalLLMDownloadView()
+            LLMDownloadView()
         }
         .interactiveDismissDisabled(!completedOnboardingFlow)
     }

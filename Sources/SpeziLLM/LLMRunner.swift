@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import llama
 import Spezi
 
 /// The ``LLMRunner`` is a Spezi `Component` that handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
@@ -71,6 +70,8 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
     
     /// The configuration of the runner represented by ``LLMRunnerConfiguration``.
     private let runnerConfiguration: LLMRunnerConfiguration
+    /// All to be performed ``LLMRunner``-related setup tasks.
+    private let runnerSetupTasks: [LLMHostingType: any LLMRunnerSetupTask]
     /// Stores all currently available ``LLMGenerationTask``'s, one for each Spezi ``LLM``, identified by the ``LLMTaskIdentifier``.
     private var runnerTasks: [LLMTaskIdentifier: LLMGenerationTask] = [:]
     /// Indicates for which ``LLMHostingType`` the runner backend is already initialized.
@@ -93,8 +94,14 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
     ///
     /// - Parameters:
     ///   - runnerConfig: The configuration of the ``LLMRunner`` represented by the ``LLMRunnerConfiguration``.
-    public init(runnerConfig: LLMRunnerConfiguration) {
+    ///   - content: A result builder that aggregates all stated ``LLMRunnerSetupTask``'s.
+    public init(
+        runnerConfig: LLMRunnerConfiguration,
+        @LLMRunnerSetupTaskBuilder _ content: @escaping () -> _LLMRunnerSetupTaskCollection
+    ) {
         self.runnerConfiguration = runnerConfig
+        self.runnerSetupTasks = content().runnerSetupTasks
+        
         for modelType in LLMHostingType.allCases {
             self.runnerBackendInitialized[modelType] = false
         }
@@ -102,7 +109,7 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
     
     /// Convenience initializer for the creation of a ``LLMRunner``.
     public init() {
-        self.init(runnerConfig: .init())
+        self.init(runnerConfig: .init()) {}
     }
     
     
@@ -117,7 +124,8 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
         let modelType = await model.type
         /// If necessary, setup of the runner backend
         if runnerBackendInitialized[modelType] == false {
-            await initializeRunnerBackend(for: modelType)
+            /// Initializes the required runner backends for the respective ``LLMHostingType``.
+            try? await self.runnerSetupTasks[modelType]?.setupRunner(runnerConfig: self.runnerConfiguration)
             
             runnerBackendInitialized[modelType] = true
         }
@@ -133,19 +141,6 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
         return runnerTask
     }
     
-    /// Initializes the required runner backends for the respective ``LLMHostingType``.
-    private func initializeRunnerBackend(for modelType: LLMHostingType) async {
-        switch modelType {
-        case .local:
-            /// Initialize the llama.cpp backend.
-            llama_backend_init(self.runnerConfiguration.numa)
-        case .fog:
-            break
-        case .cloud:
-            break
-        }
-    }
-    
 
     /// Upon deinit, cancel all ``LLMRunnerInferenceTask``'s and free the llama.cpp backend.
     deinit {
@@ -153,7 +148,6 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
             for runnerTask in await runnerTasks.values {
                 await runnerTask.task?.cancel()
             }
-            llama_backend_free()
         }
     }
 }

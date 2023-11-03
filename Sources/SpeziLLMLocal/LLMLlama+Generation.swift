@@ -8,6 +8,7 @@
 
 import Foundation
 import llama
+import SpeziLLM
 
 
 /// Extension of ``LLMLlama`` handling the text generation.
@@ -32,7 +33,7 @@ extension LLMLlama {
         
         let context = llama_new_context_with_model(model, self.contextParameters.wrapped)
         guard context != nil else {
-            print("Failed to initialize context")
+            Self.logger.error("Failed to initialize context")
             continuation.finish(throwing: LLMError.generationError)
             return
         }
@@ -42,20 +43,18 @@ extension LLMLlama {
 
         let nCtx = llama_n_ctx(context)
         
-        print("\n_length = \(self.parameters.nLength), n_ctx = \(nCtx), n_batch = \(self.contextParameters.nBatch), n_kv_req = \(nKVReq)\n")
+        Self.logger.debug("\n_length = \(self.parameters.nLength, privacy: .public), n_ctx = \(nCtx, privacy: .public), n_batch = \(self.contextParameters.nBatch, privacy: .public), n_kv_req = \(nKVReq, privacy: .public)\n")
 
         if nKVReq > nCtx {
-            print("error: n_kv_req (%d) > n_ctx, the required KV cache size is not big enough\n", nKVReq)
+            Self.logger.error("Error: n_kv_req \(nKVReq, privacy: .public) > n_ctx, the required KV cache size is not big enough")
             continuation.finish(throwing: LLMError.generationError)
             return
         }
         
         var buffer: [CChar] = []
         for id: LLMLlamaToken in tokens {
-            print(tokenToPiece(token: id, buffer: &buffer) ?? "", terminator: "")
+            Self.logger.debug("\(self.tokenToPiece(token: id, buffer: &buffer) ?? "")")
         }
-        
-        print("\n")
         
         var batch = llama_batch_init(Int32(tokens.count), 0, 1)
         defer {
@@ -77,17 +76,17 @@ extension LLMLlama {
         batch.logits[Int(batch.n_tokens) - 1] = 1
         
         if llama_decode(context, batch) != 0 {
-            print("llama_decode() failed")
+            Self.logger.error("llama_decode() failed")
             continuation.finish(throwing: LLMError.generationError)
             return
         }
         
         var nCur = batch.n_tokens
-        var nDecode = 0
+        var decodedTokens = 0
         
         var streamBuffer: [CChar] = .init()
 
-        let startTime = ggml_time_us()
+        let startTime = Date()
         
         while nCur <= self.parameters.nLength {
             let nVocab = llama_n_vocab(model)
@@ -119,14 +118,13 @@ extension LLMLlama {
             // let nextTokenId = llama_sample_token_greedy(context, &candidates_p)
             
             if nextTokenId == llama_token_eos(self.model) || nCur == self.parameters.nLength {
-                print("\n")
                 self.state = .ready
                 continuation.finish()
                 return
             }
             
             let nextStringPiece = tokenToPiece(token: nextTokenId, buffer: &streamBuffer) ?? ""
-            print(nextStringPiece, terminator: "")
+            Self.logger.debug("\(nextStringPiece)")
             continuation.yield(nextStringPiece)
             
             batch.n_tokens = 0
@@ -140,24 +138,24 @@ extension LLMLlama {
             
             batch.n_tokens += 1
             
-            nDecode += 1
+            decodedTokens += 1
             
             nCur += 1
             
             // evaluate the current batch with the transformer model
             let decodeOutput = llama_decode(context, batch)
             if decodeOutput != 0 {      // = 0 Success, > 0 Warning, < 0 Error
-                print("llama_decode() failed: Return \(decodeOutput)")
+                Self.logger.error("llama_decode() failed: Return \(decodeOutput, privacy: .public)")
                 self.state = .error(error: .generationError)
                 continuation.finish(throwing: LLMError.generationError)
                 return
             }
         }
         
-        let endTime = ggml_time_us()
+        let elapsedTime = Date().timeIntervalSince(startTime)
+        let speed = Double(decodedTokens) / elapsedTime
         
-        print("\n")
-        print("decoded \(nDecode) tokens in \(String(format: "%.2f", Double(endTime - startTime) / 1_000_000.0)) s, speed: \(String(format: "%.2f", Double(nDecode) / (Double(endTime - startTime) / 1_000_000.0))) t/s\n")
+        Self.logger.debug("Decoded \(decodedTokens, privacy: .public) tokens in \(String(format: "%.2f", elapsedTime), privacy: .public) s, speed: \(String(format: "%.2f", Double(decodedTokens) / elapsedTime), privacy: .public)) t/s\n")
 
         llama_print_timings(context)
         

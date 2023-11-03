@@ -58,9 +58,9 @@ extension LLMLlama {
         } else {
             result.removeLast(result.count - Int(nTokens))
         }
-        if buffer.isEmpty, let utfString = String(cString: result + [0], encoding: .utf8) {
-            return utfString
-        } else {
+        
+        guard buffer.isEmpty,
+              let utfString = String(cString: result + [0], encoding: .utf8) else {
             buffer.append(contentsOf: result)
             let data = Data(buffer.map { UInt8(bitPattern: $0) })
             /// 4 bytes is the max length of a utf8 character so if we're here we need to reset the buffer
@@ -73,5 +73,7 @@ extension LLMLlama {
             buffer = []
             return bufferString
         }
+        
+        return utfString
     }
 }

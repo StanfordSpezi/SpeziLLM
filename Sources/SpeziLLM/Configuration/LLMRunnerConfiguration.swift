@@ -11,9 +11,9 @@ import Foundation
 /// The ``LLMRunnerConfiguration`` represents the configuration of the Spezi ``LLMRunner``.
 public struct LLMRunnerConfiguration: Sendable {
     /// The task priority of the initiated LLM inference tasks.
-    let taskPriority: TaskPriority
+    public let taskPriority: TaskPriority
     /// Indicates if this is a device with non-unified memory access.
-    let numa: Bool
+    public let numa: Bool
     
     
     /// Creates the ``LLMRunnerConfiguration`` which configures the Spezi ``LLMRunner``.

@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// An identifier for a `LLMTask` based on the respective ``LLM``.
+/// An identifier for a ``LLMGenerationTask` based on the respective ``LLM``.
 struct LLMTaskIdentifier: Hashable {
     /// The wrapped identifier of the `LLM``.
     let taskIdentifier: String

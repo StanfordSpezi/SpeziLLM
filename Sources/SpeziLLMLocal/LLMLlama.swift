@@ -8,6 +8,8 @@
 
 import Foundation
 import llama
+import os
+import SpeziLLM
 
 
 /// The ``LLMLlama`` is a Spezi ``LLM`` and utilizes the llama.cpp library to locally execute an LLM on-device.
@@ -16,6 +18,8 @@ import llama
 /// all management overhead tasks. A code example on how to use ``LLMLlama`` in combination with the ``LLMRunner`` can be
 /// found in the documentation of the ``LLMRunner``.
 public actor LLMLlama: LLM {
+    /// A Swift Logger that logs important information from the ``LLMLlama``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziML")
     public let type: LLMHostingType = .local
     public var state: LLMState = .uninitialized
     

@@ -26,11 +26,11 @@ public enum LLMState: CustomStringConvertible, Equatable {
     /// A textual description of the current ``LLMState``.
     public var description: String {
         switch self {
-        case .uninitialized: "uninitialized"
-        case .loading: "loading"
-        case .ready: "ready"
-        case .generating: "generating"
-        case .error: "error"
+        case .uninitialized: String(localized: LocalizedStringResource("LLM_STATE_UNINITIALIZED", bundle: .main))
+        case .loading: String(localized: LocalizedStringResource("LLM_STATE_LOADING", bundle: .main))
+        case .ready: String(localized: LocalizedStringResource("LLM_STATE_READY", bundle: .main))
+        case .generating: String(localized: LocalizedStringResource("LLM_STATE_GENERATING", bundle: .main))
+        case .error: String(localized: LocalizedStringResource("LLM_STATE_ERROR", bundle: .main))
         }
     }
 }

@@ -1,180 +1,178 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "CHAT_VIEW_TITLE" : {
-      "extractionState" : "stale",
+    "LLM_DOWNLOADING_PROGRESS_STATE_END" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spezi Local LLM Chat"
+            "value" : "% of 100%"
           }
         }
       }
     },
-    "LLM_ALREADY_DOWNLOAD_DESCRIPTION" : {
-      "extractionState" : "stale",
+    "LLM_DOWNLOADING_PROGRESS_STATE_START" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The LLama 2 7B model is downloaded."
+            "value" : "Downloaded"
           }
         }
       }
     },
-    "LLM_DOWNLOAD_BUTTON" : {
-      "extractionState" : "stale",
+    "LLM_GENERATION_ERROR_DESCRIPTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download the LLama 2 7B model"
+            "value" : "Generation of LLM output failed."
           }
         }
       }
     },
-    "LLM_DOWNLOAD_DESCRIPTION" : {
-      "extractionState" : "stale",
+    "LLM_GENERATION_ERROR_FAILURE_REASON" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
+            "value" : "An unknown error has occurred during the generation of the output."
           }
         }
       }
     },
-    "LLM_DOWNLOAD_NEXT_BUTTON" : {
-      "extractionState" : "stale",
+    "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finish setup"
+            "value" : "Ensure that the device has enough free computing and memory resources. Try restarting the application."
           }
         }
       }
     },
-    "LLM_DOWNLOAD_SUBTITLE" : {
-      "extractionState" : "stale",
+    "LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In order to locally execute a LLM, first download a model."
+            "value" : "LLM file not found."
           }
         }
       }
     },
-    "LLM_DOWNLOAD_TITLE" : {
-      "extractionState" : "stale",
+    "LLM_MODEL_NOT_FOUND_FAILURE_REASON" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Model Download"
+            "value" : "The specified LLM file could not be found on the device."
           }
         }
       }
     },
-    "LLM_DOWNLOADING_PROGRESS_TEXT" : {
-      "extractionState" : "stale",
+    "LLM_MODEL_NOT_FOUND_RECOVERY_SUGGESTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Downloading..."
+            "value" : "Ensure that the LLM file is downloaded successfully and properly stored on the device. Try restarting the application."
           }
         }
       }
     },
-    "WELCOME_AREA1_DESCRIPTION" : {
+    "LLM_MODEL_NOT_READY_ERROR_DESCRIPTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locally execute LLMs directly on your phone."
+            "value" : "LLM not ready yet."
           }
         }
       }
     },
-    "WELCOME_AREA1_TITLE" : {
+    "LLM_MODEL_NOT_READY_FAILURE_REASON" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LLMs on an iPhone"
+            "value" : "The LLM needs to be initialized before usage."
           }
         }
       }
     },
-    "WELCOME_AREA2_DESCRIPTION" : {
+    "LLM_MODEL_NOT_READY_RECOVERY_SUGGESTION" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The LLM execution is provided by a module available through the Swift Package Manager."
+            "value" : "Make sure that the application initialized the LLM properly. Try restarting the application."
           }
         }
       }
     },
-    "WELCOME_AREA2_TITLE" : {
+    "LLM_STATE_ERROR" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swift Package Manager"
+            "value" : "LLM state error."
           }
         }
       }
     },
-    "WELCOME_AREA3_DESCRIPTION" : {
+    "LLM_STATE_GENERATING" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This application is built on top of the Stanford Spezi ecosystem."
+            "value" : "LLM state generating."
           }
         }
       }
     },
-    "WELCOME_AREA3_TITLE" : {
+    "LLM_STATE_LOADING" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Stanford Spezi ecosystem"
+            "value" : "LLM state loading."
           }
         }
       }
     },
-    "WELCOME_BUTTON" : {
+    "LLM_STATE_READY" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Next"
+            "value" : "LLM state ready."
           }
         }
       }
     },
-    "WELCOME_SUBTITLE" : {
+    "LLM_STATE_UNINITIALIZED" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This application demonstrates the local execution of a Large Language Model on an iPhone."
-          }
-        }
-      }
-    },
-    "WELCOME_TITLE" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Local LLM Execution Demo Application"
+            "value" : "LLM state uninitialized."
           }
         }
       }

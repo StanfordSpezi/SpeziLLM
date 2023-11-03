@@ -7,14 +7,14 @@
 //
 
 import Spezi
-import SpeziLocalLLM
+import SpeziLLM
 
 
 /// Enables configuration of the the Spezi framework.
 class LocalLLMAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            /// Configure the ``LLMRunner` responsible for executing LLMs
+            /// Configure the `LLMRunner` responsible for executing LLMs
             LLMRunner()
         }
     }
