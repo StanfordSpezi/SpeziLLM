@@ -20,13 +20,10 @@ struct LocalLLMChatView: View {
         contextParameters: .init(nCtx: 512) /// Sets the context size of the model at 512 tokens
     )
     
-    // TODO
-    private let model2 = LLMMock()
-    
     
     var body: some View {
         LLMChatView(
-            model: model2,  // TODO
+            model: model,
             initialSystemPrompt: .init(
                 role: .assistant,
                 content: "Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"

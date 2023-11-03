@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziLLM
 import llama
+import SpeziLLM
 
 
 public class LLMLocalRunnerSetupTask: LLMRunnerSetupTask {

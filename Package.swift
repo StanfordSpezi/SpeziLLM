@@ -27,7 +27,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
-        //.package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1470.0")),
+        // .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1470.0")),
         .package(url: "https://github.com/ggerganov/llama.cpp", branch: "b1470"),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.4.0")),
@@ -55,7 +55,7 @@ let package = Package(
             name: "SpeziLLM",
             dependencies: [
                 .target(name: "SpeziOpenAI"),
-                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "Spezi", package: "Spezi")
             ]
         ),
         .target(
@@ -69,7 +69,7 @@ let package = Package(
         .target(
             name: "SpeziLLMLocalDownload",
             dependencies: [
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ]
         ),
         .testTarget(

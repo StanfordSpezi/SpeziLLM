@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziOnboarding
 import SpeziLLMLocalDownload
+import SpeziOnboarding
 import SpeziViews
 import SwiftUI
 
