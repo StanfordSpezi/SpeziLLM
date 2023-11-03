@@ -11,9 +11,9 @@
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F8A431329130A8C005D2B8F /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */; };
 		2FC186012AD528830065EBB2 /* SpeziOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186002AD528830065EBB2 /* SpeziOpenAI */; };
 		2FC186032AD528830065EBB2 /* SpeziSpeechRecognizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */; };
+		2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */; };
 		2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */; };
 		2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590482A19E4AE00153BE4 /* Spezi */; };
 		2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD5904A2A19E4AE00153BE4 /* XCTSpezi */; };
@@ -327,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -381,7 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -547,7 +547,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
