@@ -28,7 +28,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     }
     
     
-    @EnvironmentObject private var openAI: OpenAIComponent
+    @Environment(OpenAIModel.self) private var openAI
     private let actionText: String
     private let action: () -> Void
     private let models: [ModelSelection]
@@ -43,6 +43,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
                 )
             },
             contentView: {
+                @Bindable var openAI = openAI
                 Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $openAI.openAIModel) {
                     ForEach(models) { model in
                         Text(model.description)
@@ -54,7 +55,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
             },
             actionView: {
                 OnboardingActionsView(
-                    actionText,
+                    verbatim: actionText,
                     action: {
                         action()
                     }

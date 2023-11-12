@@ -52,7 +52,7 @@ public struct MessagesView: View {
                     .onAppear {
                         scrollToBottom(scrollViewProxy)
                     }
-                    .onChange(of: chat) { _ in
+                    .onChange(of: chat) {
                         scrollToBottom(scrollViewProxy)
                     }
                     .onReceive(keyboardPublisher) { _ in

@@ -14,7 +14,7 @@ import XCTSpezi
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            OpenAIComponent()
+            OpenAIModule()
         }
     }
 }
