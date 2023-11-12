@@ -59,7 +59,7 @@ public struct MessageInputView: View {
                         .onAppear {
                             messageViewHeight = proxy.size.height
                         }
-                        .onChange(of: message) { _ in
+                        .onChange(of: message) {
                             messageViewHeight = proxy.size.height
                         }
                 }

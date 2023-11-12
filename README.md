@@ -38,12 +38,13 @@ First, you will need to add the SpeziML Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziOpenAI` target to add.
 
-### 2. Register the Open AI Component
+### 2. Register the Open AI Module
 
 > [!IMPORTANT]
 > If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
 
-You can configure the `OpenAIComponent` in the `SpeziAppDelegate` as follows.
+You can configure the `OpenAIModule` in the `SpeziAppDelegate` as follows.
+In the example, we configure the `OpenAIModule` to use the GPT-4 model with a default API key.
 
 ```swift
 import Spezi
@@ -53,18 +54,32 @@ import SpeziOpenAI
 class ExampleDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            OpenAIComponent(apiToken: "API_KEY", openAIModel: .gpt4)
+            OpenAIModule(apiToken: "API_KEY", openAIModel: .gpt4)
         }
     }
 }
 ```
 
-In the example above, we have configured the `OpenAIComponent` to use the GPT-4 model with a default API key. Note that the choice of model and API key are persisted across application launches. The `apiToken` and `openAIModel` can also be accessed and changed at runtime. 
+The OpenAIModule injects an ``OpenAIModel`` in the SwiftUI environment to make it accessible thoughout your application.
+
+```swift
+class ExampleView: View {
+    @Environment(OpenAIModel.self) var model
+
+
+    var body: some View {
+        // ...
+    }
+}
+```
+
+> [!NOTE]  
+> The choice of model and API key are persisted across application launches. The `apiToken` and `openAIModel` can also be accessed and changed at runtime. 
 
 The `SpeziOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that can be used to allow the user to provide their API key during the onboarding process instead (see `Examples` below). If using the `OpenAIAPIKeyOnboardingStep`, the `apiToken` property can be omitted here.
 
 > [!NOTE]  
-> You can learn more about a [`Component` in the Spezi documentation](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/component).
+> You can learn more about a [`Module` in the Spezi documentation](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/module).
 
 ## Examples
 
@@ -78,13 +93,13 @@ import SpeziOpenAI
 import SwiftUI
 
 struct OpenAIChatView: View {
-    @EnvironmentObject private var openAIComponent: OpenAIComponent
+    @Environment(OpenAIModel.self) var model
     @State private var chat: [Chat]
     
     var body: some View {
         ChatView($chat)
             .onChange(of: chat) { _ in
-                let chatStreamResults = try await openAIComponent.queryAPI(withChat: chat)
+                let chatStreamResults = try await model.queryAPI(withChat: chat)
                 
                 for try await chatStreamResult in chatStreamResults {
                     for choice in chatStreamResult.choices {
