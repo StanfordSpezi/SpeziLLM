@@ -10,7 +10,7 @@ import XCTest
 import XCTestExtensions
 
 
-class TestAppUITests: XCTestCase {
+class TestAppLLMOpenAIUITests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         

@@ -28,7 +28,7 @@ struct UITestsApp: App {
             case .llmOpenAI:
                 LLMOpenAIChatTestView()
             case .llmLocal:
-                LLMLocalChatTestView()
+                LLMLocalTestView()
             }
         }
     }

@@ -1,28 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "MESSAGE_INPUT_TEXTFIELD" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Message Input Textfield"
-          }
-        }
-      }
-    },
-    "MICROPHONE_BUTTON" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Record Message"
-          }
-        }
-      }
-    },
     "OPENAI_API_KEY_PROMT" : {
       "localizations" : {
         "en" : {
@@ -109,17 +87,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select an OpenAI Model"
-          }
-        }
-      }
-    },
-    "SEND_MESSAGE" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Send Message"
           }
         }
       }

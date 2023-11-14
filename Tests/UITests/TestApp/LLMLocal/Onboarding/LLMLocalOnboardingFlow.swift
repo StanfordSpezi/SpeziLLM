@@ -18,7 +18,10 @@ struct LLMLocalOnboardingFlow: View {
     var body: some View {
         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
             LLMLocalOnboardingWelcomeView()
-            LLMLocalOnboardingDownloadView()
+            
+            if !FeatureFlags.mockLocalLLM {
+                LLMLocalOnboardingDownloadView()
+            }
         }
         .interactiveDismissDisabled(!completedOnboardingFlow)
     }

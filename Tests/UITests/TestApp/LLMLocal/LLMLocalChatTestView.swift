@@ -13,12 +13,18 @@ import SwiftUI
 
 /// Presents a chat view that enables user's to interact with the local LLM.
 struct LLMLocalChatTestView: View {
-    /// The SpeziML `LLMLlama` that is configured and executed on the `LLMRunner`
-    private let model: LLMLlama = .init(
-        modelPath: .cachesDirectory.appending(path: "llm.gguf"),    /// Loads the LLM from the passed cache directory
-        parameters: .init(maxOutputLength: 64), /// Limits the size of the generated response to 64 tokens
-        contextParameters: .init(contextWindowSize: 512) /// Sets the context size of the model at 512 tokens
-    )
+    /// The Spezi `LLM` that is configured and executed on the `LLMRunner`
+    private let model: LLM = {
+        if FeatureFlags.mockLocalLLM {
+            LLMMock()
+        } else {
+            LLMLlama(
+                modelPath: .cachesDirectory.appending(path: "llm.gguf"),    /// Loads the LLM from the passed cache directory
+                parameters: .init(maxOutputLength: 64), /// Limits the size of the generated response to 64 tokens
+                contextParameters: .init(contextWindowSize: 512) /// Sets the context size of the model at 512 tokens
+            )
+        }
+    }()
     
     
     var body: some View {

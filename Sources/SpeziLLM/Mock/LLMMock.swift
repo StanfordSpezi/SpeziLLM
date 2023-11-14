@@ -32,7 +32,7 @@ public actor LLMMock: LLM {
         try? await Task.sleep(for: .milliseconds(500))
         continuation.yield("from ")
         try? await Task.sleep(for: .milliseconds(500))
-        continuation.yield("SpeziML!")
+        continuation.yield("SpeziLLM!")
         continuation.finish()
     }
 }

@@ -14,9 +14,51 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SpeziOpenAI"
-               BuildableName = "SpeziOpenAI"
-               BlueprintName = "SpeziOpenAI"
+               BlueprintIdentifier = "SpeziLLM"
+               BuildableName = "SpeziLLM"
+               BlueprintName = "SpeziLLM"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMLocal"
+               BuildableName = "SpeziLLMLocal"
+               BlueprintName = "SpeziLLMLocal"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMLocalDownload"
+               BuildableName = "SpeziLLMLocalDownload"
+               BlueprintName = "SpeziLLMLocalDownload"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMOpenAI"
+               BuildableName = "SpeziLLMOpenAI"
+               BlueprintName = "SpeziLLMOpenAI"
                ReferencedContainer = "container:../..">
             </BuildableReference>
          </BuildActionEntry>
@@ -90,6 +132,12 @@
             ReferencedContainer = "container:UITests.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "--mockLocalLLM"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

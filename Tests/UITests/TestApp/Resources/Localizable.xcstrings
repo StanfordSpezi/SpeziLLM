@@ -126,7 +126,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Local LLM Execution Demo Application"
+            "value" : "Local LLM Execution"
           }
         }
       }
