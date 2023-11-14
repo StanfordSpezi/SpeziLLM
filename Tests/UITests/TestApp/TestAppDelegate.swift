@@ -15,7 +15,6 @@ import XCTSpezi
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            /// Configure the `LLMRunner` responsible for executing LLMs
             LLMRunner()
             OpenAIModule()
         }
