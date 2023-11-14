@@ -28,13 +28,14 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     }
     
     
-    @EnvironmentObject private var openAI: OpenAIComponent
+    @Environment(OpenAIModel.self) private var openAI
     private let actionText: String
     private let action: () -> Void
     private let models: [ModelSelection]
     
     
     public var body: some View {
+        @Bindable var openAI = openAI
         OnboardingView(
             titleView: {
                 OnboardingTitleView(
@@ -54,7 +55,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
             },
             actionView: {
                 OnboardingActionsView(
-                    actionText,
+                    verbatim: actionText,
                     action: {
                         action()
                     }

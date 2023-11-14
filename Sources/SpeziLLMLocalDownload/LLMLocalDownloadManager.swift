@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -7,21 +7,32 @@
 //
 
 import Foundation
-import os
 
 
-/// Manages the download of the LLM to the local device.
-public final class LLMLocalDownloadManager: NSObject, ObservableObject, Sendable, URLSessionDownloadDelegate {
+/// Manages the download of an LLM to the local device.
+public final class LLMLocalDownloadManager: NSObject, ObservableObject {
     /// Defaults of possible LLMs to download via the ``LLMLocalDownloadManager``.
-    public enum LLMUrlsDefaults {
+    public enum LLMUrlDefaults {
         /// Regular LLama 2 7B model in its chat variation (~3.5GB)
-        public static var Llama2ChatModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf")! // swiftlint:disable:this force_unwrapping
+        public static var llama2ChatModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf") else {
+                preconditionFailure("""
+                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
         }
         
         /// Tiny LLama2 1B model (~700MB)
-        public static var TinyLLama2ModelUrl: URL {
-            URL(string: "https://huggingface.co/TheBloke/Tinyllama-2-1b-miniguanaco-GGUF/resolve/main/tinyllama-2-1b-miniguanaco.Q4_0.gguf")!   // swiftlint:disable:this force_unwrapping
+        public static var tinyLLama2ModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q4_0.gguf") else {
+                preconditionFailure("""
+                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
         }
     }
     
@@ -44,14 +55,15 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject, Sendable
         }
     }
     
-    
-    /// A Swift Logger that logs important information from the `LocalLLMDownloadManager`.
-    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziML")
+    /// The delegate handling the download manager tasks.
+    private var downloadDelegate: LLMLocalDownloadManagerDelegate?
+    /// The `URLSessionDownloadTask` that handles the download of the model.
+    private var downloadTask: URLSessionDownloadTask?
     /// Remote `URL` from where the LLM file should be downloaded.
     private let llmDownloadUrl: URL
     /// Local `URL` where the downloaded model is stored.
     let llmStorageUrl: URL
-    /// Indicates the current state of the ``LocalLLMDownloadManager``.
+    /// Indicates the current state of the ``LLMLocalDownloadManager``.
     @MainActor @Published public var state: DownloadState = .idle
     
     
@@ -61,7 +73,7 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject, Sendable
     ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
     ///   - llmStorageUrl: The local `URL` where the LLM file should be stored.
     public init(
-        llmDownloadUrl: URL = LLMUrlsDefaults.Llama2ChatModelUrl,
+        llmDownloadUrl: URL = LLMUrlDefaults.llama2ChatModelUrl,
         llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf")
     ) {
         self.llmDownloadUrl = llmDownloadUrl
@@ -71,48 +83,12 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject, Sendable
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.
     public func startDownload() {
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-        let task = session.downloadTask(with: self.llmDownloadUrl)
-        task.resume()
-    }
-    
-    // MARK: URLSessionDownloadDelegate
-    /// Indicates the progress of the current model download.
-    public func urlSession(
-        _ session: URLSession,
-        downloadTask: URLSessionDownloadTask,
-        didWriteData bytesWritten: Int64,
-        totalBytesWritten: Int64,
-        totalBytesExpectedToWrite: Int64
-    ) {
-        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) * 100
-        Task { @MainActor in
-            self.state = .downloading(progress: progress)
-        }
-    }
-    
-    /// Indicates the completion of the model download including the downloaded file `URL`.
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        do {
-            _ = try FileManager.default.replaceItemAt(self.llmStorageUrl, withItemAt: location)
-        } catch {
-            Task { @MainActor in
-                self.state = .error(error)
-            }
-            Self.logger.error("\(String(describing: error))")
-            return
-        }
+        downloadTask?.cancel()
         
-        Task { @MainActor in
-            self.state = .downloaded
-        }
-    }
-    
-    /// Indicates an error during the model download
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        Task { @MainActor in
-            self.state = .error(error)
-        }
-        Self.logger.error("\(String(describing: error))")
+        downloadDelegate = LLMLocalDownloadManagerDelegate(manager: self, storageUrl: llmStorageUrl)
+        let session = URLSession(configuration: .default, delegate: downloadDelegate, delegateQueue: nil)
+        downloadTask = session.downloadTask(with: llmDownloadUrl)
+        
+        downloadTask?.resume()
     }
 }

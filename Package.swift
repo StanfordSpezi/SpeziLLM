@@ -18,44 +18,26 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(name: "SpeziOpenAI", targets: ["SpeziOpenAI"]),
-        .library(name: "SpeziSpeechRecognizer", targets: ["SpeziSpeechRecognizer"]),
-        .library(name: "SpeziSpeechSynthesizer", targets: ["SpeziSpeechSynthesizer"]),
         .library(name: "SpeziLLM", targets: ["SpeziLLM"]),
         .library(name: "SpeziLLMLocal", targets: ["SpeziLLMLocal"]),
-        .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"])
+        .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
+        .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"])
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
-        // .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1470.0")),
-        .package(url: "https://github.com/ggerganov/llama.cpp", branch: "b1470"),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.7.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.4.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.6.0"))
+        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.0")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", branch: "feat/init-setup"),     // .upToNextMinor(from: "0.1.0")
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", branch: "feat/init-setup")     // .upToNextMinor(from: "0.1.0")
     ],
     targets: [
         .target(
-            name: "SpeziOpenAI",
-            dependencies: [
-                .target(name: "SpeziSpeechRecognizer"),
-                .product(name: "OpenAI", package: "OpenAI"),
-                .product(name: "Spezi", package: "Spezi"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
-                .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
-            ]
-        ),
-        .target(
-            name: "SpeziSpeechRecognizer"
-        ),
-        .target(
-            name: "SpeziSpeechSynthesizer"
-        ),
-        .target(
             name: "SpeziLLM",
             dependencies: [
-                .target(name: "SpeziOpenAI"),
-                .product(name: "Spezi", package: "Spezi")
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziChat", package: "SpeziChat")
             ]
         ),
         .target(
@@ -72,10 +54,22 @@ let package = Package(
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ]
         ),
-        .testTarget(
-            name: "SpeziOpenAITests",
+        .target(
+            name: "SpeziLLMOpenAI",
             dependencies: [
-                .target(name: "SpeziOpenAI")
+                .product(name: "OpenAI", package: "OpenAI"),
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziChat", package: "SpeziChat"),
+                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
+                .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
+                .product(name: "SpeziSpeechRecognizer", package: "SpeziSpeech"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
+            ]
+        ),
+        .testTarget(
+            name: "SpeziLLMOpenAITests",
+            dependencies: [
+                .target(name: "SpeziLLMOpenAI")
             ]
         )
     ]

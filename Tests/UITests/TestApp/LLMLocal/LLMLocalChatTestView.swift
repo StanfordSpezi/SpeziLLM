@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -8,11 +8,11 @@
 
 import SpeziLLM
 import SpeziLLMLocal
-import SpeziOpenAI
 import SwiftUI
 
+
 /// Presents a chat view that enables user's to interact with the local LLM.
-struct LocalLLMChatView: View {
+struct LLMLocalChatTestView: View {
     /// The SpeziML `LLMLlama` that is configured and executed on the `LLMRunner`
     private let model: LLMLlama = .init(
         modelPath: .cachesDirectory.appending(path: "llm.gguf"),    /// Loads the LLM from the passed cache directory
@@ -24,15 +24,18 @@ struct LocalLLMChatView: View {
     var body: some View {
         LLMChatView(
             model: model,
-            initialSystemPrompt: .init(
-                role: .assistant,
-                content: "Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"
-            )
+            initialSystemPrompt: [
+                .init(
+                    role: .assistant,
+                    content: "Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"
+                )
+            ]
         )
+            .navigationTitle("LLM_LOCAL_CHAT_VIEW_TITLE")
     }
 }
 
 
 #Preview {
-    LocalLLMChatView()
+    LLMLocalChatTestView()
 }

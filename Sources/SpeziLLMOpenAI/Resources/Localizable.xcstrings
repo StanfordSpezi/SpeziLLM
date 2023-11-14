@@ -1,0 +1,129 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "MESSAGE_INPUT_TEXTFIELD" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message Input Textfield"
+          }
+        }
+      }
+    },
+    "MICROPHONE_BUTTON" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record Message"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_PROMT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter your OpenAI API key."
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SUBTITLE_HINT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can create and inspect your OpenAI API keys [in the API keys section of your OpenAI Account](https://platform.openai.com/account/api-keys)."
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI GPT Model"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the OpenAI model that you want to use. Ensure that your API key has proper access to the model you select."
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select an OpenAI Model"
+          }
+        }
+      }
+    },
+    "SEND_MESSAGE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Message"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

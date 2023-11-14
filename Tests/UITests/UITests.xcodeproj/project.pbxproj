@@ -7,18 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F55FC552A1B42D20051DF48 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F55FC542A1B42D20051DF48 /* ContentView.swift */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F8A431329130A8C005D2B8F /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */; };
-		2FC186012AD528830065EBB2 /* SpeziOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186002AD528830065EBB2 /* SpeziOpenAI */; };
-		2FC186032AD528830065EBB2 /* SpeziSpeechRecognizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */; };
 		2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */; };
 		2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590482A19E4AE00153BE4 /* Spezi */; };
 		2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD5904A2A19E4AE00153BE4 /* XCTSpezi */; };
-		2FD5904F2A19E70000153BE4 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD5904E2A19E70000153BE4 /* OnboardingView.swift */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
+		9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24B2B0316240006B6BD /* Binding+Negate.swift */; };
+		9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24C2B0316240006B6BD /* StorageKeys.swift */; };
+		9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */; };
+		9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */; };
+		9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */; };
+		9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2562B0316740006B6BD /* Localizable.xcstrings */; };
+		9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2572B0316740006B6BD /* Localizable.xcstrings.license */; };
+		9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */; };
+		9756D2602B0316D80006B6BD /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9756D25F2B0316D80006B6BD /* SpeziLLMLocal */; };
+		9756D2622B0316D80006B6BD /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */; };
+		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
+		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
+		97DD56BB2B02F7E400389331 /* SpeziChat in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BA2B02F7E400389331 /* SpeziChat */; };
+		97DD56BD2B02F80100389331 /* SpeziLLMOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,7 +41,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F55FC542A1B42D20051DF48 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2F68C3C6292E9F8F00B3E12C /* SpeziML */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziML; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -41,7 +49,16 @@
 		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
 		2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
-		2FD5904E2A19E70000153BE4 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		9756D24B2B0316240006B6BD /* Binding+Negate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Binding+Negate.swift"; sourceTree = "<group>"; };
+		9756D24C2B0316240006B6BD /* StorageKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
+		9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingDownloadView.swift; sourceTree = "<group>"; };
+		9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingWelcomeView.swift; sourceTree = "<group>"; };
+		9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingFlow.swift; sourceTree = "<group>"; };
+		9756D2562B0316740006B6BD /* Localizable.xcstrings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		9756D2572B0316740006B6BD /* Localizable.xcstrings.license */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Localizable.xcstrings.license; sourceTree = "<group>"; };
+		9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalChatTestView.swift; sourceTree = "<group>"; };
+		9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIOnboardingView.swift; sourceTree = "<group>"; };
+		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,11 +66,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FC186032AD528830065EBB2 /* SpeziSpeechRecognizer in Frameworks */,
 				2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */,
-				2FC186012AD528830065EBB2 /* SpeziOpenAI in Frameworks */,
+				97DD56BB2B02F7E400389331 /* SpeziChat in Frameworks */,
+				97DD56BD2B02F80100389331 /* SpeziLLMOpenAI in Frameworks */,
+				9756D2602B0316D80006B6BD /* SpeziLLMLocal in Frameworks */,
+				9756D2622B0316D80006B6BD /* SpeziLLMLocalDownload in Frameworks */,
 				2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */,
-				2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,10 +110,11 @@
 		2F6D139428F5F384007C25D6 /* TestApp */ = {
 			isa = PBXGroup;
 			children = (
+				9756D25A2B0316790006B6BD /* Resources */,
+				97DD56B32B02F72D00389331 /* LLMLocal */,
+				97DD56B42B02F72D00389331 /* LLMOpenAI */,
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
-				2F55FC542A1B42D20051DF48 /* ContentView.swift */,
 				2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */,
-				2FD5904E2A19E70000153BE4 /* OnboardingView.swift */,
 				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
 			);
 			path = TestApp;
@@ -114,6 +133,53 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9756D24A2B0316240006B6BD /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24B2B0316240006B6BD /* Binding+Negate.swift */,
+				9756D24C2B0316240006B6BD /* StorageKeys.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		9756D24D2B0316240006B6BD /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */,
+				9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */,
+				9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		9756D25A2B0316790006B6BD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9756D2562B0316740006B6BD /* Localizable.xcstrings */,
+				9756D2572B0316740006B6BD /* Localizable.xcstrings.license */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		97DD56B32B02F72D00389331 /* LLMLocal */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24A2B0316240006B6BD /* Helpers */,
+				9756D24D2B0316240006B6BD /* Onboarding */,
+				9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */,
+			);
+			path = LLMLocal;
+			sourceTree = "<group>";
+		};
+		97DD56B42B02F72D00389331 /* LLMOpenAI */ = {
+			isa = PBXGroup;
+			children = (
+				9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */,
+				9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */,
+			);
+			path = LLMOpenAI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,9 +202,10 @@
 			packageProductDependencies = (
 				2FD590482A19E4AE00153BE4 /* Spezi */,
 				2FD5904A2A19E4AE00153BE4 /* XCTSpezi */,
-				2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */,
-				2FC186002AD528830065EBB2 /* SpeziOpenAI */,
-				2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */,
+				97DD56BA2B02F7E400389331 /* SpeziChat */,
+				97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */,
+				9756D25F2B0316D80006B6BD /* SpeziLLMLocal */,
+				9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -196,6 +263,7 @@
 			packageReferences = (
 				2FD590442A19E40F00153BE4 /* XCRemoteSwiftPackageReference "Spezi" */,
 				2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
+				97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -212,7 +280,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */,
 				2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */,
+				9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,10 +321,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */,
+				9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */,
+				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
 				2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */,
+				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
+				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
+				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
+				9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
-				2F55FC552A1B42D20051DF48 /* ContentView.swift in Sources */,
-				2FD5904F2A19E70000153BE4 /* OnboardingView.swift in Sources */,
+				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,7 +403,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -381,7 +457,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -547,7 +623,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -651,7 +727,7 @@
 			repositoryURL = "https://github.com/StanfordSpezi/Spezi.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.7.3;
+				minimumVersion = 0.8.0;
 			};
 		};
 		2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
@@ -662,21 +738,17 @@
 				minimumVersion = 0.4.4;
 			};
 		};
+		97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StanfordSpezi/SpeziChat";
+			requirement = {
+				branch = "feat/init-setup";
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2FC186002AD528830065EBB2 /* SpeziOpenAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziOpenAI;
-		};
-		2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziSpeechRecognizer;
-		};
-		2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziSpeechSynthesizer;
-		};
 		2FD590482A19E4AE00153BE4 /* Spezi */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2FD590442A19E40F00153BE4 /* XCRemoteSwiftPackageReference "Spezi" */;
@@ -691,6 +763,23 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
 			productName = XCTestExtensions;
+		};
+		9756D25F2B0316D80006B6BD /* SpeziLLMLocal */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMLocal;
+		};
+		9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMLocalDownload;
+		};
+		97DD56BA2B02F7E400389331 /* SpeziChat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */;
+			productName = SpeziChat;
+		};
+		97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMOpenAI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

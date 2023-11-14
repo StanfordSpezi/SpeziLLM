@@ -10,8 +10,8 @@
 import XCTest
 
 
-final class SpeziOpenAITests: XCTestCase {
-    func testSpeziOpenAITests() throws {
+final class SpeziLLMOpenAITests: XCTestCase {
+    func testSpeziLLMOpenAITests() throws {
         XCTAssert(true)
     }
 }

@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -13,8 +13,8 @@ import SwiftUI
 
 
 /// Onboarding LLM Download view for the Local LLM example application.
-struct LLMDownloadView: View {
-    @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
+struct LLMLocalOnboardingDownloadView: View {
+    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
     
     
     var body: some View {
@@ -30,6 +30,6 @@ struct LLMDownloadView: View {
 
 #Preview {
     OnboardingStack {
-        LLMDownloadView()
+        LLMLocalOnboardingDownloadView()
     }
 }

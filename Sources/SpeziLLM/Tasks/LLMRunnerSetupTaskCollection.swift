@@ -1,5 +1,5 @@
 //
-// This source file is part of the Stanford Spezi open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -23,7 +23,7 @@ public struct _LLMRunnerSetupTaskCollection {  // swiftlint:disable:this type_na
             guard partialResult[runnerSetupTask.type] == nil else {
                 fatalError("""
                 LLMRunner was initialized with LLMRunnerSetupTasks's of the same LLMHostingType type.
-                Ensure that only one LLMRunnerSetupTasks is responsible for setting up the runner of one LLMHostingType.
+                Ensure that only one LLMRunnerSetupTask is responsible for setting up the runner of one LLMHostingType.
                 """)
             }
             

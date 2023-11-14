@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -20,9 +20,9 @@ extension LLMLlama {
     ///   
     /// - Returns: The tokenized `String` as `LLMLlamaToken`'s.
     func tokenize(text: String) -> [LLMLlamaToken] {
-        let nTokens = text.count + (self.parameters.addBos ? 1 : 0)
+        let nTokens = text.count + (self.parameters.addBosToken ? 1 : 0)
         let tokens = UnsafeMutablePointer<llama_token>.allocate(capacity: nTokens)
-        let tokenCount = llama_tokenize(self.model, text, Int32(text.count), tokens, Int32(nTokens), self.parameters.addBos, false)
+        let tokenCount = llama_tokenize(self.model, text, Int32(text.count), tokens, Int32(nTokens), self.parameters.addBosToken, false)
         var swiftTokens: [llama_token] = []
         for tokenIndex in 0 ..< tokenCount {
             swiftTokens.append(tokens[Int(tokenIndex)])

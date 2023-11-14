@@ -1,92 +1,92 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "WELCOME_AREA1_DESCRIPTION" : {
+    "Downloaded %@%% of 100%%." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locally execute LLMs directly on your phone."
+            "value" : "Downloaded %@%% of 100%%."
           }
         }
       }
     },
-    "WELCOME_AREA1_TITLE" : {
+    "LLM_ALREADY_DOWNLOADED_DESCRIPTION" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LLMs on an iPhone"
+            "value" : "The Large Language Model is already present on the device."
           }
         }
       }
     },
-    "WELCOME_AREA2_DESCRIPTION" : {
+    "LLM_DOWNLOAD_BUTTON" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The LLM execution is provided by a module available through the Swift Package Manager."
+            "value" : "Download LLM"
           }
         }
       }
     },
-    "WELCOME_AREA2_TITLE" : {
+    "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swift Package Manager"
+            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
           }
         }
       }
     },
-    "WELCOME_AREA3_DESCRIPTION" : {
+    "LLM_DOWNLOAD_NEXT_BUTTON" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This application is built on top of the Stanford Spezi ecosystem."
+            "value" : "Finish setup"
           }
         }
       }
     },
-    "WELCOME_AREA3_TITLE" : {
+    "LLM_DOWNLOAD_SUBTITLE" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Stanford Spezi ecosystem"
+            "value" : "In order to locally execute a LLM, first download a model."
           }
         }
       }
     },
-    "WELCOME_BUTTON" : {
+    "LLM_DOWNLOAD_TITLE" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Next"
+            "value" : "LLM Download"
           }
         }
       }
     },
-    "WELCOME_SUBTITLE" : {
+    "LLM_DOWNLOADED_DESCRIPTION" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This application demonstrates the local execution of a Large Language Model on an iPhone."
+            "value" : "The Large Language Model is downloaded to the device."
           }
         }
       }
     },
-    "WELCOME_TITLE" : {
+    "LLM_DOWNLOADING_PROGRESS_TEXT" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Local LLM Execution Demo Application"
+            "value" : "Downloading..."
           }
         }
       }

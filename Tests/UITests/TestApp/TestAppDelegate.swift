@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -7,14 +7,17 @@
 //
 
 import Spezi
-import SpeziOpenAI
+import SpeziLLM
+import SpeziLLMOpenAI
 import XCTSpezi
 
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            OpenAIComponent()
+            /// Configure the `LLMRunner` responsible for executing LLMs
+            LLMRunner()
+            OpenAIModule()
         }
     }
 }

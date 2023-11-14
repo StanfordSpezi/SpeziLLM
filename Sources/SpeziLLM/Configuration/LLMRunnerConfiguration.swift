@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -13,19 +13,19 @@ public struct LLMRunnerConfiguration: Sendable {
     /// The task priority of the initiated LLM inference tasks.
     public let taskPriority: TaskPriority
     /// Indicates if this is a device with non-unified memory access.
-    public let numa: Bool
+    public let nonUniformMemoryAccess: Bool
     
     
     /// Creates the ``LLMRunnerConfiguration`` which configures the Spezi ``LLMRunner``.
     ///
     /// - Parameters:
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
-    ///   - numa: Indicates if this is a device with non-unified memory access.
+    ///   - nonUniformMemoryAccess: Indicates if this is a device with non-unified memory access.
     public init(
         taskPriority: TaskPriority = .userInitiated,
-        numa: Bool = false
+        nonUniformMemoryAccess: Bool = false
     ) {
         self.taskPriority = taskPriority
-        self.numa = numa
+        self.nonUniformMemoryAccess = nonUniformMemoryAccess
     }
 }

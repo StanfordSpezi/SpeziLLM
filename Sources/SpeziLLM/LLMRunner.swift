@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -19,7 +19,7 @@ import Spezi
 /// exist once in the entire application.
 ///
 ///
-/// The next code section describes a complete example on how to use the ``LLMRunner`` in combination with a ``LLMLlama``.
+/// The next code section describes a complete example on how to use the ``LLMRunner`` in combination with a `LLMLlama` from the SpeziLLMLocal target.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {
@@ -38,7 +38,7 @@ import Spezi
 ///
 /// struct LocalLLMChatView: View {
 ///    // The runner responsible for executing the local LLM.
-///    @EnvironmentObject private var runner: LLMRunner
+///    @Environment(LLMRunner.self) private var runner: LLMRunner
 ///
 ///    // The locally executed LLM
 ///    private let model: LLMLlama = .init(
@@ -59,7 +59,7 @@ import Spezi
 ///    }
 /// }
 /// ```
-public actor LLMRunner: Component, DefaultInitializable, ObservableObject, ObservableObjectProvider {
+public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
     /// The ``State`` describes the current state of the ``LLMRunner``.
     /// As of now, the ``State`` is quite minimal with only ``LLMRunner/State-swift.enum/idle`` and ``LLMRunner/State-swift.enum/processing`` states.
     public enum State {
@@ -142,7 +142,7 @@ public actor LLMRunner: Component, DefaultInitializable, ObservableObject, Obser
     }
     
 
-    /// Upon deinit, cancel all ``LLMRunnerInferenceTask``'s and free the llama.cpp backend.
+    /// Upon deinit, cancel all ``LLMRunnerInferenceTask``'s.
     deinit {
         Task {
             for runnerTask in await runnerTasks.values {

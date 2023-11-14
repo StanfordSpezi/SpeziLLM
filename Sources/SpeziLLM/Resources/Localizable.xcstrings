@@ -1,30 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "LLM_DOWNLOADING_PROGRESS_STATE_END" : {
-      "extractionState" : "manual",
+    "CHAT_VIEW_TITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "% of 100%"
-          }
-        }
-      }
-    },
-    "LLM_DOWNLOADING_PROGRESS_STATE_START" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Downloaded"
+            "value" : "Spezi LLM Chat"
           }
         }
       }
     },
     "LLM_GENERATION_ERROR_DESCRIPTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -35,7 +23,6 @@
       }
     },
     "LLM_GENERATION_ERROR_FAILURE_REASON" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -46,7 +33,6 @@
       }
     },
     "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -57,7 +43,6 @@
       }
     },
     "LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -68,7 +53,6 @@
       }
     },
     "LLM_MODEL_NOT_FOUND_FAILURE_REASON" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -79,7 +63,6 @@
       }
     },
     "LLM_MODEL_NOT_FOUND_RECOVERY_SUGGESTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -90,7 +73,6 @@
       }
     },
     "LLM_MODEL_NOT_READY_ERROR_DESCRIPTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -101,7 +83,6 @@
       }
     },
     "LLM_MODEL_NOT_READY_FAILURE_REASON" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -112,7 +93,6 @@
       }
     },
     "LLM_MODEL_NOT_READY_RECOVERY_SUGGESTION" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -123,7 +103,6 @@
       }
     },
     "LLM_STATE_ERROR" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -134,7 +113,6 @@
       }
     },
     "LLM_STATE_GENERATING" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -145,7 +123,6 @@
       }
     },
     "LLM_STATE_LOADING" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -156,7 +133,6 @@
       }
     },
     "LLM_STATE_READY" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -167,7 +143,6 @@
       }
     },
     "LLM_STATE_UNINITIALIZED" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {

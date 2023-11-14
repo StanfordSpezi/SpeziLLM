@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -16,21 +16,21 @@ public struct LLMLocalDownloadView: View {
     @StateObject private var downloadManager: LLMLocalDownloadManager
     private let action: () async throws -> Void
     
-    
+
     public var body: some View {
         OnboardingView(
             contentView: {
                 VStack {
                     OnboardingTitleView(
-                        title: "LLM_DOWNLOAD_TITLE",
-                        subtitle: "LLM_DOWNLOAD_SUBTITLE"
+                        title: .init("LLM_DOWNLOAD_TITLE", bundle: .atURL(from: .module)),
+                        subtitle: .init("LLM_DOWNLOAD_SUBTITLE", bundle: .atURL(from: .module))
                     )
                     Spacer()
                     Image(systemName: "shippingbox")
                         .font(.system(size: 100))
                         .foregroundColor(.accentColor)
                         .accessibilityHidden(true)
-                    Text("LLM_DOWNLOAD_DESCRIPTION")
+                    Text("LLM_DOWNLOAD_DESCRIPTION", bundle: .module)
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 16)
                     
@@ -40,22 +40,26 @@ public struct LLMLocalDownloadView: View {
                         if isDownloading {
                             downloadProgressView
                         }
-                    } else if modelExists && downloadManager.state != .downloaded {
-                        Text("LLM_ALREADY_DOWNLOAD_DESCRIPTION")
+                    } else {
+                        Group {
+                            if downloadManager.state != .downloaded {
+                                Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
+                            } else if downloadManager.state == .downloaded {
+                                Text("LLM_DOWNLOADED_DESCRIPTION", bundle: .module)
+                            }
+                        }
                             .multilineTextAlignment(.center)
                             .padding(.vertical, 16)
-                            .padding(.top, 16)
                             .bold()
                             .italic()
                     }
-                    
                     
                     Spacer()
                 }
                     .transition(.opacity)
                     .animation(.easeInOut, value: isDownloading || modelExists)
             }, actionView: {
-                OnboardingActionsView("LLM_DOWNLOAD_NEXT_BUTTON") {
+                OnboardingActionsView(.init("LLM_DOWNLOAD_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }
                     .disabled(!modelExists)
@@ -65,12 +69,10 @@ public struct LLMLocalDownloadView: View {
     }
     
     private var downloadButton: some View {
-        Button("LLM_DOWNLOAD_BUTTON") {
-            Task {
-                withAnimation {
-                    downloadManager.startDownload()
-                }
-            }
+        Button(action: downloadManager.startDownload) {
+            Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
+                .padding(.horizontal)
+                .padding(.vertical, 6)
         }
             .buttonStyle(.borderedProminent)
             .disabled(isDownloading)
@@ -79,13 +81,13 @@ public struct LLMLocalDownloadView: View {
     
     private var downloadProgressView: some View {
         VStack {
-            ProgressView("LLM_DOWNLOADING_PROGRESS_TEXT", value: downloadProgress, total: 100.0)
+            ProgressView(value: downloadProgress, total: 100.0) {
+                Text("LLM_DOWNLOADING_PROGRESS_TEXT", bundle: .module)
+            }
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
             
-            Group {
-                Text("LLM_DOWNLOADING_PROGRESS_STATE_START") + Text(" \(String(format: "%.2f", downloadProgress))") + Text("LLM_DOWNLOADING_PROGRESS_STATE_END")
-            }
+            Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%.", bundle: .module)
                 .padding(.top, 5)
         }
     }
@@ -125,7 +127,7 @@ public struct LLMLocalDownloadView: View {
     ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     public init(
-        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlsDefaults.Llama2ChatModelUrl,
+        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl,
         llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
         action: @escaping () async throws -> Void
     ) {
@@ -141,7 +143,5 @@ public struct LLMLocalDownloadView: View {
 
 
 #Preview {
-    OnboardingStack {
-        LLMLocalDownloadView(action: {})
-    }
+    LLMLocalDownloadView(action: {})
 }

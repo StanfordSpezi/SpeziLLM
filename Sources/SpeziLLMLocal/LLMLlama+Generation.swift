@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -29,9 +29,9 @@ extension LLMLlama {
         self.state = .generating
         
         let tokens = tokenize(text: prompt)
-        let nKVReq = UInt32(tokens.count) + UInt32((self.parameters.nLength - Int(tokens.count)))
+        let nKVReq = UInt32(tokens.count) + UInt32((self.parameters.maxOutputLength - Int(tokens.count)))
         
-        let context = llama_new_context_with_model(model, self.contextParameters.wrapped)
+        let context = llama_new_context_with_model(model, self.contextParameters.getLlamaCppRepresentation())
         guard context != nil else {
             Self.logger.error("Failed to initialize context")
             continuation.finish(throwing: LLMError.generationError)
@@ -43,7 +43,7 @@ extension LLMLlama {
 
         let nCtx = llama_n_ctx(context)
         
-        Self.logger.debug("\n_length = \(self.parameters.nLength, privacy: .public), n_ctx = \(nCtx, privacy: .public), n_batch = \(self.contextParameters.nBatch, privacy: .public), n_kv_req = \(nKVReq, privacy: .public)\n")
+        Self.logger.debug("\n_length = \(self.parameters.maxOutputLength, privacy: .public), n_ctx = \(nCtx, privacy: .public), n_batch = \(self.contextParameters.batchSize, privacy: .public), n_kv_req = \(nKVReq, privacy: .public)\n")
 
         if nKVReq > nCtx {
             Self.logger.error("Error: n_kv_req \(nKVReq, privacy: .public) > n_ctx, the required KV cache size is not big enough")
@@ -51,10 +51,13 @@ extension LLMLlama {
             return
         }
         
+        // Convert input prompt tokens back to string
+        /*
         var buffer: [CChar] = []
         for id: LLMLlamaToken in tokens {
-            Self.logger.debug("\(self.tokenToPiece(token: id, buffer: &buffer) ?? "")")
+            self.tokenToPiece(token: id, buffer: &buffer)
         }
+         */
         
         var batch = llama_batch_init(Int32(tokens.count), 0, 1)
         defer {
@@ -88,7 +91,7 @@ extension LLMLlama {
 
         let startTime = Date()
         
-        while nCur <= self.parameters.nLength {
+        while nCur <= self.parameters.maxOutputLength {
             let nVocab = llama_n_vocab(model)
             let logits = llama_get_logits_ith(context, batch.n_tokens - 1)
             
@@ -104,38 +107,29 @@ extension LLMLlama {
                 sorted: false
             )
             
-            
-            let topK: Int32 = 40
-            let topP: Float = 0.9
-            let temp: Float = 0.7
-            
-            llama_sample_top_k(context, &candidatesP, topK, 1)
-            llama_sample_top_p(context, &candidatesP, topP, 1)
-            llama_sample_temp(context, &candidatesP, temp)
+            llama_sample_top_k(context, &candidatesP, self.parameters.topK, 1)
+            llama_sample_top_p(context, &candidatesP, self.parameters.topP, 1)
+            llama_sample_temp(context, &candidatesP, self.parameters.temperature)
             
             let nextTokenId = llama_sample_token(context, &candidatesP)
-            // Greedy sampeling
-            // let nextTokenId = llama_sample_token_greedy(context, &candidates_p)
+            // Greedy sampling
+            // let nextTokenId = llama_sample_token_greedy(context, &candidatesP)
             
-            if nextTokenId == llama_token_eos(self.model) || nCur == self.parameters.nLength {
+            if nextTokenId == llama_token_eos(self.model) || nCur == self.parameters.maxOutputLength {
                 self.state = .ready
                 continuation.finish()
                 return
             }
             
-            let nextStringPiece = tokenToPiece(token: nextTokenId, buffer: &streamBuffer) ?? ""
-            Self.logger.debug("\(nextStringPiece)")
-            continuation.yield(nextStringPiece)
+            continuation.yield(tokenToPiece(token: nextTokenId, buffer: &streamBuffer) ?? "")
             
             batch.n_tokens = 0
-            
             // push this new token for next evaluation
             batch.token[Int(batch.n_tokens)] = nextTokenId
             batch.pos[Int(batch.n_tokens)] = nCur
             batch.n_seq_id[Int(batch.n_tokens)] = 1
             batch.seq_id[Int(batch.n_tokens)]?[0] = 0
             batch.logits[Int(batch.n_tokens)] = 1
-            
             batch.n_tokens += 1
             
             decodedTokens += 1
@@ -153,7 +147,6 @@ extension LLMLlama {
         }
         
         let elapsedTime = Date().timeIntervalSince(startTime)
-        let speed = Double(decodedTokens) / elapsedTime
         
         Self.logger.debug("Decoded \(decodedTokens, privacy: .public) tokens in \(String(format: "%.2f", elapsedTime), privacy: .public) s, speed: \(String(format: "%.2f", Double(decodedTokens) / elapsedTime), privacy: .public)) t/s\n")
 

@@ -14,7 +14,7 @@ import SwiftUI
 
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 public struct OpenAIAPIKeyOnboardingStep: View {
-    @EnvironmentObject private var openAI: OpenAIComponent
+    @Environment(OpenAIModel.self) private var openAI
     private let actionText: String
     private let action: () -> Void
     
@@ -64,7 +64,7 @@ public struct OpenAIAPIKeyOnboardingStep: View {
             },
             actionView: {
                 OnboardingActionsView(
-                    actionText,
+                    verbatim: actionText,
                     action: {
                         action()
                     }

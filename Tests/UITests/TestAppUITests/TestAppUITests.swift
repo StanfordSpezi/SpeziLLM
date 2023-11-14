@@ -1,5 +1,5 @@
 //
-// This source file is part of the SpeziML open-source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -21,14 +21,14 @@ class TestAppUITests: XCTestCase {
     }
     
     
-    func testSpeziMLOnboarding() throws {
+    func testSpeziLLMOpenAIOnboarding() throws {
         let app = XCUIApplication()
         
+        XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
+        app.buttons["LLMOpenAI"].tap()
         
-        let elementsQuery = XCUIApplication().scrollViews.otherElements
-        elementsQuery.staticTexts["User Message!"].tap()
-        elementsQuery.staticTexts["Assistant Message!"].tap()
-        
+        app.staticTexts["User Message!"].tap()
+        app.staticTexts["Assistant Message!"].tap()
         
         app.buttons["Onboarding"].tap()
         
@@ -49,6 +49,10 @@ class TestAppUITests: XCTestCase {
         app.terminate()
         app.launch()
         
+        XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
+        app.buttons["LLMOpenAI"].tap()
+        
+        XCTAssert(app.buttons["Onboarding"].waitForExistence(timeout: 2))
         app.buttons["Onboarding"].tap()
         
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
@@ -60,6 +64,9 @@ class TestAppUITests: XCTestCase {
         
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
+        XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
+        app.buttons["LLMOpenAI"].tap()
+        
         app.buttons["Onboarding"].tap()
         
         XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
@@ -70,8 +77,11 @@ class TestAppUITests: XCTestCase {
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
     }
     
-    func testSpeziMLChat() throws {
+    func testSpeziLLMOpenAIChat() throws {
         let app = XCUIApplication()
+        
+        XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
+        app.buttons["LLMOpenAI"].tap()
         
         XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))

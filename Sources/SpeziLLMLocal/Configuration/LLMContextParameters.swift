@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -14,7 +14,7 @@ import llama
 /// Internally, these data points are passed as a llama.cpp `llama_context_params` C struct to the LLM.
 public struct LLMContextParameters: Sendable {
     /// Wrapped C struct from the llama.cpp library, later-on passed to the LLM
-    var wrapped: llama_context_params
+    private var wrapped: llama_context_params
     
     
     /// RNG seed of the LLM
@@ -28,7 +28,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// Context window size in tokens (0 = take default window size from model)
-    var nCtx: UInt32 {
+    var contextWindowSize: UInt32 {
         get {
             wrapped.n_ctx
         }
@@ -38,7 +38,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// Maximum batch size during prompt processing
-    var nBatch: UInt32 {
+    var batchSize: UInt32 {
         get {
             wrapped.n_batch
         }
@@ -48,7 +48,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// Number of threads used by LLM for generation of output
-    var nThreads: UInt32 {
+    var threadCount: UInt32 {
         get {
             wrapped.n_threads
         }
@@ -58,7 +58,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// Number of threads used by LLM for batch processing
-    var nThreadsBatch: UInt32 {
+    var threadCountBatch: UInt32 {
         get {
             wrapped.n_threads_batch
         }
@@ -88,7 +88,7 @@ public struct LLMContextParameters: Sendable {
     }
 
     /// Set the usage of experimental `mul_mat_q` kernels
-    var mulMatQ: Bool {
+    var useMulMatQKernels: Bool {
         get {
             wrapped.mul_mat_q
         }
@@ -98,7 +98,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// If `true`, use fp16 for KV cache, fp32 otherwise
-    var f16KV: Bool {
+    var useFp16Cache: Bool {
         get {
             wrapped.f16_kv
         }
@@ -108,7 +108,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// If `true`, the (deprecated) `llama_eval()` call computes all logits, not just the last one
-    var logitsAll: Bool {
+    var computeAllLogits: Bool {
         get {
             wrapped.logits_all
         }
@@ -118,7 +118,7 @@ public struct LLMContextParameters: Sendable {
     }
     
     /// If `true`, the mode is set to embeddings only
-    var embedding: Bool {
+    var embeddingsOnly: Bool {
         get {
             wrapped.embedding
         }
@@ -127,46 +127,53 @@ public struct LLMContextParameters: Sendable {
         }
     }
     
-    /// Creates the ``LLMContextParams`` which wrap the underlying llama.cpp `llama_context_params` C struct.
+    /// Creates the ``LLMContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
     /// Is passed to the underlying llama.cpp model in order to configure the context of the LLM.
     ///
     /// - Parameters:
     ///   - seed: RNG seed of the LLM, defaults to `4294967295` (which represents a random seed).
-    ///   - nCtx: Context window size in tokens, defaults to `0` indicating the usage of the default window size from the model.
-    ///   - nBatch: Maximum batch size during prompt processing, defaults to `512` tokens.
-    ///   - nThreads: Number of threads used by LLM for generation of output, defaults to the processor count of the device.
-    ///   - nThreadsBatch: Number of threads used by LLM for batch processing, defaults to the processor count of the device.
+    ///   - contextWindowSize: Context window size in tokens, defaults to `0` indicating the usage of the default window size from the model.
+    ///   - batchSize: Maximum batch size during prompt processing, defaults to `512` tokens.
+    ///   - threadCount: Number of threads used by LLM for generation of output, defaults to the processor count of the device.
+    ///   - threadCountBatch: Number of threads used by LLM for batch processing, defaults to the processor count of the device.
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
     ///   - ropeFreqScale: RoPE frequency scaling factor, defaults to `0` indicating the default from model.
-    ///   - mulMatQ: Usage of experimental `mul_mat_q` kernels, defaults to `true`.
-    ///   - f16KV: Usage of fp16 for KV cache, fp32 otherwise, defaults to `true`.
-    ///   - logitsAll: `llama_eval()` call computes all logits, not just the last one. Defaults to `false`.
-    ///   - embedding: Embedding-only mode, defaults to `false`.
+    ///   - useMulMatQKernels: Usage of experimental `mul_mat_q` kernels, defaults to `true`.
+    ///   - useFp16Cache: Usage of fp16 for KV cache, fp32 otherwise, defaults to `true`.
+    ///   - computeAllLogits: `llama_eval()` call computes all logits, not just the last one. Defaults to `false`.
+    ///   - embeddingsOnly: Embedding-only mode, defaults to `false`.
     public init(
         seed: UInt32 = 4294967295,
-        nCtx: UInt32 = 0,
-        nBatch: UInt32 = 512,
-        nThreads: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
-        nThreadsBatch: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
+        contextWindowSize: UInt32 = 0,
+        batchSize: UInt32 = 512,
+        threadCount: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
+        threadCountBatch: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
         ropeFreqBase: Float = 0.0,
         ropeFreqScale: Float = 0.0,
-        mulMatQ: Bool = true,
-        f16KV: Bool = true,
-        logitsAll: Bool = false,
-        embedding: Bool = false
+        useMulMatQKernels: Bool = true,
+        useFp16Cache: Bool = true,
+        computeAllLogits: Bool = false,
+        embeddingsOnly: Bool = false
     ) {
         self.wrapped = llama_context_params()
         
         self.seed = seed
-        self.nCtx = nCtx
-        self.nBatch = nBatch
-        self.nThreads = nThreads
-        self.nThreadsBatch = nThreadsBatch
+        self.contextWindowSize = contextWindowSize
+        self.batchSize = batchSize
+        self.threadCount = threadCount
+        self.threadCountBatch = threadCountBatch
         self.ropeFreqBase = ropeFreqBase
         self.ropeFreqScale = ropeFreqScale
-        self.mulMatQ = mulMatQ
-        self.f16KV = f16KV
-        self.logitsAll = logitsAll
-        self.embedding = embedding
+        self.useMulMatQKernels = useMulMatQKernels
+        self.useFp16Cache = useFp16Cache
+        self.computeAllLogits = computeAllLogits
+        self.embeddingsOnly = embeddingsOnly
+    }
+    
+    
+    /// Fetches the context parameters in llama.cpp's low-level C representation
+    /// - Returns: C representation of llama.cpp's context parameters
+    func getLlamaCppRepresentation() -> llama_context_params {
+        wrapped
     }
 }

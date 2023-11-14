@@ -1,7 +1,7 @@
 //
-// This source file is part of the Stanford Spezi Template Application project
+// This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2023 Stanford University
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -26,11 +26,11 @@ public enum LLMState: CustomStringConvertible, Equatable {
     /// A textual description of the current ``LLMState``.
     public var description: String {
         switch self {
-        case .uninitialized: String(localized: LocalizedStringResource("LLM_STATE_UNINITIALIZED", bundle: .main))
-        case .loading: String(localized: LocalizedStringResource("LLM_STATE_LOADING", bundle: .main))
-        case .ready: String(localized: LocalizedStringResource("LLM_STATE_READY", bundle: .main))
-        case .generating: String(localized: LocalizedStringResource("LLM_STATE_GENERATING", bundle: .main))
-        case .error: String(localized: LocalizedStringResource("LLM_STATE_ERROR", bundle: .main))
+        case .uninitialized: String(localized: LocalizedStringResource("LLM_STATE_UNINITIALIZED", bundle: .atURL(from: .module)))
+        case .loading: String(localized: LocalizedStringResource("LLM_STATE_LOADING", bundle: .atURL(from: .module)))
+        case .ready: String(localized: LocalizedStringResource("LLM_STATE_READY", bundle: .atURL(from: .module)))
+        case .generating: String(localized: LocalizedStringResource("LLM_STATE_GENERATING", bundle: .atURL(from: .module)))
+        case .error: String(localized: LocalizedStringResource("LLM_STATE_ERROR", bundle: .atURL(from: .module)))
         }
     }
 }
