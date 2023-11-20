@@ -7,11 +7,29 @@
 //
 
 import llama
+import Spezi
 import SpeziLLM
 
 
-public class LLMLocalRunnerSetupTask: LLMRunnerSetupTask {
+/// The ``LLMLocalRunnerSetupTask`` sets up the local environment in order to execute Spezi `LLM`s.
+/// It needs to be stated within the `LLMRunner` initializer.
+///
+/// ```swift
+/// class LocalLLMAppDelegate: SpeziAppDelegate {
+///     override var configuration: Configuration {
+///         Configuration {
+///             // Configure the runner responsible for executing local LLMs
+///             LLMRunner {
+///                 LLMLocalRunnerSetupTask()
+///             }
+///         }
+///     }
+/// }
+public class LLMLocalRunnerSetupTask: LLMRunnerSetupTask, DefaultInitializable {
     public let type: LLMHostingType = .local
+    
+    
+    public required init() { }
     
     
     public func setupRunner(runnerConfig: LLMRunnerConfiguration) async throws {

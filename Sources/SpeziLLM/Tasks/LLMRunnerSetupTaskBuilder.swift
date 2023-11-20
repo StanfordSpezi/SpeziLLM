@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 
-/// A result builder used to aggregate multiple SpeziML ``LLMRunnerSetupTask``s within the ``LLMRunner``.
+/// A result builder used to aggregate multiple Spezi ``LLMRunnerSetupTask``s within the ``LLMRunner``.
 @resultBuilder
 @_documentation(visibility: internal)
 public enum LLMRunnerSetupTaskBuilder {

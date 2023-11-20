@@ -8,6 +8,7 @@
 
 import Spezi
 import SpeziLLM
+import SpeziLLMLocal
 import SpeziLLMOpenAI
 import XCTSpezi
 
@@ -15,7 +16,9 @@ import XCTSpezi
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            LLMRunner()
+            LLMRunner {
+                LLMLocalRunnerSetupTask()
+            }
             OpenAIModule()
         }
     }

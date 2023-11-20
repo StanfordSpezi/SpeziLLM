@@ -96,8 +96,8 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
     ///   - runnerConfig: The configuration of the ``LLMRunner`` represented by the ``LLMRunnerConfiguration``.
     ///   - content: A result builder that aggregates all stated ``LLMRunnerSetupTask``'s.
     public init(
-        runnerConfig: LLMRunnerConfiguration,
-        @LLMRunnerSetupTaskBuilder _ content: @escaping () -> _LLMRunnerSetupTaskCollection
+        runnerConfig: LLMRunnerConfiguration = .init(),
+        @LLMRunnerSetupTaskBuilder _ content: @Sendable @escaping () -> _LLMRunnerSetupTaskCollection
     ) {
         self.runnerConfiguration = runnerConfig
         self.runnerSetupTasks = content().runnerSetupTasks

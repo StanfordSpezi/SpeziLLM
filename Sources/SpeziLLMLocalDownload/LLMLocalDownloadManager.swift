@@ -13,9 +13,20 @@ import Foundation
 public final class LLMLocalDownloadManager: NSObject, ObservableObject {
     /// Defaults of possible LLMs to download via the ``LLMLocalDownloadManager``.
     public enum LLMUrlDefaults {
-        /// Regular LLama 2 7B model in its chat variation (~3.5GB)
+        /// LLama 2 7B model in its chat variation (~3.5GB)
         public static var llama2ChatModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf") else {
+                preconditionFailure("""
+                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
+        }
+        
+        /// LLama 2 13B model in its chat variation (~7GB)
+        public static var llama2Chat13BModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-13B-chat-GGML/resolve/main/llama-2-13b-chat.ggmlv3.q4_0.bin") else {
                 preconditionFailure("""
                     SpeziML: Invalid LLMUrlDefaults LLM download URL.
                 """)

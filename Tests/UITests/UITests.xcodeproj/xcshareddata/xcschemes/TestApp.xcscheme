@@ -135,7 +135,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--mockLocalLLM"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

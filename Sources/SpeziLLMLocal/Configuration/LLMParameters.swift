@@ -32,6 +32,11 @@ public struct LLMParameters: Sendable {
     private var wrapped: llama_model_params
     
     
+    /// Model parameters in llama.cpp's low-level C representation
+    var llamaCppRepresentation: llama_model_params {
+        wrapped
+    }
+    
     /// Number of layers to store in VRAM
     /// - Note: On iOS simulators, this property has to be set to 0 (which is automatically done by the library).
     var gpuLayerCount: Int32 {
@@ -146,7 +151,7 @@ public struct LLMParameters: Sendable {
         useMmap: Bool = true,
         useMlock: Bool = false
     ) {
-        self.wrapped = llama_model_params()
+        self.wrapped = llama_model_default_params()
         
         self.maxOutputLength = maxOutputLength
         self.addBosToken = addBosToken
@@ -167,12 +172,5 @@ public struct LLMParameters: Sendable {
         self.vocabOnly = vocabOnly
         self.useMmap = useMmap
         self.useMlock = useMlock
-    }
-    
-    
-    /// Fetches the model parameters in llama.cpp's low-level C representation
-    /// - Returns: C representation of llama.cpp's model parameters
-    func getLlamaCppRepresentation() -> llama_model_params {
-        wrapped
     }
 }

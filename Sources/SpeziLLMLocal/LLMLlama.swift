@@ -31,6 +31,8 @@ public actor LLMLlama: LLM {
     private let modelPath: URL
     /// A pointer to the allocated model via llama.cpp.
     var model: OpaquePointer?
+    /// A pointer to the allocated model context from llama.cpp.
+    var context: OpaquePointer?
     
     
     /// Creates a ``LLMLlama`` instance that can then be passed to the `LLMRunner` for execution.
@@ -53,7 +55,7 @@ public actor LLMLlama: LLM {
     public func setup(runnerConfig: LLMRunnerConfiguration) async throws {
         self.state = .loading
         
-        guard let model = llama_load_model_from_file(modelPath.path().cString(using: .utf8), parameters.getLlamaCppRepresentation()) else {
+        guard let model = llama_load_model_from_file(modelPath.path().cString(using: .utf8), parameters.llamaCppRepresentation) else {
             throw LLMError.modelNotFound
         }
         self.model = model
@@ -66,8 +68,9 @@ public actor LLMLlama: LLM {
     }
     
     
-    /// Upon deinit, free the model via llama.cpp
+    /// Upon deinit, free the context and the model via llama.cpp
     deinit {
+        llama_free(context)
         llama_free_model(self.model)
     }
 }

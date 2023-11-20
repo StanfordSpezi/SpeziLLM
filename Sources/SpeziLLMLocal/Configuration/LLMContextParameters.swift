@@ -17,6 +17,11 @@ public struct LLMContextParameters: Sendable {
     private var wrapped: llama_context_params
     
     
+    /// Context parameters in llama.cpp's low-level C representation
+    var llamaCppRepresentation: llama_context_params {
+        wrapped
+    }
+    
     /// RNG seed of the LLM
     var seed: UInt32 {
         get {
@@ -132,8 +137,8 @@ public struct LLMContextParameters: Sendable {
     ///
     /// - Parameters:
     ///   - seed: RNG seed of the LLM, defaults to `4294967295` (which represents a random seed).
-    ///   - contextWindowSize: Context window size in tokens, defaults to `0` indicating the usage of the default window size from the model.
-    ///   - batchSize: Maximum batch size during prompt processing, defaults to `512` tokens.
+    ///   - contextWindowSize: Context window size in tokens, defaults to `512`.
+    ///   - batchSize: Maximum batch size during prompt processing, defaults to `512` tokens (but is dynamically increased according to the count of tokens in the input prompt).
     ///   - threadCount: Number of threads used by LLM for generation of output, defaults to the processor count of the device.
     ///   - threadCountBatch: Number of threads used by LLM for batch processing, defaults to the processor count of the device.
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
@@ -144,10 +149,10 @@ public struct LLMContextParameters: Sendable {
     ///   - embeddingsOnly: Embedding-only mode, defaults to `false`.
     public init(
         seed: UInt32 = 4294967295,
-        contextWindowSize: UInt32 = 0,
+        contextWindowSize: UInt32 = 512,
         batchSize: UInt32 = 512,
-        threadCount: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
-        threadCountBatch: UInt32 = UInt32(ProcessInfo.processInfo.processorCount),
+        threadCount: UInt32 = .init(ProcessInfo.processInfo.processorCount),
+        threadCountBatch: UInt32 = .init(ProcessInfo.processInfo.processorCount),
         ropeFreqBase: Float = 0.0,
         ropeFreqScale: Float = 0.0,
         useMulMatQKernels: Bool = true,
@@ -155,7 +160,7 @@ public struct LLMContextParameters: Sendable {
         computeAllLogits: Bool = false,
         embeddingsOnly: Bool = false
     ) {
-        self.wrapped = llama_context_params()
+        self.wrapped = llama_context_default_params()
         
         self.seed = seed
         self.contextWindowSize = contextWindowSize
@@ -168,12 +173,5 @@ public struct LLMContextParameters: Sendable {
         self.useFp16Cache = useFp16Cache
         self.computeAllLogits = computeAllLogits
         self.embeddingsOnly = embeddingsOnly
-    }
-    
-    
-    /// Fetches the context parameters in llama.cpp's low-level C representation
-    /// - Returns: C representation of llama.cpp's context parameters
-    func getLlamaCppRepresentation() -> llama_context_params {
-        wrapped
     }
 }

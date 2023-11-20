@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 
-/// A `_LLMRunnerSetupTaskCollection` defines a collection of SpeziML ``LLMRunnerSetupTask``s that are defined with a ``LLMRunner``.
+/// A `_LLMRunnerSetupTaskCollection` defines a collection of Spezi ``LLMRunnerSetupTask``s that are defined with a ``LLMRunner``.
 ///
 /// You can not create a `_LLMRunnerSetupTaskCollection` yourself. Please use the ``LLMRunner`` that internally creates a `_LLMRunnerSetupTaskCollection` with the passed views.
 public struct _LLMRunnerSetupTaskCollection {  // swiftlint:disable:this type_name

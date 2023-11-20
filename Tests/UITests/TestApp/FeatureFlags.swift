@@ -7,6 +7,6 @@
 //
 
 enum FeatureFlags {
-    /// Mocks the local LLM.
+    /// Configures the local LLM to mock all generated responses in order to simplify development and write UI Tests.
     static let mockLocalLLM = CommandLine.arguments.contains("--mockLocalLLM")
 }

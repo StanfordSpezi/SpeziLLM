@@ -6,12 +6,11 @@
 // SPDX-License-Identifier: MIT
 //
 
-@testable import SpeziLLMOpenAI
-import XCTest
+#ifndef vector_hpp
+#define vector_hpp
 
+#include <vector>
 
-final class SpeziLLMOpenAITests: XCTestCase {
-    func testSpeziLLMOpenAITests() throws {
-        XCTAssert(true)
-    }
-}
+const std::vector<int32_t> getLlamaSeqIdInt32Vector();
+
+#endif
