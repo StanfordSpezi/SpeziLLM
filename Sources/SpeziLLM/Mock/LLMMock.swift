@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// A mock SpeziML ``LLM`` that is used for testing and preview purposes.
+/// A mock SpeziLLM ``LLM`` that is used for testing and preview purposes.
 public actor LLMMock: LLM {
     public let type: LLMHostingType = .local
     public var state: LLMState = .uninitialized

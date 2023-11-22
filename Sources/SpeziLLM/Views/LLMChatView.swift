@@ -20,7 +20,7 @@ public struct LLMChatView: View {
     @State private var inputDisabled = false
     
     
-    /// A SpeziML ``LLM`` that is used for the text generation within the chat view
+    /// A SpeziLLM ``LLM`` that is used for the text generation within the chat view
     private let model: any LLM
     
     
@@ -49,10 +49,10 @@ public struct LLMChatView: View {
     }
     
     
-    /// Creates a ``LLMChatView`` that provides developers with a basic chat view towards a SpeziML ``LLM``.
+    /// Creates a ``LLMChatView`` that provides developers with a basic chat view towards a SpeziLLM ``LLM``.
     ///
     /// - Parameters:
-    ///   - model: The SpeziML ``LLM`` that should be used for the text generation.
+    ///   - model: The SpeziLLM ``LLM`` that should be used for the text generation.
     ///   - initialSystemPrompt: The initial prompt by the system.
     public init(
         model: any LLM,

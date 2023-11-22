@@ -19,7 +19,7 @@ import SpeziLLM
 /// found in the documentation of the `LLMRunner`.
 public actor LLMLlama: LLM {
     /// A Swift Logger that logs important information from the ``LLMLlama``.
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziML")
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     public let type: LLMHostingType = .local
     public var state: LLMState = .uninitialized
     

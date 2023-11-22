@@ -17,7 +17,7 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
         public static var llama2ChatModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf") else {
                 preconditionFailure("""
-                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
                 """)
             }
             
@@ -28,7 +28,7 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
         public static var llama2Chat13BModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-13B-chat-GGML/resolve/main/llama-2-13b-chat.ggmlv3.q4_0.bin") else {
                 preconditionFailure("""
-                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
                 """)
             }
             
@@ -39,7 +39,7 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
         public static var tinyLLama2ModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q4_0.gguf") else {
                 preconditionFailure("""
-                    SpeziML: Invalid LLMUrlDefaults LLM download URL.
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
                 """)
             }
             

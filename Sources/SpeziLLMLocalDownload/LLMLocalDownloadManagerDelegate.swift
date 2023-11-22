@@ -12,7 +12,7 @@ import os
 /// Delegate of the ``LLMLocalDownloadManager`` that conforms to the `URLSessionDownloadDelegate`.
 class LLMLocalDownloadManagerDelegate: NSObject, URLSessionDownloadDelegate {
     /// A Swift Logger that logs important information from the `LocalLLMDownloadManager`.
-    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziML")
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     /// A `weak` reference to the ``LLMLocalDownloadManager``.
     private weak var manager: LLMLocalDownloadManager?
     /// The storage location `URL` of the downloaded LLM.
