@@ -14,7 +14,8 @@ import SpeziSecureStorage
 
 /// `OpenAIModule` is a module responsible for to coordinate the interactions with the OpenAI GPT API.
 public class OpenAIModule: Module, DefaultInitializable {
-    @Module.Model private var model: OpenAIModel
+    /// Model accessible to modules using the ``OpenAIModule`` as a dependency and injected in the SwiftUI environment.
+    @Module.Model public var model: OpenAIModel
     @Dependency private var secureStorage: SecureStorage
     
     

@@ -35,7 +35,6 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     
     
     public var body: some View {
-        @Bindable var openAI = openAI
         OnboardingView(
             titleView: {
                 OnboardingTitleView(
@@ -44,6 +43,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
                 )
             },
             contentView: {
+                @Bindable var openAI = openAI
                 Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $openAI.openAIModel) {
                     ForEach(models) { model in
                         Text(model.description)

@@ -25,7 +25,7 @@ The Spezi ML Swift Package includes modules that are helpful to integrate ML-rel
 
 A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.
 
-|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboardingStep~dark.png"><img src="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIAPIKeyOnboardingStep.png" width="250" alt="Screenshot displaying the OpenAI API Key Onboarding view from Spezi OpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIModelSelectionOnboardingStep~dark.png"><img src="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/OpenAIModelSelectionOnboardingStep.png" width="250" alt="Screenshot displaying the Open AI Model Selection Onboarding Step from Spezi OpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziOpenAI/SpeziOpenAI.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View from Spezi OpenAI." /></picture>|
+|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/OpenAIAPIKeyOnboardingStep~dark.png"><img src="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/OpenAIAPIKeyOnboardingStep.png" width="250" alt="Screenshot displaying the OpenAI API Key Onboarding view from Spezi OpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/OpenAIModelSelectionOnboardingStep~dark.png"><img src="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/OpenAIModelSelectionOnboardingStep.png" width="250" alt="Screenshot displaying the Open AI Model Selection Onboarding Step from Spezi OpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View from Spezi OpenAI." /></picture>|
 |:--:|:--:|:--:|
 |`API Key Onboarding`|`Model Selection`|`Chat View`|
 
@@ -36,7 +36,7 @@ A module that allows you to interact with GPT-based large language models (LLMs)
 
 First, you will need to add the SpeziML Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
-[Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziOpenAI` target to add.
+[Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziLLMOpenAI` target to add.
 
 ### 2. Register the Open AI Module
 
@@ -48,7 +48,7 @@ In the example, we configure the `OpenAIModule` to use the GPT-4 model with a de
 
 ```swift
 import Spezi
-import SpeziOpenAI
+import SpeziLLMOpenAI
 
 
 class ExampleDelegate: SpeziAppDelegate {
@@ -76,7 +76,7 @@ class ExampleView: View {
 > [!NOTE]  
 > The choice of model and API key are persisted across application launches. The `apiToken` and `openAIModel` can also be accessed and changed at runtime. 
 
-The `SpeziOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that can be used to allow the user to provide their API key during the onboarding process instead (see `Examples` below). If using the `OpenAIAPIKeyOnboardingStep`, the `apiToken` property can be omitted here.
+The `SpeziLLMOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that can be used to allow the user to provide their API key during the onboarding process instead (see `Examples` below). If using the `OpenAIAPIKeyOnboardingStep`, the `apiToken` property can be omitted here.
 
 > [!NOTE]  
 > You can learn more about a [`Module` in the Spezi documentation](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/module).
@@ -89,7 +89,7 @@ In this example, we will create a chat interface that allows the user to convers
 
 ```swift
 import OpenAI
-import SpeziOpenAI
+import SpeziLLMOpenAI
 import SwiftUI
 
 struct OpenAIChatView: View {
@@ -130,7 +130,7 @@ First, create a new view to show the onboarding step:
 
 ```swift
 import SpeziOnboarding
-import SpeziOpenAI
+import SpeziLLMOpenAI
 import SwiftUI
 
 
@@ -149,7 +149,7 @@ This view can then be added to the `OnboardingFlow` within the Spezi Template Ap
 
 ```swift
 import SpeziOnboarding
-import SpeziOpenAI
+import SpeziLLMOpenAI
 import SwiftUI
 
 
