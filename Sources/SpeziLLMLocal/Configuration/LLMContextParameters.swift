@@ -137,8 +137,8 @@ public struct LLMContextParameters: Sendable {
     ///
     /// - Parameters:
     ///   - seed: RNG seed of the LLM, defaults to `4294967295` (which represents a random seed).
-    ///   - contextWindowSize: Context window size in tokens, defaults to `512`.
-    ///   - batchSize: Maximum batch size during prompt processing, defaults to `512` tokens (but is dynamically increased according to the count of tokens in the input prompt).
+    ///   - contextWindowSize: Context window size in tokens, defaults to `1024`.
+    ///   - batchSize: Maximum batch size during prompt processing, defaults to `1024` tokens.
     ///   - threadCount: Number of threads used by LLM for generation of output, defaults to the processor count of the device.
     ///   - threadCountBatch: Number of threads used by LLM for batch processing, defaults to the processor count of the device.
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
@@ -149,8 +149,8 @@ public struct LLMContextParameters: Sendable {
     ///   - embeddingsOnly: Embedding-only mode, defaults to `false`.
     public init(
         seed: UInt32 = 4294967295,
-        contextWindowSize: UInt32 = 512,
-        batchSize: UInt32 = 512,
+        contextWindowSize: UInt32 = 1024,
+        batchSize: UInt32 = 1024,
         threadCount: UInt32 = .init(ProcessInfo.processInfo.processorCount),
         threadCountBatch: UInt32 = .init(ProcessInfo.processInfo.processorCount),
         ropeFreqBase: Float = 0.0,

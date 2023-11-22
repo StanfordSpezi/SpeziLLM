@@ -125,7 +125,14 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
         /// If necessary, setup of the runner backend
         if runnerBackendInitialized[modelType] == false {
             /// Initializes the required runner backends for the respective ``LLMHostingType``.
-            try? await self.runnerSetupTasks[modelType]?.setupRunner(runnerConfig: self.runnerConfiguration)
+            guard let task = self.runnerSetupTasks[modelType] else {
+                preconditionFailure("""
+                    A LLMRunnerSetupTask setting up the runner for a specific LLM environment was not found.
+                    Please ensure that a LLMRunnerSetupTask is passed to the Spezi LLMRunner within the Spezi Configuration.
+                """)
+            }
+            
+            try? await task.setupRunner(runnerConfig: self.runnerConfiguration)
             
             runnerBackendInitialized[modelType] = true
         }

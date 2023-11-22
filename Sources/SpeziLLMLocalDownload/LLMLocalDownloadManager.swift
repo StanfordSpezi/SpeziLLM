@@ -67,7 +67,7 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
     }
     
     /// The delegate handling the download manager tasks.
-    private var downloadDelegate: LLMLocalDownloadManagerDelegate?
+    private var downloadDelegate: LLMLocalDownloadManagerDelegate?  // swiftlint:disable:this weak_delegate
     /// The `URLSessionDownloadTask` that handles the download of the model.
     private var downloadTask: URLSessionDownloadTask?
     /// Remote `URL` from where the LLM file should be downloaded.

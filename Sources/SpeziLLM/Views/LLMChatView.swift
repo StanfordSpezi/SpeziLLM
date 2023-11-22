@@ -19,8 +19,10 @@ public struct LLMChatView: View {
     /// Indicates if the input field is disabled
     @State private var inputDisabled = false
     
+    
     /// A SpeziML ``LLM`` that is used for the text generation within the chat view
     private let model: any LLM
+    
     
     public var body: some View {
         ChatView($chat, disableInput: $inputDisabled)

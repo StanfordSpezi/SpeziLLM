@@ -28,12 +28,11 @@ extension LLMLlama {
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) {
         self.state = .generating
-
-        let tokens = tokenize(text: prompt)
         
-        // TODO: We keep the context for all queries towards the LLM, is that wanted or should we enable clearing the context again?
-        // TODO: How do we ensure proper error messages for breaching the batch size, context window etc.?
-        /// Allocate new model context, if not already present
+        // Log the most important parameters of the LLM
+        Self.logger.debug("n_length = \(self.parameters.maxOutputLength, privacy: .public), n_ctx = \(self.contextParameters.contextWindowSize, privacy: .public), n_batch = \(self.contextParameters.batchSize, privacy: .public), n_kv_req = \(self.parameters.maxOutputLength, privacy: .public)")
+        
+        // Allocate new model context, if not already present
         if self.context == nil {
             guard let context = llama_new_context_with_model(model, self.contextParameters.llamaCppRepresentation) else {
                 Self.logger.error("Failed to initialize context")
@@ -42,11 +41,22 @@ extension LLMLlama {
             }
             self.context = context
         }
-        
-        Self.logger.debug("n_length = \(self.parameters.maxOutputLength, privacy: .public), n_ctx = \(self.contextParameters.contextWindowSize, privacy: .public), n_batch = \(self.contextParameters.batchSize, privacy: .public), n_kv_req = \(self.parameters.maxOutputLength, privacy: .public)")
 
-        if self.parameters.maxOutputLength > self.contextParameters.contextWindowSize {
+        // Check if the maximal output generation length is smaller or equals to the context window size.
+        guard self.parameters.maxOutputLength <= self.contextParameters.contextWindowSize else {
             Self.logger.error("Error: n_kv_req \(self.parameters.maxOutputLength, privacy: .public) > n_ctx, the required KV cache size is not big enough")
+            continuation.finish(throwing: LLMError.generationError)
+            return
+        }
+        
+        let tokens = tokenize(prompt)
+        
+        // Check if the input token count is smaller than the context window size decremented by 4 (space for end tokens).
+        guard tokens.count <= self.contextParameters.contextWindowSize - 4 else {
+            Self.logger.error("""
+            Input prompt is too long with \(tokens.count, privacy: .public) tokens for the configured
+            context window size of \(self.contextParameters.contextWindowSize, privacy: .public) tokens.
+            """)
             continuation.finish(throwing: LLMError.generationError)
             return
         }
@@ -58,7 +68,7 @@ extension LLMLlama {
         
         // Evaluate the initial prompt
         for (tokenIndex, token) in tokens.enumerated() {
-            llama_batch_add(&batch, token, Int32(tokenIndex), SpeziLLMLocalHelpers.getLlamaSeqIdInt32Vector(), false)
+            llama_batch_add(&batch, token, Int32(tokenIndex), SpeziLLMLocalHelpers.getLlamaSeqIdVector(), false)
         }
         // llama_decode will output logits only for the last token of the prompt
         batch.logits[Int(batch.n_tokens) - 1] = 1
@@ -92,27 +102,32 @@ extension LLMLlama {
                 sorted: false
             )
             
-            //llama_sample_top_k(self.context, &candidatesP, self.parameters.topK, 1)
-            //llama_sample_top_p(self.context, &candidatesP, self.parameters.topP, 1)
-            //llama_sample_temp(self.context, &candidatesP, self.parameters.temperature)
-            
-            //let nextTokenId = llama_sample_token(self.context, &candidatesP)
-            // Greedy sampling
-            let nextTokenId = llama_sample_token_greedy(self.context, &candidatesP)
+            // Sample via the temperature method
+            let minKeep = Int(max(1, self.samplingParameters.outputProbabilities))
+            llama_sample_top_k(self.context, &candidatesP, self.samplingParameters.topK, minKeep)
+            llama_sample_tail_free(self.context, &candidatesP, self.samplingParameters.tfs, minKeep)
+            llama_sample_typical(self.context, &candidatesP, self.samplingParameters.typicalP, minKeep)
+            llama_sample_top_p(self.context, &candidatesP, self.samplingParameters.topP, minKeep)
+            llama_sample_min_p(self.context, &candidatesP, self.samplingParameters.minP, minKeep)
+            llama_sample_temp(self.context, &candidatesP, self.samplingParameters.temperature)
+            let nextTokenId = llama_sample_token(self.context, &candidatesP)
             
             if nextTokenId == llama_token_eos(self.model) || batchTokenIndex == self.parameters.maxOutputLength {
-                self.state = .ready
+                self.generatedText.append(self.EOS)
                 continuation.finish()
+                self.state = .ready
                 return
             }
             
-            continuation.yield(String(llama_token_to_piece(context, nextTokenId)))
+            let nextStringPiece = String(llama_token_to_piece(context, nextTokenId))
+            continuation.yield(nextStringPiece)
+            self.generatedText.append(nextStringPiece)
             
             // Prepare the next batch
             llama_batch_clear(&batch)
             
             // Push generated output token for the next evaluation round
-            llama_batch_add(&batch, nextTokenId, batchTokenIndex, SpeziLLMLocalHelpers.getLlamaSeqIdInt32Vector(), true)
+            llama_batch_add(&batch, nextTokenId, batchTokenIndex, SpeziLLMLocalHelpers.getLlamaSeqIdVector(), true)
             
             decodedTokens += 1
             batchTokenIndex += 1
@@ -132,8 +147,8 @@ extension LLMLlama {
         Self.logger.debug("Decoded \(decodedTokens, privacy: .public) tokens in \(String(format: "%.2f", elapsedTime), privacy: .public) s, speed: \(String(format: "%.2f", Double(decodedTokens) / elapsedTime), privacy: .public)) t/s")
 
         llama_print_timings(self.context)
-        
-        self.state = .ready
+         
         continuation.finish()
+        self.state = .ready
     }
 }

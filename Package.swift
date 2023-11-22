@@ -25,14 +25,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
-        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.3")),
-        //.package(url: "https://github.com/StanfordBDHG/llama.cpp", branch: "0.1.2"),
-        //.package(path: "llama"),
+        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.5")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", branch: "feat/init-setup"),     // .upToNextMinor(from: "0.1.0")
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", branch: "feat/init-setup")     // .upToNextMinor(from: "0.1.0")
+        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1"))
     ],
     targets: [
         .target(
@@ -47,9 +45,7 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziLLM"),
                 .target(name: "SpeziLLMLocalHelpers"),
-                //.target(name: "llama"),
                 .product(name: "llama", package: "llama.cpp"),
-                //.product(name: "llama", package: "llama"),
                 .product(name: "Spezi", package: "Spezi")
             ],
             swiftSettings: [
@@ -59,11 +55,8 @@ let package = Package(
         .target(
             name: "SpeziLLMLocalHelpers",
             dependencies: [
-                //.target(name: "llama"),
                 .product(name: "llama", package: "llama.cpp")
-                //.product(name: "llama", package: "llama"),
             ],
-            // TODO: Does this affect versioning?
             cxxSettings: [
                 .unsafeFlags(["-std=c++11"])
             ],
@@ -94,7 +87,6 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziLLMOpenAI")
             ]
-        ),
-        //.binaryTarget(name: "llama", path: "./llama/llama.xcframework")
+        )
     ]
 )

@@ -8,8 +8,8 @@
 
 #include "vector.hpp"
 
-// Function that returns a vector of int32_t initialized with {0}
-const std::vector<int32_t> getLlamaSeqIdInt32Vector() {
-    const std::vector<int32_t> vec = { 0 };
+
+const std::vector<llama_seq_id> getLlamaSeqIdVector() {
+    const std::vector<llama_seq_id> vec = { 0 };
     return vec;
 }

@@ -10,7 +10,11 @@
 #define vector_hpp
 
 #include <vector>
+#include "llama/common.h"
 
-const std::vector<int32_t> getLlamaSeqIdInt32Vector();
+
+/// Create an empty `vector` of `llama_seq_id`s that serve as a buffer for batch processing.
+const std::vector<llama_seq_id> getLlamaSeqIdVector();
+
 
 #endif
