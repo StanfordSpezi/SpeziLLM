@@ -20,18 +20,27 @@ struct LLMLocalOnboardingWelcomeView: View {
             title: "WELCOME_TITLE",
             subtitle: "WELCOME_SUBTITLE",
             areas: [
-                .init(
-                    icon: Image(systemName: "apps.iphone"), // swiftlint:disable:this accessibility_label_for_image
+                OnboardingInformationView.Content(
+                    icon: {
+                        Image(systemName: "apps.iphone")
+                            .accessibilityHidden(true)
+                    },
                     title: "WELCOME_AREA1_TITLE",
                     description: "WELCOME_AREA1_DESCRIPTION"
                 ),
-                .init(
-                    icon: Image(systemName: "shippingbox.fill"), // swiftlint:disable:this accessibility_label_for_image
+                OnboardingInformationView.Content(
+                    icon: {
+                        Image(systemName: "shippingbox.fill")
+                            .accessibilityHidden(true)
+                    },
                     title: "WELCOME_AREA2_TITLE",
                     description: "WELCOME_AREA2_DESCRIPTION"
                 ),
-                .init(
-                    icon: Image(systemName: "globe"), // swiftlint:disable:this accessibility_label_for_image
+                OnboardingInformationView.Content(
+                    icon: {
+                        Image(systemName: "globe")
+                            .accessibilityHidden(true)
+                    },
                     title: "WELCOME_AREA3_TITLE",
                     description: "WELCOME_AREA3_DESCRIPTION"
                 )
