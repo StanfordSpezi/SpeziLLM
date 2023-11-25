@@ -22,33 +22,33 @@ public struct MessageView: View {
 
     
     private var foregroundColor: Color {
-        chat.allignment == .leading ? .primary : .white
+        chat.alignment == .leading ? .primary : .white
     }
     
     private var backgroundColor: Color {
-        chat.allignment == .leading ? Color(.secondarySystemBackground) : .accentColor
+        chat.alignment == .leading ? Color(.secondarySystemBackground) : .accentColor
     }
     
-    private var multilineTextAllignment: TextAlignment {
-        chat.allignment == .leading ? .leading : .trailing
+    private var multilineTextAlignment: TextAlignment {
+        chat.alignment == .leading ? .leading : .trailing
     }
     
     private var arrowRotation: Angle {
-        .degrees(chat.allignment == .leading ? -50 : -130)
+        .degrees(chat.alignment == .leading ? -50 : -130)
     }
     
-    private var arrowAllignment: CGFloat {
-        chat.allignment == .leading ? -7 : 7
+    private var arrowAlignment: CGFloat {
+        chat.alignment == .leading ? -7 : 7
     }
     
     public var body: some View {
         if !hideMessagesWithRoles.contains(chat.role), let content = chat.content {
             HStack {
-                if chat.allignment == .trailing {
+                if chat.alignment == .trailing {
                     Spacer(minLength: 32)
                 }
                 Text(content)
-                    .multilineTextAlignment(multilineTextAllignment)
+                    .multilineTextAlignment(multilineTextAlignment)
                     .frame(idealWidth: .infinity)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
@@ -60,11 +60,11 @@ public struct MessageView: View {
                             .accessibilityHidden(true)
                             .foregroundColor(backgroundColor)
                             .rotationEffect(arrowRotation)
-                            .offset(x: arrowAllignment),
-                        alignment: chat.allignment == .leading ? .bottomLeading : .bottomTrailing
+                            .offset(x: arrowAlignment),
+                        alignment: chat.alignment == .leading ? .bottomLeading : .bottomTrailing
                     )
                     .padding(.horizontal, 4)
-                if chat.allignment == .leading {
+                if chat.alignment == .leading {
                     Spacer(minLength: 32)
                 }
             }

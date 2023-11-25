@@ -10,13 +10,13 @@ import OpenAI
 
 
 extension Chat {
-    enum Allignment {
+    enum Alignment {
         case leading
         case trailing
     }
     
     
-    var allignment: Allignment {
+    var alignment: Alignment {
         switch self.role {
         case .user:
             return .trailing
