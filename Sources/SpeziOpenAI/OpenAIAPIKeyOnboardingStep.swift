@@ -47,7 +47,7 @@ public struct OpenAIAPIKeyOnboardingStep: View {
                     VStack(spacing: 0) {
                         Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
                             .multilineTextAlignment(.center)
-                        TextField(String(localized: "OPENAI_API_KEY_PROMT", bundle: .module), text: apiToken)
+                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: apiToken)
                             .frame(height: 50)
                             .textFieldStyle(.roundedBorder)
                             .padding(.vertical, 16)

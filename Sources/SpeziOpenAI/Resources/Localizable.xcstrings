@@ -1,0 +1,282 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "MESSAGE_INPUT_TEXTFIELD" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachrichteneingabefeld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message Input Textfield"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campo de texto de entrada de mensaje"
+          }
+        }
+      }
+    },
+    "MICROPHONE_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachricht aufnehmen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record Message"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grabar Mensaje"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_PROMPT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI-API-Schlüssel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clave API de OpenAI"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SAVE_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SUBTITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte geben Sie Ihren OpenAI-API-Schlüssel ein."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter your OpenAI API key."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, introduzca su clave API de OpenAI."
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_SUBTITLE_HINT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie können Ihre OpenAI-API-Schlüssel [im API-Schlüsselbereich Ihres OpenAI-Kontos erstellen und überprüfen.](https://platform.openai.com/account/api-keys)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can create and inspect your OpenAI API keys [in the API keys section of your OpenAI Account](https://platform.openai.com/account/api-keys)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puede crear e inspeccionar sus claves API de OpenAI [en la sección de claves API de su cuenta de OpenAI.](https://platform.openai.com/account/api-keys)"
+          }
+        }
+      }
+    },
+    "OPENAI_API_KEY_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI-API-Schlüssel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clave API de OpenAI"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_DESCRIPTION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI GPT-Modell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI GPT Model"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelo GPT de OpenAI"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_SAVE_BUTTON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente"
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_SUBTITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wählen Sie das OpenAI-Modell, das Sie verwenden möchten. Stellen Sie sicher, dass Ihr API-Schlüssel angemessenen Zugriff auf das ausgewählte Modell hat."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the OpenAI model that you want to use. Ensure that your API key has proper access to the model you select."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccione el modelo de OpenAI que desea utilizar. Asegúrese de que su clave API tenga acceso adecuado al modelo que seleccione."
+          }
+        }
+      }
+    },
+    "OPENAI_MODEL_SELECTION_TITLE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wählen Sie ein OpenAI-Modell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select an OpenAI Model"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccione un Modelo de OpenAI"
+          }
+        }
+      }
+    },
+    "SEND_MESSAGE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachricht senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Message"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar Mensaje"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
