@@ -10,7 +10,7 @@
              
 -->
 
-SpeziML contributors
+SpeziLLM contributors
 ====================
 
 * [Paul Schmiedmayer](https://github.com/PSchmiedmayer)

@@ -8,18 +8,18 @@ SPDX-License-Identifier: MIT
              
 -->
 
-# Spezi ML
+# Spezi LLM
 
-[![Build and Test](https://github.com/StanfordSpezi/SpeziML/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordSpezi/SpeziML/actions/workflows/build-and-test.yml)
-[![codecov](https://codecov.io/gh/StanfordSpezi/SpeziML/branch/main/graph/badge.svg?token=pptLyqtoNR)](https://codecov.io/gh/StanfordSpezi/SpeziML)
+[![Build and Test](https://github.com/StanfordSpezi/SpeziLLM/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordSpezi/SpeziLLM/actions/workflows/build-and-test.yml)
+[![codecov](https://codecov.io/gh/StanfordSpezi/SpeziLLM/branch/main/graph/badge.svg?token=pptLyqtoNR)](https://codecov.io/gh/StanfordSpezi/SpeziLLM)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7954213.svg)](https://doi.org/10.5281/zenodo.7954213)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziML%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/StanfordSpezi/SpeziML)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziML%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziML)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziLLM%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/StanfordSpezi/SpeziLLM)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziLLM%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziLLM)
 
 
 # Overview
 
-The Spezi ML Swift Package includes modules that are helpful to integrate ML-related functionality in your application.
+The Spezi LLM Swift Package includes modules that are helpful to integrate LLM-related functionality in your application.
 
 # Spezi Open AI
 
@@ -32,9 +32,9 @@ A module that allows you to interact with GPT-based large language models (LLMs)
 
 ## Setup
 
-### 1. Add Spezi ML as a Dependency
+### 1. Add Spezi LLM as a Dependency
 
-First, you will need to add the SpeziML Swift package to
+First, you will need to add the SpeziLLM Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziLLMOpenAI` target to add.
 
@@ -98,34 +98,44 @@ The `SpeziLLMOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that 
 ### Creating a Chat Interface
 
 In this example, we will create a chat interface that allows the user to converse with the model. Responses from the model will be streamed.
+To properly visualize the chat interface with the LLM, the example utilizes the [SpeziChat](https://github.com/StanfordSpezi/SpeziChat) module of the Spezi ecosystem, providing developers with easy to use chat interfaces like the `ChatView`.
 
 ```swift
-import OpenAI
+import SpeziChat
 import SpeziLLMOpenAI
 import SwiftUI
 
+
 struct OpenAIChatView: View {
     @Environment(OpenAIModel.self) var model
-    @State private var chat: [Chat]
+    @State private var chat: Chat = [
+        .init(role: .assistant, content: "Assistant Message!")
+    ]
     
     var body: some View {
         ChatView($chat)
-            .onChange(of: chat) { _ in
-                let chatStreamResults = try await model.queryAPI(withChat: chat)
-                
-                for try await chatStreamResult in chatStreamResults {
-                    for choice in chatStreamResult.choices {
-                        guard let newContent = choice.delta.content else {
-                            continue
-                        }
-                        
-                        if chat.last?.role == .assistent, let previousContent = chat.last?.content {
-                            chat[chat.count - 1] = Chat(
-                                role: .assistant,
-                                content: previousContent + newContent
-                            )
-                        } else {
-                            chat.append(Chat(role: .assistent, content: newContent))
+            .onChange(of: chat) { _, _ in
+                Task {
+                    let chatStreamResults = try model.queryAPI(withChat: chat)
+                    
+                    for try await chatStreamResult in chatStreamResults {
+                        for choice in chatStreamResult.choices {
+                            guard let newContent = choice.delta.content else {
+                                continue
+                            }
+                            
+                            if chat.last?.role == .assistant, let previousContent = chat.last?.content {
+                                await MainActor.run {
+                                    chat[chat.count - 1] = ChatEntity(
+                                        role: .assistant,
+                                        content: previousContent + newContent
+                                    )
+                                }
+                            } else {
+                                await MainActor.run {
+                                    chat.append(ChatEntity(role: .assistant, content: newContent))
+                                }
+                            }
                         }
                     }
                 }
@@ -181,7 +191,7 @@ struct OnboardingFlow: View {
 
 Now the OpenAI API Key entry view will appear within your application's onboarding process. The API Key entered will be persisted across application launches.
 
-For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziML/documentation).
+For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziLLM/documentation).
 
 ## Contributing
 
@@ -190,7 +200,7 @@ Contributions to this project are welcome. Please make sure to read the [contrib
 
 ## License
 
-This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordSpezi/SpeziML/tree/main/LICENSES) for more information.
+This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordSpezi/SpeziLLM/tree/main/LICENSES) for more information.
 
 ![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/FooterLight.png#gh-light-mode-only)
 ![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/FooterDark.png#gh-dark-mode-only)

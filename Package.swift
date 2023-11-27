@@ -12,7 +12,7 @@ import PackageDescription
 
 
 let package = Package(
-    name: "SpeziML",
+    name: "SpeziLLM",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
@@ -83,7 +83,7 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "SpeziLLMOpenAITests",
+            name: "SpeziLLMTests",
             dependencies: [
                 .target(name: "SpeziLLMOpenAI")
             ]

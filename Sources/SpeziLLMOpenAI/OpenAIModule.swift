@@ -23,7 +23,7 @@ public class OpenAIModule: Module, DefaultInitializable {
     private var defaultOpenAIModel: Model?
     
     
-    /// Initializes a new instance of `OpenAIGPT` with the specified API token and OpenAI model.
+    /// Initializes a new instance of `OpenAIModule` with the specified API token and OpenAI model.
     ///
     /// - Parameters:
     ///   - apiToken: The API token for the OpenAI API.

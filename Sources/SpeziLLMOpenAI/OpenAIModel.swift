@@ -6,11 +6,15 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
+import struct OpenAI.Chat
+import struct OpenAI.ChatFunctionDeclaration
+import struct OpenAI.ChatQuery
+import class OpenAI.OpenAI
 @_exported import struct OpenAI.Model
 @_exported import struct OpenAI.ChatStreamResult
 import Foundation
 import Observation
+import SpeziChat
 import SpeziSecureStorage
 
 
@@ -76,18 +80,42 @@ public class OpenAIModel {
         }
     }
     
-
-    /// Queries the OpenAI API using the provided messages.
+    /// Queries the OpenAI API using the provided chat messages.
+    /// Builds on top of the [SpeziChat](https://github.com/StanfordSpezi/SpeziChat) module to handle the `SpeziChat.Chat` data structure.
     ///
     /// - Parameters:
-    ///   - chat: A collection of chat  messages used in the conversation.
+    ///   - chat: A collection of chat messages (from the `SpeziChat` dependency) used in the conversation.
+    ///
+    /// - Returns: The content of the response from the API.
+    public func queryAPI(
+        withChat chat: SpeziChat.Chat
+    ) throws -> AsyncThrowingStream<ChatStreamResult, Error> {
+        guard let apiToken, !apiToken.isEmpty else {
+            throw OpenAIError.noAPIToken
+        }
+        
+        let openAIChat: [Chat] = chat.map { speziChat in
+            .init(
+                role: Chat.Role(rawValue: speziChat.role.rawValue) ?? .assistant,
+                content: speziChat.content
+            )
+        }
+        
+        return try self.queryAPI(withOpenAIChat: openAIChat)
+    }
+    
+    /// Queries the OpenAI API using the provided chat messages.
+    /// Supports advanced OpenAI functionality like Function Calling using the native OpenAI `[OpenAI.Chat]` data structure.
+    ///
+    /// - Parameters:
+    ///   - chat: A collection of chat messages (from the `OpenAI` dependency) used in the conversation.
     ///   - chatFunctionDeclaration: OpenAI functions that should be injected in the OpenAI query.
     ///
     /// - Returns: The content of the response from the API.
     public func queryAPI(
-        withChat chat: [Chat],
+        withOpenAIChat chat: [Chat],
         withFunction chatFunctionDeclaration: [ChatFunctionDeclaration] = []
-    ) async throws -> AsyncThrowingStream<ChatStreamResult, Error> {
+    ) throws -> AsyncThrowingStream<ChatStreamResult, Error> {
         guard let apiToken, !apiToken.isEmpty else {
             throw OpenAIError.noAPIToken
         }

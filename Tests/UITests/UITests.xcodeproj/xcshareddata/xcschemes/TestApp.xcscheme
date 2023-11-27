@@ -87,9 +87,9 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SpeziML"
-            BuildableName = "SpeziML"
-            BlueprintName = "SpeziML"
+            BlueprintIdentifier = "SpeziLLM"
+            BuildableName = "SpeziLLM"
+            BlueprintName = "SpeziLLM"
             ReferencedContainer = "container:../..">
          </BuildableReference>
       </CodeCoverageTargets>

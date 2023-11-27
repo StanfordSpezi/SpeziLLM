@@ -6,12 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
-@testable import SpeziLLMOpenAI
+@testable import SpeziLLM
 import XCTest
 
 
-final class SpeziLLMOpenAITests: XCTestCase {
-    func testSpeziLLMOpenAITests() throws {
+final class SpeziLLMTests: XCTestCase {
+    func testSpeziLLMTests() throws {
         XCTAssert(true)
     }
 }

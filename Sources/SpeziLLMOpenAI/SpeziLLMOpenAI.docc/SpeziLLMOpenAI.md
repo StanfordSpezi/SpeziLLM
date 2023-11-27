@@ -26,17 +26,17 @@ A module that allows you to interact with GPT-based large language models (LLMs)
         }
     }
     @Column {
-        @Image(source: "ChatView", alt: "Screenshot displaying the Chat View."){
-            ``ChatView``
+        @Image(source: "ChatView", alt: "Screenshot displaying the usage of the OpenAIModule with the SpeziChat Chat View."){
+            ``OpenAIModule``
         }
     }
 }
 
 ## Setup
 
-### 1. Add Spezi ML as a Dependency
+### 1. Add Spezi LLM as a Dependency
 
-First, you will need to add the SpeziML Swift package to
+First, you will need to add the SpeziLLM Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziLLMOpenAI` target to add.
 
@@ -61,7 +61,7 @@ class ExampleDelegate: SpeziAppDelegate {
 }
 ```
 
-The OpenAIModule injects an ``OpenAIModel`` in the SwiftUI environment to make it accessible thoughout your application.
+The OpenAIModule injects an ``OpenAIModel`` in the SwiftUI environment to make it accessible throughout your application.
 
 ```swift
 class ExampleView: View {
@@ -85,34 +85,44 @@ The `SpeziLLMOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that 
 ### Creating a Chat Interface
 
 In this example, we will create a chat interface that allows the user to converse with the model. Responses from the model will be streamed.
+To properly visualize the chat interface with the LLM, the example utilizes the [SpeziChat](https://github.com/StanfordSpezi/SpeziChat) module of the Spezi ecosystem, providing developers with easy to use chat interfaces like the `ChatView`.
 
 ```swift
-import OpenAI
+import SpeziChat
 import SpeziLLMOpenAI
 import SwiftUI
 
+
 struct OpenAIChatView: View {
     @Environment(OpenAIModel.self) var model
-    @State private var chat: [Chat]
+    @State private var chat: Chat = [
+        .init(role: .assistant, content: "Assistant Message!")
+    ]
     
     var body: some View {
         ChatView($chat)
-            .onChange(of: chat) { _ in
-                let chatStreamResults = try await model.queryAPI(withChat: chat)
-                
-                for try await chatStreamResult in chatStreamResults {
-                    for choice in chatStreamResult.choices {
-                        guard let newContent = choice.delta.content else {
-                            continue
-                        }
-                        
-                        if chat.last?.role == .assistent, let previousContent = chat.last?.content {
-                            chat[chat.count - 1] = Chat(
-                                role: .assistant,
-                                content: previousContent + newContent
-                            )
-                        } else {
-                            chat.append(Chat(role: .assistent, content: newContent))
+            .onChange(of: chat) { _, _ in
+                Task {
+                    let chatStreamResults = try model.queryAPI(withChat: chat)
+                    
+                    for try await chatStreamResult in chatStreamResults {
+                        for choice in chatStreamResult.choices {
+                            guard let newContent = choice.delta.content else {
+                                continue
+                            }
+                            
+                            if chat.last?.role == .assistant, let previousContent = chat.last?.content {
+                                await MainActor.run {
+                                    chat[chat.count - 1] = ChatEntity(
+                                        role: .assistant,
+                                        content: previousContent + newContent
+                                    )
+                                }
+                            } else {
+                                await MainActor.run {
+                                    chat.append(ChatEntity(role: .assistant, content: newContent))
+                                }
+                            }
                         }
                     }
                 }

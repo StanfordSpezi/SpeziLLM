@@ -20,9 +20,9 @@ jobs:
     name: Build and Test Swift Package
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: SpeziML-Package.xcresult
+      artifactname: SpeziLLM-Package.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziML-Package
+      scheme: SpeziLLM-Package
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
@@ -36,4 +36,4 @@ jobs:
     needs: [buildandtest, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziML-Package.xcresult TestApp.xcresult
+      coveragereports: SpeziLLM-Package.xcresult TestApp.xcresult

@@ -13,8 +13,8 @@
       "targets" : [
         {
           "containerPath" : "container:..\/..",
-          "identifier" : "SpeziOpenAI",
-          "name" : "SpeziOpenAI"
+          "identifier" : "SpeziLLMOpenAI",
+          "name" : "SpeziLLMOpenAI"
         }
       ]
     },
