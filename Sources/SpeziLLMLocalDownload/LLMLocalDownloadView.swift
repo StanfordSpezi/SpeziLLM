@@ -11,7 +11,39 @@ import SpeziViews
 import SwiftUI
 
 
-/// Onboarding LLM Download view
+/// The ``LLMLocalDownloadView`` provides an out-of-the-box onboarding view for downloading locally executed Spezi `LLM`s to the device.
+/// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
+///
+/// The ``LLMLocalDownloadView/init(llmDownloadUrl:llmStorageUrl:action:)`` initializer accepts the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
+///
+/// The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
+///
+/// # Usage
+/// 
+/// ```swift
+/// struct LLMLocalDownloadApp: View {
+///     @State private var path = NavigationPath()
+///
+///     var body: some View {
+///         NavigationStack(path: $path) {
+///             LLMLocalOnboardingDownloadView()
+///         }
+///     }
+/// }
+///
+/// struct LLMLocalOnboardingDownloadView: View {
+///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///
+///     var body: some View {
+///         LLMLocalDownloadView(
+///             llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, /// Download the Llama2 7B model
+///             llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") /// Store the downloaded LLM in the caches directory
+///         ) {
+///             onboardingNavigationPath.nextStep()
+///         }
+///     }
+/// }
+/// ``
 public struct LLMLocalDownloadView: View {
     /// The ``LLMLocalDownloadManager`` manages the download and storage of the models.
     @State private var downloadManager: LLMLocalDownloadManager

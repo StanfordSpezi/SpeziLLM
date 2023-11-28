@@ -84,7 +84,7 @@ class LLMLocalDownloadManagerDelegate: NSObject, URLSessionDownloadDelegate {
             Task { @MainActor in
                 self.manager?.state = .error(
                     AnyLocalizedError(
-                        error: LLMLocalDownloadError.unknownError,
+                        error: LLMLocalDownloadError.downloadError,
                         defaultErrorDescription: LocalizedStringResource("LLM_DOWNLOAD_FAILED_ERROR", bundle: .atURL(from: .module))
                     )
                 )

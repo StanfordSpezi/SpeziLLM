@@ -18,7 +18,7 @@ import SpeziViews
 /// The download of a model is started via ``LLMLocalDownloadManager/startDownload()`` and can be cancelled (early) via ``LLMLocalDownloadManager/cancelDownload()``.
 /// 
 /// The current state of the ``LLMLocalDownloadManager`` is exposed via the ``LLMLocalDownloadManager/state`` property which
-/// is of type ``LLMLocalDownloadManager/DownloadState``, containing cases such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
+/// is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
 /// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
 @Observable
 public final class LLMLocalDownloadManager: NSObject {

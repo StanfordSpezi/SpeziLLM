@@ -12,7 +12,7 @@ import Foundation
 /// The ``LLMLocalDownloadError`` describes possible errors that occur during downloading models via the ``LLMLocalDownloadManager``.
 public enum LLMLocalDownloadError: LocalizedError {
     /// Indicates an unknown error during downloading the model
-    case unknownError
+    case downloadError
     
     
     public var errorDescription: String? {
