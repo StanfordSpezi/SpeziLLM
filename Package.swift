@@ -30,14 +30,17 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1"))
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1")),
+        // .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.2"))
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", branch: "feature/view-state-mapper")
     ],
     targets: [
         .target(
             name: "SpeziLLM",
             dependencies: [
                 .product(name: "Spezi", package: "Spezi"),
-                .product(name: "SpeziChat", package: "SpeziChat")
+                .product(name: "SpeziChat", package: "SpeziChat"),
+                .product(name: "SpeziViews", package: "SpeziViews")
             ]
         ),
         .target(
@@ -67,7 +70,8 @@ let package = Package(
         .target(
             name: "SpeziLLMLocalDownload",
             dependencies: [
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
+                .product(name: "SpeziViews", package: "SpeziViews")
             ]
         ),
         .target(

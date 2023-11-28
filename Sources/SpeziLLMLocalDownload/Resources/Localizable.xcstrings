@@ -41,6 +41,46 @@
         }
       }
     },
+    "LLM_DOWNLOAD_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unexpected error has occurred during downloading the LLM."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The system indicates an unknown download error."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the download of the LLM."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_FAILED_ERROR" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occurred during the download of the LLM."
+          }
+        }
+      }
+    },
     "LLM_DOWNLOAD_NEXT_BUTTON" : {
       "localizations" : {
         "en" : {

@@ -14,7 +14,7 @@ public protocol LLM {
     /// The type of the ``LLM`` as represented by the ``LLMHostingType``.
     var type: LLMHostingType { get async }
     /// The state of the ``LLM`` indicated by the ``LLMState``.
-    var state: LLMState { get async }
+    @MainActor var state: LLMState { get }
     
     
     /// Performs any setup-related actions for the ``LLM``.

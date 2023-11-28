@@ -13,26 +13,20 @@ import SwiftUI
 
 /// Onboarding LLM Download view
 public struct LLMLocalDownloadView: View {
-    @StateObject private var downloadManager: LLMLocalDownloadManager
+    /// The ``LLMLocalDownloadManager`` manages the download and storage of the models.
+    @State private var downloadManager: LLMLocalDownloadManager
+    /// The action that should be performed when pressing the primary button of the view.
     private let action: () async throws -> Void
     
+    /// Indicates the state of the view, get's derived from the ``LLMLocalDownloadManager/state``.
+    @State private var viewState: ViewState = .idle
 
+    
     public var body: some View {
         OnboardingView(
             contentView: {
                 VStack {
-                    OnboardingTitleView(
-                        title: .init("LLM_DOWNLOAD_TITLE", bundle: .atURL(from: .module)),
-                        subtitle: .init("LLM_DOWNLOAD_SUBTITLE", bundle: .atURL(from: .module))
-                    )
-                    Spacer()
-                    Image(systemName: "shippingbox")
-                        .font(.system(size: 100))
-                        .foregroundColor(.accentColor)
-                        .accessibilityHidden(true)
-                    Text("LLM_DOWNLOAD_DESCRIPTION", bundle: .module)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 16)
+                    informationView
                     
                     if !modelExists {
                         downloadButton
@@ -42,10 +36,11 @@ public struct LLMLocalDownloadView: View {
                         }
                     } else {
                         Group {
-                            if downloadManager.state != .downloaded {
-                                Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
-                            } else if downloadManager.state == .downloaded {
+                            switch downloadManager.state {
+                            case .downloaded:
                                 Text("LLM_DOWNLOADED_DESCRIPTION", bundle: .module)
+                            default:
+                                Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
                             }
                         }
                             .multilineTextAlignment(.center)
@@ -65,10 +60,29 @@ public struct LLMLocalDownloadView: View {
                     .disabled(!modelExists)
             }
         )
+            .map(state: downloadManager.state, to: $viewState)
+            .viewStateAlert(state: $viewState)
             .navigationBarBackButtonHidden(isDownloading)
     }
     
-    private var downloadButton: some View {
+    /// Presents information about the model download.
+    @MainActor @ViewBuilder private var informationView: some View {
+        OnboardingTitleView(
+            title: .init("LLM_DOWNLOAD_TITLE", bundle: .atURL(from: .module)),
+            subtitle: .init("LLM_DOWNLOAD_SUBTITLE", bundle: .atURL(from: .module))
+        )
+        Spacer()
+        Image(systemName: "shippingbox")
+            .font(.system(size: 100))
+            .foregroundColor(.accentColor)
+            .accessibilityHidden(true)
+        Text("LLM_DOWNLOAD_DESCRIPTION", bundle: .module)
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 16)
+    }
+    
+    /// Button which starts the download of the model.
+    @MainActor private var downloadButton: some View {
         Button(action: downloadManager.startDownload) {
             Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
                 .padding(.horizontal)
@@ -79,7 +93,8 @@ public struct LLMLocalDownloadView: View {
             .padding()
     }
     
-    private var downloadProgressView: some View {
+    /// A progress view indicating the state of the download
+    @MainActor private var downloadProgressView: some View {
         VStack {
             ProgressView(value: downloadProgress, total: 100.0) {
                 Text("LLM_DOWNLOADING_PROGRESS_TEXT", bundle: .module)
@@ -93,7 +108,7 @@ public struct LLMLocalDownloadView: View {
     }
     
     /// A `Bool` flag indicating if the model is currently being downloaded
-    private var isDownloading: Bool {
+    @MainActor private var isDownloading: Bool {
         if case .downloading = self.downloadManager.state {
             return true
         }
@@ -102,7 +117,7 @@ public struct LLMLocalDownloadView: View {
     }
     
     /// Represents the download progress of the model in percent (from 0 to 100)
-    private var downloadProgress: Double {
+    @MainActor private var downloadProgress: Double {
         if case .downloading(let progress) = self.downloadManager.state {
             return progress
         } else if case .downloaded = self.downloadManager.state {
@@ -131,7 +146,7 @@ public struct LLMLocalDownloadView: View {
         llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
         action: @escaping () async throws -> Void
     ) {
-        self._downloadManager = StateObject(
+        self._downloadManager = State(
             wrappedValue: LLMLocalDownloadManager(
                 llmDownloadUrl: llmDownloadUrl,
                 llmStorageUrl: llmStorageUrl

@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// The ``LLMError`` describes possible errors that occure during the execution of the ``LLM`` via the ``LLMRunner``.
+/// The ``LLMError`` describes possible errors that occur during the execution of the ``LLM`` via the ``LLMRunner``.
 public enum LLMError: LocalizedError {
     /// Indicates that the local model file is not found.
     case modelNotFound

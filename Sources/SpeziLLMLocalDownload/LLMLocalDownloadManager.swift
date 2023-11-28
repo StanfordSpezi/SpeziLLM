@@ -7,10 +7,21 @@
 //
 
 import Foundation
+import Observation
+import SpeziViews
 
 
-/// Manages the download of an LLM to the local device.
-public final class LLMLocalDownloadManager: NSObject, ObservableObject {
+/// The ``LLMLocalDownloadManager`` manages the download and storage of Large Language Models (LLM) to the local device.
+///
+/// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
+/// passing a download `URL` as well as a storage `URL` to the ``LLMLocalDownloadManager``.
+/// The download of a model is started via ``LLMLocalDownloadManager/startDownload()`` and can be cancelled (early) via ``LLMLocalDownloadManager/cancelDownload()``.
+/// 
+/// The current state of the ``LLMLocalDownloadManager`` is exposed via the ``LLMLocalDownloadManager/state`` property which
+/// is of type ``LLMLocalDownloadManager/DownloadState``, containing cases such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
+/// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
+@Observable
+public final class LLMLocalDownloadManager: NSObject {
     /// Defaults of possible LLMs to download via the ``LLMLocalDownloadManager``.
     public enum LLMUrlDefaults {
         /// LLama 2 7B model in its chat variation (~3.5GB)
@@ -51,8 +62,8 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
     public enum DownloadState: Equatable {
         case idle
         case downloading(progress: Double)
-        case downloaded
-        case error(Error?)
+        case downloaded(storageUrl: URL)
+        case error(LocalizedError)
         
         
         public static func == (lhs: LLMLocalDownloadManager.DownloadState, rhs: LLMLocalDownloadManager.DownloadState) -> Bool {
@@ -67,15 +78,15 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
     }
     
     /// The delegate handling the download manager tasks.
-    private var downloadDelegate: LLMLocalDownloadManagerDelegate?  // swiftlint:disable:this weak_delegate
+    @ObservationIgnored private var downloadDelegate: LLMLocalDownloadManagerDelegate?  // swiftlint:disable:this weak_delegate
     /// The `URLSessionDownloadTask` that handles the download of the model.
-    private var downloadTask: URLSessionDownloadTask?
+    @ObservationIgnored private var downloadTask: URLSessionDownloadTask?
     /// Remote `URL` from where the LLM file should be downloaded.
     private let llmDownloadUrl: URL
     /// Local `URL` where the downloaded model is stored.
     let llmStorageUrl: URL
     /// Indicates the current state of the ``LLMLocalDownloadManager``.
-    @MainActor @Published public var state: DownloadState = .idle
+    @MainActor public var state: DownloadState = .idle
     
     
     /// Creates a ``LLMLocalDownloadManager`` that helps with downloading LLM files from remote servers.
@@ -101,5 +112,10 @@ public final class LLMLocalDownloadManager: NSObject, ObservableObject {
         downloadTask = session.downloadTask(with: llmDownloadUrl)
         
         downloadTask?.resume()
+    }
+    
+    /// Cancels the download of a specified model via a `URLSessionDownloadTask`.
+    public func cancelDownload() {
+        downloadTask?.cancel()
     }
 }

@@ -10,6 +10,7 @@
 #include "tokenize.h"
 
 
+/// Tokenize a `String` via a given `llama_context`.
 std::vector<llama_token> llama_tokenize_with_context(
      const struct llama_context * ctx,
      const std::string & text,
@@ -18,6 +19,7 @@ std::vector<llama_token> llama_tokenize_with_context(
     return llama_tokenize(ctx, text, add_bos, special);
 }
 
+/// Tokenize a `String` via a given `llama_model`.
 std::vector<llama_token> llama_tokenize_with_model(
      const struct llama_model * model,
      const std::string & text,

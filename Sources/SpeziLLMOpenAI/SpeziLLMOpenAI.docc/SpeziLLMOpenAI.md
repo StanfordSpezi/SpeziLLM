@@ -10,6 +10,8 @@
 #       
 -->
 
+Interact with Large Language Models (LLMs) from OpenAI.
+
 ## Overview
 
 A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.

@@ -21,7 +21,7 @@ public actor LLMLlama: LLM {
     /// A Swift Logger that logs important information from the ``LLMLlama``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     public let type: LLMHostingType = .local
-    public var state: LLMState = .uninitialized
+    @MainActor public var state: LLMState = .uninitialized
     
     /// Parameters of the llama.cpp ``LLM``.
     let parameters: LLMParameters
@@ -60,10 +60,14 @@ public actor LLMLlama: LLM {
     
     
     public func setup(runnerConfig: LLMRunnerConfiguration) async throws {
-        self.state = .loading
+        await MainActor.run {
+            self.state = .loading
+        }
         
         guard let model = llama_load_model_from_file(modelPath.path().cString(using: .utf8), parameters.llamaCppRepresentation) else {
-            self.state = .error(error: LLMError.modelNotFound)
+            await MainActor.run {
+                self.state = .error(error: LLMError.modelNotFound)
+            }
             throw LLMError.modelNotFound
         }
         self.model = model
@@ -72,15 +76,19 @@ public actor LLMLlama: LLM {
         let trainingContextWindow = llama_n_ctx_train(model)
         guard self.contextParameters.contextWindowSize <= trainingContextWindow else {
             Self.logger.warning("Model was trained on only \(trainingContextWindow, privacy: .public) context tokens, not the configured \(self.contextParameters.contextWindowSize, privacy: .public) context tokens")
-            self.state = .error(error: LLMError.generationError)
+            await MainActor.run {
+                self.state = .error(error: LLMError.generationError)
+            }
             throw LLMError.modelNotFound
         }
         
-        self.state = .ready
+        await MainActor.run {
+            self.state = .ready
+        }
     }
     
     public func generate(prompt: String, continuation: AsyncThrowingStream<String, Error>.Continuation) async {
-        _generate(prompt: prompt, continuation: continuation)
+        await _generate(prompt: prompt, continuation: continuation)
     }
     
     

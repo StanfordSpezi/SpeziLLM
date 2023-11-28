@@ -12,15 +12,16 @@ import Foundation
 /// A mock SpeziLLM ``LLM`` that is used for testing and preview purposes.
 public actor LLMMock: LLM {
     public let type: LLMHostingType = .local
-    public var state: LLMState = .uninitialized
+    @MainActor public var state: LLMState = .uninitialized
     
     
     public init() {}
     
     
     public func setup(runnerConfig: LLMRunnerConfiguration) async throws {
-        /// Set ``LLMState`` to ready
-        self.state = .ready
+        await MainActor.run {
+            self.state = .ready
+        }
     }
     
     public func generate(prompt: String, continuation: AsyncThrowingStream<String, Error>.Continuation) async {

@@ -26,8 +26,10 @@ extension LLMLlama {
     func _generate( // swiftlint:disable:this identifier_name function_body_length
         prompt: String,
         continuation: AsyncThrowingStream<String, Error>.Continuation
-    ) {
-        self.state = .generating
+    ) async {
+        await MainActor.run {
+            self.state = .generating
+        }
         
         // Log the most important parameters of the LLM
         Self.logger.debug("n_length = \(self.parameters.maxOutputLength, privacy: .public), n_ctx = \(self.contextParameters.contextWindowSize, privacy: .public), n_batch = \(self.contextParameters.batchSize, privacy: .public), n_kv_req = \(self.parameters.maxOutputLength, privacy: .public)")
@@ -115,7 +117,9 @@ extension LLMLlama {
             if nextTokenId == llama_token_eos(self.model) || batchTokenIndex == self.parameters.maxOutputLength {
                 self.generatedText.append(self.EOS)
                 continuation.finish()
-                self.state = .ready
+                await MainActor.run {
+                    self.state = .ready
+                }
                 return
             }
             
@@ -136,7 +140,9 @@ extension LLMLlama {
             let decodeOutput = llama_decode(self.context, batch)
             if decodeOutput != 0 {      // = 0 Success, > 0 Warning, < 0 Error
                 Self.logger.error("Decoding of generated output failed. Output: \(decodeOutput, privacy: .public)")
-                self.state = .error(error: .generationError)
+                await MainActor.run {
+                    self.state = .error(error: .generationError)
+                }
                 continuation.finish(throwing: LLMError.generationError)
                 return
             }
@@ -149,6 +155,8 @@ extension LLMLlama {
         llama_print_timings(self.context)
          
         continuation.finish()
-        self.state = .ready
+        await MainActor.run {
+            self.state = .ready
+        }
     }
 }

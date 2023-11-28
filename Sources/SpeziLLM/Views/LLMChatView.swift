@@ -7,6 +7,7 @@
 //
 
 import SpeziChat
+import SpeziViews
 import SwiftUI
 
 
@@ -16,9 +17,10 @@ public struct LLMChatView: View {
     @Environment(LLMRunner.self) private var runner
     /// Represents the chat content that is displayed.
     @State private var chat: Chat = []
-    /// Indicates if the input field is disabled
+    /// Indicates if the input field is disabled.
     @State private var inputDisabled = false
-    
+    /// Indicates the state of the view, get's derived from the ``LLM/state``.
+    @State private var viewState: ViewState = .idle
     
     /// A SpeziLLM ``LLM`` that is used for the text generation within the chat view
     private let model: any LLM
@@ -46,6 +48,8 @@ public struct LLMChatView: View {
                     }
                 }
             }
+                .map(state: model.state, to: $viewState)
+                .viewStateAlert(state: $viewState)
     }
     
     
