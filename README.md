@@ -43,6 +43,14 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 
 ## Targets
 
+Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
+- [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base reusable functionality of LLM execution in the Spezi ecosystem.
+- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Integration with [Meta's Llama2 models](https://ai.meta.com/llama/).
+- [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
+- [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with [OpenAIs GPT models](https://openai.com/gpt-4) via using OpenAIs API service.
+
+The section below highlights the setup and basic use of the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) and [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai) targets in order to integrate Language Models in a Spezi-based application.
+
 ### Spezi LLM Local
 
 The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device via the [llama.cpp framework](https://github.com/ggerganov/llama.cpp). The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level C or C++ code is necessary.
@@ -92,7 +100,7 @@ class ExampleView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMLocal, please refer to the DocC documentation of the target: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation]: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
 ### Spezi LLM Open AI
 
@@ -138,7 +146,7 @@ class ExampleView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMOpenAI, please refer to the DocC documentation of the target: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai).
+> To learn more about the usage of SpeziLLMOpenAI, please refer to the [DocC documentation] (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai).
 
 ## Contributing
 
