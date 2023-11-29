@@ -31,8 +31,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1")),
-        // .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.2"))
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", branch: "feature/view-state-mapper")
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.3"))
     ],
     targets: [
         .target(
