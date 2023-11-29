@@ -14,7 +14,7 @@ import SwiftUI
 /// Presents a chat view that enables user's to interact with the local LLM.
 struct LLMLocalChatTestView: View {
     /// The Spezi `LLM` that is configured and executed on the `LLMRunner`
-    private let model: LLM = {
+    @State private var model: LLM = {
         if FeatureFlags.mockLocalLLM {
             LLMMock()
         } else {

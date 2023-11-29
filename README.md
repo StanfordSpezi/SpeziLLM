@@ -17,39 +17,88 @@ SPDX-License-Identifier: MIT
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziLLM%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziLLM)
 
 
-# Overview
+## Overview
 
 The Spezi LLM Swift Package includes modules that are helpful to integrate LLM-related functionality in your application.
+The package provides all necessary tools for local LLM execution as well as the usage of remote OpenAI-based LLMs.
 
 |<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View utilizing the OpenAI API from SpeziLLMOpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMLocalDownload/SpeziLLMLocalDownload.docc/Resources/LLMLocalDownload~dark.png"><img src="Sources/SpeziLLMLocalDownload/SpeziLLMLocalDownload.docc/Resources/LLMLocalDownload.png" width="250" alt="Screenshot displaying the Local LLM Download View from SpeziLLMLocalDownload." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMLocal/SpeziLLMLocal.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziLLMLocal/SpeziLLMLocal.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View utilizing a locally executed LLM via SpeziLLMLocal." /></picture>|
 |:--:|:--:|:--:|
 |`OpenAI LLM Chat View`|`Language Model Download`|`Local LLM Chat View`|
 
-## Spezi LLM
-
-## Spezi LLM Local
-
-## Spezi LLM Open AI
-
-A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.
-
-|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziLLMOpenAI/SpeziLLMOpenAI.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View utilizing the OpenAI API from SpeziLLMOpenAI." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMLocalDownload/SpeziLLMLocalDownload.docc/Resources/LLMLocalDownload~dark.png"><img src="Sources/SpeziLLMLocalDownload/SpeziLLMLocalDownload.docc/Resources/LLMLocalDownload.png" width="250" alt="Screenshot displaying the Local LLM Download View from SpeziLLMLocalDownload." /></picture>|<picture><source media="(prefers-color-scheme: dark)" srcset="Sources/SpeziLLMLocal/SpeziLLMLocal.docc/Resources/ChatView~dark.png"><img src="Sources/SpeziLLMLocal/SpeziLLMLocal.docc/Resources/ChatView.png" width="250" alt="Screenshot displaying the Chat View utilizing a locally executed LLM via SpeziLLMLocal." /></picture>|
-|:--:|:--:|:--:|
-|`OpenAI Chat View`|`Language Model Download`|`Local LLM Chat View`|
-
-
 ## Setup
 
 ### 1. Add Spezi LLM as a Dependency
 
-First, you will need to add the SpeziLLM Swift package to
+You need to add the Spezi Speech Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
-[Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package). When adding the package, select the `SpeziLLMOpenAI` target to add.
+[Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
 
-### 2. Register the Open AI Module
-
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
+
+### 2. Follow the setup steps of the individual targets
+
+As Spezi LLM contains a variety of different targets for specific LLM functionalities, please follow the additional setup guide in the respective target section of this README.
+
+## Targets
+
+### Spezi LLM Local
+
+The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device via the [llama.cpp framework](https://github.com/ggerganov/llama.cpp). The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level C or C++ code is necessary.
+
+#### Setup
+
+You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
+In the example below, the `LLMRunner` from the `SpeziLLM` target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalRunnerSetupTask` from the `SpeziLLMLocal` target. This prepares the `LLMRunner` to locally execute Language Models.
+
+```
+import Spezi
+import SpeziLLM
+import SpeziLLMLocal
+import SpeziLLMOpenAI
+
+class TestAppDelegate: SpeziAppDelegate {
+    override var configuration: Configuration {
+        Configuration {
+            LLMRunner {
+                LLMLocalRunnerSetupTask()
+            }
+        }
+    }
+}
+```
+
+Spezi will then automatically inject the `LLMRunner` in the SwiftUI environment to make it accessible throughout your application. 
+The example below also showcases how to use the `LLMRunner` to execute a SpeziLLM-based `LLM`.
+
+```swift
+class ExampleView: View {
+    @Environment(LLMRunner.self) var runner
+    @State var model = LLMLlama(
+        modelPath: URL(string: "...") // The locally stored Language Model File in the ".gguf" format
+    )
+
+    var body: some View {
+        EmptyView()
+            .task {
+                // Returns an `AsyncThrowingStream` which yields the produced output of the LLM.
+                let stream = try await runner(with: model).generate(prompt: "Some example prompt")
+                
+                // ...
+            }
+    }
+}
+```
+
+> [!NOTE]  
+> To learn more about the usage of SpeziLLMLocal, please refer to the DocC documentation of the target: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+
+### Spezi LLM Open AI
+
+A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.
+
+#### Setup
 
 You can configure the `OpenAIModule` in the `SpeziAppDelegate` as follows.
 In the example, we configure the `OpenAIModule` to use the GPT-4 model with a default API key.
@@ -57,7 +106,6 @@ In the example, we configure the `OpenAIModule` to use the GPT-4 model with a de
 ```swift
 import Spezi
 import SpeziLLMOpenAI
-
 
 class ExampleDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
@@ -68,138 +116,29 @@ class ExampleDelegate: SpeziAppDelegate {
 }
 ```
 
-The OpenAIModule injects an ``OpenAIModel`` in the SwiftUI environment to make it accessible thoughout your application.
+The OpenAIModule injects an `OpenAIModel` in the SwiftUI environment to make it accessible throughout your application. The model is queried via an instance of [`Chat` from the SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chat).
 
 ```swift
 class ExampleView: View {
     @Environment(OpenAIModel.self) var model
-
-
-    var body: some View {
-        // ...
-    }
-}
-```
-
-> [!NOTE]  
-> The choice of model and API key are persisted across application launches. The `apiToken` and `openAIModel` can also be accessed and changed at runtime. 
-
-The `SpeziLLMOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that can be used to allow the user to provide their API key during the onboarding process instead (see `Examples` below). If using the `OpenAIAPIKeyOnboardingStep`, the `apiToken` property can be omitted here.
-
-
-    var body: some View {
-        // ...
-    }
-}
-```
-
-> [!NOTE]  
-> You can learn more about a [`Module` in the Spezi documentation](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/module).
-
-The `SpeziLLMOpenAI` package also provides an `OpenAIAPIKeyOnboardingStep` that can be used to allow the user to provide their API key during the onboarding process instead (see `Examples` below). If using the `OpenAIAPIKeyOnboardingStep`, the `apiToken` property can be omitted here.
-
-> [!NOTE]  
-> You can learn more about a [`Module` in the Spezi documentation](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/module).
-
-## Examples
-
-### Creating a Chat Interface
-
-In this example, we will create a chat interface that allows the user to converse with the model. Responses from the model will be streamed.
-To properly visualize the chat interface with the LLM, the example utilizes the [SpeziChat](https://github.com/StanfordSpezi/SpeziChat) module of the Spezi ecosystem, providing developers with easy to use chat interfaces like the `ChatView`.
-
-```swift
-import SpeziChat
-import SpeziLLMOpenAI
-import SwiftUI
-
-
-struct OpenAIChatView: View {
-    @Environment(OpenAIModel.self) var model
-    @State private var chat: Chat = [
-        .init(role: .assistant, content: "Assistant Message!")
+    let chat: Chat = [
+        .init(role: .user, content: "Example prompt!"),
     ]
-    
+
     var body: some View {
-        ChatView($chat)
-            .onChange(of: chat) { _, _ in
-                Task {
-                    let chatStreamResults = try model.queryAPI(withChat: chat)
-                    
-                    for try await chatStreamResult in chatStreamResults {
-                        for choice in chatStreamResult.choices {
-                            guard let newContent = choice.delta.content else {
-                                continue
-                            }
-                            
-                            if chat.last?.role == .assistant, let previousContent = chat.last?.content {
-                                await MainActor.run {
-                                    chat[chat.count - 1] = ChatEntity(
-                                        role: .assistant,
-                                        content: previousContent + newContent
-                                    )
-                                }
-                            } else {
-                                await MainActor.run {
-                                    chat.append(ChatEntity(role: .assistant, content: newContent))
-                                }
-                            }
-                        }
-                    }
-                }
+        EmptyView()
+            .task {
+                // Returns an `AsyncThrowingStream` which yields the produced output of the LLM.
+                let stream = try model.queryAPI(withChat: chat)
+                
+                // ...
             }
     }
 }
 ```
 
-### Setting the API Key During Onboarding
-
-The `OpenAIAPIKeyOnboardingStep` provides a view that can be used for the user to enter an OpenAI API key during onboarding in your Spezi application. We will show an example of how you can add an OpenAI onboarding step within an application created from the Spezi Template Application below.
-
-First, create a new view to show the onboarding step:
-
-```swift
-import SpeziOnboarding
-import SpeziLLMOpenAI
-import SwiftUI
-
-
-struct OpenAIAPIKey: View {
-    @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
-    
-    var body: some View {
-        OpenAIAPIKeyOnboardingStep {
-            onboardingNavigationPath.nextStep()
-        }
-    }
-}
-```
-
-This view can then be added to the `OnboardingFlow` within the Spezi Template Application:
-
-```swift
-import SpeziOnboarding
-import SpeziLLMOpenAI
-import SwiftUI
-
-
-struct OnboardingFlow: View {
-    @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
-    
-    
-    var body: some View {
-        OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
-            // ... other steps
-            OpenAIAPIKey()
-            // ... other steps
-        }
-    }
-}
-```
-
-Now the OpenAI API Key entry view will appear within your application's onboarding process. The API Key entered will be persisted across application launches.
-
-For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziLLM/documentation).
+> [!NOTE]  
+> To learn more about the usage of SpeziLLMOpenAI, please refer to the DocC documentation of the target: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai).
 
 ## Contributing
 

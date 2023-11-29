@@ -10,7 +10,6 @@ import Spezi
 import SpeziLLM
 import SpeziLLMLocal
 import SpeziLLMOpenAI
-import XCTSpezi
 
 
 class TestAppDelegate: SpeziAppDelegate {
