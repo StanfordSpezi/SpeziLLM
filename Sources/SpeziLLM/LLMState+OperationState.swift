@@ -13,7 +13,7 @@ import SpeziViews
 // the "Circular reference resolving attached macro 'Observable'" error during compiling (see https://github.com/apple/swift/issues/66450)
 /// Maps the ``LLMState`` to the SpeziViews `ViewState` via the conformance to the SpeziViews `OperationState` protocol.
 extension LLMState: OperationState {
-    public var viewState: ViewState {
+    public var representation: ViewState {
         switch self {
         case .uninitialized, .ready:
             .idle
