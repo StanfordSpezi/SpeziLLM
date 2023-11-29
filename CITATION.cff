@@ -16,6 +16,5 @@ authors:
   given-names: "Vishnu"
   orcid: "https://orcid.org/0000-0003-0359-1275"
 title: "SpeziLLM"
-# TODO: Check if the DOI can be migrated to SpeziLLM?
 doi: 10.5281/zenodo.7538165
 url: "https://github.com/StanfordSpezi/SpeziLLM"

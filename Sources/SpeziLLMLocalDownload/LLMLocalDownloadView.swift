@@ -36,14 +36,14 @@ import SwiftUI
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(
-///             llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, /// Download the Llama2 7B model
-///             llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") /// Store the downloaded LLM in the caches directory
+///             llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, // Download the Llama2 7B model
+///             llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") // Store the downloaded LLM in the caches directory
 ///         ) {
 ///             onboardingNavigationPath.nextStep()
 ///         }
 ///     }
 /// }
-/// ``
+/// ```
 public struct LLMLocalDownloadView: View {
     /// The ``LLMLocalDownloadManager`` manages the download and storage of the models.
     @State private var downloadManager: LLMLocalDownloadManager

@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-
 #include "tokenize.h"
 
 

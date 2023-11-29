@@ -34,5 +34,6 @@ struct LLMOpenAIChatTestView: View {
             .sheet(isPresented: $showOnboarding) {
                 LLMOpenAIOnboardingView()
             }
+            .accentColor(Color(red: 0, green: 166 / 255, blue: 126 / 255))  // OpenAI Green Color
     }
 }

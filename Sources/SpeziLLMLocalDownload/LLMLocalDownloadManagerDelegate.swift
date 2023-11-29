@@ -69,7 +69,8 @@ class LLMLocalDownloadManagerDelegate: NSObject, URLSessionDownloadDelegate {
     /// Indicates an error during the model download
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         // The `error` property is set for client-side errors (e.g. couldn't resolve host name),
-        // the `task.error` property is set in the case of server-side errors
+        // the `task.error` property is set in the case of server-side errors.
+        // If none of these properties are set, no error has occurred.
         if let error = error ?? task.error {
             Task { @MainActor in
                 self.manager?.state = .error(
@@ -80,19 +81,6 @@ class LLMLocalDownloadManagerDelegate: NSObject, URLSessionDownloadDelegate {
                 )
             }
             Self.logger.error("\(String(describing: error))")
-        } else {
-            Task { @MainActor in
-                self.manager?.state = .error(
-                    AnyLocalizedError(
-                        error: LLMLocalDownloadError.downloadError,
-                        defaultErrorDescription: LocalizedStringResource("LLM_DOWNLOAD_FAILED_ERROR", bundle: .atURL(from: .module))
-                    )
-                )
-            }
-            assertionFailure("""
-            The download of the LLM via the `LLMLocalDownloadManager` has failed with an unknown error.
-            This error is unexpected and violates the integrity of the `LLMLocalDownloadManager` error state.
-            """)
         }
     }
 }
