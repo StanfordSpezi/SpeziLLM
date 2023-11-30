@@ -30,7 +30,7 @@ The package provides all necessary tools for local LLM execution as well as the 
 
 ### 1. Add Spezi LLM as a Dependency
 
-You need to add the Spezi Speech Swift package to
+You need to add the SpeziLLM Swift package to
 [your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app#) or
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
 
@@ -44,12 +44,15 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 ## Targets
 
 Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
-- [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base reusable functionality of LLM execution in the Spezi ecosystem.
+- [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base infrastructure of LLM execution in the Spezi ecosystem.
 - [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Integration with [Meta's Llama2 models](https://ai.meta.com/llama/).
 - [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
 - [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with [OpenAIs GPT models](https://openai.com/gpt-4) via using OpenAIs API service.
 
-The section below highlights the setup and basic use of the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) and [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai) targets in order to integrate Language Models in a Spezi-based application.
+The section below highlights the setup and basic use of the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) and [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai) targets in order to integrate Language Models in a Spezi-based application. 
+
+> [!NOTE]  
+> To learn more about the usage of the individual targets, please refer to the [DocC documentation of the package] (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation).
 
 ### Spezi LLM Local
 
@@ -58,7 +61,7 @@ The target enables developers to easily execute medium-size Language Models (LLM
 #### Setup
 
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
-In the example below, the `LLMRunner` from the `SpeziLLM` target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalRunnerSetupTask` from the `SpeziLLMLocal` target. This prepares the `LLMRunner` to locally execute Language Models.
+In the example below, the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalRunnerSetupTask` from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target. This prepares the `LLMRunner` to locally execute Language Models.
 
 ```
 import Spezi
@@ -78,12 +81,12 @@ class TestAppDelegate: SpeziAppDelegate {
 ```
 
 Spezi will then automatically inject the `LLMRunner` in the SwiftUI environment to make it accessible throughout your application. 
-The example below also showcases how to use the `LLMRunner` to execute a SpeziLLM-based `LLM`.
+The example below also showcases how to use the `LLMRunner` to execute a SpeziLLM-based [`LLM`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm).
 
 ```swift
 class ExampleView: View {
     @Environment(LLMRunner.self) var runner
-    @State var model = LLMLlama(
+    @State var model: LLM = LLMLlama(
         modelPath: URL(string: "...") // The locally stored Language Model File in the ".gguf" format
     )
 

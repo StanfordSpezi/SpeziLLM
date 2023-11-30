@@ -14,7 +14,7 @@ import SpeziLLM
 
 /// The ``LLMLlama`` is a Spezi `LLM` and utilizes the llama.cpp library to locally execute an LLM on-device.
 /// 
-/// - Note: ``LLMLlama`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
+/// - Important: ``LLMLlama`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks. A code example on how to use ``LLMLlama`` in combination with the `LLMRunner` can be
 /// found in the documentation of the `LLMRunner`.
 public actor LLMLlama: LLM {
@@ -70,17 +70,17 @@ public actor LLMLlama: LLM {
             }
             throw LLMError.modelNotFound
         }
-        self.model = model
         
-        // Check if model was trained for the configured context window size
-        let trainingContextWindow = llama_n_ctx_train(model)
-        guard self.contextParameters.contextWindowSize <= trainingContextWindow else {
-            Self.logger.warning("Model was trained on only \(trainingContextWindow, privacy: .public) context tokens, not the configured \(self.contextParameters.contextWindowSize, privacy: .public) context tokens")
+        /// Check if model was trained for the configured context window size
+        guard self.contextParameters.contextWindowSize <= llama_n_ctx_train(model) else {
+            Self.logger.warning("Model was trained on only \(llama_n_ctx_train(model), privacy: .public) context tokens, not the configured \(self.contextParameters.contextWindowSize, privacy: .public) context tokens")
             await MainActor.run {
                 self.state = .error(error: LLMError.generationError)
             }
             throw LLMError.modelNotFound
         }
+        
+        self.model = model
         
         await MainActor.run {
             self.state = .ready

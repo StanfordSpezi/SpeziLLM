@@ -11,6 +11,7 @@ builder:
   configs:
     - platform: ios
       documentation_targets:
-      - SpeziOpenAI
-      - SpeziSpeechRecognizer
-      - SpeziSpeechSynthesizer
+      - SpeziLLM
+      - SpeziLLMLocal
+      - SpeziLLMLocalDownload
+      - SpeziLLMOpenAI

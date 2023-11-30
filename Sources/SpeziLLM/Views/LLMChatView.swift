@@ -11,9 +11,35 @@ import SpeziViews
 import SwiftUI
 
 
-/// Presents a basic chat view that enables user's to chat with an LLM.
+/// Presents a basic chat view that enables users to chat with a Spezi ``LLM`` in a typical chat-like fashion.
+/// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
+/// The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
+///
+/// > Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
+/// > For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
+///
+/// ### Usage
+///
+/// An example usage of the ``LLMChatView`` can be seen in the following example.
+/// The example uses the ``LLMMock`` as the passed ``LLM`` instance in order to provide a default output generation stream.
+///
+/// ```swift
+/// struct LLMLocalChatTestView: View {
+///     var body: some View {
+///         LLMChatView(
+///             model: LLMMock(),
+///             initialSystemPrompt: [
+///                 .init(
+///                     role: .assistant,
+///                     content: "Hello!"
+///                 )
+///             ]
+///         )
+///     }
+/// }
+/// ```
 public struct LLMChatView: View {
-    /// A ``LLMRunner`` responsible for executing the LLM. Must be configured via the Spezi `Configuration`.
+    /// A ``LLMRunner`` is responsible for executing the ``LLM``. Must be configured via the Spezi `Configuration`.
     @Environment(LLMRunner.self) private var runner
     /// Represents the chat content that is displayed.
     @State private var chat: Chat = []
@@ -23,7 +49,7 @@ public struct LLMChatView: View {
     @State private var viewState: ViewState = .idle
     
     /// A SpeziLLM ``LLM`` that is used for the text generation within the chat view
-    private let model: any LLM
+    @State private var model: any LLM
     
     
     public var body: some View {
@@ -35,7 +61,7 @@ public struct LLMChatView: View {
                     Task {
                         inputDisabled = true
                         
-                        /// Stream the LLMs response via a `AsyncThrowingStream`
+                        /// Stream the LLMs response via an `AsyncThrowingStream`
                         let stream = try await runner(with: model).generate(prompt: lastChat.content)
                         chat.append(.init(role: .assistant, content: ""))
                         
@@ -57,12 +83,12 @@ public struct LLMChatView: View {
     ///
     /// - Parameters:
     ///   - model: The SpeziLLM ``LLM`` that should be used for the text generation.
-    ///   - initialSystemPrompt: The initial prompt by the system.
+    ///   - initialAssistantPrompt: The initial message of the LLM assistant.
     public init(
         model: any LLM,
-        initialSystemPrompt chat: Chat
+        initialAssistantPrompt chat: Chat
     ) {
-        self.model = model
+        self._model = State(wrappedValue: model)
         self._chat = State(wrappedValue: chat)
     }
 }
@@ -71,6 +97,6 @@ public struct LLMChatView: View {
 #Preview {
     LLMChatView(
         model: LLMMock(),
-        initialSystemPrompt: [.init(role: .assistant, content: "Hello world!")]
+        initialAssistantPrompt: [.init(role: .assistant, content: "Hello world!")]
     )
 }

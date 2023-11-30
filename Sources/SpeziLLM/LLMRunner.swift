@@ -9,17 +9,17 @@
 import Foundation
 import Spezi
 
-/// The ``LLMRunner`` is a Spezi `Component` that handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
-/// The runner manages a set of ``LLMGenerationTask``'s as well as the respective backends in order to enable a smooth and efficient
-/// model execution.
-///
+/// The ``LLMRunner`` is a Spezi `Module` that handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
 /// A ``LLMRunner`` wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
 ///
-/// The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration``. It should only
-/// exist once in the entire application.
+/// The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration`` as well as a set of ``LLMRunnerSetupTask``s as arguments.
 ///
+/// The runner manages a set of ``LLMGenerationTask``'s as well as the respective LLM execution backends in order to enable
+/// a smooth and efficient model execution.
 ///
-/// The next code section describes a complete example on how to use the ``LLMRunner`` in combination with a `LLMLlama` from the SpeziLLMLocal target.
+/// ### Usage
+///
+/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLlama` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {
@@ -30,11 +30,13 @@ import Spezi
 ///                 runnerConfig: .init(
 ///                     taskPriority: .medium
 ///                 )
-///             )
+///             ) {
+///                 // Runner setup tasks conforming to `LLMRunnerSetupTask` protocol
+///                 LLMLocalRunnerSetupTask()
+///             }
 ///         }
 ///     }
 /// }
-///
 ///
 /// struct LocalLLMChatView: View {
 ///    // The runner responsible for executing the local LLM.
@@ -46,8 +48,6 @@ import Spezi
 ///    )
 ///
 ///    @State var responseText: String
-///
-///    ...
 ///
 ///    func executePrompt(prompt: String) {
 ///         // Execute the query on the runner, returning a stream of outputs

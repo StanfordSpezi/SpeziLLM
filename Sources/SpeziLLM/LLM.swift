@@ -9,7 +9,29 @@
 import Foundation
 
 
-/// The ``LLM`` protocol provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem.
+/// The ``LLM`` protocol provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem,
+/// regardless of the execution locality (local or remote) or the specific model type.
+/// Developers can use the ``LLM`` protocol to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
+///
+/// It is recommended that ``LLM`` should be used in conjunction with the [Swift Actor concept](https://developer.apple.com/documentation/swift/actor), meaning one should use the `actor` keyword (not `class`) for the implementation of the model component. The Actor concept provides guarantees regarding concurrent access to shared instances from multiple threads.
+///
+/// - Important: An ``LLM`` shouldn't be executed on it's own but always used together with the ``LLMRunner``.
+/// Please refer to the ``LLMRunner`` documentation for a complete code example.
+///
+/// ### Usage
+///
+/// An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
+/// The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(prompt:continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
+///
+/// ```swift
+/// actor LLMTest: LLM {
+///     var type: LLMHostingType = .local
+///     var state: LLMState = .uninitialized
+///
+///     func setup(/* */) async {}
+///     func generate(/* */) async {}
+/// }
+/// ```
 public protocol LLM {
     /// The type of the ``LLM`` as represented by the ``LLMHostingType``.
     var type: LLMHostingType { get async }
