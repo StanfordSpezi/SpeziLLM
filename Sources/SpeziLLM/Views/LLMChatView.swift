@@ -28,7 +28,7 @@ import SwiftUI
 ///     var body: some View {
 ///         LLMChatView(
 ///             model: LLMMock(),
-///             initialSystemPrompt: [
+///             initialAssistantPrompt: [
 ///                 .init(
 ///                     role: .assistant,
 ///                     content: "Hello!"
@@ -74,8 +74,7 @@ public struct LLMChatView: View {
                     }
                 }
             }
-                .map(state: model.state, to: $viewState)
-                .viewStateAlert(state: $viewState)
+                .viewStateAlert(state: model.state)
     }
     
     

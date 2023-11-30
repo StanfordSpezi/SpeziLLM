@@ -26,7 +26,7 @@ You need to add the SpeziLLM Swift package to
 
 > Important: If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
 
-## Spezi LLM Local Core Components
+## Spezi LLM Local Components
 
 The core component of the ``SpeziLLMLocal`` target is the ``LLMLlama`` [Actor](https://developer.apple.com/documentation/swift/actor) which conforms to the [`LLM` protocol of SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm). ``LLMLlama`` heavily utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to perform the inference of the Language Model. 
 

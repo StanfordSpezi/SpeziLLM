@@ -20,7 +20,7 @@ struct LLMLocalChatTestView: View {
         } else {
             LLMLlama(
                 modelPath: .cachesDirectory.appending(path: "llm.gguf"),    /// Loads the LLM from the passed cache directory
-                parameters: .init(maxOutputLength: 1024), /// Limits the size of the generated response to 1024 tokens
+                parameters: .init(maxOutputLength: 512), /// Limits the size of the generated response to 512 tokens
                 contextParameters: .init(contextWindowSize: 1024) /// Sets the context size of the model at 1024 tokens
             )
         }
@@ -30,7 +30,7 @@ struct LLMLocalChatTestView: View {
     var body: some View {
         LLMChatView(
             model: model,
-            initialSystemPrompt: [
+            initialAssistantPrompt: [
                 .init(
                     role: .assistant,
                     content: "Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"

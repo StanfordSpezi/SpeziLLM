@@ -18,8 +18,8 @@ import SwiftUI
 ///
 /// The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
 ///
-/// # Usage
-/// 
+/// ### Usage
+///
 /// ```swift
 /// struct LLMLocalDownloadApp: View {
 ///     @State private var path = NavigationPath()

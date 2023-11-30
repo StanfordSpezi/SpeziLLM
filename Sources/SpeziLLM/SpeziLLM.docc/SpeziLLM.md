@@ -26,7 +26,7 @@ You need to add the SpeziLLM Swift package to
 
 > Important: If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
 
-## Spezi LLM Core Components
+## Spezi LLM Components
 
 The two main components of ``SpeziLLM`` are the ``LLM`` abstraction as well as the ``LLMRunner`` execution capability. The following section highlights the usage of these parts.
 
@@ -130,7 +130,7 @@ struct LLMLocalChatTestView: View {
     var body: some View {
         LLMChatView(
             model: LLMMock(),
-            initialSystemPrompt: [
+            initialAssistantPrompt: [
                 .init(
                     role: .assistant,
                     content: "Hello!"

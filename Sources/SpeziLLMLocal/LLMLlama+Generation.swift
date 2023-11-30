@@ -63,6 +63,9 @@ extension LLMLlama {
             return
         }
         
+        // Clear the KV cache in order to free up space for the incoming prompt (as we inject the entire history of the chat again)
+        llama_kv_cache_clear(self.context)
+        
         var batch = llama_batch_init(Int32(tokens.count), 0, 1)
         defer {
             llama_batch_free(batch)
@@ -88,33 +91,13 @@ extension LLMLlama {
         // Calculate the token generation rate
         let startTime = Date()
         
-        while batchTokenIndex <= self.parameters.maxOutputLength {
-            let nVocab = llama_n_vocab(model)
-            let logits = llama_get_logits_ith(self.context, batch.n_tokens - 1)
+        while decodedTokens <= self.parameters.maxOutputLength {
+            let nextTokenId = sample(batchSize: batch.n_tokens)
             
-            var candidates: [llama_token_data] = .init(repeating: llama_token_data(), count: Int(nVocab))
-            
-            for tokenId in 0 ..< nVocab {
-                candidates.append(llama_token_data(id: tokenId, logit: logits?[Int(tokenId)] ?? 0, p: 0.0))
-            }
-            
-            var candidatesP: llama_token_data_array = .init(
-                data: candidates.withUnsafeMutableBytes { $0.baseAddress?.assumingMemoryBound(to: llama_token_data.self) }, // &candidates
-                size: candidates.count,
-                sorted: false
-            )
-            
-            // Sample via the temperature method
-            let minKeep = Int(max(1, self.samplingParameters.outputProbabilities))
-            llama_sample_top_k(self.context, &candidatesP, self.samplingParameters.topK, minKeep)
-            llama_sample_tail_free(self.context, &candidatesP, self.samplingParameters.tfs, minKeep)
-            llama_sample_typical(self.context, &candidatesP, self.samplingParameters.typicalP, minKeep)
-            llama_sample_top_p(self.context, &candidatesP, self.samplingParameters.topP, minKeep)
-            llama_sample_min_p(self.context, &candidatesP, self.samplingParameters.minP, minKeep)
-            llama_sample_temp(self.context, &candidatesP, self.samplingParameters.temperature)
-            let nextTokenId = llama_sample_token(self.context, &candidatesP)
-            
-            if nextTokenId == llama_token_eos(self.model) || batchTokenIndex == self.parameters.maxOutputLength {
+            // Either finish the generation once EOS token appears, the maximum output length of the answer is reached or the context window is reached
+            if nextTokenId == llama_token_eos(self.model)
+                || decodedTokens == self.parameters.maxOutputLength
+                || batchTokenIndex == self.contextParameters.contextWindowSize {
                 self.generatedText.append(self.EOS)
                 continuation.finish()
                 await MainActor.run {
@@ -123,7 +106,12 @@ extension LLMLlama {
                 return
             }
             
-            let nextStringPiece = String(llama_token_to_piece(context, nextTokenId))
+            var nextStringPiece = String(llama_token_to_piece(context, nextTokenId))
+            // As first character is sometimes randomly prefixed by a single space (even though prompt has an additional character)
+            if decodedTokens == 0 && nextStringPiece.starts(with: " ") {
+                nextStringPiece = String(nextStringPiece.dropFirst())
+            }
+            
             continuation.yield(nextStringPiece)
             self.generatedText.append(nextStringPiece)
             

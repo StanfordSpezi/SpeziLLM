@@ -65,15 +65,16 @@ public actor LLMGenerationTask {
         }
         
         /// Execute the LLM generation.
-        if await model.state == .ready {
+        switch await model.state {
+        case .ready, .error:
             self.task = Task(priority: self.runnerConfig.taskPriority) {
                 await model.generate(prompt: prompt, continuation: continuation)
             }
             
             return stream
+        default:
+            throw LLMError.modelNotReadyYet
         }
-        
-        throw LLMError.modelNotReadyYet
     }
     
     
