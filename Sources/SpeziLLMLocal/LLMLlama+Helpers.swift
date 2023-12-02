@@ -9,7 +9,6 @@
 import CxxStdlib
 import Foundation
 import llama
-import SpeziLLMLocalHelpers
 
 
 /// Extension of ``LLMLlama`` handling the text tokenization.

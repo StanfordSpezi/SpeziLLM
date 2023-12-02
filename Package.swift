@@ -25,7 +25,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
-        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.5")),
+        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.6")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
@@ -46,21 +46,8 @@ let package = Package(
             name: "SpeziLLMLocal",
             dependencies: [
                 .target(name: "SpeziLLM"),
-                .target(name: "SpeziLLMLocalHelpers"),
                 .product(name: "llama", package: "llama.cpp"),
                 .product(name: "Spezi", package: "Spezi")
-            ],
-            swiftSettings: [
-                .interoperabilityMode(.Cxx)
-            ]
-        ),
-        .target(
-            name: "SpeziLLMLocalHelpers",
-            dependencies: [
-                .product(name: "llama", package: "llama.cpp")
-            ],
-            cxxSettings: [
-                .unsafeFlags(["-std=c++11"])
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx)

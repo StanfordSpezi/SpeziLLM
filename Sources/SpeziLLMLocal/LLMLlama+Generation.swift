@@ -9,7 +9,6 @@
 import Foundation
 import llama
 import SpeziLLM
-import SpeziLLMLocalHelpers
 
 
 /// Extension of ``LLMLlama`` handling the text generation.
@@ -73,7 +72,7 @@ extension LLMLlama {
         
         // Evaluate the initial prompt
         for (tokenIndex, token) in tokens.enumerated() {
-            llama_batch_add(&batch, token, Int32(tokenIndex), SpeziLLMLocalHelpers.getLlamaSeqIdVector(), false)
+            llama_batch_add(&batch, token, Int32(tokenIndex), getLlamaSeqIdVector(), false)
         }
         // llama_decode will output logits only for the last token of the prompt
         batch.logits[Int(batch.n_tokens) - 1] = 1
@@ -119,7 +118,7 @@ extension LLMLlama {
             llama_batch_clear(&batch)
             
             // Push generated output token for the next evaluation round
-            llama_batch_add(&batch, nextTokenId, batchTokenIndex, SpeziLLMLocalHelpers.getLlamaSeqIdVector(), true)
+            llama_batch_add(&batch, nextTokenId, batchTokenIndex, getLlamaSeqIdVector(), true)
             
             decodedTokens += 1
             batchTokenIndex += 1

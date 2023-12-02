@@ -19,7 +19,7 @@ import Spezi
 ///
 /// ### Usage
 ///
-/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLlama` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target.
+/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLlama` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/spezillmlocal) target.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {
