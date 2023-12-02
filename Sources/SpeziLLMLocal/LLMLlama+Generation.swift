@@ -97,7 +97,7 @@ extension LLMLlama {
             if nextTokenId == llama_token_eos(self.model)
                 || decodedTokens == self.parameters.maxOutputLength
                 || batchTokenIndex == self.contextParameters.contextWindowSize {
-                self.generatedText.append(self.EOS)
+                self.generatedText.append(Self.EOS)
                 continuation.finish()
                 await MainActor.run {
                     self.state = .ready

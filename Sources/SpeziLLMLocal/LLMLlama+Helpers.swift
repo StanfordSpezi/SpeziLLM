@@ -14,34 +14,34 @@ import llama
 /// Extension of ``LLMLlama`` handling the text tokenization.
 extension LLMLlama {
     /// BOS token of the LLM, used at the start of each prompt passage.
-    var BOS: String {
+    static let BOS: String = {
         "<s>"
-    }
+    }()
     
     /// EOS token of the LLM, used at the end of each prompt passage.
-    var EOS: String {
+    static let EOS: String = {
         "</s>"
-    }
+    }()
     
     /// BOSYS token of the LLM, used at the start of the system prompt.
-    var BOSYS: String {
+    static let BOSYS: String = {
         "<<SYS>>"
-    }
+    }()
     
     /// EOSYS token of the LLM, used at the end of the system prompt.
-    var EOSYS: String {
+    static let EOSYS: String = {
         "<</SYS>>"
-    }
+    }()
     
     /// BOINST token of the LLM, used at the start of the instruction part of the prompt.
-    var BOINST: String {
+    static let BOINST: String = {
         "[INST]"
-    }
+    }()
     
     /// EOINST token of the LLM, used at the end of the instruction part of the prompt.
-    var EOINST: String {
+    static let EOINST: String = {
         "[/INST]"
-    }
+    }()
     
     
     /// Converts a textual `String` to the individual `LLMLlamaToken`'s based on the model's dictionary.
@@ -144,15 +144,15 @@ extension LLMLlama {
     private func buildPrompt(with userInputString: String) -> String {
         if self.generatedText.isEmpty {
             """
-            \(BOS)\(BOINST) \(BOSYS)
+            \(Self.BOS)\(Self.BOINST) \(Self.BOSYS)
             \(self.parameters.systemPrompt)
-            \(EOSYS)
+            \(Self.EOSYS)
             
-            \(userInputString) \(EOINST)
+            \(userInputString) \(Self.EOINST)
             """ + " "   // Add a spacer to the generated output from the model
         } else {
             """
-            \(BOS)\(BOINST) \(userInputString) \(EOINST)
+            \(Self.BOS)\(Self.BOINST) \(userInputString) \(Self.EOINST)
             """ + " "   // Add a spacer to the generated output from the model
         }
     }
