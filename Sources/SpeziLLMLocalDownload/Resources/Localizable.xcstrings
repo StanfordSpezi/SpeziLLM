@@ -1,0 +1,106 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Downloaded %@%% of 100%%." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloaded %@%% of 100%%."
+          }
+        }
+      }
+    },
+    "LLM_ALREADY_DOWNLOADED_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Large Language Model is already present on the device."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download LLM"
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_FAILED_ERROR" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occurred during the download of the LLM."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_NEXT_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish setup"
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In order to locally execute a LLM, first download a model."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOAD_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM Download"
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOADED_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Large Language Model is downloaded to the device."
+          }
+        }
+      }
+    },
+    "LLM_DOWNLOADING_PROGRESS_TEXT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading..."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

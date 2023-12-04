@@ -1,0 +1,157 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CHAT_VIEW_TITLE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spezi LLM Chat"
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation of LLM output failed."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error has occurred during the generation of the output."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the device has enough free computing and memory resources. Try restarting the application."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM file not found."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified LLM file could not be found on the device."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the LLM file is downloaded successfully and properly stored on the device. Try restarting the application."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM not ready yet."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM needs to be initialized before usage."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make sure that the application initialized the LLM properly. Try restarting the application."
+          }
+        }
+      }
+    },
+    "LLM_STATE_ERROR" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state error."
+          }
+        }
+      }
+    },
+    "LLM_STATE_GENERATING" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state generating."
+          }
+        }
+      }
+    },
+    "LLM_STATE_LOADING" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state loading."
+          }
+        }
+      }
+    },
+    "LLM_STATE_READY" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state ready."
+          }
+        }
+      }
+    },
+    "LLM_STATE_UNINITIALIZED" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state uninitialized."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

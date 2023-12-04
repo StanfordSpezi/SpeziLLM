@@ -15,6 +15,6 @@ authors:
 - family-names: "Ravi"
   given-names: "Vishnu"
   orcid: "https://orcid.org/0000-0003-0359-1275"
-title: "SpeziML"
+title: "SpeziLLM"
 doi: 10.5281/zenodo.7538165
-url: "https://github.com/StanfordSpezi/SpeziML"
+url: "https://github.com/StanfordSpezi/SpeziLLM"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1410"
+   LastUpgradeVersion = "1500"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,51 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SpeziOpenAI"
-               BuildableName = "SpeziOpenAI"
-               BlueprintName = "SpeziOpenAI"
+               BlueprintIdentifier = "SpeziLLM"
+               BuildableName = "SpeziLLM"
+               BlueprintName = "SpeziLLM"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMLocal"
+               BuildableName = "SpeziLLMLocal"
+               BlueprintName = "SpeziLLMLocal"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMLocalDownload"
+               BuildableName = "SpeziLLMLocalDownload"
+               BlueprintName = "SpeziLLMLocalDownload"
+               ReferencedContainer = "container:../..">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SpeziLLMOpenAI"
+               BuildableName = "SpeziLLMOpenAI"
+               BlueprintName = "SpeziLLMOpenAI"
                ReferencedContainer = "container:../..">
             </BuildableReference>
          </BuildActionEntry>
@@ -37,7 +79,7 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Test"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
@@ -45,9 +87,9 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SpeziML"
-            BuildableName = "SpeziML"
-            BlueprintName = "SpeziML"
+            BlueprintIdentifier = "SpeziLLM"
+            BuildableName = "SpeziLLM"
+            BlueprintName = "SpeziLLM"
             ReferencedContainer = "container:../..">
          </BuildableReference>
       </CodeCoverageTargets>
@@ -90,6 +132,12 @@
             ReferencedContainer = "container:UITests.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "--mockLocalLLM"
+            isEnabled = "NO">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

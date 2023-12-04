@@ -13,8 +13,23 @@
       "targets" : [
         {
           "containerPath" : "container:..\/..",
-          "identifier" : "SpeziOpenAI",
-          "name" : "SpeziOpenAI"
+          "identifier" : "SpeziLLMOpenAI",
+          "name" : "SpeziLLMOpenAI"
+        },
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziLLM",
+          "name" : "SpeziLLM"
+        },
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziLLMLocal",
+          "name" : "SpeziLLMLocal"
+        },
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziLLMLocalDownload",
+          "name" : "SpeziLLMLocalDownload"
         }
       ]
     },

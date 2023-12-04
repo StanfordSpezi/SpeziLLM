@@ -7,18 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F55FC552A1B42D20051DF48 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F55FC542A1B42D20051DF48 /* ContentView.swift */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
-		2F8A431329130A8C005D2B8F /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppUITests.swift */; };
+		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		2FC186012AD528830065EBB2 /* SpeziOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186002AD528830065EBB2 /* SpeziOpenAI */; };
-		2FC186032AD528830065EBB2 /* SpeziSpeechRecognizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */; };
-		2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */ = {isa = PBXBuildFile; productRef = 2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */; };
-		2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */; };
 		2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590482A19E4AE00153BE4 /* Spezi */; };
 		2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD5904A2A19E4AE00153BE4 /* XCTSpezi */; };
-		2FD5904F2A19E70000153BE4 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD5904E2A19E70000153BE4 /* OnboardingView.swift */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
+		9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24B2B0316240006B6BD /* Binding+Negate.swift */; };
+		9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24C2B0316240006B6BD /* StorageKeys.swift */; };
+		9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */; };
+		9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */; };
+		9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */; };
+		9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2562B0316740006B6BD /* Localizable.xcstrings */; };
+		9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2572B0316740006B6BD /* Localizable.xcstrings.license */; };
+		9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */; };
+		9756D2602B0316D80006B6BD /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9756D25F2B0316D80006B6BD /* SpeziLLMLocal */; };
+		9756D2622B0316D80006B6BD /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */; };
+		976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9761794F2B034E0400E1046E /* TestAppDelegate.swift */; };
+		976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */; };
+		976179542B03501100E1046E /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179532B03501100E1046E /* FeatureFlags.swift */; };
+		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
+		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
+		977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977E499F2B035563001485D4 /* LLMLocalTestView.swift */; };
+		97DD56BB2B02F7E400389331 /* SpeziChat in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BA2B02F7E400389331 /* SpeziChat */; };
+		97DD56BD2B02F80100389331 /* SpeziLLMOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,16 +44,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F55FC542A1B42D20051DF48 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2F68C3C6292E9F8F00B3E12C /* SpeziML */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziML; path = ../..; sourceTree = "<group>"; };
+		2F68C3C6292E9F8F00B3E12C /* SpeziLLM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziLLM; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F8A431229130A8C005D2B8F /* TestAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppUITests.swift; sourceTree = "<group>"; };
+		2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppLLMOpenAIUITests.swift; sourceTree = "<group>"; };
 		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
-		2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
-		2FD5904E2A19E70000153BE4 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		9756D24B2B0316240006B6BD /* Binding+Negate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Binding+Negate.swift"; sourceTree = "<group>"; };
+		9756D24C2B0316240006B6BD /* StorageKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
+		9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingDownloadView.swift; sourceTree = "<group>"; };
+		9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingWelcomeView.swift; sourceTree = "<group>"; };
+		9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingFlow.swift; sourceTree = "<group>"; };
+		9756D2562B0316740006B6BD /* Localizable.xcstrings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		9756D2572B0316740006B6BD /* Localizable.xcstrings.license */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Localizable.xcstrings.license; sourceTree = "<group>"; };
+		9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalChatTestView.swift; sourceTree = "<group>"; };
+		9761794F2B034E0400E1046E /* TestAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
+		976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppLLMLocalUITests.swift; sourceTree = "<group>"; };
+		976179532B03501100E1046E /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIOnboardingView.swift; sourceTree = "<group>"; };
+		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
+		977438092B05709700EC6527 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		977E499F2B035563001485D4 /* LLMLocalTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMLocalTestView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,11 +73,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FC186032AD528830065EBB2 /* SpeziSpeechRecognizer in Frameworks */,
 				2FD5904B2A19E4AE00153BE4 /* XCTSpezi in Frameworks */,
-				2FC186012AD528830065EBB2 /* SpeziOpenAI in Frameworks */,
+				97DD56BB2B02F7E400389331 /* SpeziChat in Frameworks */,
+				97DD56BD2B02F80100389331 /* SpeziLLMOpenAI in Frameworks */,
+				9756D2602B0316D80006B6BD /* SpeziLLMLocal in Frameworks */,
+				9756D2622B0316D80006B6BD /* SpeziLLMLocalDownload in Frameworks */,
 				2FD590492A19E4AE00153BE4 /* Spezi in Frameworks */,
-				2FC186052AD52C5B0065EBB2 /* SpeziSpeechSynthesizer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,7 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */,
-				2F68C3C6292E9F8F00B3E12C /* SpeziML */,
+				2F68C3C6292E9F8F00B3E12C /* SpeziLLM */,
 				2F6D139428F5F384007C25D6 /* TestApp */,
 				2F6D13AF28F5F386007C25D6 /* TestAppUITests */,
 				2F6D139328F5F384007C25D6 /* Products */,
@@ -92,10 +117,12 @@
 		2F6D139428F5F384007C25D6 /* TestApp */ = {
 			isa = PBXGroup;
 			children = (
+				9756D25A2B0316790006B6BD /* Resources */,
+				97DD56B32B02F72D00389331 /* LLMLocal */,
+				97DD56B42B02F72D00389331 /* LLMOpenAI */,
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
-				2F55FC542A1B42D20051DF48 /* ContentView.swift */,
-				2FD590452A19E41D00153BE4 /* TestAppDelegate.swift */,
-				2FD5904E2A19E70000153BE4 /* OnboardingView.swift */,
+				9761794F2B034E0400E1046E /* TestAppDelegate.swift */,
+				976179532B03501100E1046E /* FeatureFlags.swift */,
 				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
 			);
 			path = TestApp;
@@ -104,7 +131,8 @@
 		2F6D13AF28F5F386007C25D6 /* TestAppUITests */ = {
 			isa = PBXGroup;
 			children = (
-				2F8A431229130A8C005D2B8F /* TestAppUITests.swift */,
+				976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */,
+				2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */,
 			);
 			path = TestAppUITests;
 			sourceTree = "<group>";
@@ -112,8 +140,57 @@
 		2F6D13C228F5F3BE007C25D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				977438092B05709700EC6527 /* libc++.tbd */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9756D24A2B0316240006B6BD /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24B2B0316240006B6BD /* Binding+Negate.swift */,
+				9756D24C2B0316240006B6BD /* StorageKeys.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		9756D24D2B0316240006B6BD /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */,
+				9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */,
+				9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		9756D25A2B0316790006B6BD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9756D2562B0316740006B6BD /* Localizable.xcstrings */,
+				9756D2572B0316740006B6BD /* Localizable.xcstrings.license */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		97DD56B32B02F72D00389331 /* LLMLocal */ = {
+			isa = PBXGroup;
+			children = (
+				9756D24A2B0316240006B6BD /* Helpers */,
+				9756D24D2B0316240006B6BD /* Onboarding */,
+				9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */,
+				977E499F2B035563001485D4 /* LLMLocalTestView.swift */,
+			);
+			path = LLMLocal;
+			sourceTree = "<group>";
+		};
+		97DD56B42B02F72D00389331 /* LLMOpenAI */ = {
+			isa = PBXGroup;
+			children = (
+				9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */,
+				9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */,
+			);
+			path = LLMOpenAI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,9 +213,10 @@
 			packageProductDependencies = (
 				2FD590482A19E4AE00153BE4 /* Spezi */,
 				2FD5904A2A19E4AE00153BE4 /* XCTSpezi */,
-				2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */,
-				2FC186002AD528830065EBB2 /* SpeziOpenAI */,
-				2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */,
+				97DD56BA2B02F7E400389331 /* SpeziChat */,
+				97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */,
+				9756D25F2B0316D80006B6BD /* SpeziLLMLocal */,
+				9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -173,7 +251,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					2F6D139128F5F384007C25D6 = {
 						CreatedOnToolsVersion = 14.1;
@@ -196,6 +274,7 @@
 			packageReferences = (
 				2FD590442A19E40F00153BE4 /* XCRemoteSwiftPackageReference "Spezi" */,
 				2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
+				97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -212,7 +291,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */,
 				2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */,
+				9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,10 +332,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FD590472A19E42000153BE4 /* TestAppDelegate.swift in Sources */,
+				9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */,
+				9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */,
+				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
+				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
+				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
+				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
+				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
+				976179542B03501100E1046E /* FeatureFlags.swift in Sources */,
+				976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */,
+				9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
-				2F55FC552A1B42D20051DF48 /* ContentView.swift in Sources */,
-				2FD5904F2A19E70000153BE4 /* OnboardingView.swift in Sources */,
+				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,7 +351,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F8A431329130A8C005D2B8F /* TestAppUITests.swift in Sources */,
+				2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */,
+				976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +371,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -341,6 +432,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -396,6 +488,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -415,10 +508,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.speziml.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezillm.testapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -430,6 +524,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -449,10 +544,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.speziml.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezillm.testapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_INTEROP_MODE = objcxx;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -468,7 +564,7 @@
 				DEVELOPMENT_TEAM = 637867499T;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.SpeziML.testappuitests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezillm.testappuitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -487,7 +583,7 @@
 				DEVELOPMENT_TEAM = 637867499T;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.SpeziML.testappuitests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezillm.testappuitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -497,119 +593,6 @@
 			};
 			name = Release;
 		};
-		2FB07587299DDB6000C0B37F /* Test */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = TEST;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Test;
-		};
-		2FB07588299DDB6000C0B37F /* Test */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 637867499T;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_TESTING_SEARCH_PATHS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The Test Application uses the micophone to test the dication functionality.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.speziml.testapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Test;
-		};
-		2FB07589299DDB6000C0B37F /* Test */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 637867499T;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.SpeziML.testappuitests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = TestApp;
-			};
-			name = Test;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -617,7 +600,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2F6D13B428F5F386007C25D6 /* Debug */,
-				2FB07587299DDB6000C0B37F /* Test */,
 				2F6D13B528F5F386007C25D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -627,7 +609,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2F6D13B728F5F386007C25D6 /* Debug */,
-				2FB07588299DDB6000C0B37F /* Test */,
 				2F6D13B828F5F386007C25D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -637,7 +618,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2F6D13BD28F5F386007C25D6 /* Debug */,
-				2FB07589299DDB6000C0B37F /* Test */,
 				2F6D13BE28F5F386007C25D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -662,21 +642,17 @@
 				minimumVersion = 0.4.4;
 			};
 		};
+		97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StanfordSpezi/SpeziChat";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2FC186002AD528830065EBB2 /* SpeziOpenAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziOpenAI;
-		};
-		2FC186022AD528830065EBB2 /* SpeziSpeechRecognizer */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziSpeechRecognizer;
-		};
-		2FC186042AD52C5B0065EBB2 /* SpeziSpeechSynthesizer */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SpeziSpeechSynthesizer;
-		};
 		2FD590482A19E4AE00153BE4 /* Spezi */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2FD590442A19E40F00153BE4 /* XCRemoteSwiftPackageReference "Spezi" */;
@@ -691,6 +667,23 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
 			productName = XCTestExtensions;
+		};
+		9756D25F2B0316D80006B6BD /* SpeziLLMLocal */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMLocal;
+		};
+		9756D2612B0316D80006B6BD /* SpeziLLMLocalDownload */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMLocalDownload;
+		};
+		97DD56BA2B02F7E400389331 /* SpeziChat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97DD56B92B02F7E400389331 /* XCRemoteSwiftPackageReference "SpeziChat" */;
+			productName = SpeziChat;
+		};
+		97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMOpenAI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
