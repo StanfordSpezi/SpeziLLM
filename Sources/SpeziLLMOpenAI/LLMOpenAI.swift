@@ -29,6 +29,10 @@ import SpeziLLM
 ///
 /// The code section below showcases a complete code example on how to use the ``LLMOpenAI`` in combination with a `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target.
 ///
+/// - Important: The model can be queried via the `LLMGenerationTask/generate()` and `LLMGenerationTask/generate(prompt:)` calls (returned from wrapping the ``LLMOpenAI`` in the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target).
+/// The first method takes no input prompt at all but uses the current context of the model (so `LLM/context`) to query the model.
+/// The second takes a `String`-based input from the user and appends it to the  context of the model (so `LLM/context`) before querying the model.
+///
 /// ```swift
 /// class LLMOpenAIAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {

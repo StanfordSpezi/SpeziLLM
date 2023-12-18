@@ -10,11 +10,11 @@ import Foundation
 import SpeziLLM
 
 
-/// The ``LLMLlamaError`` describes possible errors that occur during the execution of ``LLMLlama`` via the ``LLMRunner``.
+/// The ``LLMLlamaError`` describes possible errors that occur during the execution of ``LLMLlama`` via the SpeziLLM `LLMRunner`.
 public enum LLMLlamaError: LLMError {
     /// Indicates that the local model file is not found.
     case modelNotFound
-    /// Indicates that the ``LLM`` is not yet ready, e.g., not initialized.
+    /// Indicates that the ``LLMLlama`` is not yet ready, e.g., not initialized.
     case modelNotReadyYet
     /// Indicates that during generation an error occurred.
     case generationError

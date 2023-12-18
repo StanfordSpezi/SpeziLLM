@@ -13,7 +13,7 @@ import SpeziLLM
 import SpeziSecureStorage
 
 
-/// The ``LLMRemoteRunnerSetupTask`` sets up the OpenAI environment in order to execute Spezi `LLM`s.
+/// The ``LLMOpenAIRunnerSetupTask`` sets up the OpenAI environment in order to execute Spezi `LLM`s.
 /// The task needs to be stated within the `LLMRunner` initializer in the Spezi `Configuration`.
 ///
 /// One is able to specify Spezi-wide configurations for the OpenAI interaction, such as the API key or a network timeout duration (however, not a requirement!).
@@ -21,7 +21,7 @@ import SpeziSecureStorage
 ///
 /// ### Usage
 ///
-/// A minimal example of using the ``LLMRemoteRunnerSetupTask`` can be found below.
+/// A minimal example of using the ``LLMOpenAIRunnerSetupTask`` can be found below.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {

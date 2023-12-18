@@ -32,7 +32,7 @@ public struct LLMOpenAIParameters: Sendable {
     /// - Parameters:
     ///   - modelType: The to-be-used OpenAI model such as GPT3.5 or GPT4.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
-    ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMRemoteRunnerSetupTask``.
+    ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIRunnerSetupTask``.
     public init(
         modelType: Model,
         systemPrompt: String = Defaults.defaultOpenAISystemPrompt,

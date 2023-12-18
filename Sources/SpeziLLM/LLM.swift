@@ -20,7 +20,7 @@ import SpeziChat
 /// ### Usage
 ///
 /// An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
-/// The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(prompt:continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
+/// The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
 ///
 /// ```swift
 /// @Observable
@@ -59,7 +59,7 @@ public protocol LLM: AnyObject {
 
 
 extension LLM {
-    /// Finishes the continuation with an error and sets the ``LLMLlama/state`` to the respective error (on the main actor).
+    /// Finishes the continuation with an error and sets the ``LLM/state`` to the respective error (on the main actor).
     ///
     /// - Parameters:
     ///   - error: The error that occurred.

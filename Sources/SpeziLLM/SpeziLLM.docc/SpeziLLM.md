@@ -42,7 +42,7 @@ It is recommended that ``LLM`` should be used in conjunction with the [Swift Act
 #### Usage
 
 An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
-The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(prompt:continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
+The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
 
 ```swift
 actor LLMTest: LLM {
