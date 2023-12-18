@@ -17,8 +17,8 @@ class TestAppDelegate: SpeziAppDelegate {
         Configuration {
             LLMRunner {
                 LLMLocalRunnerSetupTask()
+                LLMOpenAIRunnerSetupTask()
             }
-            OpenAIModule()
         }
     }
 }

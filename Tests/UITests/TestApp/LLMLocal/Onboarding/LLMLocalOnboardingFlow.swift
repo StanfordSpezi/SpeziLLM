@@ -19,7 +19,7 @@ struct LLMLocalOnboardingFlow: View {
         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
             LLMLocalOnboardingWelcomeView()
             
-            if !FeatureFlags.mockLocalLLM {
+            if !FeatureFlags.mockMode {
                 LLMLocalOnboardingDownloadView()
             }
         }

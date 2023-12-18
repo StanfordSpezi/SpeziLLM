@@ -44,23 +44,15 @@ extension LLMLlama {
     }()
     
     
-    /// Converts a textual `String` to the individual `LLMLlamaToken`'s based on the model's dictionary.
+    /// Converts the current context of the model to the individual `LLMLlamaToken`'s based on the model's dictionary.
     /// This is a required tasks as LLMs internally processes tokens.
     ///
-    /// - Parameters:
-    ///   - toBeTokenizedText: The input `String` that should be tokenized.
-    ///
     /// - Returns: The tokenized `String` as `LLMLlamaToken`'s.
-    func tokenize(_ toBeTokenizedText: String) -> [LLMLlamaToken] {
-        let formattedPrompt = buildPrompt(with: toBeTokenizedText)
-        if self.generatedText.isEmpty {
-            self.generatedText = formattedPrompt
-        } else {
-            self.generatedText.append(formattedPrompt)
-        }
+    func tokenize() async throws -> [LLMLlamaToken] {
+        let formattedPrompt = try await tokenizeChat()
         
         var tokens: [LLMLlamaToken] = .init(
-            llama_tokenize_with_context(self.context, std.string(self.generatedText), self.parameters.addBosToken, true)
+            llama_tokenize_with_context(self.modelContext, std.string(formattedPrompt), self.parameters.addBosToken, true)
         )
         
         // Truncate tokens if there wouldn't be enough context size for the generated output
@@ -72,7 +64,7 @@ extension LLMLlama {
         if tokens.isEmpty {
             tokens.append(llama_token_bos(self.model))
             Self.logger.warning("""
-            The input prompt didn't map to any tokens, so the prompt was considered empty.
+            SpeziLLMLocal: The input prompt didn't map to any tokens, so the prompt was considered empty.
             To mediate this issue, a BOS token was added to the prompt so that the output generation
             doesn't run without any tokens.
             """)
@@ -90,7 +82,7 @@ extension LLMLlama {
     /// - Note: Used only for debug purposes
     func detokenize(tokens: [LLMLlamaToken]) -> [(LLMLlamaToken, String)] {
         tokens.reduce(into: [(LLMLlamaToken, String)]()) { partialResult, token in
-            partialResult.append((token, String(llama_token_to_piece(self.context, token))))
+            partialResult.append((token, String(llama_token_to_piece(self.modelContext, token))))
         }
     }
     
@@ -101,7 +93,7 @@ extension LLMLlama {
     /// - Returns: A sampled `LLMLLamaToken`
     func sample(batchSize: Int32) -> LLMLlamaToken {
         let nVocab = llama_n_vocab(model)
-        let logits = llama_get_logits_ith(self.context, batchSize - 1)
+        let logits = llama_get_logits_ith(self.modelContext, batchSize - 1)
         
         var candidates: [llama_token_data] = .init(repeating: llama_token_data(), count: Int(nVocab))
         
@@ -117,17 +109,17 @@ extension LLMLlama {
         
         // Sample via the temperature method
         let minKeep = Int(max(1, self.samplingParameters.outputProbabilities))
-        llama_sample_top_k(self.context, &candidatesP, self.samplingParameters.topK, minKeep)
-        llama_sample_tail_free(self.context, &candidatesP, self.samplingParameters.tfs, minKeep)
-        llama_sample_typical(self.context, &candidatesP, self.samplingParameters.typicalP, minKeep)
-        llama_sample_top_p(self.context, &candidatesP, self.samplingParameters.topP, minKeep)
-        llama_sample_min_p(self.context, &candidatesP, self.samplingParameters.minP, minKeep)
-        llama_sample_temp(self.context, &candidatesP, self.samplingParameters.temperature)
+        llama_sample_top_k(self.modelContext, &candidatesP, self.samplingParameters.topK, minKeep)
+        llama_sample_tail_free(self.modelContext, &candidatesP, self.samplingParameters.tfs, minKeep)
+        llama_sample_typical(self.modelContext, &candidatesP, self.samplingParameters.typicalP, minKeep)
+        llama_sample_top_p(self.modelContext, &candidatesP, self.samplingParameters.topP, minKeep)
+        llama_sample_min_p(self.modelContext, &candidatesP, self.samplingParameters.minP, minKeep)
+        llama_sample_temp(self.modelContext, &candidatesP, self.samplingParameters.temperature)
         
-        return llama_sample_token(self.context, &candidatesP)
+        return llama_sample_token(self.modelContext, &candidatesP)
     }
     
-    /// Build a typical Llama2 prompt format out of the user's input including the system prompt and all necessary instruction tokens.
+    /// Builds a typical Llama2 prompt format out of the ``LLMLlama/context`` including the system prompt and all necessary instruction tokens.
     ///
     /// The typical format of an Llama2 prompt looks like:
     /// """
@@ -138,22 +130,48 @@ extension LLMLlama {
     /// {user_message_1} [/INST] {model_reply_1}</s><s>[INST] {user_message_2} [/INST]
     /// """
     ///
-    /// - Parameters:
-    ///     - userInputString: String-based input prompt of the user.
     /// - Returns: Properly formatted Llama2 prompt including system prompt.
-    private func buildPrompt(with userInputString: String) -> String {
-        if self.generatedText.isEmpty {
-            """
-            \(Self.BOS)\(Self.BOINST) \(Self.BOSYS)
-            \(self.parameters.systemPrompt)
-            \(Self.EOSYS)
-            
-            \(userInputString) \(Self.EOINST)
-            """ + " "   // Add a spacer to the generated output from the model
-        } else {
-            """
-            \(Self.BOS)\(Self.BOINST) \(userInputString) \(Self.EOINST)
-            """ + " "   // Add a spacer to the generated output from the model
+    private func tokenizeChat() async throws -> String {
+        // Ensure that system prompt as well as a first user prompt exist
+        guard let systemPrompt = await self.context.first,
+              systemPrompt.role == .system,
+              let initialUserPrompt = await self.context.indices.contains(1) ? self.context[1] : nil,
+              initialUserPrompt.role == .user else {
+            throw LLMLlamaError.illegalContext
         }
+        
+        /// Build the initial prompt
+        /// """
+        /// <s>[INST] <<SYS>>
+        /// {your_system_message}
+        /// <</SYS>>
+        ///
+        /// {user_message_1} [/INST]
+        /// """
+        var prompt = """
+        \(Self.BOS)\(Self.BOINST) \(Self.BOSYS)
+        \(systemPrompt.content)
+        \(Self.EOSYS)
+        
+        \(initialUserPrompt.content) \(Self.EOINST)
+        """ + " "   // Add a spacer to the generated output from the model
+        
+        for chatEntry in await self.context.dropFirst(2) {
+            if chatEntry.role == .assistant {
+                /// Append response from assistant
+                /// (already existing: {user_message_1} [/INST]){model_reply_1}</s>
+                prompt += """
+                \(chatEntry.content)\(Self.EOS)
+                """
+            } else if chatEntry.role == .user {
+                /// Append response from user
+                /// <s>[INST] {user_message_2} [/INST]
+                prompt += """
+                \(Self.BOS)\(Self.BOINST) \(chatEntry.content) \(Self.EOINST)
+                """ + " "   // Add a spacer to the generated output from the model
+            }
+        }
+        
+        return prompt
     }
 }

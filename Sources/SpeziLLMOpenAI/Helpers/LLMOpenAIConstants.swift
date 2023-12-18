@@ -6,4 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-extension OpenAI.ChatStreamResult: @unchecked Sendable {}
+
+/// Constants used throughout the `SpeziLLMOpenAI` target.
+enum LLMOpenAIConstants {
+    static let credentialsServer = "openapi.org"
+    static let credentialsUsername = "OpenAIGPT"
+}

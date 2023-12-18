@@ -17,6 +17,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
+        app.launchArguments = ["--mockMode"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
     }
     
@@ -26,9 +27,6 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
-        
-        app.staticTexts["User Message!"].tap()
-        app.staticTexts["Assistant Message!"].tap()
         
         app.buttons["Onboarding"].tap()
         
@@ -58,9 +56,8 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         sleep(1)
         
-        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
-        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
         
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
@@ -83,20 +80,19 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
         
-        XCTAssert(app.staticTexts["User Message!"].waitForExistence(timeout: 2))
-        XCTAssert(app.staticTexts["Assistant Message!"].waitForExistence(timeout: 2))
         XCTAssert(app.buttons["Record Message"].waitForExistence(timeout: 2))
         
-        XCTAssertFalse(app.staticTexts["System Message!"].waitForExistence(timeout: 2))
-        XCTAssertFalse(app.staticTexts["Function Message!"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.staticTexts["You're a helpful assistant that answers questions from users."].waitForExistence(timeout: 2))
         
         XCTAssert(app.buttons["Record Message"].isEnabled)
-        try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
-        XCTAssert(app.buttons["Send Message"].isEnabled)
         
-        sleep(1)
+        try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        
+        XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
         app.buttons["Send Message"].tap()
-                
-        XCTAssert(app.staticTexts["New Message!"].waitForExistence(timeout: 2))
+        
+        sleep(3)
+        
+        XCTAssert(app.staticTexts["Mock Message from SpeziLLM!"].waitForExistence(timeout: 5))
     }
 }

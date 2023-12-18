@@ -20,7 +20,7 @@ public enum LLMState: CustomStringConvertible, Equatable {
     /// The Spezi ``LLM`` is currently in the process of generating an output.
     case generating
     /// The Spezi ``LLM`` is in an error state as described by the associated value ``LLMError``.
-    case error(error: LLMError)
+    case error(error: any LLMError)
     
     
     /// A textual description of the current ``LLMState``.
@@ -31,6 +31,19 @@ public enum LLMState: CustomStringConvertible, Equatable {
         case .ready: String(localized: LocalizedStringResource("LLM_STATE_READY", bundle: .atURL(from: .module)))
         case .generating: String(localized: LocalizedStringResource("LLM_STATE_GENERATING", bundle: .atURL(from: .module)))
         case .error: String(localized: LocalizedStringResource("LLM_STATE_ERROR", bundle: .atURL(from: .module)))
+        }
+    }
+    
+    
+    /// Necessary `Equatable` implementation
+    public static func == (lhs: LLMState, rhs: LLMState) -> Bool {
+        switch (lhs, rhs) {
+        case (.uninitialized, .uninitialized): true
+        case (.loading, .loading): true
+        case (.ready, .ready): true
+        case (.generating, .generating): true
+        case (.error, .error): true
+        default: false
         }
     }
 }

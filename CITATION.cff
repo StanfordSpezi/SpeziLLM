@@ -12,9 +12,9 @@ authors:
 - family-names: "Schmiedmayer"
   given-names: "Paul"
   orcid: "https://orcid.org/0000-0002-8607-9148"
-- family-names: "Ravi"
-  given-names: "Vishnu"
-  orcid: "https://orcid.org/0000-0003-0359-1275"
+- family-names: "Zagar"
+  given-names: "Philipp"
+  orcid: "https://orcid.org/0009-0001-5934-2078"
 title: "SpeziLLM"
 doi: 10.5281/zenodo.7538165
 url: "https://github.com/StanfordSpezi/SpeziLLM"

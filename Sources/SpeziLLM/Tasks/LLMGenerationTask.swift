@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SpeziChat
 
 
 /// The ``LLMGenerationTask`` with the specific responsibility to handle LLM generation tasks.
@@ -49,14 +50,13 @@ public actor LLMGenerationTask {
     }
     
     
-    /// Starts the LLM output generation based on an input prompt.
+    /// Starts the LLM output generation based on the ``LLM/context``.
     /// Handles management takes like the initial setup of the ``LLM``.
     ///
-    /// - Parameters:
-    ///     - prompt: The `String` that should be used as an input to the ``LLM``
-    ///
     /// - Returns: An asynchronous stream of the ``LLM`` generation results.
-    public func generate(prompt: String) async throws -> AsyncThrowingStream<String, Error> {
+    ///
+    /// - Important: This function takes the state present within the ``LLM/context`` to query the ``LLM``. Ensure that the ``LLM/context`` reflects the state you want to use, especially the last (user) entry of the ``LLM/context``.
+    public func generate() async throws -> AsyncThrowingStream<String, Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         /// Setup the model if necessary.
@@ -64,17 +64,30 @@ public actor LLMGenerationTask {
             try await model.setup(runnerConfig: self.runnerConfig)
         }
         
-        /// Execute the LLM generation.
-        switch await model.state {
-        case .ready, .error:
-            self.task = Task(priority: self.runnerConfig.taskPriority) {
-                await model.generate(prompt: prompt, continuation: continuation)
-            }
-            
-            return stream
-        default:
-            throw LLMError.modelNotReadyYet
+        /// Execute the output generation of the LLM.
+        self.task = Task(priority: self.runnerConfig.taskPriority) {
+            await model.generate(continuation: continuation)
         }
+        
+        return stream
+    }
+    
+    
+    /// Starts the LLM output generation based on an input prompt.
+    /// Handles management takes like the initial setup of the ``LLM``.
+    ///
+    /// - Parameters:
+    ///     - userPrompt: The `String` that should be used as an input prompt to the ``LLM``
+    ///
+    /// - Returns: An asynchronous stream of the ``LLM`` generation results.
+    ///
+    /// - Important: This function appends to the``LLM/context``. Ensure that this wasn't done before by, e.g., the ``LLMChatView``.
+    public func generate(prompt userPrompt: String) async throws -> AsyncThrowingStream<String, Error> {
+        await MainActor.run {
+            self.model.context.append(userInput: userPrompt)
+        }
+        
+        return try await self.generate()
     }
     
     

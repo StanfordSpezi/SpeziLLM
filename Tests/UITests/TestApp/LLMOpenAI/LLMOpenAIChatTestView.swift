@@ -7,22 +7,33 @@
 //
 
 import SpeziChat
+import SpeziLLM
+import SpeziLLMOpenAI
 import SwiftUI
 
 
 struct LLMOpenAIChatTestView: View {
-    @State var chat: Chat = [
-        .init(role: .system, content: "System Message!"),
-        .init(role: .system, content: "System Message (hidden)!"),
-        .init(role: .function, content: "Function Message!"),
-        .init(role: .user, content: "User Message!"),
-        .init(role: .assistant, content: "Assistant Message!")
-    ]
     @State var showOnboarding = false
+
+    /// The Spezi `LLM` that is configured and executed on the `LLMRunner`
+    private var model: LLM = {
+        if FeatureFlags.mockMode {
+            LLMMock()
+        } else {
+            LLMOpenAI(
+                parameters: .init(
+                    modelType: .gpt3_5Turbo,
+                    systemPrompt: "You're a helpful assistant that answers questions from users."
+                )
+            )
+        }
+    }()
     
     
     var body: some View {
-        ChatView($chat)
+        LLMChatView(
+            model: model
+        )
             .navigationTitle("LLM_OPENAI_CHAT_VIEW_TITLE")
             .toolbar {
                 ToolbarItem {
@@ -34,6 +45,6 @@ struct LLMOpenAIChatTestView: View {
             .sheet(isPresented: $showOnboarding) {
                 LLMOpenAIOnboardingView()
             }
-            .accentColor(Color(red: 0, green: 166 / 255, blue: 126 / 255))  // OpenAI Green Color
+            .accentColor(Color(red: 0, green: 166 / 255, blue: 126 / 255))  // OpenAI Green
     }
 }
