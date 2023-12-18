@@ -62,7 +62,10 @@ public class LLMOpenAITokenSaver {
     public var token: String? {
         get {
             access(keyPath: \.token)
-            return try? secureStorage.retrieveCredentials(LLMOpenAIConstants.credentialsUsername, server: LLMOpenAIConstants.credentialsServer)?.password
+            return try? secureStorage.retrieveCredentials(
+                LLMOpenAIConstants.credentialsUsername,
+                server: LLMOpenAIConstants.credentialsServer
+            )?.password
         }
         set {
             withMutation(keyPath: \.token) {
