@@ -47,7 +47,7 @@ You need to add the SpeziLLM Swift package to
 
 ## Spezi LLM OpenAI Components
 
-The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class which conforms to the [`LLM` protocol of SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm). ``LLMOpenAI`` uses the OpenAI API to perform textual inference on the [GPT-3.5 or GPT-4 models](https://platform.openai.com/docs/models) from OpenAI.
+The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class which conforms to the [`LLM` protocol of SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm). ``LLMOpenAI`` uses the OpenAI API to perform textual inference on the GPT-3.5 or GPT-4 models from OpenAI.
 
 > Important: To utilize an LLM from OpenAI, an OpenAI API Key is required. Ensure that the OpenAI account associated with the key has enough resources to access the specified model as well as enough credits to perform the actual inference.
 
