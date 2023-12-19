@@ -65,6 +65,14 @@ class LocalLLMAppDelegate: SpeziAppDelegate {
 The code example below showcases the interaction with the ``LLMLlama`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner).
 Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
 
+The ``LLMLlama`` contains the ``LLMLlama/context`` property which holds the entire history of the model interactions.
+This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLMLlama/generate(continuation:)`` function executes the inference based on the ``LLMLlama/context``
+
+> Tip: The model can be queried via the `LLMGenerationTask/generate()` and `LLMGenerationTask/generate(prompt:)` calls (returned from wrapping the ``LLMLlama`` in the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target).
+    The first method takes no input prompt at all but uses the current context of the model (so `LLM/context`) to query the model.
+    The second takes a `String`-based input from the user and appends it to the  context of the model (so `LLM/context`) before querying the model.
+
 > Important: The ``LLMLlama`` should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
 
 ```swift

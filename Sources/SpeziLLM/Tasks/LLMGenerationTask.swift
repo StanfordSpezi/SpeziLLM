@@ -26,9 +26,7 @@ public actor LLMGenerationTask {
     
     /// The `LLMTaskIdentifier` of the ``LLMGenerationTask``.
     var id: LLMTaskIdentifier {
-        get async {
-            .init(fromModel: model)
-        }
+        .init(fromModel: model)
     }
     
     /// Describes the state of the ``LLM`` as a ``LLMState``.
@@ -81,7 +79,7 @@ public actor LLMGenerationTask {
     ///
     /// - Returns: An asynchronous stream of the ``LLM`` generation results.
     ///
-    /// - Important: This function appends to the``LLM/context``. Ensure that this wasn't done before by, e.g., the ``LLMChatView``.
+    /// - Important: This function appends to the``LLM/context``. Ensure that this wasn't done before by, e.g., via the ``LLMChatView``.
     public func generate(prompt userPrompt: String) async throws -> AsyncThrowingStream<String, Error> {
         await MainActor.run {
             self.model.context.append(userInput: userPrompt)

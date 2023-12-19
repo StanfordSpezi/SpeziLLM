@@ -59,7 +59,7 @@ The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class w
 
 ### Setup
 
-In order to use the ``LLMOpenAI``, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
+In order to use ``LLMOpenAI``, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
@@ -76,8 +76,12 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 
 ### Usage
 
-The code example below showcases the interaction with the ``LLMOpenAI`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner).
+The code example below showcases the interaction with the ``LLMOpenAI`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
 Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
+
+The ``LLMOpenAI`` contains the ``LLMOpenAI/context`` property which holds the entire history of the model interactions.
+This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLMOpenAI/generate(continuation:)`` function executes the inference based on the ``LLMOpenAI/context``
 
 > Tip: The model can be queried via the `LLMGenerationTask/generate()` and `LLMGenerationTask/generate(prompt:)` calls (returned from wrapping the ``LLMOpenAI`` in the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target).
     The first method takes no input prompt at all but uses the current context of the model (so `LLM/context`) to query the model.
@@ -91,7 +95,7 @@ struct LLMOpenAIChatView: View {
     @Environment(LLMRunner.self) private var runner: LLMRunner
 
     // The OpenAI LLM
-    private let model: LLMOpenAI = .init(
+    @State private var model: LLMOpenAI = .init(
         parameters: .init(
             modelType: .gpt3_5Turbo,
             systemPrompt: "You're a helpful assistant that answers questions from users.",

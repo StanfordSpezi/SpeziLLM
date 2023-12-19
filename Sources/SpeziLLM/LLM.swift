@@ -14,6 +14,10 @@ import SpeziChat
 /// regardless of the execution locality (local or remote) or the specific model type.
 /// Developers can use the ``LLM`` protocol to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
 ///
+/// The ``LLM`` contains the ``LLM/context`` property which holds the entire history of the model interactions.
+/// This includes the system prompt, user input, but also assistant responses.
+/// Ensure the property always contains all necessary information, as the ``LLM/generate(continuation:)`` function executes the inference based on the ``LLM/context``.
+///
 /// - Important: An ``LLM`` shouldn't be executed on it's own but always used together with the ``LLMRunner``.
 /// Please refer to the ``LLMRunner`` documentation for a complete code example.
 ///
