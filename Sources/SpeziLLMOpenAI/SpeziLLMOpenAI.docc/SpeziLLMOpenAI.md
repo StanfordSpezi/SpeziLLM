@@ -53,11 +53,13 @@ The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class w
 
 > Tip: In order to collect the OpenAI API Key or model type from the user, ``SpeziLLMOpenAI`` provides the ``LLMOpenAIAPITokenOnboardingStep`` and ``LLMOpenAIModelOnboardingStep`` views which can be used in the onboarding flow of the application.
 
+### LLM OpenAI
+
 ``LLMOpenAI`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAI/init(parameters:modelParameters:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
 
 - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles all management overhead tasks.
 
-### Setup
+#### Setup
 
 In order to use ``LLMOpenAI``, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
@@ -74,7 +76,7 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 }
 ```
 
-### Usage
+#### Usage
 
 The code example below showcases the interaction with the ``LLMOpenAI`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
 Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
@@ -92,17 +94,16 @@ Ensure the property always contains all necessary information, as the ``LLMOpenA
 ```swift
 struct LLMOpenAIChatView: View {
     // The runner responsible for executing the OpenAI LLM.
-    @Environment(LLMRunner.self) private var runner: LLMRunner
+    @Environment(LLMRunner.self) var runner: LLMRunner
 
     // The OpenAI LLM
-    @State private var model: LLMOpenAI = .init(
+    @State var model: LLMOpenAI = .init(
         parameters: .init(
             modelType: .gpt3_5Turbo,
             systemPrompt: "You're a helpful assistant that answers questions from users.",
             overwritingToken: "abc123"
         )
     )
-
     @State var responseText: String
 
     func executePrompt(prompt: String) {

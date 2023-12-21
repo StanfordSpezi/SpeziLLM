@@ -87,13 +87,12 @@ Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method ret
 
 ```swift
 struct LocalLLMChatView: View {
-   @Environment(LLMRunner.self) private var runner: LLMRunner
+   @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   private let model: LLMLlama = .init(
+   @State var model: LLMLlama = .init(
         modelPath: ...
    )
-
    @State var responseText: String
 
    func executePrompt(prompt: String) {
@@ -139,15 +138,15 @@ Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method ret
 
 ```swift
 struct LLMOpenAIChatView: View {
-    @Environment(LLMRunner.self) private var runner: LLMRunner
-    @State private var model: LLMOpenAI = .init(
+    @Environment(LLMRunner.self) var runner: LLMRunner
+    
+    @State var model: LLMOpenAI = .init(
         parameters: .init(
             modelType: .gpt3_5Turbo,
             systemPrompt: "You're a helpful assistant that answers questions from users.",
             overwritingToken: "abc123"
         )
     )
-
     @State var responseText: String
 
     func executePrompt(prompt: String) {

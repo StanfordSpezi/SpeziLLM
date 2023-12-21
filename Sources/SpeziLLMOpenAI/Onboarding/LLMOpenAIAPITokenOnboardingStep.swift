@@ -16,6 +16,7 @@ import SwiftUI
 /// Ensure that the ``LLMOpenAIRunnerSetupTask`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 public struct LLMOpenAIAPITokenOnboardingStep: View {
     @Environment(LLMOpenAITokenSaver.self) private var tokenSaver
+    
     private let actionText: String
     private let action: () -> Void
     

@@ -14,32 +14,32 @@ import llama
 /// Extension of ``LLMLlama`` handling the text tokenization.
 extension LLMLlama {
     /// BOS token of the LLM, used at the start of each prompt passage.
-    static let BOS: String = {
+    private static let BOS: String = {
         "<s>"
     }()
     
     /// EOS token of the LLM, used at the end of each prompt passage.
-    static let EOS: String = {
+    private static let EOS: String = {
         "</s>"
     }()
     
     /// BOSYS token of the LLM, used at the start of the system prompt.
-    static let BOSYS: String = {
+    private static let BOSYS: String = {
         "<<SYS>>"
     }()
     
     /// EOSYS token of the LLM, used at the end of the system prompt.
-    static let EOSYS: String = {
+    private static let EOSYS: String = {
         "<</SYS>>"
     }()
     
     /// BOINST token of the LLM, used at the start of the instruction part of the prompt.
-    static let BOINST: String = {
+    private static let BOINST: String = {
         "[INST]"
     }()
     
     /// EOINST token of the LLM, used at the end of the instruction part of the prompt.
-    static let EOINST: String = {
+    private static let EOINST: String = {
         "[/INST]"
     }()
     
@@ -49,10 +49,10 @@ extension LLMLlama {
     ///
     /// - Returns: The tokenized `String` as `LLMLlamaToken`'s.
     func tokenize() async throws -> [LLMLlamaToken] {
-        let formattedPrompt = try await tokenizeChat()
+        let formattedChat = try await formatChat()
         
         var tokens: [LLMLlamaToken] = .init(
-            llama_tokenize_with_context(self.modelContext, std.string(formattedPrompt), self.parameters.addBosToken, true)
+            llama_tokenize_with_context(self.modelContext, std.string(formattedChat), self.parameters.addBosToken, true)
         )
         
         // Truncate tokens if there wouldn't be enough context size for the generated output
@@ -131,7 +131,7 @@ extension LLMLlama {
     /// """
     ///
     /// - Returns: Properly formatted Llama2 prompt including system prompt.
-    private func tokenizeChat() async throws -> String {
+    private func formatChat() async throws -> String {
         // Ensure that system prompt as well as a first user prompt exist
         guard let systemPrompt = await self.context.first,
               systemPrompt.role == .system,

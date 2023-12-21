@@ -28,13 +28,13 @@ import SpeziChat
 ///
 /// ```swift
 /// @Observable
-/// class LLMTest: LLM {
-///     var type: LLMHostingType = .local
+/// public class LLMTest: LLM {
+///     public let type: LLMHostingType = .local
 ///     @MainActor public var state: LLMState = .uninitialized
 ///     @MainActor public var context: Chat = []
 ///
-///     func setup(/* */) async {}
-///     func generate(/* */) async {}
+///     public func setup(/* */) async throws {}
+///     public func generate(/* */) async {}
 /// }
 /// ```
 public protocol LLM: AnyObject {
