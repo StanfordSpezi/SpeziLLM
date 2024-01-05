@@ -88,8 +88,8 @@ public struct LLMOpenAIModelOnboardingStep: View {
 }
 
 
-private extension Model {   // swiftlint:disable:this no_extension_access_modifier
-    var formattedModelDescription: String {
+extension Model {
+    fileprivate var formattedModelDescription: String {
         self.replacing("-", with: " ").capitalized.replacing("Gpt", with: "GPT")
     }
 }

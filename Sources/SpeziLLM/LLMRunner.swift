@@ -39,14 +39,13 @@ import Spezi
 /// }
 ///
 /// struct LocalLLMChatView: View {
-///    // The runner responsible for executing the local LLM.
-///    @Environment(LLMRunner.self) private var runner: LLMRunner
+///    // The runner responsible for executing the LLM.
+///    @Environment(LLMRunner.self) var runner: LLMRunner
 ///
-///    // The locally executed LLM
-///    private let model: LLMLlama = .init(
+///    // The executed LLM
+///    @State var model: LLMLlama = .init(
 ///         modelPath: ...
 ///    )
-///
 ///    @State var responseText: String
 ///
 ///    func executePrompt(prompt: String) {

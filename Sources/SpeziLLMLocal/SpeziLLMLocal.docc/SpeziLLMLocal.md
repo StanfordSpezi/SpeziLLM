@@ -77,13 +77,12 @@ Ensure the property always contains all necessary information, as the ``LLMLlama
 
 ```swift
 struct LocalLLMChatView: View {
-   @Environment(LLMRunner.self) private var runner: LLMRunner
+   @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   private let model: LLMLlama = .init(
+   @State var model: LLMLlama = .init(
         modelPath: ...
    )
-
    @State var responseText: String
 
    func executePrompt(prompt: String) {

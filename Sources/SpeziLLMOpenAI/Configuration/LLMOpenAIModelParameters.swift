@@ -10,7 +10,7 @@ import Foundation
 import OpenAI
 
 
-/// The ``LLMOpenAIModelParameters`` represents the model parameters of OpenAIs LLMs.
+/// Represents the model-specific parameters of OpenAIs LLMs.
 public struct LLMOpenAIModelParameters: Sendable {
     /// The format for model responses.
     let responseFormat: ResponseFormat?

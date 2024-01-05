@@ -46,17 +46,16 @@ import SpeziLLM
 ///
 /// struct LLMOpenAIChatView: View {
 ///    // The runner responsible for executing the OpenAI LLM.
-///    @Environment(LLMRunner.self) private var runner: LLMRunner
+///    @Environment(LLMRunner.self) var runner: LLMRunner
 ///
 ///    // The OpenAI LLM
-///    private let model: LLMOpenAI = .init(
+///    @State var model: LLMOpenAI = .init(
 ///         parameters: .init(
 ///             modelType: .gpt3_5Turbo,
 ///             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///             overwritingToken: "abc123"
 ///         )
 ///    )
-///
 ///    @State var responseText: String
 ///
 ///    func executePrompt(prompt: String) {

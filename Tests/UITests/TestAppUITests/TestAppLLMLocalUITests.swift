@@ -36,6 +36,8 @@ class TestAppLLMLocalUITests: XCTestCase {
         XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         
+        sleep(1)
+        
         // Chat
         try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
         
