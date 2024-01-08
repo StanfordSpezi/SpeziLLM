@@ -13,10 +13,20 @@ extension LLMOpenAI {
     private var openAIContext: [Chat] {
         get async {
             await self.context.map { chatEntity in
-                Chat(
-                    role: chatEntity.role.openAIRepresentation,
-                    content: chatEntity.content
-                )
+                // TODO: What about the functionCall parameter of the OpenAI.Chat?!
+                // For what is it used exactly? Debug LLMonFHIR!
+                if case let .function(name: functionName) = chatEntity.role {
+                    return Chat(
+                        role: chatEntity.role.openAIRepresentation,
+                        content: chatEntity.content,
+                        name: functionName
+                    )
+                } else {
+                    return Chat(
+                        role: chatEntity.role.openAIRepresentation,
+                        content: chatEntity.content
+                    )
+                }
             }
         }
     }
@@ -28,6 +38,15 @@ extension LLMOpenAI {
                 model: self.parameters.modelType,
                 messages: self.openAIContext,
                 responseFormat: self.modelParameters.responseFormat,
+                functions: self.functions.values.map { function in
+                    let functionType = Swift.type(of: function)
+                    
+                    return .init(
+                        name: functionType.name,
+                        description: functionType.description,
+                        parameters: functionType.schema
+                    )
+                },
                 temperature: self.modelParameters.temperature,
                 topP: self.modelParameters.topP,
                 n: self.modelParameters.completionsPerOutput,

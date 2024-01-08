@@ -79,10 +79,11 @@ public class LLMOpenAI: LLM {
     public let type: LLMHostingType = .cloud
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
+    var functions: Dictionary<String, LLMFunction> = [:]
     @ObservationIgnored private var wrappedModel: OpenAI?
     
     
-    private var model: OpenAI {
+    var model: OpenAI {
         guard let model = wrappedModel else {
             preconditionFailure("""
             SpeziLLMOpenAII: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
@@ -100,10 +101,16 @@ public class LLMOpenAI: LLM {
     ///    - modelParameters: LLM Model Parameters
     public init(
         parameters: LLMOpenAIParameters,
+        functions: [LLMFunction] = [],
         modelParameters: LLMOpenAIModelParameters = .init()
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
+        for function in functions {
+            // Need to get the type in order to access static properties of the `LLMFunction`
+            self.functions[Swift.type(of: function).name] = function
+        }
+        
         Task { @MainActor in
             self.context.append(systemMessage: parameters.systemPrompt)
         }
@@ -149,9 +156,16 @@ public class LLMOpenAI: LLM {
     public func generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         
-        let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
+        await MainActor.run {
+            self.state = .generating
+        }
+        
+        //let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
         
         do {
+            try await _generate(continuation: continuation)
+            
+            /*
             for try await chatStreamResult in chatStream {
                 guard let yieldedToken = chatStreamResult.choices.first?.delta.content,
                       !yieldedToken.isEmpty else {
@@ -163,8 +177,16 @@ public class LLMOpenAI: LLM {
                 """)
                 continuation.yield(yieldedToken)
             }
+             */
             
             continuation.finish()
+            
+            await MainActor.run {
+                self.state = .ready
+            }
+            
+            Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
+        // TODO: Handle function calling errors
         } catch let error as APIErrorResponse {
             if error.error.code == LLMOpenAIError.insufficientQuota.openAIErrorMessage {
                 LLMOpenAI.logger.error("""
@@ -183,7 +205,5 @@ public class LLMOpenAI: LLM {
             """)
             await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
-        
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
     }
 }

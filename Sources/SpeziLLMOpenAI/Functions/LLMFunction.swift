@@ -11,7 +11,7 @@ import os
 import Foundation
 
 
-protocol LLMFunction {
+public protocol LLMFunction {
     typealias LLMFunctionParameterSchema = JSONSchema
     
     
@@ -73,8 +73,8 @@ extension LLMFunction {
         retrieveProperties(ofType: ParameterValueCollector.self)
     }
 
-    func injectParameterValues(from data: Data) {
-        // No injection of data
+    func injectParameterValues(from data: Data) throws {
+        // No injection of data if no `@Parameter` declared and `LLMFunctionParameterSchema` specifies no parameters
         guard storageValueCollectors.count != 0 && Self.schema.type != .null else {
             return
         }
@@ -87,15 +87,18 @@ extension LLMFunction {
                                 Ensure that only one @Parameter value is defined that contains all relevant
                                 function calling parameters, reflected in the LLMFunctionParameterSchema.
                                 """)
+            throw LLMOpenAIError.illegalFunctionCallParameterCount
         }
         
-        collector.retrieve(from: data)
-        
-        /*
-        for collector in storageValueCollectors {
-            collector.retrieve(from: data)
+        do {
+            try collector.retrieve(from: data)
+        } catch {
+            preconditionFailure("""
+                                Injection of LLM functional calling parameters into the @Parameter's of the Spezi LLMFunction failed.
+                                Ensure that the specified LLMFunctionParameterSchema matches the declared @Parameter's.
+                                """)
+            throw LLMOpenAIError.invalidFunctionCallArguments(error)
         }
-         */
     }
 }
 
@@ -122,23 +125,15 @@ struct LLMTestFunction: LLMFunction {
         ]
     )
     
-    static var schema2: LLMFunctionParameterSchema = .init(type: .null)
+    let someRandomParam: String
     
     @Parameter var parameter: SomeType
     
     init(someRandomParam: String) {
-        
+        self.someRandomParam = someRandomParam
     }
     
     func execute() async throws -> String {
         parameter.test1
     }
 }
-
-//let functions: [any LLMFunction] = [
-// LLMTestFunction(someRandomParam: "adf")
-//]
-
-let json = "{\"test1\": \"hello\", \"test2\": 123}"
-let injectedFuc = LLMTestFunction(someRandomParam: "adf").injectParameterValues(from: json.data(using: .utf8) ?? Data())
-print(injectedFuc)

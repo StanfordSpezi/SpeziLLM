@@ -44,4 +44,14 @@ extension Chat {
     public mutating func append(systemMessage systemPrompt: String) {
         self.insert(.init(role: .system, content: systemPrompt), at: 0)
     }
+    
+    /// Append a `ChatEntity/Role/function` response from a function call to the `Chat.
+    ///
+    /// - Parameters:
+    ///     - functionName: The name of the `ChatEntity/Role/function` that is called by the LLM.
+    ///     - functionResponse: The response `String` of the `ChatEntity/Role/function` that is called by the LLM.
+    @MainActor
+    public mutating func append(forFunction functionName: String, response functionResponse: String) {
+        self.append(.init(role: .function(name: functionName), content: functionResponse))
+    }
 }
