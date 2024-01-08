@@ -30,8 +30,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
-        // .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", branch: "feat/chat-export"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.2")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.3"))
     ],
     targets: [
