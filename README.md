@@ -56,7 +56,7 @@ The section below highlights the setup and basic use of the [SpeziLLMLocal](http
 
 ### Spezi LLM Local
 
-The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device via the [llama.cpp framework](https://github.com/ggerganov/llama.cpp). The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level C or C++ code is necessary.
+The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device via the [llama.cpp framework](https://github.com/ggerganov/llama.cpp). The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level C or C++ code is necessary, building on top of the infrastructure of the [SpeziLLM target](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm).
 
 #### Setup
 
@@ -80,25 +80,29 @@ class TestAppDelegate: SpeziAppDelegate {
 }
 ```
 
-Spezi will then automatically inject the `LLMRunner` in the SwiftUI environment to make it accessible throughout your application. 
-The example below also showcases how to use the `LLMRunner` to execute a SpeziLLM-based [`LLM`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm).
+#### Usage
+
+The code example below showcases the interaction with the `LLMLlama` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
+Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
 
 ```swift
-class ExampleView: View {
-    @Environment(LLMRunner.self) var runner
-    @State var model: LLM = LLMLlama(
-        modelPath: URL(string: "...") // The locally stored Language Model File in the ".gguf" format
-    )
+struct LocalLLMChatView: View {
+   @Environment(LLMRunner.self) var runner: LLMRunner
 
-    var body: some View {
-        EmptyView()
-            .task {
-                // Returns an `AsyncThrowingStream` which yields the produced output of the LLM.
-                let stream = try await runner(with: model).generate(prompt: "Some example prompt")
-                
-                // ...
-            }
-    }
+   // The locally executed LLM
+   @State var model: LLMLlama = .init(
+        modelPath: ...
+   )
+   @State var responseText: String
+
+   func executePrompt(prompt: String) {
+        // Execute the query on the runner, returning a stream of outputs
+        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
+
+        for try await token in stream {
+            responseText.append(token)
+       }
+   }
 }
 ```
 
@@ -107,43 +111,51 @@ class ExampleView: View {
 
 ### Spezi LLM Open AI
 
-A module that allows you to interact with GPT-based large language models (LLMs) from OpenAI within your Spezi application.
+A module that allows you to interact with GPT-based Large Language Models (LLMs) from OpenAI within your Spezi application.
+`SpeziLLMOpenAI` provides a pure Swift-based API for interacting with the OpenAI GPT API, building on top of the infrastructure of the [SpeziLLM target](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm).
 
 #### Setup
 
-You can configure the `OpenAIModule` in the `SpeziAppDelegate` as follows.
-In the example, we configure the `OpenAIModule` to use the GPT-4 model with a default API key.
+In order to use `LLMOpenAI`, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
+See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
-import Spezi
-import SpeziLLMOpenAI
-
-class ExampleDelegate: SpeziAppDelegate {
+class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration {
-            OpenAIModule(apiToken: "API_KEY", openAIModel: .gpt4)
+         Configuration {
+             LLMRunner {
+                LLMOpenAIRunnerSetupTask()
+            }
         }
     }
 }
 ```
 
-The OpenAIModule injects an `OpenAIModel` in the SwiftUI environment to make it accessible throughout your application. The model is queried via an instance of [`Chat` from the SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chat).
+#### Usage
+
+The code example below showcases the interaction with the `LLMOpenAI` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
+Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
 
 ```swift
-class ExampleView: View {
-    @Environment(OpenAIModel.self) var model
-    let chat: Chat = [
-        .init(role: .user, content: "Example prompt!"),
-    ]
+struct LLMOpenAIChatView: View {
+    @Environment(LLMRunner.self) var runner: LLMRunner
+    
+    @State var model: LLMOpenAI = .init(
+        parameters: .init(
+            modelType: .gpt3_5Turbo,
+            systemPrompt: "You're a helpful assistant that answers questions from users.",
+            overwritingToken: "abc123"
+        )
+    )
+    @State var responseText: String
 
-    var body: some View {
-        EmptyView()
-            .task {
-                // Returns an `AsyncThrowingStream` which yields the produced output of the LLM.
-                let stream = try model.queryAPI(withChat: chat)
-                
-                // ...
-            }
+    func executePrompt(prompt: String) {
+        // Execute the query on the runner, returning a stream of outputs
+        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
+
+        for try await token in stream {
+            responseText.append(token)
+        }
     }
 }
 ```

@@ -14,4 +14,6 @@ public enum LLMHostingType: String, CaseIterable {
     case fog
     /// Remote, cloud-based execution of the ``LLM``.
     case cloud
+    /// Mock execution
+    case mock
 }

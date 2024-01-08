@@ -26,11 +26,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.6")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.0")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.2")),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.1")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.2")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.3"))
     ],
     targets: [
@@ -63,10 +63,10 @@ let package = Package(
         .target(
             name: "SpeziLLMOpenAI",
             dependencies: [
+                .target(name: "SpeziLLM"),
                 .product(name: "OpenAI", package: "OpenAI"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
                 .product(name: "SpeziSpeechRecognizer", package: "SpeziSpeech"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")

@@ -134,7 +134,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--mockLocalLLM"
+            argument = "--mockMode"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

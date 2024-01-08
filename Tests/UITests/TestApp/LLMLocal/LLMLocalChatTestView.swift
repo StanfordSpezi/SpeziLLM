@@ -14,8 +14,8 @@ import SwiftUI
 /// Presents a chat view that enables user's to interact with the local LLM.
 struct LLMLocalChatTestView: View {
     /// The Spezi `LLM` that is configured and executed on the `LLMRunner`
-    @State private var model: LLM = {
-        if FeatureFlags.mockLocalLLM {
+    private var model: LLM = {
+        if FeatureFlags.mockMode {
             LLMMock()
         } else {
             LLMLlama(
@@ -29,13 +29,7 @@ struct LLMLocalChatTestView: View {
     
     var body: some View {
         LLMChatView(
-            model: model,
-            initialAssistantPrompt: [
-                .init(
-                    role: .assistant,
-                    content: "Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"
-                )
-            ]
+            model: model
         )
             .navigationTitle("LLM_LOCAL_CHAT_VIEW_TITLE")
     }

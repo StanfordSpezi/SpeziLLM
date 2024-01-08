@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Spezi
 
 
 /// The ``LLMRunnerSetupTask`` provides an abstraction of different runner-related setup `Task`'s.
@@ -23,7 +24,7 @@ import Foundation
 ///         }
 ///     }
 /// }
-public protocol LLMRunnerSetupTask {
+public protocol LLMRunnerSetupTask: Module {
     /// The ``LLMHostingType`` that the ``LLMRunnerSetupTask`` sets up.
     var type: LLMHostingType { get }
     

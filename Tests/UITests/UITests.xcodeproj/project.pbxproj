@@ -29,6 +29,8 @@
 		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
 		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
 		977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977E499F2B035563001485D4 /* LLMLocalTestView.swift */; };
+		97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */; };
+		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
 		97DD56BB2B02F7E400389331 /* SpeziChat in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BA2B02F7E400389331 /* SpeziChat */; };
 		97DD56BD2B02F80100389331 /* SpeziLLMOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 97DD56BC2B02F80100389331 /* SpeziLLMOpenAI */; };
 /* End PBXBuildFile section */
@@ -66,6 +68,8 @@
 		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
 		977438092B05709700EC6527 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		977E499F2B035563001485D4 /* LLMLocalTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMLocalTestView.swift; sourceTree = "<group>"; };
+		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
+		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +177,15 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		97A25C912B28DDAB0073B990 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */,
+				97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		97DD56B32B02F72D00389331 /* LLMLocal */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +200,7 @@
 		97DD56B42B02F72D00389331 /* LLMOpenAI */ = {
 			isa = PBXGroup;
 			children = (
+				97A25C912B28DDAB0073B990 /* Onboarding */,
 				9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */,
 				9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */,
 			);
@@ -336,12 +350,14 @@
 				9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */,
 				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
 				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
+				97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */,
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
 				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
 				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
 				976179542B03501100E1046E /* FeatureFlags.swift in Sources */,
 				976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */,
 				9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */,
+				97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 			);

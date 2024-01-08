@@ -10,9 +10,9 @@ import Foundation
 import llama
 
 
-/// The ``LLMContextParameters`` represents the context parameters of the LLM.
+/// The ``LLMLocalContextParameters`` represents the context parameters of the LLM.
 /// Internally, these data points are passed as a llama.cpp `llama_context_params` C struct to the LLM.
-public struct LLMContextParameters: Sendable {
+public struct LLMLocalContextParameters: Sendable {
     /// Wrapped C struct from the llama.cpp library, later-on passed to the LLM
     private var wrapped: llama_context_params
     
@@ -132,7 +132,7 @@ public struct LLMContextParameters: Sendable {
         }
     }
     
-    /// Creates the ``LLMContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
+    /// Creates the ``LLMLocalContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
     /// Is passed to the underlying llama.cpp model in order to configure the context of the LLM.
     ///
     /// - Parameters:

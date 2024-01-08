@@ -1,6 +1,216 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectivity Error with the OpenAI API."
+          }
+        }
+      }
+    },
+    "LLM_CONNECTIVITY_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The network connection to the OpenAI servers couldn't be established, most probably the device doesn't have an internet connection."
+          }
+        }
+      }
+    },
+    "LLM_CONNECTIVITY_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the device has a stable internet connection."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation Error occurred during OpenAI inference."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The OpenAI API responded with an error during the output generation."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the input query."
+          }
+        }
+      }
+    },
+    "LLM_INSUFFICIENT_QUOTA_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI Quota limit reached."
+          }
+        }
+      }
+    },
+    "LLM_INSUFFICIENT_QUOTA_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified OpenAI API key has reached the quota limit of the associated OpenAI account."
+          }
+        }
+      }
+    },
+    "LLM_INSUFFICIENT_QUOTA_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please increase the OpenAI quota limits or try again later."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key invalid."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified OpenAI API key is not valid."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the specified OpenAI API key is valid."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI GPT Model couldn't be accessed."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified GPT model in combination with the API key couldn't be accessed. Ensure that the API key can access the specified model."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the specified API key has access to the configured GPT model."
+          }
+        }
+      }
+    },
+    "LLM_STORAGE_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token could not be stored in a secure storage."
+          }
+        }
+      }
+    },
+    "LLM_STORAGE_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The configured OpenAI API key could not be stored in the secure enclave."
+          }
+        }
+      }
+    },
+    "LLM_STORAGE_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try to restart the application or the phone."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown OpenAI error has occured."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The OpenAI API responded with an unknown error."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the query."
+          }
+        }
+      }
+    },
     "OPENAI_API_KEY_PROMPT" : {
       "localizations" : {
         "de" : {
@@ -195,6 +405,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seleccione un Modelo de OpenAI"
+          }
+        }
+      }
+    },
+    "SPEZI_LLM_OPENAI_SYSTEM_PROMPT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are ChatGPT, a large language model trained by OpenAI, based on the GPT architecture."
           }
         }
       }

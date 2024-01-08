@@ -13,27 +13,13 @@ import SwiftUI
 
 
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
-public struct OpenAIAPIKeyOnboardingStep: View {
-    @Environment(OpenAIModel.self) private var openAI
+/// Ensure that the ``LLMOpenAIRunnerSetupTask`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+public struct LLMOpenAIAPITokenOnboardingStep: View {
+    @Environment(LLMOpenAITokenSaver.self) private var tokenSaver
+    
     private let actionText: String
     private let action: () -> Void
     
-    
-    private var apiToken: Binding<String> {
-        Binding(
-            get: {
-                openAI.apiToken ?? ""
-            },
-            set: { newValue in
-                guard !newValue.isEmpty else {
-                    openAI.apiToken = nil
-                    return
-                }
-                
-                openAI.apiToken = newValue
-            }
-        )
-    }
     
     public var body: some View {
         OnboardingView(
@@ -47,7 +33,7 @@ public struct OpenAIAPIKeyOnboardingStep: View {
                     VStack(spacing: 0) {
                         Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
                             .multilineTextAlignment(.center)
-                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: apiToken)
+                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: tokenSaver.tokenBinding)
                             .frame(height: 50)
                             .textFieldStyle(.roundedBorder)
                             .padding(.vertical, 16)
@@ -69,7 +55,7 @@ public struct OpenAIAPIKeyOnboardingStep: View {
                         action()
                     }
                 )
-                    .disabled(apiToken.wrappedValue.isEmpty)
+                    .disabled(!tokenSaver.tokenPresent)
             }
         )
     }

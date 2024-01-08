@@ -13,25 +13,16 @@ import SwiftUI
 
 
 /// View to display an onboarding step for the user to enter change the OpenAI model.
-public struct OpenAIModelSelectionOnboardingStep: View {
+public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
         public static let models = [Model.gpt3_5Turbo, Model.gpt4]
     }
     
-    fileprivate struct ModelSelection: Identifiable {
-        fileprivate let id: String
-        
-        
-        fileprivate var description: String {
-            id.replacing("-", with: " ").capitalized.replacing("Gpt", with: "GPT")
-        }
-    }
     
-    
-    @Environment(OpenAIModel.self) private var openAI
+    @State private var modelSelection: Model
     private let actionText: String
-    private let action: () -> Void
-    private let models: [ModelSelection]
+    private let action: (Model) -> Void
+    private let models: [Model]
     
     
     public var body: some View {
@@ -43,11 +34,10 @@ public struct OpenAIModelSelectionOnboardingStep: View {
                 )
             },
             contentView: {
-                @Bindable var openAI = openAI
-                Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $openAI.openAIModel) {
-                    ForEach(models) { model in
-                        Text(model.description)
-                            .tag(model.id)
+                Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $modelSelection) {
+                    ForEach(models, id: \.self) { model in
+                        Text(model.formattedModelDescription)
+                            .tag(model.formattedModelDescription)
                     }
                 }
                     .pickerStyle(.wheel)
@@ -57,7 +47,7 @@ public struct OpenAIModelSelectionOnboardingStep: View {
                 OnboardingActionsView(
                     verbatim: actionText,
                     action: {
-                        action()
+                        action(modelSelection)
                     }
                 )
             }
@@ -67,11 +57,11 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
     ///   - models: The models that should be displayed in the picker user interface.
-    ///   - action: Action that should be performed after the openAI model selection has been persisted.
+    ///   - action: Action that should be performed after the openAI model selection has been done, selection is passed as closure argument.
     public init(
         actionText: LocalizedStringResource? = nil,
         models: [Model] = Default.models,
-        _ action: @escaping () -> Void
+        _ action: @escaping (Model) -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
@@ -83,15 +73,23 @@ public struct OpenAIModelSelectionOnboardingStep: View {
     /// - Parameters:
     ///   - actionText: Text that should appear on the action button without localization.
     ///   - models: The models that should be displayed in the picker user interface.
-    ///   - action: Action that should be performed after the openAI model selection has been persisted.
+    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
         models: [Model] = Default.models,
-        _ action: @escaping () -> Void
+        _ action: @escaping (Model) -> Void
     ) {
         self.actionText = String(actionText)
-        self.models = models.map { ModelSelection(id: $0) }
+        self.models = models
         self.action = action
+        self._modelSelection = State(initialValue: models.first ?? .gpt3_5Turbo_1106)
+    }
+}
+
+
+extension Model {
+    fileprivate var formattedModelDescription: String {
+        self.replacing("-", with: " ").capitalized.replacing("Gpt", with: "GPT")
     }
 }

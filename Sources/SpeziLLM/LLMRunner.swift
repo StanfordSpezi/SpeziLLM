@@ -39,14 +39,13 @@ import Spezi
 /// }
 ///
 /// struct LocalLLMChatView: View {
-///    // The runner responsible for executing the local LLM.
-///    @Environment(LLMRunner.self) private var runner: LLMRunner
+///    // The runner responsible for executing the LLM.
+///    @Environment(LLMRunner.self) var runner: LLMRunner
 ///
-///    // The locally executed LLM
-///    private let model: LLMLlama = .init(
+///    // The executed LLM
+///    @State var model: LLMLlama = .init(
 ///         modelPath: ...
 ///    )
-///
 ///    @State var responseText: String
 ///
 ///    func executePrompt(prompt: String) {
@@ -65,13 +64,21 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
     public enum State {
         case idle
         case processing
+        case error(LocalizedError)
     }
     
     
     /// The configuration of the runner represented by ``LLMRunnerConfiguration``.
     private let runnerConfiguration: LLMRunnerConfiguration
-    /// All to be performed ``LLMRunner``-related setup tasks.
-    private let runnerSetupTasks: [LLMHostingType: any LLMRunnerSetupTask]
+    /// Indicates if the ``LLMRunner`` should lazily perform the passed ``LLMRunnerSetupTask``'s.
+    private let lazyRunnerSetup: Bool
+    /// Holds all dependencies of the ``LLMRunner`` as expressed by all stated ``LLMRunnerSetupTask``'s in the ``init(runnerConfig:_:)``.
+    /// Is required to enable the injection of `Dependency`s into the ``LLMRunnerSetupTask``'s.
+    @Dependency private var runnerSetupTaskModules: [any Module]
+    /// All to be performed ``LLMRunner``-related setup tasks, mapped to the respective ``LLMHostingType``.
+    /// Derived from the ``LLMRunnerSetupTask``'s passed within the ``init(runnerConfig:_:)``.
+    private var runnerSetupTasks: [LLMHostingType: any LLMRunnerSetupTask] = [:]
+    
     /// Stores all currently available ``LLMGenerationTask``'s, one for each Spezi ``LLM``, identified by the ``LLMTaskIdentifier``.
     private var runnerTasks: [LLMTaskIdentifier: LLMGenerationTask] = [:]
     /// Indicates for which ``LLMHostingType`` the runner backend is already initialized.
@@ -94,13 +101,15 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
     ///
     /// - Parameters:
     ///   - runnerConfig: The configuration of the ``LLMRunner`` represented by the ``LLMRunnerConfiguration``.
-    ///   - content: A result builder that aggregates all stated ``LLMRunnerSetupTask``'s.
+    ///   - dependencies: A result builder that aggregates all stated ``LLMRunnerSetupTask``'s as dependencies.
     public init(
         runnerConfig: LLMRunnerConfiguration = .init(),
-        @LLMRunnerSetupTaskBuilder _ content: @Sendable @escaping () -> _LLMRunnerSetupTaskCollection
+        lazyRunnerSetup: Bool = true,
+        @LLMRunnerSetupTaskBuilder _ dependencies: @Sendable () -> DependencyCollection
     ) {
         self.runnerConfiguration = runnerConfig
-        self.runnerSetupTasks = content().runnerSetupTasks
+        self.lazyRunnerSetup = lazyRunnerSetup
+        self._runnerSetupTaskModules = Dependency(using: dependencies())
         
         for modelType in LLMHostingType.allCases {
             self.runnerBackendInitialized[modelType] = false
@@ -112,6 +121,27 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
         self.init(runnerConfig: .init()) {}
     }
     
+    public nonisolated func configure() {
+        Task {
+            await mapRunnerSetupTasks()
+        }
+    }
+    
+    private func mapRunnerSetupTasks() async {
+        for module in runnerSetupTaskModules {
+            guard let task = module as? any LLMRunnerSetupTask else {
+                preconditionFailure("SpeziLLM: Reached inconsistent state. \(type(of: module)) is not a \((any LLMRunnerSetupTask).self)")
+            }
+            
+            runnerSetupTasks[task.type] = task
+            
+            if !lazyRunnerSetup {
+                try? await task.setupRunner(runnerConfig: self.runnerConfiguration)
+                runnerBackendInitialized[task.type] = true
+            }
+        }
+    }
+    
     
     /// This call-as-a-function ``LLMRunner`` usage wraps a Spezi ``LLM`` and makes it ready for execution.
     /// It manages a set of all ``LLMGenerationTask``'s, guaranteeing efficient model execution.
@@ -120,10 +150,10 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
     ///   - with: The ``LLM`` that should be executed.
     ///
     /// - Returns: The ready to use ``LLMGenerationTask``.
-    public func callAsFunction(with model: any LLM) async -> LLMGenerationTask {
-        let modelType = await model.type
+    public func callAsFunction(with model: any LLM) async throws -> LLMGenerationTask {
+        let modelType = model.type
         /// If necessary, setup of the runner backend
-        if runnerBackendInitialized[modelType] == false {
+        if runnerBackendInitialized[modelType] != true && modelType != .mock {
             /// Initializes the required runner backends for the respective ``LLMHostingType``.
             guard let task = self.runnerSetupTasks[modelType] else {
                 preconditionFailure("""
@@ -132,7 +162,15 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
                 """)
             }
             
-            try? await task.setupRunner(runnerConfig: self.runnerConfiguration)
+            do {
+                try await task.setupRunner(runnerConfig: self.runnerConfiguration)
+            } catch {
+                // Adjust `LLM/state` to not initialized in order to allow for new errors to surface and trigger and alert
+                await MainActor.run {
+                    model.state = .uninitialized
+                }
+                throw error
+            }
             
             runnerBackendInitialized[modelType] = true
         }

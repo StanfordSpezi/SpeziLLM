@@ -7,12 +7,15 @@
 //
 
 import Foundation
+import SpeziChat
 
 
 /// A mock SpeziLLM ``LLM`` that is used for testing and preview purposes.
-public actor LLMMock: LLM {
-    public let type: LLMHostingType = .local
+@Observable
+public class LLMMock: LLM {
+    public let type: LLMHostingType = .mock
     @MainActor public var state: LLMState = .uninitialized
+    @MainActor public var context: Chat = []
     
     
     public init() {}
@@ -24,7 +27,7 @@ public actor LLMMock: LLM {
         }
     }
     
-    public func generate(prompt: String, continuation: AsyncThrowingStream<String, Error>.Continuation) async {
+    public func generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async {
         /// Generate mock message
         try? await Task.sleep(for: .seconds(1))
         continuation.yield("Mock ")

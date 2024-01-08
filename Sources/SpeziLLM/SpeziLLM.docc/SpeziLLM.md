@@ -32,25 +32,31 @@ The two main components of ``SpeziLLM`` are the ``LLM`` abstraction as well as t
 
 ### LLM abstraction
 
-``SpeziLLM`` provides the ``LLM`` protocol which provides an abstraction of an arbitrary Language Model, regardless of the execution locality (local or remote) or the specific model type.
+The ``LLM`` protocol provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem,
+regardless of the execution locality (local or remote) or the specific model type.
 Developers can use the ``LLM`` protocol to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
-It is recommended that ``LLM`` should be used in conjunction with the [Swift Actor concept](https://developer.apple.com/documentation/swift/actor), meaning one should use the `actor` keyword (not `class`) for the implementation of the model component. The Actor concept provides guarantees regarding concurrent access to shared instances from multiple threads.
+
+The ``LLM`` contains the ``LLM/context`` property which holds the entire history of the model interactions.
+This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLM/generate(continuation:)`` function executes the inference based on the ``LLM/context``.
 
 > Important: An ``LLM`` shouldn't be executed on it's own but always used together with the ``LLMRunner``.
-> Please refer to the ``LLMRunner`` documentation for a complete code example.
+    Please refer to the ``LLMRunner`` documentation for a complete code example.
 
-#### Usage
+### Usage
 
 An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
-The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(prompt:continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
+The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
 
 ```swift
-actor LLMTest: LLM {
-    var type: LLMHostingType = .local
-    var state: LLMState = .uninitialized
+@Observable
+public class LLMTest: LLM {
+    public let type: LLMHostingType = .local
+    @MainActor public var state: LLMState = .uninitialized
+    @MainActor public var context: Chat = []
 
-    func setup(/* */) async {}
-    func generate(/* */) async {}
+    public func setup(/* */) async throws {}
+    public func generate(/* */) async {}
 }
 ```
 
@@ -92,13 +98,12 @@ import SpeziLLMLocal
 
 struct LocalLLMChatView: View {
    // The runner responsible for executing the local LLM.
-   @Environment(LLMRunner.self) private var runner: LLMRunner
+   @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   private let model: LLMLlama = .init(
+   @State var model: LLMLlama = .init(
         modelPath: ...
    )
-
    @State var responseText: String
 
    func executePrompt(prompt: String) {
@@ -118,7 +123,7 @@ The ``LLMChatView`` presents a basic chat view that enables users to chat with a
 The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
 
 > Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
-> For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
+    For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
 
 #### Usage
 

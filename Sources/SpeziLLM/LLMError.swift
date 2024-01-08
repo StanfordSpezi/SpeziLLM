@@ -9,46 +9,34 @@
 import Foundation
 
 
-/// The ``LLMError`` describes possible errors that occur during the execution of the ``LLM`` via the ``LLMRunner``.
-public enum LLMError: LocalizedError {
-    /// Indicates that the local model file is not found.
-    case modelNotFound
-    /// Indicates that the ``LLM`` is not yet ready, e.g., not initialized.
-    case modelNotReadyYet
-    /// Indicates that during generation an error occurred.
-    case generationError
+/// Defines errors that may occur during setting up the runner environment for ``LLM`` generation jobs.
+public enum LLMRunnerError: LLMError {
+    /// Indicates an error occurred during setup of the LLM generation.
+    case setupError
     
     
     public var errorDescription: String? {
         switch self {
-        case .modelNotFound:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        case .modelNotReadyYet:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_READY_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        case .generationError:
-            String(localized: LocalizedStringResource("LLM_GENERATION_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
+        case .setupError:
+            String(localized: LocalizedStringResource("LLM_SETUP_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
     }
     
     public var recoverySuggestion: String? {
         switch self {
-        case .modelNotFound:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_FOUND_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        case .modelNotReadyYet:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_READY_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        case .generationError:
-            String(localized: LocalizedStringResource("LLM_GENERATION_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
+        case .setupError:
+            String(localized: LocalizedStringResource("LLM_SETUP_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
     }
 
     public var failureReason: String? {
         switch self {
-        case .modelNotFound:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_FOUND_FAILURE_REASON", bundle: .atURL(from: .module)))
-        case .modelNotReadyYet:
-            String(localized: LocalizedStringResource("LLM_MODEL_NOT_READY_FAILURE_REASON", bundle: .atURL(from: .module)))
-        case .generationError:
-            String(localized: LocalizedStringResource("LLM_GENERATION_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
+        case .setupError:
+            String(localized: LocalizedStringResource("LLM_SETUP_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
     }
 }
+
+
+/// The ``LLMError`` defines a common error protocol which should be used for defining errors within the SpeziLLM ecosystem.
+public protocol LLMError: LocalizedError, Equatable {}

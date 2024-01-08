@@ -1,6 +1,156 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "LLM_CONTEXT_SIZE_MISMATCH_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The configured LLM context size mismatched with the model."
+          }
+        }
+      }
+    },
+    "LLM_CONTEXT_SIZE_MISMATCH_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM was trained on a context size that is smaller than the configured LLM context size."
+          }
+        }
+      }
+    },
+    "LLM_CONTEXT_SIZE_MISMATCH_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the configured LLM context size is smaller or equal to the context the model was trained upon."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation of LLM output failed."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error has occurred during the generation of the output."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the device has enough free computing and memory resources. Try restarting the application."
+          }
+        }
+      }
+    },
+    "LLM_ILLEGAL_CONTEXT_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM context is in an illegal state."
+          }
+        }
+      }
+    },
+    "LLM_ILLEGAL_CONTEXT_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM context doesn't contain the required messages such as system prompt and a user message. These messages are required before triggering an inference."
+          }
+        }
+      }
+    },
+    "LLM_ILLEGAL_CONTEXT_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the query or restart the applicaiton."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM file not found."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified LLM file could not be found on the device."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_FOUND_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the LLM file is downloaded successfully and properly stored on the device. Try restarting the application."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM not ready yet."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM needs to be initialized before usage."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_NOT_READY_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make sure that the application initialized the LLM properly. Try restarting the application."
+          }
+        }
+      }
+    },
     "SPEZI_LLM_LOCAL_LLAMA_SYSTEM_PROMPT" : {
       "localizations" : {
         "en" : {

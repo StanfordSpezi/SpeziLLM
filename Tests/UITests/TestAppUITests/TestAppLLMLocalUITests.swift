@@ -17,7 +17,7 @@ class TestAppLLMLocalUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
-        app.launchArguments = ["--mockLocalLLM"]
+        app.launchArguments = ["--mockMode"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
     }
     
@@ -36,9 +36,9 @@ class TestAppLLMLocalUITests: XCTestCase {
         XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
         
-        // Chat
-        XCTAssert(app.staticTexts["Hello! I'm a locally executed Llama 2 7B model, enabled by the Spezi ecosystem!"].waitForExistence(timeout: 2))
+        sleep(1)
         
+        // Chat
         try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
         
         XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
