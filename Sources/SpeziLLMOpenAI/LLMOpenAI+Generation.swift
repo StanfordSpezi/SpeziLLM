@@ -6,54 +6,47 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import OpenAI
 import SpeziChat
 
 
 extension LLMOpenAI {
-    func _generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async throws {    // swiftlint:disable:this identifier_name
+    // swiftlint:disable:next identifier_name function_body_length
+    func _generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async throws {
         while true {
             let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
             
-            //let currentMessageCount = await self.context.count
             var llmStreamResults: [LLMStreamResult] = []
             
             for try await chatStreamResult in chatStream {
-                // Parse the different elements in mutable llm stream results.
+                // Important to iterate over all choices as LLM could choose to call multiple functions
                 for choice in chatStreamResult.choices {
-                    let existingLLMStreamResult = llmStreamResults.first(where: { $0.id == choice.index })
-                    let llmStreamResult: LLMStreamResult
-                    
-                    if let existingLLMStreamResult {
-                        llmStreamResult = existingLLMStreamResult
+                    // Already existing stream result
+                    if let existingIndex = llmStreamResults.firstIndex(where: { $0.id == choice.index }) {
+                        var existingLLMStreamResult = llmStreamResults[existingIndex]
+                        existingLLMStreamResult.append(choice: choice)
+                        llmStreamResults[existingIndex] = existingLLMStreamResult
+                    // New stream result
                     } else {
-                        llmStreamResult = LLMStreamResult(id: choice.index)
-                        llmStreamResults.append(llmStreamResult)
+                        var newLLMStreamResult = LLMStreamResult(id: choice.index)
+                        newLLMStreamResult.append(choice: choice)
+                        llmStreamResults.append(newLLMStreamResult)
                     }
-                    
-                    llmStreamResult.append(choice: choice)
                 }
                 
-                // Append assistant messages during the streaming to ensure that they are presented in the UI.
-                // Limitation: We currently don't really handle multiple llmStreamResults, messages could overwritten.
-                for llmStreamResult in llmStreamResults where llmStreamResult.role == .assistant && !(llmStreamResult.content?.isEmpty ?? true) {
-                    // TODO: Is this really equivalent?!
-                    /*
-                    let newMessage = SpeziChat.ChatEntity(
-                        role: .assistant,
-                        content: llmStreamResult.content ?? ""
-                    )
-                    
-                    if await self.context.indices.contains(currentMessageCount) {
-                        self.context[currentMessageCount] = newMessage
-                    } else {
-                        self.context.append(newMessage)
-                    }
-                     */
-                    
-                    await MainActor.run {
-                        self.context.append(assistantOutput: llmStreamResult.content ?? "")
-                    }
+                // Append assistant messages during the streaming to ensure that they are visible to the user during processing
+                let assistantContentResults = llmStreamResults.filter { llmStreamResult in
+                    llmStreamResult.role == .assistant && !(llmStreamResult.content?.isEmpty ?? true)
+                }
+                
+                // Only consider the first found assistant content result
+                guard let content = assistantContentResults.first?.content else {
+                    continue
+                }
+                
+                await MainActor.run {
+                    self.context.append(assistantOutput: content, overwrite: true)
                 }
             }
             
@@ -64,24 +57,43 @@ extension LLMOpenAI {
                 break
             }
             
-            for functionCall in functionCalls {
-                print("Function Call - Name: \(functionCall.name ?? ""), Arguments: \(functionCall.arguments ?? "")")   // TODO: Logger
-                
-                guard let functionName = functionCall.name,
-                      let functionArgument = functionCall.arguments?.data(using: .utf8),
-                      let function = self.functions[functionName] else {
-                    print("Couldn't find the requested function or arguments from the LLM!") // TODO: Logger
-                    return
+            // Parallelize function call execution
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for functionCall in functionCalls {
+                    group.addTask {
+                        Self.logger.debug("""
+                        SpeziLLMOpenAI: Function call \(functionCall.name ?? ""), Arguments: \(functionCall.arguments ?? "")
+                        """)
+
+                        guard let functionName = functionCall.name,
+                              let functionArgument = functionCall.arguments?.data(using: .utf8),
+                              let function = self.functions[functionName] else {
+                            Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
+                            return
+                        }
+
+                        // Inject parameters into the @Parameters of the function call
+                        do {
+                            try function.injectParameters(from: functionArgument)
+                        } catch {
+                            throw LLMOpenAIError.invalidFunctionCallArguments(error)
+                        }
+
+                        // Execute function
+                        let functionCallResponse = try await function.execute()
+                        Self.logger.debug("""
+                        SpeziLLMOpenAI: Function call \(functionCall.name ?? "") \
+                        Arguments: \(functionCall.arguments ?? "") \
+                        Response: \(functionCallResponse)
+                        """)
+                        await MainActor.run {
+                            self.context.append(forFunction: functionName, response: functionCallResponse)
+                        }
+                    }
                 }
-                
-                // Inject parameters into the @Parameters of the function call
-                try function.injectParameterValues(from: functionArgument)
-                
-                // Execute function
-                let functionCallResponse = try await function.execute()
-                await MainActor.run {
-                    self.context.append(forFunction: functionName, response: functionCallResponse)
-                }
+
+                // Wait for all function calls to finish
+                try await group.waitForAll()
             }
         }
     }

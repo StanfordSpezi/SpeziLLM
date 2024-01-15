@@ -79,14 +79,14 @@ public class LLMOpenAI: LLM {
     public let type: LLMHostingType = .cloud
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
-    var functions: Dictionary<String, LLMFunction> = [:]
+    var functions: [String: LLMFunction] = [:]
     @ObservationIgnored private var wrappedModel: OpenAI?
     
     
     var model: OpenAI {
         guard let model = wrappedModel else {
             preconditionFailure("""
-            SpeziLLMOpenAII: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
+            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
             Ensure that the `LLMOpenAIRunnerSetupTask` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
@@ -160,24 +160,8 @@ public class LLMOpenAI: LLM {
             self.state = .generating
         }
         
-        //let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
-        
         do {
             try await _generate(continuation: continuation)
-            
-            /*
-            for try await chatStreamResult in chatStream {
-                guard let yieldedToken = chatStreamResult.choices.first?.delta.content,
-                      !yieldedToken.isEmpty else {
-                    continue
-                }
-                
-                LLMOpenAI.logger.debug("""
-                SpeziLLMOpenAI: Yielded token: \(yieldedToken, privacy: .public)
-                """)
-                continuation.yield(yieldedToken)
-            }
-             */
             
             continuation.finish()
             
@@ -199,6 +183,11 @@ public class LLMOpenAI: LLM {
                 """)
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
             }
+        } catch let error as LLMOpenAIError {
+            LLMOpenAI.logger.error("""
+            SpeziLLMOpenAI: OpenAI inference failed with the OpenAIError: \(error.localizedDescription).
+            """)
+            await finishGenerationWithError(error, on: continuation)
         } catch {
             LLMOpenAI.logger.error("""
             SpeziLLMOpenAI: OpenAI inference failed with a generation error.

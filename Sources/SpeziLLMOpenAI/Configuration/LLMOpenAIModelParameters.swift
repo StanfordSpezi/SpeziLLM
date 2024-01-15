@@ -40,7 +40,7 @@ public struct LLMOpenAIModelParameters: Sendable {
     ///   - responseFormat: Format for model responses.
     ///   - temperature: Sampling temperature (0 to 2); higher values (e.g., 0.8) increase randomness, lower values (e.g., 0.2) enhance focus. Adjust this or topP, not both.
     ///   - topP: Nucleus sampling threshold; considers tokens with top_p probability mass. Alternative to temperature sampling.
-    ///   - completionsPerOutput: Number of generated chat completions per input.
+    ///   - completionsPerOutput: Number of generated chat completions (choices) per input, defaults to 1 choice.
     ///   - stopSequence: Sequences (up to 4) where generation stops; output doesn't include these sequences.
     ///   - maxOutputLength: Maximum token count for each completion.
     ///   - presencePenalty: Adjusts new topic exploration (-2.0 to 2.0); higher values encourage novelty.
