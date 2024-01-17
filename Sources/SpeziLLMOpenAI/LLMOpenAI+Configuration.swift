@@ -29,7 +29,8 @@ extension LLMOpenAI {
         }
     }
     
-    /// Provides the ``LLMOpenAI/context``, the `` LLMOpenAIParameters`` and the ``LLMOpenAIModelParameters`` in an OpenAI `ChatQuery` representation used for querying the API.
+    /// Provides the ``LLMOpenAI/context``, the `` LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``, as well as the declared ``LLMFunction``s
+    /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
     var openAIChatQuery: ChatQuery {
         get async {
             await .init(

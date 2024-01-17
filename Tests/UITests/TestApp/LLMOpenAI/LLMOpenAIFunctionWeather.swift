@@ -8,9 +8,35 @@
 
 import Foundation
 import SpeziLLMOpenAI
+import OpenAI
 
 // swiftlint:disable attributes
 struct WeatherFunction: LLMFunction {
+    enum TemperatureUnit: String, LLMFunctionParameterEnum {
+        case test1
+        case test2
+    }
+    
+    struct CustomType: LLMFunctionParameter {
+        static var schema: LLMFunctionParameterPropertySchema = .init(type: .null)
+        
+        let name: String
+        let world: String
+    }
+    
+    struct TemperatureUnit2: LLMFunctionParameter {
+        static var schema: LLMFunctionParameterPropertySchema = .init(
+            type: .object,
+            items: .init(
+                type: .null
+                //properties: <#T##[String : JSONSchema.Property]?#>
+            )
+        )
+        
+        let test1: String
+        let test2: String
+    }
+    
     static let name: String = "get_current_weather"
     static let description: String = "Get the current weather in a given location"
     
@@ -19,8 +45,26 @@ struct WeatherFunction: LLMFunction {
     
     @Parameter(description: "The city and state of the to be determined weather, e.g. San Francisco, CA")
     var location: String
-    @Parameter(description: "The unit of the temperature", enumValues: ["fahrenheit", "celsius"])
-    var unit: String?
+    
+    
+    @Parameter(description: "Enum", const: "")
+    var unit: TemperatureUnit
+    @Parameter(description: "Enum Optional", const: "")
+    var unit1: TemperatureUnit?
+    @Parameter(description: "Custom Type Optional")
+    var unit2: TemperatureUnit2?
+    @Parameter(description: "Int Optional")
+    var unit3: Int?
+    @Parameter(description: "ArrayParameterPrimitive", maxItems: 3)
+    var arrayParameterPrimitive: [String]
+    @Parameter(description: "ArrayParameterPrimitiveOptional", maxItems: 3)
+    var arrayParameterPrimitiveOptional: [String]?
+    
+    
+    @Parameter(description: "ArrayParameterCustomType", maxItems: 3)
+    var arrayParameterCustomType: [TemperatureUnit2]
+    @Parameter(description: "ArrayParameterCustomTypeOptional", maxItems: 3)
+    var arrayParameterCustomTypeOptional: [TemperatureUnit2]?
     
     
     init(someArg: String) {
@@ -29,7 +73,7 @@ struct WeatherFunction: LLMFunction {
     
     
     func execute() async throws -> String {
-        "The weather at \(location) is 30 degrees \(unit ?? "fahrenheit")"
+        return "The weather at \(location) is 30 degrees \(unit1?.rawValue ?? "fahrenheit")"
     }
 }
 // swiftlint:enable attributes

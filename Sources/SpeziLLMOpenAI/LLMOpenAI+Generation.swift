@@ -17,7 +17,7 @@ extension LLMOpenAI {
         while true {
             let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
             
-            var llmStreamResults: [LLMStreamResult] = []
+            var llmStreamResults: [LLMOpenAIStreamResult] = []
             
             for try await chatStreamResult in chatStream {
                 // Important to iterate over all choices as LLM could choose to call multiple functions
@@ -29,7 +29,7 @@ extension LLMOpenAI {
                         llmStreamResults[existingIndex] = existingLLMStreamResult
                     // New stream result
                     } else {
-                        var newLLMStreamResult = LLMStreamResult(id: choice.index)
+                        var newLLMStreamResult = LLMOpenAIStreamResult(id: choice.index)
                         newLLMStreamResult.append(choice: choice)
                         llmStreamResults.append(newLLMStreamResult)
                     }
@@ -80,7 +80,9 @@ extension LLMOpenAI {
                         }
 
                         // Execute function
+                        // Errors thrown by the functions are surfaced to the user as an LLM generation error
                         let functionCallResponse = try await function.execute()
+                        
                         Self.logger.debug("""
                         SpeziLLMOpenAI: Function call \(functionCall.name ?? "") \
                         Arguments: \(functionCall.arguments ?? "") \
@@ -92,7 +94,6 @@ extension LLMOpenAI {
                     }
                 }
 
-                // Wait for all function calls to finish
                 try await group.waitForAll()
             }
         }

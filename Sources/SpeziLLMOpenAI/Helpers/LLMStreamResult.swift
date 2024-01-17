@@ -9,7 +9,8 @@
 import OpenAI
 
 
-struct LLMStreamResult {
+/// Helper to process the returned stream by the LLM output generation call.
+struct LLMOpenAIStreamResult {
     struct FunctionCall {
         var name: String?
         var arguments: String?

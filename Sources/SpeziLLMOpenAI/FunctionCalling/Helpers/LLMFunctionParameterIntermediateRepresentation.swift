@@ -9,16 +9,18 @@
 import Foundation
 
 
-enum LLMFunctionParameterJSON: Codable {
+/// Serves as an intermediary representation of the requested function call parameters in order to decode the parameters into the ``LLMFunction/Parameter``s.
+enum LLMFunctionParameterIntermediary: Codable {
     case null
     case int(Int)
     case bool(Bool)
     case string(String)
     case double(Double)
-    case array(Array<LLMFunctionParameterJSON>)
-    case dictionary([String: LLMFunctionParameterJSON])
+    case array(Array<LLMFunctionParameterIntermediary>)
+    case dictionary([String: LLMFunctionParameterIntermediary])
     
     
+    /// Provides a representation of the received JSON where each first-level parameter (the key) maps to the respective nested JSON `Data`.
     var topLayerJSONRepresentation: [String: Data] {
         get throws {
             guard case let .dictionary(dictionary) = self else {
@@ -45,9 +47,9 @@ enum LLMFunctionParameterJSON: Codable {
             self = .double(double)
         } else if let string = try? container.decode(String.self) {
             self = .string(string)
-        } else if let array = try? container.decode([LLMFunctionParameterJSON].self) {
+        } else if let array = try? container.decode([LLMFunctionParameterIntermediary].self) {
             self = .array(array)
-        } else if let dictionary = try? container.decode([String: LLMFunctionParameterJSON].self) {
+        } else if let dictionary = try? container.decode([String: LLMFunctionParameterIntermediary].self) {
             self = .dictionary(dictionary)
         } else {
             throw DecodingError.dataCorrupted(

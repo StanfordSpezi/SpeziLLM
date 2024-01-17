@@ -10,6 +10,7 @@ import OpenAI
 
 
 extension Int: LLMFunctionParameter {
+    /// Convenience conformance of `Int`s to ``LLMFunctionParameter``, so developers can use primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .integer
@@ -18,6 +19,7 @@ extension Int: LLMFunctionParameter {
 }
 
 extension Float: LLMFunctionParameter {
+    /// Convenience conformance of `Float`s to ``LLMFunctionParameter``, so developers can use primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .number
@@ -26,6 +28,7 @@ extension Float: LLMFunctionParameter {
 }
 
 extension Double: LLMFunctionParameter {
+    /// Convenience conformance of `Double`s to ``LLMFunctionParameter``, so developers can use primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .number
@@ -34,6 +37,7 @@ extension Double: LLMFunctionParameter {
 }
 
 extension String: LLMFunctionParameter {
+    /// Convenience conformance of `String`s to ``LLMFunctionParameter``, so developers can use primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .string
@@ -42,6 +46,7 @@ extension String: LLMFunctionParameter {
 }
 
 extension Bool: LLMFunctionParameter {
+    /// Convenience conformance of `Bool`s to ``LLMFunctionParameter``, so developers can use primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .boolean
@@ -49,7 +54,8 @@ extension Bool: LLMFunctionParameter {
     }
 }
 
-extension Array: LLMFunctionParameter where Element: Decodable {
+extension Array: LLMFunctionParameter where Element: LLMFunctionParameter {
+    /// Convenience conformance of `Array`s to ``LLMFunctionParameter``, so developers can use array-based primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
             type: .array
@@ -57,19 +63,11 @@ extension Array: LLMFunctionParameter where Element: Decodable {
     }
 }
 
-
-public protocol LLMFunctionParameterWrappedCompatible: Decodable {}
-
-extension Int: LLMFunctionParameterWrappedCompatible {}
-extension Float: LLMFunctionParameterWrappedCompatible {}
-extension Double: LLMFunctionParameterWrappedCompatible {}
-extension String: LLMFunctionParameterWrappedCompatible {}
-extension Bool: LLMFunctionParameterWrappedCompatible {}
-extension Array: LLMFunctionParameterWrappedCompatible where Element: LLMFunctionParameterWrappedCompatible {}
-extension Optional: LLMFunctionParameter where Wrapped: LLMFunctionParameterWrappedCompatible {
+extension Optional: LLMFunctionParameter where Wrapped: LLMFunctionParameter {
+    /// Convenience conformance of `Optional`s to ``LLMFunctionParameter``, so developers can use wrapped primitive types out of the box with ``LLMFunction``s.
     public static var schema: LLMFunctionParameterPropertySchema {
         .init(
-            type: .null     // Dummy value for optional parameters
+            type: Wrapped.schema.type
         )
     }
 }

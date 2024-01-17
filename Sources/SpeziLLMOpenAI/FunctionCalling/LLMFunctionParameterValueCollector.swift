@@ -7,34 +7,46 @@
 //
 
 import Foundation
+import SpeziFoundation
 
 
-protocol ParameterValueCollector {
+
+protocol LLMFunctionParameterValueCollector {
+    /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
     var isOptional: Bool { get }
     
-    /// This method is called to retrieve all the requested values from the given ``SpeziStorage`` repository.
-    /// - Parameter repository: Provides access to the ``SpeziStorage`` repository for read access.
+    /// This method is called to retrieve the requested parameter value given the passed `Data`.
+    ///
+    /// - Parameter data: JSON-based parameter data.
     func retrieve(from data: Data) throws
 }
 
-extension _LLMFunctionParameterWrapper: ParameterValueCollector {
+
+extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
     var isOptional: Bool {
         // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
-        T.self is ExpressibleByNilLiteral.Type
+        // T.self is ExpressibleByNilLiteral.Type
+        // TODO: Check if this works
+        T.self is (any AnyOptional).Type
     }
     
     
-    public func retrieve(from data: Data) throws {
+    func retrieve(from data: Data) throws {
         self.inject(try JSONDecoder().decode(T.self, from: data))
     }
 }
 
 extension LLMFunction {
-    var storageValueCollectors: [String: ParameterValueCollector] {
-        retrieveProperties(ofType: ParameterValueCollector.self)
+    /// All ``LLMFunction/Parameter``s conforming to `LLMFunctionParameterValueCollector`, mapped by their name.
+    var parameterValueCollectors: [String: LLMFunctionParameterValueCollector] {
+        retrieveProperties(ofType: LLMFunctionParameterValueCollector.self)
     }
     
     
+    /// Retrieves all ``LLMFunction/Parameter``s (`@Parameter`s) including their name conforming to a certain `Value` from the ``LLMFunction``.
+    ///
+    /// - Parameters:
+    ///    - type: Specifies which type of ``LLMFunction/Parameter``s should be retrieved.
     func retrieveProperties<Value>(ofType type: Value.Type) -> [String: Value] {
         let mirror = Mirror(reflecting: self)
 
@@ -48,17 +60,24 @@ extension LLMFunction {
         }
     }
     
+    /// Injects the requested function call argument from the LLM into the ``LLMFunction``.
+    ///
+    /// - Parameters:
+    ///    - parameterData: JSON-based parameter data of the ``LLMFunction``.
     func injectParameters(from parameterData: Data) throws {
-        let topLayerParameterData = try JSONDecoder().decode(LLMFunctionParameterJSON.self, from: parameterData).topLayerJSONRepresentation
+        let topLayerParameterData = try JSONDecoder().decode(
+            LLMFunctionParameterIntermediary.self,
+            from: parameterData
+        ).topLayerJSONRepresentation
         
-        for (propertyName, propertyValue) in storageValueCollectors {
+        for (propertyName, propertyValue) in parameterValueCollectors {
             guard let propertyData = topLayerParameterData[propertyName] else {
                 // If optional property, tolerable that there isn't a value
                 if propertyValue.isOptional {
                     continue
                 }
                 
-                let missingCodingKey = LLMCodingKey(stringValue: propertyName)
+                let missingCodingKey = LLMFunctionParameterCodingKey(stringValue: propertyName)
                 
                 throw DecodingError.keyNotFound(
                     missingCodingKey,
