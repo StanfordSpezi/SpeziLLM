@@ -116,8 +116,10 @@ public enum LLMOpenAIError: LLMError {
         switch (lhs, rhs) {
         case (.invalidAPIToken, .invalidAPIToken): true
         case (.connectivityIssues, .connectivityIssues): true
+        case (.storageError, .storageError): true
         case (.insufficientQuota, .insufficientQuota): true
         case (.generationError, .generationError): true
+        case (.modelAccessError, .modelAccessError): true
         case (.invalidFunctionCallArguments, .invalidFunctionCallArguments): true
         case (.illegalFunctionCallParameterCount, .illegalFunctionCallParameterCount): true
         case (.unknownError, .unknownError): true
