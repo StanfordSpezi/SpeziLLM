@@ -86,10 +86,12 @@ extension LLMOpenAI {
                         Self.logger.debug("""
                         SpeziLLMOpenAI: Function call \(functionCall.name ?? "") \
                         Arguments: \(functionCall.arguments ?? "") \
-                        Response: \(functionCallResponse)
+                        Response: \(functionCallResponse ?? "<empty response>")
                         """)
-                        await MainActor.run {
-                            self.context.append(forFunction: functionName, response: functionCallResponse)
+                        if let functionCallResponse {
+                            await MainActor.run {
+                                self.context.append(forFunction: functionName, response: functionCallResponse)
+                            }
                         }
                     }
                 }

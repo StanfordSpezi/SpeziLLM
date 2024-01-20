@@ -73,5 +73,5 @@ public protocol LLMFunction {
     /// The output is automatically injected into the conversational history.
     ///
     /// - Returns: `String`-based output of the function call that is then provided to the LLM.
-    func execute() async throws -> String
+    func execute() async throws -> String?
 }

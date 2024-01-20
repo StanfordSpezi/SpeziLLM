@@ -6,12 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-@testable import SpeziLLM
-import XCTest
+import Foundation
 
 
-final class SpeziLLMTests: XCTestCase {
-    func testSpeziLLMTests() throws {
-        XCTAssert(true)
-    }
+// Only array items
+public protocol LLMFunctionParameterArrayItem: Decodable {
+    static var itemSchema: LLMFunctionParameterItemSchema { get }
 }

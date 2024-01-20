@@ -7,10 +7,11 @@
 //
 
 import Foundation
-import SpeziLLMOpenAI
 import OpenAI
+import SpeziLLMOpenAI
 
 // swiftlint:disable attributes
+
 struct WeatherFunction: LLMFunction {
     enum TemperatureUnit: String, LLMFunctionParameterEnum {
         case test1
@@ -24,13 +25,13 @@ struct WeatherFunction: LLMFunction {
         let world: String
     }
     
-    struct TemperatureUnit2: LLMFunctionParameter {
-        static var schema: LLMFunctionParameterPropertySchema = .init(
+    struct TemperatureUnit2: LLMFunctionParameterArrayItem {
+        static var itemSchema: LLMFunctionParameterItemSchema = .init(
             type: .object,
-            items: .init(
-                type: .null
-                //properties: <#T##[String : JSONSchema.Property]?#>
-            )
+            properties: [
+                "test1": .init(type: .string),
+                "test2": .init(type: .string)
+            ]
         )
         
         let test1: String
@@ -51,8 +52,6 @@ struct WeatherFunction: LLMFunction {
     var unit: TemperatureUnit
     @Parameter(description: "Enum Optional", const: "")
     var unit1: TemperatureUnit?
-    @Parameter(description: "Custom Type Optional")
-    var unit2: TemperatureUnit2?
     @Parameter(description: "Int Optional")
     var unit3: Int?
     @Parameter(description: "ArrayParameterPrimitive", maxItems: 3)
@@ -73,7 +72,8 @@ struct WeatherFunction: LLMFunction {
     
     
     func execute() async throws -> String {
-        return "The weather at \(location) is 30 degrees \(unit1?.rawValue ?? "fahrenheit")"
+        "The weather at \(location) is 30 degrees \(unit1?.rawValue ?? "fahrenheit")"
     }
 }
+
 // swiftlint:enable attributes

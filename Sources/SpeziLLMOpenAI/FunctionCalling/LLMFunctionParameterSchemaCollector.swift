@@ -35,31 +35,6 @@ extension LLMFunction {
                 .keys
         )
         
-        let schema = JSONSchema(
-            type: .object,
-            properties: [
-                "test1": .init(
-                    type: .object,
-                    items: .init(
-                        type: .object,
-                        properties: [
-                            "test2": .init(type: .string)
-                        ]
-                    )
-                )
-            ]
-        )
-        
-        """
-        {
-            "test1": {
-                "test2": "abc"
-            }
-        }
-        """
-
-        let json = try? JSONEncoder().encode(schema)
-        
         let properties = schemaValueCollectors.compactMapValues { $0.schema }
         
         return .init(

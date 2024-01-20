@@ -19,8 +19,9 @@ import SpeziChat
 import SpeziLLM
 
 
-/// The ``LLMOpenAI`` is a Spezi `LLM` and utilizes the OpenAI API to generate output via the OpenAI GPT models.
-/// ``LLMOpenAI`` provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
+/// Generate output via the OpenAI GPT models.
+/// 
+/// ``LLMOpenAI`` is a Spezi `LLM` and provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
 ///
 /// - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks.
@@ -170,7 +171,6 @@ public class LLMOpenAI: LLM {
             }
             
             Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
-        // TODO: Handle function calling errors
         } catch let error as APIErrorResponse {
             if error.error.code == LLMOpenAIError.insufficientQuota.openAIErrorMessage {
                 LLMOpenAI.logger.error("""

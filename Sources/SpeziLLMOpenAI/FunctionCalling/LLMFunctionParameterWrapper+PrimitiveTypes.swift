@@ -8,7 +8,7 @@
 
 // swiftlint:disable discouraged_optional_collection
 
-extension _LLMFunctionParameterWrapper where T == Int {
+extension _LLMFunctionParameterWrapper where T: BinaryInteger {
     /// Creates an ``LLMFunction/Parameter`` of the type `Int` defining a integer parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -18,29 +18,26 @@ extension _LLMFunctionParameterWrapper where T == Int {
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
     public convenience init(
-        description: String,
-        const: (any CustomStringConvertible)? = nil,
-        multipleOf: Int? = nil,
-        minimum: Int? = nil,
-        maximum: Int? = nil
+        description: any StringProtocol,
+        const: (any StringProtocol)? = nil,
+        multipleOf: (any BinaryInteger)? = nil,
+        minimum: T? = nil,
+        maximum: T? = nil
     ) {
-        self.init(description: .init())
-        let minimum: Double? = if let minimum { Double(minimum) } else { nil }
-        let maximum: Double? = if let maximum { Double(maximum) } else { nil }
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
-            const: const?.description,
-            multipleOf: multipleOf,
-            minimum: minimum,
-            maximum: maximum
-        )
+        self.init(schema: .init(
+            type: .integer,
+            description: String(description),
+            const: const.map { String($0) },
+            multipleOf: multipleOf.map { Int($0) },
+            minimum: minimum.map { Double($0) },
+            maximum: maximum.map { Double($0) }
+        ))
     }
 }
 
 
-extension _LLMFunctionParameterWrapper where T == Float {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Float` defining a floating-point parameter of the ``LLMFunction``.
+extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
+    /// Creates an ``LLMFunction/Parameter`` of the type `Float` or `Double` (`BinaryFloatingPoint`) defining a floating-point parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -48,46 +45,18 @@ extension _LLMFunctionParameterWrapper where T == Float {
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
     public convenience init(
-        description: String,
-        const: (any CustomStringConvertible)? = nil,
-        minimum: Float? = nil,
-        maximum: Float? = nil
+        description: any StringProtocol,
+        const: (any StringProtocol)? = nil,
+        minimum: T? = nil,
+        maximum: T? = nil
     ) {
-        self.init(description: .init())
-        let minimum: Double? = if let minimum { Double(minimum) } else { nil }
-        let maximum: Double? = if let maximum { Double(maximum) } else { nil }
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
-            const: const?.description,
-            minimum: minimum,
-            maximum: maximum
-        )
-    }
-}
-
-extension _LLMFunctionParameterWrapper where T == Double {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Double` defining a floating-point parameter of the ``LLMFunction``.
-    ///
-    /// - Parameters:
-    ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
-    ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    ///    - minimum: The minimum value of the parameter.
-    ///    - maximum: The maximum value of the parameter.
-    public convenience init(
-        description: String,
-        const: (any CustomStringConvertible)? = nil,
-        minimum: Double? = nil,
-        maximum: Double? = nil
-    ) {
-        self.init(description: .init())
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
-            const: const?.description,
-            minimum: minimum,
-            maximum: maximum
-        )
+        self.init(schema: .init(
+            type: .number,
+            description: String(description),
+            const: const.map { String($0) },
+            minimum: minimum.map { Double($0) },
+            maximum: maximum.map { Double($0) }
+        ))
     }
 }
 
@@ -97,17 +66,17 @@ extension _LLMFunctionParameterWrapper where T == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(description: String, const: (any CustomStringConvertible)? = nil) {
-        self.init(description: .init())
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
-            const: const?.description
-        )
+    public convenience init(description: any StringProtocol, const: (any StringProtocol)? = nil) {
+        self.init(schema: .init(
+            type: .boolean,
+            description: String(description),
+            const: const.map { String($0) }
+        ))
     }
 }
 
-extension _LLMFunctionParameterWrapper where T == String {
+extension _LLMFunctionParameterWrapper where T: StringProtocol {
+    // TODO
     // https://json-schema.org/draft-06/json-schema-validation
     // 
     // "pattern": "\d\d\d\d-\d\d-\d\d", Regex    https://json-schema.org/draft-06/json-schema-validation#rfc.section.6.8
@@ -124,21 +93,20 @@ extension _LLMFunctionParameterWrapper where T == String {
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enumValues: Defines all cases of the `String` parameter.
     public convenience init(
-        description: String,
+        description: any StringProtocol,
         format: _LLMFunctionParameterWrapper.Format? = nil,
-        pattern: String? = nil,
-        const: (any CustomStringConvertible)? = nil,
-        enumValues: [String]? = nil
+        pattern: (any StringProtocol)? = nil,
+        const: (any StringProtocol)? = nil,
+        enumValues: [any StringProtocol]? = nil
     ) {
-        self.init(description: .init())
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
+        self.init(schema: .init(
+            type: .string,
+            description: String(description),
             format: format?.rawValue,
-            pattern: pattern,
-            const: const?.description,
-            enumValues: enumValues
-        )
+            pattern: pattern.map { String($0) },
+            const: const.map { String($0) },
+            enumValues: enumValues.map { $0.map { String($0) } }
+        ))
     }
 }
 

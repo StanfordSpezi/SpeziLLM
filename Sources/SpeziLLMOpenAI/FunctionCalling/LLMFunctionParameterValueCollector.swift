@@ -10,7 +10,7 @@ import Foundation
 import SpeziFoundation
 
 
-
+/// Defines the `LLMFunctionParameterValueCollector/retrieve(_:)` requirement so that the ``LLMFunction/Parameter``s retrieve the function calling parameter values.
 protocol LLMFunctionParameterValueCollector {
     /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
     var isOptional: Bool { get }
@@ -25,9 +25,10 @@ protocol LLMFunctionParameterValueCollector {
 extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
     var isOptional: Bool {
         // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
-        // T.self is ExpressibleByNilLiteral.Type
-        // TODO: Check if this works
-        T.self is (any AnyOptional).Type
+        T.self is ExpressibleByNilLiteral.Type
+        
+        // TODO: Check if this works -> NO!
+        // T.self is (any AnyOptional).Type
     }
     
     

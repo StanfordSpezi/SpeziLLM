@@ -24,14 +24,14 @@ let package = Package(
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.4")),
+        .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.5")),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.6")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.8.2")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", .upToNextMinor(from: "0.5.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", .upToNextMinor(from: "0.7.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", .upToNextMinor(from: "0.1.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.2")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", .upToNextMinor(from: "0.6.3"))
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.1.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.0.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", from: "1.0.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.3")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.0.0")
     ],
     targets: [
         .target(

@@ -8,11 +8,10 @@
 
 import SpeziFoundation
 
+// swiftlint:disable discouraged_optional_boolean
 
-// TODO: This doesn't work yet as the properties are tricky..
-// TODO: Do we need more parameters here? No?
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameter {
-    /// Creates an `LLMFunctionParameter`-based (custom type) ``LLMFunction/Parameter`` `array`.
+extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterArrayItem {
+    /// Creates an ``LLMFunctionParameterArrayItem``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -20,36 +19,33 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: String,
-        minItems: Int? = nil,
-        maxItems: Int? = nil,
+        description: any StringProtocol,
+        minItems: (any BinaryInteger)? = nil,
+        maxItems: (any BinaryInteger)? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(description: .init())
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
+        self.init(schema: .init(
+            type: .array,
+            description: String(description),
             items: .init(
-                type: T.Element.schema.type,
-                // TODO: How should that work? Separate LLMFunctionParameter type for Array that uses a different type?
-                //properties: T.Element.schema.properties,
-                
-                pattern: T.Element.schema.pattern,
-                const: T.Element.schema.const,
-                enumValues: T.Element.schema.enumValues,
-                multipleOf: T.Element.schema.multipleOf,
-                minimum: T.Element.schema.minimum,
-                maximum: T.Element.schema.maximum
+                type: T.Element.itemSchema.type,
+                properties: T.Element.itemSchema.properties,
+                pattern: T.Element.itemSchema.pattern,
+                const: T.Element.itemSchema.const,
+                enumValues: T.Element.itemSchema.enumValues,
+                multipleOf: T.Element.itemSchema.multipleOf,
+                minimum: T.Element.itemSchema.minimum,
+                maximum: T.Element.itemSchema.maximum
             ),
-            minItems: minItems,
-            maxItems: maxItems,
+            minItems: minItems.map { Int($0) },
+            maxItems: maxItems.map { Int($0) },
             uniqueItems: uniqueItems
-        )
+        ))
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: LLMFunctionParameter {
-    /// Creates an optional `LLMFunctionParameter`-based (custom type) ``LLMFunction/Parameter`` `array`.
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: LLMFunctionParameterArrayItem {
+    /// Creates an optional ``LLMFunctionParameterArrayItem``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -57,30 +53,29 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: String,
-        minItems: Int? = nil,
-        maxItems: Int? = nil,
+        description: any StringProtocol,
+        minItems: (any BinaryInteger)? = nil,
+        maxItems: (any BinaryInteger)? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(description: .init())
-        self.schema = .init(
-            type: T.schema.type,
-            description: description,
+        self.init(schema: .init(
+            type: .array,
+            description: String(description),
             items: .init(
-                type: T.Wrapped.Element.schema.type,
-                // TODO: How should that work? Separate LLMFunctionParameter type for Array that uses a different type?
-                //properties: T.Wrapped.Element.schema.properties,
-                
-                pattern: T.Wrapped.Element.schema.pattern,
-                const: T.Wrapped.Element.schema.const,
-                enumValues: T.Wrapped.Element.schema.enumValues,
-                multipleOf: T.Wrapped.Element.schema.multipleOf,
-                minimum: T.Wrapped.Element.schema.minimum,
-                maximum: T.Wrapped.Element.schema.maximum
+                type: T.Wrapped.Element.itemSchema.type,
+                properties: T.Wrapped.Element.itemSchema.properties,
+                pattern: T.Wrapped.Element.itemSchema.pattern,
+                const: T.Wrapped.Element.itemSchema.const,
+                enumValues: T.Wrapped.Element.itemSchema.enumValues,
+                multipleOf: T.Wrapped.Element.itemSchema.multipleOf,
+                minimum: T.Wrapped.Element.itemSchema.minimum,
+                maximum: T.Wrapped.Element.itemSchema.maximum
             ),
-            minItems: minItems,
-            maxItems: maxItems,
+            minItems: minItems.map { Int($0) },
+            maxItems: maxItems.map { Int($0) },
             uniqueItems: uniqueItems
-        )
+        ))
     }
 }
+
+// swiftlint:enable discouraged_optional_boolean
