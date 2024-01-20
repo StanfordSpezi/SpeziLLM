@@ -8,7 +8,6 @@
 
 import SpeziOnboarding
 import SwiftUI
-import XCTSpezi
 
 
 struct LLMOpenAIOnboardingView: View {

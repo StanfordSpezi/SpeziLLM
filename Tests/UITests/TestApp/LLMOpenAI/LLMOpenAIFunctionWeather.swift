@@ -71,7 +71,7 @@ struct WeatherFunction: LLMFunction {
     }
     
     
-    func execute() async throws -> String {
+    func execute() async throws -> String? {
         "The weather at \(location) is 30 degrees \(unit1?.rawValue ?? "fahrenheit")"
     }
 }

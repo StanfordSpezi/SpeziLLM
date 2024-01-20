@@ -81,7 +81,7 @@ final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
         ]
     )
     
-    func testLLMFunctionOptionalParameters() async throws {
+    func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
         XCTAssertEqual(llm.functions.count, 1)
         let llmFunctionPair = try XCTUnwrap(llm.functions.first)
         

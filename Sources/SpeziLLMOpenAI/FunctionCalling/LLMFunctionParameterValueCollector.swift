@@ -26,9 +26,6 @@ extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
     var isOptional: Bool {
         // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
         T.self is ExpressibleByNilLiteral.Type
-        
-        // TODO: Check if this works -> NO!
-        // T.self is (any AnyOptional).Type
     }
     
     

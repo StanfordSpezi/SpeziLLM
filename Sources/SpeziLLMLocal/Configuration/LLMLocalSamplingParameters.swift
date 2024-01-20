@@ -230,7 +230,7 @@ public struct LLMLocalSamplingParameters: Sendable {
     var cfg: ClassifierFreeGuidance {
         get {
             .init(
-                negativePrompt: String(wrapped.cfg_negative_prompt),
+                negativePrompt: String(cxxString: wrapped.cfg_negative_prompt),
                 scale: wrapped.cfg_scale
             )
         }

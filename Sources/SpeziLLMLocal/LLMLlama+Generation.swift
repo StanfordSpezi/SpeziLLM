@@ -110,7 +110,8 @@ extension LLMLlama {
                 return
             }
             
-            var nextStringPiece = String(llama_token_to_piece(self.modelContext, nextTokenId))
+            // TODO: document all workarounds!
+            var nextStringPiece = String(cxxString: llama_token_to_piece(self.modelContext, nextTokenId))
             // As first character is sometimes randomly prefixed by a single space (even though prompt has an additional character)
             if decodedTokens == 0 && nextStringPiece.starts(with: " ") {
                 nextStringPiece = String(nextStringPiece.dropFirst())
@@ -150,5 +151,17 @@ extension LLMLlama {
         await MainActor.run {
             self.state = .ready
         }
+    }
+}
+
+
+extension String {
+    init(cxxString: std.__1.string) {
+        let bytes: [UInt8] = cxxString.compactMap { UInt8(bitPattern: $0) }
+        
+        guard let string = String(bytes: bytes, encoding: .utf8) else {
+            preconditionFailure("Encoding issue") // TODO: better !
+        }
+        self = string
     }
 }
