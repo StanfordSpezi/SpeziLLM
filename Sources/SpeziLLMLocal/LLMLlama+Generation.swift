@@ -48,7 +48,7 @@ extension LLMLlama {
             return
         }
         
-        // Tokenizes the entire context of the `LLM?
+        // Tokenizes the entire context of the `LLM
         guard let tokens = try? await tokenize() else {
             Self.logger.error("""
             SpeziLLMLocal: Tokenization failed as illegal context exists.
@@ -111,7 +111,7 @@ extension LLMLlama {
             }
             
             // TODO: document all workarounds!
-            var nextStringPiece = String(cxxString: llama_token_to_piece(self.modelContext, nextTokenId))
+            var nextStringPiece = String(llama_token_to_piece(self.modelContext, nextTokenId))
             // As first character is sometimes randomly prefixed by a single space (even though prompt has an additional character)
             if decodedTokens == 0 && nextStringPiece.starts(with: " ") {
                 nextStringPiece = String(nextStringPiece.dropFirst())
@@ -155,13 +155,3 @@ extension LLMLlama {
 }
 
 
-extension String {
-    init(cxxString: std.__1.string) {
-        let bytes: [UInt8] = cxxString.compactMap { UInt8(bitPattern: $0) }
-        
-        guard let string = String(bytes: bytes, encoding: .utf8) else {
-            preconditionFailure("Encoding issue") // TODO: better !
-        }
-        self = string
-    }
-}

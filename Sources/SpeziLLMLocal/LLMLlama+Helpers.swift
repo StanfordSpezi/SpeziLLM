@@ -82,7 +82,7 @@ extension LLMLlama {
     /// - Note: Used only for debug purposes
     func detokenize(tokens: [LLMLlamaToken]) -> [(LLMLlamaToken, String)] {
         tokens.reduce(into: [(LLMLlamaToken, String)]()) { partialResult, token in
-            partialResult.append((token, String(cxxString: llama_token_to_piece(self.modelContext, token))))
+            partialResult.append((token, String(llama_token_to_piece(self.modelContext, token))))
         }
     }
     
