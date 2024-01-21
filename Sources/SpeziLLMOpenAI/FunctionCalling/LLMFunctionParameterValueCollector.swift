@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SpeziFoundation
 
 
 /// Defines the `LLMFunctionParameterValueCollector/retrieve(_:)` requirement so that the ``LLMFunction/Parameter``s retrieve the function calling parameter values.

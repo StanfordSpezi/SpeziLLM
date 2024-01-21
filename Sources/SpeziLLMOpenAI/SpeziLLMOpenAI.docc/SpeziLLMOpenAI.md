@@ -55,7 +55,7 @@ The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class w
 
 ### LLM OpenAI
 
-``LLMOpenAI`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAI/init(parameters:modelParameters:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
+``LLMOpenAI`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAI/init(parameters:modelParameters:_:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
 
 - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles all management overhead tasks.
 
@@ -116,6 +116,12 @@ struct LLMOpenAIChatView: View {
     }
 }
 ```
+
+#### LLM Function Calling
+
+The OpenAI GPT-based LLMs provide function calling capabilities in order to enable a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
+``SpeziLLMOpenAI`` provides a declarative Domain Specific Language to make LLM function calling as seamless as possible within Spezi.
+An extensive documentation can be found in <doc:FunctionCalling>.
 
 ### Onboarding Flow
 

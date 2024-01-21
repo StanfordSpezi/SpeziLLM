@@ -55,7 +55,7 @@ enum LLMFunctionParameterIntermediary: Codable {
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
                     codingPath: decoder.codingPath,
-                    debugDescription: "Encountered unexpected JSON values"
+                    debugDescription: "Encountered unexpected JSON values within LLM Function Calling Parameters"
                 )
             )
         }

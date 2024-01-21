@@ -24,13 +24,12 @@ struct LLMOpenAIChatTestView: View {
                 parameters: .init(
                     modelType: .gpt4_1106_preview,
                     systemPrompt: "You're a helpful assistant that answers questions from users."
-                ),
-                functions: [
-                    LLMOpenAIFunctionWeather(),
-                    LLMOpenAIFunctionHealthData(),
-                    LLMOpenAIFunctionPerson()
-                ]
-            )
+                )
+            ) {
+                LLMOpenAIFunctionWeather()
+                LLMOpenAIFunctionHealthData()
+                LLMOpenAIFunctionPerson()
+            }
         }
     }()
     

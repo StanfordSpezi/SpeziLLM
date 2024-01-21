@@ -26,6 +26,8 @@ import SpeziLLM
 /// - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks.
 ///
+/// > Tip: ``SpeziLLMOpenAI`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:Function-Calling> DocC article.
+///
 /// ### Usage
 ///
 /// The code section below showcases a complete code example on how to use the ``LLMOpenAI`` in combination with a `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target.
@@ -80,7 +82,7 @@ public class LLMOpenAI: LLM {
     public let type: LLMHostingType = .cloud
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
-    var functions: [String: LLMFunction] = [:]
+    let functions: [String: LLMFunction]
     @ObservationIgnored private var wrappedModel: OpenAI?
     
     
@@ -100,17 +102,15 @@ public class LLMOpenAI: LLM {
     /// - Parameters:
     ///    - parameters: LLM Parameters
     ///    - modelParameters: LLM Model Parameters
+    ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
         parameters: LLMOpenAIParameters,
-        functions: [LLMFunction] = [],
-        modelParameters: LLMOpenAIModelParameters = .init()
+        modelParameters: LLMOpenAIModelParameters = .init(),
+        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
-        for function in functions {
-            // Need to get the type in order to access static properties of the `LLMFunction`
-            self.functions[Swift.type(of: function).name] = function
-        }
+        self.functions = functionsCollection().functions
         
         Task { @MainActor in
             self.context.append(systemMessage: parameters.systemPrompt)

@@ -11,8 +11,9 @@ import Foundation
 
 /// In case of a `DecodingError` of the called function parameters to the ``LLMFunction/Parameter``s, indicates where in the `DecodingError` occurred.
 struct LLMFunctionParameterCodingKey: CodingKey {
-    var stringValue: String
+    let stringValue: String
     var intValue: Int?
+    
     
     init(stringValue: String) {
         self.stringValue = stringValue

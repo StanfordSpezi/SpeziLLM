@@ -9,7 +9,7 @@
 // swiftlint:disable discouraged_optional_collection
 
 extension _LLMFunctionParameterWrapper where T: BinaryInteger {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Int` defining a integer parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Int` defining a integer parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -37,7 +37,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
 
 
 extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Float` or `Double` (`BinaryFloatingPoint`) defining a floating-point parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Float` or `Double` (`BinaryFloatingPoint`) defining a floating-point parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -61,7 +61,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
 }
 
 extension _LLMFunctionParameterWrapper where T == Bool {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Bool` defining a binary parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Bool` defining a binary parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -79,7 +79,7 @@ extension _LLMFunctionParameterWrapper where T == Bool {
 }
 
 extension _LLMFunctionParameterWrapper where T: StringProtocol {
-    /// Creates an ``LLMFunction/Parameter`` of the type `String` defining a text-based parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `String` defining a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.

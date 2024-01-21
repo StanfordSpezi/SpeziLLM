@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+
 extension _LLMFunctionParameterWrapper {
     /// Represents the `format` property of the JSON schema used of OpenAI Function calling.
     public enum Format: String {

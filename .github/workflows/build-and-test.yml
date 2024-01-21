@@ -35,10 +35,10 @@ jobs:
     name: Build and Test UI Tests Release
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: TestApp.xcresult
+      artifactname: TestAppResult.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
-      scheme: 'TestApp Release'
+      scheme: TestAppRelease
   uploadcoveragereport:
     name: Upload Coverage Report
     needs: [buildandtest, buildandtestuitestsdebug]

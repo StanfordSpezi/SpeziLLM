@@ -9,6 +9,7 @@
 import Foundation
 import OpenAI
 
+
 /// Defines the `LLMFunctionParameterSchemaCollector/schema` requirement to collect the function calling parameter schema's from the ``LLMFunction/Parameter``s.
 ///
 /// Conformance of ``LLMFunction/Parameter`` to `LLMFunctionParameterSchemaCollector` can be found in the declaration of the ``LLMFunction/Parameter``.
@@ -25,7 +26,7 @@ extension LLMFunction {
         retrieveProperties(ofType: LLMFunctionParameterSchemaCollector.self)
     }
     
-    /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines it into a single, complete parameter schema of the ``LLMFunction``.
+    /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines them into the complete parameter schema of the ``LLMFunction``.
     var schema: LLMFunctionParameterSchema {
         let requiredPropertyNames = Array(
             parameterValueCollectors

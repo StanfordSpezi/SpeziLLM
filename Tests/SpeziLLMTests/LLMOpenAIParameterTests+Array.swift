@@ -55,11 +55,10 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
     }
     
     let llm = LLMOpenAI(
-        parameters: .init(modelType: .gpt4_1106_preview),
-        functions: [
-            LLMFunctionTest(someInitArg: "testArg")
-        ]
-    )
+        parameters: .init(modelType: .gpt4_1106_preview)
+    ) {
+        LLMFunctionTest(someInitArg: "testArg")
+    }
     
     func testLLMFunctionPrimitiveParameters() async throws {
         XCTAssertEqual(llm.functions.count, 1)

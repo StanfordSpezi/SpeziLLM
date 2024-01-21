@@ -7,13 +7,13 @@
 //
 
 import OpenAI
-import SpeziFoundation
 
 
-/// Alias of the OpenAI `JSONSchema/Property` type
+/// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
 public typealias LLMFunctionParameterPropertySchema = JSONSchema.Property
-/// Alias of the OpenAI `JSONSchema/Item` type
+/// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
 public typealias LLMFunctionParameterItemSchema = JSONSchema.Items
+
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
@@ -73,6 +73,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable, D: StringProtocol>: LLMF
         self.schema = schema
     }
     
+    
     func inject(_ value: T) where T: Decodable {
         self.injectedValue = value
     }
@@ -82,9 +83,17 @@ public class _LLMFunctionParameterWrapper<T: Decodable, D: StringProtocol>: LLMF
 extension LLMFunction {
     /// Defines parameters within an ``LLMFunction``.
     ///
-    /// The `@Parameter` property wrapper can be used within an ``LLMFunction`` to declare that the function takes a single argument.
-    /// As the function is called by the LLM, the parameters that are requested are automatically filled by SpeziLLM.
-    /// The wrapper contains lots of different initializers for the respective wrapped types of the parameter, such as `Int`, `Float`, `Double`, `Bool` or `String`, as well as `Optional`, `array`, and `enum` data types.
+    /// The `@Parameter` property wrapper (``LLMFunction/Parameter``) can be used within an ``LLMFunction`` to declare that the function takes a number of arguments of specific type.
+    /// As the function is called by the LLM, the function parameters that are sent by the LLM are automatically injected into the ``LLMFunction`` by ``SpeziLLMOpenAI``.
+    ///
+    /// The wrapper contains various initializers for the respective wrapped types of the parameter, such as `Int`, `Float`, `Double`, `Bool` or `String`, as well as `Optional`, `array`, and `enum` data types.
+    /// For these types, ``SpeziLLMOpenAI`` is able to automatically synthezise the OpenAI function parameter schema from the declared ``LLMFunction/Parameter``s.
+    ///
+    /// > Tip: In case developers want to manually define schema's for custom and complex types, please refer to ``LLMFunctionParameter``, ``LLMFunctionParameterEnum``, and ``LLMFunctionParameterArrayElement``.
+    ///
+    /// # Usage
+    ///
+    /// The example below demonstrates a simple use case of an ``LLMFunction/Parameter`` within a ``LLMFunction``.
     ///
     /// ```swift
     /// struct WeatherFunction: LLMFunction {

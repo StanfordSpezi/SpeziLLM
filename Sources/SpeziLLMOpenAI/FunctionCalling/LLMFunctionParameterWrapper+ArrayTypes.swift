@@ -11,7 +11,7 @@ import SpeziFoundation
 // swiftlint:disable discouraged_optional_boolean discouraged_optional_collection
 
 extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteger {
-    /// Creates an `Int`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -50,7 +50,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloatingPoint {
-    /// Creates an `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
+    /// Declares an `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -86,7 +86,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
-    /// Creates an `Bool`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an `Bool`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -116,7 +116,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProtocol {
-    /// Creates an `String`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.

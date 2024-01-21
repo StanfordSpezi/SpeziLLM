@@ -13,7 +13,8 @@ import SpeziLLM
 import SpeziSecureStorage
 
 
-/// The ``LLMOpenAIRunnerSetupTask`` sets up the OpenAI environment in order to execute Spezi `LLM`s.
+/// Sets up the OpenAI environment in order to execute Spezi `LLM`s.
+/// 
 /// The task needs to be stated within the `LLMRunner` initializer in the Spezi `Configuration`.
 ///
 /// One is able to specify Spezi-wide configurations for the OpenAI interaction, such as the API key or a network timeout duration (however, not a requirement!).

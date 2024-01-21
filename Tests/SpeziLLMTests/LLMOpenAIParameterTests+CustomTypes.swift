@@ -10,7 +10,7 @@
 import XCTest
 
 final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
-    struct CustomType: LLMFunctionParameterArrayItem, Encodable, Equatable {
+    struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
         static var itemSchema: SpeziLLMOpenAI.LLMFunctionParameterItemSchema = .init(
             type: .object,
             properties: [
@@ -64,11 +64,10 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAI(
-        parameters: .init(modelType: .gpt4_1106_preview),
-        functions: [
-            LLMFunctionTest(someInitArg: "testArg")
-        ]
-    )
+        parameters: .init(modelType: .gpt4_1106_preview)
+    ) {
+        LLMFunctionTest(someInitArg: "testArg")
+    }
     
     func testLLMFunctionPrimitiveParameters() async throws {
         XCTAssertEqual(llm.functions.count, 1)

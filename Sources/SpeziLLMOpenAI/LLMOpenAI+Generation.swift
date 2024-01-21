@@ -88,9 +88,15 @@ extension LLMOpenAI {
                         Arguments: \(functionCall.arguments ?? "") \
                         Response: \(functionCallResponse ?? "<empty response>")
                         """)
-                        if let functionCallResponse {
-                            await MainActor.run {
+                        
+                        await MainActor.run {
+                            if let functionCallResponse {
                                 self.context.append(forFunction: functionName, response: functionCallResponse)
+                            } else {
+                                self.context.append(
+                                    forFunction: functionName,
+                                    response: "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
+                                )
                             }
                         }
                     }

@@ -61,36 +61,6 @@
         }
       }
     },
-    "LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_ERROR_DESCRIPTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The LLM Function Call includes illegal parameters."
-          }
-        }
-      }
-    },
-    "LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_FAILURE_REASON" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The LLM Function Call specified an illegal amount of Parameters within its specification."
-          }
-        }
-      }
-    },
-    "LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_RECOVERY_SUGGESTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please ensure that the LLM Function Call was specified according to the SpeziLLM rules."
-          }
-        }
-      }
-    },
     "LLM_INSUFFICIENT_QUOTA_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {

@@ -6,36 +6,36 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
+import Foundation
 
 
-/// Represents LLM function calling parameters.
+/// Represents an LLM function calling parameter.
 ///
-/// Every parameter used within an ``LLMFunction`` via the ``LLMFunction/Parameter`` (`@Parameter`) needs to conform to the ``LLMFunctionParameter`` protocol.
-/// The protocol enforces the ``LLMFunctionParameter/schema`` property, which every ``LLMFunction/Parameter`` needs to implement so that OpenAI LLMs are able to
-/// structure the function call parameters.
+/// The ``LLMFunctionParameter``enables developers to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling).
+/// However, the usage of ``LLMFunctionParameter`` should rarely be required as ``SpeziLLMOpenAI`` automatically synthezises the OpenAI schema from the underlying primitive Swift types,
+/// such as `Int`s, `Float`s, `Double`s, `Bool`s, and `String`s. Furthermore, `array`- or `enum`-based compositions of these type are automatically supported, similar to `Optional`s of these types.
 ///
-/// For primitive types, arrays of primitive types as well as optionals of primitive types, the conformance to the ``LLMFunctionParameter`` protocol is done by SpeziLLM.
-/// For `enum`s, please refer to the ``LLMFunctionParameterEnum``.
-/// 
-/// > Tip: For custom and more complex types, one needs to manually implement the conformance to the protocol as SpeziLLM is not able to automatically synthesise the schema.
+/// The protocol enforces the ``LLMFunctionParameter/schema`` property that defines the OpenAI schema-based structure of the function calling arguments,
+/// enabling developers full freedom over the defined schema.
+///
+/// > Warning: One cannot use the ``LLMFunctionParameter`` to nest OpenAI schema `object`s within `object`s, as the defining OpenAI schema language doesn't allow for that.
+/// > In case your LLM function calling use case requires such functionality, please rethink your approach and try to simplify it.
 ///
 /// # Usage
 ///
 /// An example usage of the ``LLMFunctionParameter`` for a custom type looks like the following:
 ///
 /// ```swift
-/// struct WeatherFunction: LLMFunction {
-///     struct CustomType: LLMFunctionParameter {
-///         // Manually implement the conformance to the `LLMFunctionParameter` protocol, enforcing the declaration of the parameter schema.
-///         static var schema: LLMFunctionParameterPropertySchema = .init(type: .null)
-///
-///         let hello: String
-///         let world: Int
+/// /// Manual conformance to `LLMFunctionParameter` of a custom type.
+/// extension Data: LLMFunctionParameter {
+///     public static var schema: LLMFunctionParameterPropertySchema {
+///         .init(type: .string)
 ///     }
+/// }
 ///
-///     @Parameter(description: "An example description of the custom LLM function parameter type")
-///     var customParameter: CustomType
+/// struct WeatherFunction: LLMFunction {
+///     @Parameter(description: "Random base64 coded data")
+///     var customParameter: Data
 ///
 ///     func execute() async throws -> String {
 ///         "..."

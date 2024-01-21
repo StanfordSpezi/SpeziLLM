@@ -11,7 +11,7 @@ import SpeziFoundation
 // swiftlint:disable discouraged_optional_boolean discouraged_optional_collection
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryInteger {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Int?` defining a integer parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Int?` defining a integer parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -38,7 +38,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFloatingPoint {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Float?` or `Double?` (`FloatingPoint?`)  defining a floating-point parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Float?` or `Double?` (`FloatingPoint?`)  defining a floating-point parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -62,7 +62,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
-    /// Creates an ``LLMFunction/Parameter`` of the type `Bool?` defining a binary parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `Bool?` defining a binary parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -80,7 +80,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringProtocol {
-    /// Creates an ``LLMFunction/Parameter`` of the type `String?` defining a text-based parameter of the ``LLMFunction``.
+    /// Declares an ``LLMFunction/Parameter`` of the type `String?` defining a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -107,7 +107,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryInteger {
-    /// Creates an optional `Int`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an optional `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -146,7 +146,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryFloatingPoint {
-    /// Creates an optional `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
+    /// Declares an optional `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -182,7 +182,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element == Bool {
-    /// Creates an optional `Bool`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an optional `Bool`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -212,7 +212,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: StringProtocol {
-    /// Creates an optional `String`-based ``LLMFunction/Parameter`` `array`.
+    /// Declares an optional `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.

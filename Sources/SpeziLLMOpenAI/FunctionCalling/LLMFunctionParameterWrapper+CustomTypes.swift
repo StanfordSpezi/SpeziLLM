@@ -10,8 +10,8 @@ import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterArrayItem {
-    /// Creates an ``LLMFunctionParameterArrayItem``-based (custom type) ``LLMFunction/Parameter`` `array`.
+extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterArrayElement {
+    /// Declares an ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -44,8 +44,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: LLMFunctionParameterArrayItem {
-    /// Creates an optional ``LLMFunctionParameterArrayItem``-based (custom type) ``LLMFunction/Parameter`` `array`.
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: LLMFunctionParameterArrayElement {
+    /// Declares an optional ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.

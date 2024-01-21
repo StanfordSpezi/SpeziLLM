@@ -26,9 +26,6 @@ public enum LLMOpenAIError: LLMError {
     case modelAccessError(Error)
     /// Invalid function call parameters (mismatch between sent parameters from OpenAI and declared ones within the ``LLMFunction``), including the decoding error
     case invalidFunctionCallArguments(Error)
-    /// Illegal function call parameter count specified in the ``LLMFunction``.
-    /// Only one `@Parameter` value should exist within the ``LLMFunction`` that contains all the function arguments sent by OpenAI.
-    case illegalFunctionCallParameterCount
     /// Unknown error
     case unknownError(Error)
     
@@ -58,8 +55,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_MODEL_ACCESS_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .invalidFunctionCallArguments:
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        case .illegalFunctionCallParameterCount:
-            String(localized: LocalizedStringResource("LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
@@ -81,8 +76,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_MODEL_ACCESS_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .invalidFunctionCallArguments:
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        case .illegalFunctionCallParameterCount:
-            String(localized: LocalizedStringResource("LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
@@ -104,8 +97,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_MODEL_ACCESS_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .invalidFunctionCallArguments:
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_FAILURE_REASON", bundle: .atURL(from: .module)))
-        case .illegalFunctionCallParameterCount:
-            String(localized: LocalizedStringResource("LLM_ILLEGAL_FUNCTION_PARAMETER_COUNT_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
@@ -121,7 +112,6 @@ public enum LLMOpenAIError: LLMError {
         case (.generationError, .generationError): true
         case (.modelAccessError, .modelAccessError): true
         case (.invalidFunctionCallArguments, .invalidFunctionCallArguments): true
-        case (.illegalFunctionCallParameterCount, .illegalFunctionCallParameterCount): true
         case (.unknownError, .unknownError): true
         default: false
         }

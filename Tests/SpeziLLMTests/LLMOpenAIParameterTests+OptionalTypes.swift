@@ -74,11 +74,10 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAI(
-        parameters: .init(modelType: .gpt4_1106_preview),
-        functions: [
-            LLMFunctionTest(someInitArg: "testArg")
-        ]
-    )
+        parameters: .init(modelType: .gpt4_1106_preview)
+    ) {
+        LLMFunctionTest(someInitArg: "testArg")
+    }
     
     func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
         XCTAssertEqual(llm.functions.count, 1)
