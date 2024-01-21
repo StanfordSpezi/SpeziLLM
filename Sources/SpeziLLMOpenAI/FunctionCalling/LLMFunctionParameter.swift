@@ -11,7 +11,7 @@ import Foundation
 
 /// Represents an LLM function calling parameter.
 ///
-/// The ``LLMFunctionParameter``enables developers to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling).
+/// The ``LLMFunctionParameter``enables developers to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). <!-- markdown-link-check-disable-line -->
 /// However, the usage of ``LLMFunctionParameter`` should rarely be required as ``SpeziLLMOpenAI`` automatically synthezises the OpenAI schema from the underlying primitive Swift types,
 /// such as `Int`s, `Float`s, `Double`s, `Bool`s, and `String`s. Furthermore, `array`- or `enum`-based compositions of these type are automatically supported, similar to `Optional`s of these types.
 ///

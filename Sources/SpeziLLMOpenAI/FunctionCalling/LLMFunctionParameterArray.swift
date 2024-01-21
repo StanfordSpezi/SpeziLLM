@@ -11,7 +11,7 @@ import Foundation
 
 /// Represents an LLM function calling parameter in the form of an `array` element.
 ///
-/// The ``LLMFunctionParameterArrayElement``enables developers to manually specify the conformance of an array-based Swift type to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling).
+/// The ``LLMFunctionParameterArrayElement``enables developers to manually specify the conformance of an array-based Swift type to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). <!-- markdown-link-check-disable-line -->
 /// However, the usage of ``LLMFunctionParameterArrayElement`` should rarely be required as ``SpeziLLMOpenAI`` automatically synthezises the OpenAI schema from `array`-based types with primitive Swift types as elements.
 ///
 /// The protocol enforces the ``LLMFunctionParameterArrayElement/itemSchema`` property that defines the OpenAI schema-based structure of array-based elements.

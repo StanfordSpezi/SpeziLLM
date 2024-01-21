@@ -14,7 +14,7 @@ Function calling with LLMs from OpenAI.
 
 ## Overview
 
-The OpenAI GPT-based LLMs provide [function calling capabilities](https://platform.openai.com/docs/guides/function-calling) in order to enable a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
+The OpenAI GPT-based LLMs provide [function calling capabilities](https://platform.openai.com/docs/guides/function-calling) in order to enable a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem. <!-- markdown-link-check-disable-line -->
 ``SpeziLLMOpenAI`` provides a declarative Domain Specific Language to make LLM function calling as seamless as possible within Spezi.
 
 ## Usage
@@ -127,7 +127,7 @@ struct LLMOpenAIFunctionHealthData: LLMFunction {
 }
 ```
 
-> Tip: In case one wants to use complex custom objects within the ``LLMFunction/Parameter``, one can use ``LLMFunctionParameter`` for regular types and ``LLMFunctionParameterArrayElement`` for `array`-based types to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). See the inline DocC documentation for further information.
+> Tip: In case one wants to use complex custom objects within the ``LLMFunction/Parameter``, one can use ``LLMFunctionParameter`` for regular types and ``LLMFunctionParameterArrayElement`` for `array`-based types to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). See the inline DocC documentation for further information. <!-- markdown-link-check-disable-line -->
 
 ## Topics
 
