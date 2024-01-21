@@ -10,7 +10,13 @@ import Foundation
 
 
 extension String {
-    /// C++ String to Swift String from: https://github.com/apple/swift/blob/cf2a338afca54a787d59b83db6238b1568215b94/stdlib/public/Cxx/std/String.swift#L231-L239
+    /// Initializes a Swift `String` from a C++ `string`.
+    ///
+    /// - Parameters:
+    ///    - cxxString: The given C++ `string`
+    ///
+    /// In the Release build mode, the Swift compiler is unable to choose the correct String initializer from the Swift stdlib.
+    /// Therefore, manual `String `extension by SpeziLLM that mirrors the C++ interop implementation within the Swift stdlib: https://github.com/apple/swift/blob/cf2a338afca54a787d59b83db6238b1568215b94/stdlib/public/Cxx/std/String.swift#L231-L239
     init(_ cxxString: std.string) {
         let buffer = UnsafeBufferPointer<CChar>(
             start: cxxString.__c_strUnsafe(),

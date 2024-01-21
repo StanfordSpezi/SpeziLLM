@@ -18,9 +18,9 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
-        multipleOf: (any BinaryInteger)? = nil,
+        multipleOf: Int? = nil,
         minimum: T? = nil,
         maximum: T? = nil
     ) {
@@ -28,7 +28,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
             type: .integer,
             description: String(description),
             const: const.map { String($0) },
-            multipleOf: multipleOf.map { Int($0) },
+            multipleOf: multipleOf,
             minimum: minimum.map { Double($0) },
             maximum: maximum.map { Double($0) }
         ))
@@ -45,7 +45,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
         minimum: T? = nil,
         maximum: T? = nil
@@ -66,7 +66,10 @@ extension _LLMFunctionParameterWrapper where T == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(description: any StringProtocol, const: (any StringProtocol)? = nil) {
+    public convenience init(
+        description: D,
+        const: (any StringProtocol)? = nil
+    ) {
         self.init(schema: .init(
             type: .boolean,
             description: String(description),
@@ -93,7 +96,7 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enumValues: Defines all cases of the `String` parameter.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,

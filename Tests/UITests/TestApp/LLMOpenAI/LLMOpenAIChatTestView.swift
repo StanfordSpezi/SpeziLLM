@@ -26,7 +26,9 @@ struct LLMOpenAIChatTestView: View {
                     systemPrompt: "You're a helpful assistant that answers questions from users."
                 ),
                 functions: [
-                    WeatherFunction(someArg: "")
+                    LLMOpenAIFunctionWeather(),
+                    LLMOpenAIFunctionHealthData(),
+                    LLMOpenAIFunctionPerson()
                 ]
             )
         }

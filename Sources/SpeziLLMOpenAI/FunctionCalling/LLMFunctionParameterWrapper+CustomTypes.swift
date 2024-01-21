@@ -19,9 +19,9 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        description: D,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -37,8 +37,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 minimum: T.Element.itemSchema.minimum,
                 maximum: T.Element.itemSchema.maximum
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }
@@ -53,9 +53,9 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        description: D,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -71,8 +71,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 minimum: T.Wrapped.Element.itemSchema.minimum,
                 maximum: T.Wrapped.Element.itemSchema.maximum
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }

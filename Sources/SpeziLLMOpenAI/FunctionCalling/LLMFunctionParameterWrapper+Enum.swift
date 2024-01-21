@@ -18,7 +18,7 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil
     ) {
         self.init(schema: .init(
@@ -37,7 +37,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     public convenience init(
-        description: String,
+        description: D,
         const: (any StringProtocol)? = nil
     ) {
         self.init(schema: .init(
@@ -59,10 +59,10 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -73,8 +73,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 const: const.map { String($0) },
                 enumValues: T.Element.allCases.map { String($0.rawValue) }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }
@@ -93,10 +93,10 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -107,8 +107,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 const: const.map { String($0) },
                 enumValues: T.Wrapped.Element.allCases.map { String($0.rawValue) }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }

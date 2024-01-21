@@ -23,13 +23,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
-        multipleOf: (any BinaryInteger)? = nil,
+        multipleOf: Int? = nil,
         minimum: T.Element? = nil,
         maximum: T.Element? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -38,12 +38,12 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
             items: .init(
                 type: .integer,
                 const: const.map { String($0) },
-                multipleOf: multipleOf.map { Int($0) },
+                multipleOf: multipleOf,
                 minimum: minimum.map { Double($0) },
                 maximum: maximum.map { Double($0) }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }
@@ -61,12 +61,12 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
         minimum: T.Element? = nil,
         maximum: T.Element? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -78,8 +78,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 minimum: minimum.map { Double($0) },
                 maximum: maximum.map { Double($0) }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }
@@ -95,10 +95,10 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         const: (any StringProtocol)? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -108,8 +108,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 type: .boolean,
                 const: const.map { String($0) }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }
@@ -127,12 +127,12 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
     public convenience init(
-        description: any StringProtocol,
+        description: D,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enumValues: [any StringProtocol]? = nil,
-        minItems: (any BinaryInteger)? = nil,
-        maxItems: (any BinaryInteger)? = nil,
+        minItems: Int? = nil,
+        maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
         self.init(schema: .init(
@@ -144,8 +144,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 const: const.map { String($0) },
                 enumValues: enumValues.map { $0.map { String($0) } }
             ),
-            minItems: minItems.map { Int($0) },
-            maxItems: maxItems.map { Int($0) },
+            minItems: minItems,
+            maxItems: maxItems,
             uniqueItems: uniqueItems
         ))
     }

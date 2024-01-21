@@ -14,7 +14,7 @@ protocol NilValueProtocol {
     func nilValue<Value>(_ value: Value.Type) -> Value
 }
 
-/// If injected type T of ``LLMFunction/Parameter`` is  of value`nil`, enable the conformance of `nil` to static type T
+/// If injected type T of ``LLMFunction/Parameter`` is an `Optional`, enable the conformance of `nil` to static type T
 extension _LLMFunctionParameterWrapper: NilValueProtocol where T: AnyOptional {
     func nilValue<Value>(_ value: Value.Type) -> Value {
         guard let nilLiteral = T.init(nilLiteral: ()) as? Value else {

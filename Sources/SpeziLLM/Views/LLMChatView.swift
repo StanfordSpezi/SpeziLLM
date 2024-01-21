@@ -45,7 +45,11 @@ public struct LLMChatView: View {
     }
     
     public var body: some View {
-        ChatView($model.context, disableInput: inputDisabled)
+        ChatView(
+            $model.context,
+            disableInput: inputDisabled,
+            exportFormat: .pdf
+        )
             .onChange(of: model.context) { oldValue, newValue in
                 /// Once the user enters a message in the chat, send a request to the local LLM.
                 if oldValue.count != newValue.count,

@@ -21,7 +21,7 @@ extension Chat {
         if self.last?.role == .assistant {
             self[self.count - 1] = .init(
                 role: .assistant,
-                content: overwrite ? output : (self.last?.content ?? "" + output)
+                content: overwrite ? output : ((self.last?.content ?? "") + output)
             )
         } else {
             self.append(.init(role: .assistant, content: output))

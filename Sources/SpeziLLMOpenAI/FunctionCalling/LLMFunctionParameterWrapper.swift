@@ -17,7 +17,7 @@ public typealias LLMFunctionParameterItemSchema = JSONSchema.Items
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+public class _LLMFunctionParameterWrapper<T: Decodable, D: StringProtocol>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
     private var injectedValue: T?
     var schema: LLMFunctionParameterPropertySchema
     
@@ -50,7 +50,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
-    public convenience init(description: any StringProtocol) where T: LLMFunctionParameter {
+    public convenience init(description: D) where T: LLMFunctionParameter {
         self.init(schema: .init(
             type: T.schema.type,
             description: String(description),   // Take description from the property wrapper, all other things from self defined schema
@@ -84,7 +84,7 @@ extension LLMFunction {
     ///
     /// The `@Parameter` property wrapper can be used within an ``LLMFunction`` to declare that the function takes a single argument.
     /// As the function is called by the LLM, the parameters that are requested are automatically filled by SpeziLLM.
-    /// The wrapper contains lots of different initializers for the respective wrapped types of the parameter, such as `Int`, `Float`, `Double`, `Bool` or `String`, as well as optional, `array`, and `enum` data types.
+    /// The wrapper contains lots of different initializers for the respective wrapped types of the parameter, such as `Int`, `Float`, `Double`, `Bool` or `String`, as well as `Optional`, `array`, and `enum` data types.
     ///
     /// ```swift
     /// struct WeatherFunction: LLMFunction {
@@ -96,5 +96,5 @@ extension LLMFunction {
     ///     }
     /// }
     /// ```
-    public typealias Parameter<Value> = _LLMFunctionParameterWrapper<Value> where Value: Decodable
+    public typealias Parameter<WrappedValue, Description> = _LLMFunctionParameterWrapper<WrappedValue, Description> where WrappedValue: Decodable, Description: StringProtocol
 }

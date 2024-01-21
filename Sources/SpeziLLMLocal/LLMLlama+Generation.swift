@@ -85,6 +85,9 @@ extension LLMLlama {
         batch.logits[Int(batch.n_tokens) - 1] = 1
         
         if llama_decode(self.modelContext, batch) != 0 {
+            Self.logger.error("""
+            SpeziLLMLocal: Initial prompt decoding as failed!
+            """)
             await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
             return
         }
@@ -110,7 +113,6 @@ extension LLMLlama {
                 return
             }
             
-            // TODO: document all workarounds!
             var nextStringPiece = String(llama_token_to_piece(self.modelContext, nextTokenId))
             // As first character is sometimes randomly prefixed by a single space (even though prompt has an additional character)
             if decodedTokens == 0 && nextStringPiece.starts(with: " ") {
@@ -153,5 +155,3 @@ extension LLMLlama {
         }
     }
 }
-
-
