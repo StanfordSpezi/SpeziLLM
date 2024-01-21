@@ -45,7 +45,7 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
         @Parameter(description: "Custom Array Parameter", minItems: 1, maxItems: 5, uniqueItems: false)
         var customArrayParameter: [CustomType]
         @Parameter(description: "Custom Optional Array Parameter")
-        var customOptionalArrayParameter: [CustomType]?
+        var customOptionalArrayParameter: [CustomType]?     // swiftlint:disable:this discouraged_optional_collection
         
         // swiftlint:enable attributes
         
@@ -86,7 +86,7 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
         XCTAssertEqual(schemaCustomArray.schema.description, "Custom Array Parameter")
         XCTAssertEqual(schemaCustomArray.schema.minItems, 1)
         XCTAssertEqual(schemaCustomArray.schema.maxItems, 5)
-        XCTAssertEqual(schemaCustomArray.schema.uniqueItems, false)
+        XCTAssertFalse(schemaCustomArray.schema.uniqueItems ?? true)
         XCTAssertEqual(schemaCustomArray.schema.items?.type, .object)
         XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyA"]?.type, .string)
         XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyA"]?.description, "First parameter")

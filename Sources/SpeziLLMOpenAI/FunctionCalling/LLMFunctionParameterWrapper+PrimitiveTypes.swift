@@ -79,14 +79,6 @@ extension _LLMFunctionParameterWrapper where T == Bool {
 }
 
 extension _LLMFunctionParameterWrapper where T: StringProtocol {
-    // TODO
-    // https://json-schema.org/draft-06/json-schema-validation
-    // 
-    // "pattern": "\d\d\d\d-\d\d-\d\d", Regex    https://json-schema.org/draft-06/json-schema-validation#rfc.section.6.8
-    // "format": "date", Type     https://json-schema.org/draft-06/json-schema-validation#rfc.section.8
-    // "const": The value of this keyword MAY be of any type, including null. An instance validates successfully against this keyword if its value is equal to the value of the keyword.   https://json-schema.org/draft-06/json-schema-validation#rfc.section.6.24
-    
-    
     /// Creates an ``LLMFunction/Parameter`` of the type `String` defining a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:

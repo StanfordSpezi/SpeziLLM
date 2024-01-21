@@ -39,7 +39,7 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
         @Parameter(description: "Array Enum Parameter", minItems: 1, maxItems: 5, uniqueItems: false)
         var arrayEnumParameter: [CustomEnumType]
         @Parameter(description: "Optional Array Enum Parameter")
-        var optionalArrayEnumParameter: [CustomEnumType]?
+        var optionalArrayEnumParameter: [CustomEnumType]?   // swiftlint:disable:this discouraged_optional_collection
         
         // swiftlint:enable attributes
         
@@ -95,7 +95,7 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
         XCTAssertEqual(schemaArrayEnum.schema.description, "Array Enum Parameter")
         XCTAssertEqual(schemaArrayEnum.schema.minItems, 1)
         XCTAssertEqual(schemaArrayEnum.schema.maxItems, 5)
-        XCTAssertEqual(schemaArrayEnum.schema.uniqueItems, false)
+        XCTAssertFalse(schemaArrayEnum.schema.uniqueItems ?? true)
         XCTAssertEqual(schemaArrayEnum.schema.items?.type, .string)
         XCTAssertEqual(schemaArrayEnum.schema.items?.enumValues, CustomEnumType.allCases.map { $0.rawValue })
         

@@ -9,7 +9,7 @@
 @testable import SpeziLLMOpenAI
 import XCTest
 
-final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
+final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
     struct Parameters: Encodable {
         static let shared = Self()
         
@@ -29,7 +29,7 @@ final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
         
         let someInitArg: String
         
-        // swiftlint:disable attributes
+        // swiftlint:disable attributes discouraged_optional_boolean discouraged_optional_collection
         
         @Parameter(description: "Optional Int Parameter", multipleOf: 3)
         var intParameter: Int?
@@ -50,7 +50,7 @@ final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
         @Parameter(description: "Optional String Array Nil Parameter")
         var arrayNilParameter: [String]?
         
-        // swiftlint:enable attributes
+        // swiftlint:enable attributes discouraged_optional_boolean discouraged_optional_collection
         
         
         init(someInitArg: String) {
@@ -67,7 +67,7 @@ final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
             XCTAssertEqual(doubleArrayParameter, Parameters.shared.doubleArrayParameter)
             XCTAssertEqual(boolArrayParameter, Parameters.shared.boolArrayParameter)
             XCTAssertEqual(stringArrayParameter, Parameters.shared.stringArrayParameter)
-            XCTAssertEqual(arrayNilParameter, nil)
+            XCTAssertNil(arrayNilParameter)
             
             return someInitArg
         }
@@ -126,7 +126,7 @@ final class LLMOpenAIParameterOptionalPrimitiveTypesTests: XCTestCase {
         XCTAssertEqual(schemaArrayInt.schema.description, "Optional Int Array Parameter")
         XCTAssertEqual(schemaArrayInt.schema.minItems, 1)
         XCTAssertEqual(schemaArrayInt.schema.maxItems, 9)
-        XCTAssertEqual(schemaArrayInt.schema.uniqueItems, true)
+        XCTAssertTrue(schemaArrayInt.schema.uniqueItems ?? false)
         XCTAssertEqual(schemaArrayInt.schema.items?.type, .integer)
         
         let schemaArrayDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleArrayParameter"])

@@ -96,5 +96,6 @@ extension LLMFunction {
     ///     }
     /// }
     /// ```
-    public typealias Parameter<WrappedValue, Description> = _LLMFunctionParameterWrapper<WrappedValue, Description> where WrappedValue: Decodable, Description: StringProtocol
+    public typealias Parameter<WrappedValue, Description> =
+        _LLMFunctionParameterWrapper<WrappedValue, Description> where WrappedValue: Decodable, Description: StringProtocol
 }

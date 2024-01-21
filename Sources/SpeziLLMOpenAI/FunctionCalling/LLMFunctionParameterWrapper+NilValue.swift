@@ -17,7 +17,7 @@ protocol NilValueProtocol {
 /// If injected type T of ``LLMFunction/Parameter`` is an `Optional`, enable the conformance of `nil` to static type T
 extension _LLMFunctionParameterWrapper: NilValueProtocol where T: AnyOptional {
     func nilValue<Value>(_ value: Value.Type) -> Value {
-        guard let nilLiteral = T.init(nilLiteral: ()) as? Value else {
+        guard let nilLiteral = T(nilLiteral: ()) as? Value else {
             preconditionFailure(
             """
             Inconsistent code: Could not cast T to passed Value (which has to be T)

@@ -79,7 +79,7 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
         XCTAssertEqual(schemaArrayInt.schema.description, "Int Array Parameter")
         XCTAssertEqual(schemaArrayInt.schema.minItems, 1)
         XCTAssertEqual(schemaArrayInt.schema.maxItems, 9)
-        XCTAssertEqual(schemaArrayInt.schema.uniqueItems, true)
+        XCTAssertTrue(schemaArrayInt.schema.uniqueItems ?? false)
         XCTAssertEqual(schemaArrayInt.schema.items?.type, .integer)
         
         let schemaArrayDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleArrayParameter"])
