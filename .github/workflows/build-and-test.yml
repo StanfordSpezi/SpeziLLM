@@ -18,7 +18,7 @@ on:
 jobs:
   buildandtest:
     name: Build and Test Swift Package
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@feat/add-build-config-parameters
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@feat/add-build-config-parameter
     strategy:
       matrix:
         include:
