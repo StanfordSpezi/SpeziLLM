@@ -28,8 +28,11 @@ jobs:
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@feat/add-build-config-parameter
     strategy:
       matrix:
-        buildConfig: [Debug, Release]
-        artifactName: [TestApp.xcresult, TestAppResult.xcresult]
+        include:
+          - buildConfig: Debug
+            artifactName: TestApp.xcresult
+          - buildConfig: Release
+            artifactName: TestAppResult.xcresult
     with:
       artifactname: ${{ matrix.artifactName }}
       runsonlabels: '["macOS", "self-hosted"]'
