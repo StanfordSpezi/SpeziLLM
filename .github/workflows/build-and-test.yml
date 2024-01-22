@@ -23,25 +23,22 @@ jobs:
       artifactname: SpeziLLM-Package.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziLLM-Package
-  buildandtestuitestsdebug:
-    name: Build and Test UI Tests Debug
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+  buildandtestuitests:
+    name: Build and Test UI Tests
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@feat/add-build-config-parameter
+    strategy:
+      matrix:
+        buildConfig: [Debug, Release]
+        artifactName: [TestApp.xcresult, TestAppResult.xcresult]
     with:
-      artifactname: TestApp.xcresult
+      artifactname: ${{ matrix.artifactName }}
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
-  buildandtestuitestsrelease:
-    name: Build and Test UI Tests Release
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      artifactname: TestAppResult.xcresult
-      runsonlabels: '["macOS", "self-hosted"]'
-      path: 'Tests/UITests'
-      scheme: TestAppRelease
+      buildConfig:  ${{ matrix.buildConfig }}
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [buildandtest, buildandtestuitestsdebug]
+    needs: [buildandtest, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
       coveragereports: SpeziLLM-Package.xcresult TestApp.xcresult

@@ -9,7 +9,7 @@
 
 /// Represents an OpenAI Function that can be called by a GPT-based LLM.
 ///
-/// The `LLMFunction` is the Spezi-based implementation of an OpenAI LLM function (or tool): https://platform.openai.com/docs/guides/function-calling <!-- markdown-link-check-disable-line -->
+/// The `LLMFunction` is the Spezi-based implementation of an [OpenAI LLM function](https://platform.openai.com/docs/guides/function-calling).  <!-- markdown-link-check-disable-line -->
 /// It enables a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
 ///
 /// Upon initializing the ``LLMOpenAI``, developers can pass an array of ``LLMFunction``s via ``LLMOpenAI/init(parameters:modelParameters:_:)``.
