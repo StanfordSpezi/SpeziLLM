@@ -9,7 +9,6 @@
 @testable import SpeziLLMOpenAI
 import XCTest
 
-
 final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
     struct Parameters: Encodable {
         static let shared = Self()
