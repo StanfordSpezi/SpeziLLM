@@ -10,7 +10,9 @@ import Foundation
 import SpeziSecureStorage
 import SwiftUI
 
-/// Enables to store the OpenAI API key (token) inside the Spezi `SecureStorage` (secure enclave) from an arbitrary `View`.
+/// Enables to store the OpenAI API key inside the Spezi `SecureStorage`
+///
+/// The OpenAI API key (token) is saved inside the Spezi `SecureStorage` (secure enclave) from an arbitrary SwiftUI `View`.
 /// The ``LLMOpenAITokenSaver`` provides the ``LLMOpenAITokenSaver/token`` property to easily read and write to the `SecureStorage`.
 /// If a SwiftUI `Binding` is required (e.g., for a `TextField`), one can use the ``LLMOpenAITokenSaver/tokenBinding`` property.
 ///

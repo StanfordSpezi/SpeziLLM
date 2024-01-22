@@ -15,12 +15,13 @@ extension Chat {
     ///
     /// - Parameters:
     ///     - output: The `ChatEntity/Role/assistant` output `String` (part) that should be appended.
+    ///     - overwrite: Indicates if the already present content of the assistant message should be overwritten.
     @MainActor
-    public mutating func append(assistantOutput output: String) {
+    public mutating func append(assistantOutput output: String, overwrite: Bool = false) {
         if self.last?.role == .assistant {
             self[self.count - 1] = .init(
-                role: self.last?.role ?? .assistant,
-                content: (self.last?.content ?? "") + output
+                role: .assistant,
+                content: overwrite ? output : ((self.last?.content ?? "") + output)
             )
         } else {
             self.append(.init(role: .assistant, content: output))
@@ -43,5 +44,15 @@ extension Chat {
     @MainActor
     public mutating func append(systemMessage systemPrompt: String) {
         self.insert(.init(role: .system, content: systemPrompt), at: 0)
+    }
+    
+    /// Append a `ChatEntity/Role/function` response from a function call to the `Chat.
+    ///
+    /// - Parameters:
+    ///     - functionName: The name of the `ChatEntity/Role/function` that is called by the LLM.
+    ///     - functionResponse: The response `String` of the `ChatEntity/Role/function` that is called by the LLM.
+    @MainActor
+    public mutating func append(forFunction functionName: String, response functionResponse: String) {
+        self.append(.init(role: .function(name: functionName), content: functionResponse))
     }
 }

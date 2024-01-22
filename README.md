@@ -113,6 +113,7 @@ struct LocalLLMChatView: View {
 
 A module that allows you to interact with GPT-based Large Language Models (LLMs) from OpenAI within your Spezi application.
 `SpeziLLMOpenAI` provides a pure Swift-based API for interacting with the OpenAI GPT API, building on top of the infrastructure of the [SpeziLLM target](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm).
+In addition, `SpeziLLMOpenAI` provides developers with a declarative Domain Specific Language to utilize OpenAI function calling mechanism. This enables a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
 
 #### Setup
 

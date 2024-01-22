@@ -13,21 +13,39 @@ extension LLMOpenAI {
     private var openAIContext: [Chat] {
         get async {
             await self.context.map { chatEntity in
-                Chat(
-                    role: chatEntity.role.openAIRepresentation,
-                    content: chatEntity.content
-                )
+                if case let .function(name: functionName) = chatEntity.role {
+                    return Chat(
+                        role: chatEntity.role.openAIRepresentation,
+                        content: chatEntity.content,
+                        name: functionName
+                    )
+                } else {
+                    return Chat(
+                        role: chatEntity.role.openAIRepresentation,
+                        content: chatEntity.content
+                    )
+                }
             }
         }
     }
     
-    /// Provides the ``LLMOpenAI/context``, the `` LLMOpenAIParameters`` and the ``LLMOpenAIModelParameters`` in an OpenAI `ChatQuery` representation used for querying the API.
+    /// Provides the ``LLMOpenAI/context``, the `` LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``, as well as the declared ``LLMFunction``s
+    /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
     var openAIChatQuery: ChatQuery {
         get async {
             await .init(
                 model: self.parameters.modelType,
                 messages: self.openAIContext,
                 responseFormat: self.modelParameters.responseFormat,
+                functions: self.functions.values.compactMap { function in
+                    let functionType = Swift.type(of: function)
+                    
+                    return .init(
+                        name: functionType.name,
+                        description: functionType.description,
+                        parameters: function.schema
+                    )
+                },
                 temperature: self.modelParameters.temperature,
                 topP: self.modelParameters.topP,
                 n: self.modelParameters.completionsPerOutput,

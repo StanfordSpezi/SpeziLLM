@@ -13,7 +13,8 @@ import SpeziLLM
 import SpeziSecureStorage
 
 
-/// The ``LLMOpenAIRunnerSetupTask`` sets up the OpenAI environment in order to execute Spezi `LLM`s.
+/// Sets up the OpenAI environment in order to execute Spezi `LLM`s.
+/// 
 /// The task needs to be stated within the `LLMRunner` initializer in the Spezi `Configuration`.
 ///
 /// One is able to specify Spezi-wide configurations for the OpenAI interaction, such as the API key or a network timeout duration (however, not a requirement!).
@@ -86,7 +87,10 @@ public class LLMOpenAIRunnerSetupTask: LLMRunnerSetupTask {
             )
         } else {
             // If token is present within the Spezi `SecureStorage`
-            guard let credentials = try? secureStorage.retrieveCredentials(LLMOpenAIConstants.credentialsUsername) else {
+            guard let credentials = try? secureStorage.retrieveCredentials(
+                LLMOpenAIConstants.credentialsUsername,
+                server: LLMOpenAIConstants.credentialsServer
+            ) else {
                 preconditionFailure("""
                 SpeziLLM: OpenAI Token wasn't properly set, please ensure that the token is either passed directly via the Spezi `Configuration`
                 or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.

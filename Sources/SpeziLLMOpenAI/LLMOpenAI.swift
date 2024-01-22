@@ -19,11 +19,14 @@ import SpeziChat
 import SpeziLLM
 
 
-/// The ``LLMOpenAI`` is a Spezi `LLM` and utilizes the OpenAI API to generate output via the OpenAI GPT models.
-/// ``LLMOpenAI`` provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
+/// Generate output via the OpenAI GPT models.
+/// 
+/// ``LLMOpenAI`` is a Spezi `LLM` and provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
 ///
 /// - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks.
+///
+/// > Tip: ``SpeziLLMOpenAI`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:Function-Calling> DocC article.
 ///
 /// ### Usage
 ///
@@ -79,13 +82,14 @@ public class LLMOpenAI: LLM {
     public let type: LLMHostingType = .cloud
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
+    let functions: [String: LLMFunction]
     @ObservationIgnored private var wrappedModel: OpenAI?
     
     
-    private var model: OpenAI {
+    var model: OpenAI {
         guard let model = wrappedModel else {
             preconditionFailure("""
-            SpeziLLMOpenAII: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
+            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
             Ensure that the `LLMOpenAIRunnerSetupTask` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
@@ -98,12 +102,16 @@ public class LLMOpenAI: LLM {
     /// - Parameters:
     ///    - parameters: LLM Parameters
     ///    - modelParameters: LLM Model Parameters
+    ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
         parameters: LLMOpenAIParameters,
-        modelParameters: LLMOpenAIModelParameters = .init()
+        modelParameters: LLMOpenAIModelParameters = .init(),
+        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
+        self.functions = functionsCollection().functions
+        
         Task { @MainActor in
             self.context.append(systemMessage: parameters.systemPrompt)
         }
@@ -149,22 +157,20 @@ public class LLMOpenAI: LLM {
     public func generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         
-        let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
+        await MainActor.run {
+            self.state = .generating
+        }
         
         do {
-            for try await chatStreamResult in chatStream {
-                guard let yieldedToken = chatStreamResult.choices.first?.delta.content,
-                      !yieldedToken.isEmpty else {
-                    continue
-                }
-                
-                LLMOpenAI.logger.debug("""
-                SpeziLLMOpenAI: Yielded token: \(yieldedToken, privacy: .public)
-                """)
-                continuation.yield(yieldedToken)
-            }
+            try await _generate(continuation: continuation)
             
             continuation.finish()
+            
+            await MainActor.run {
+                self.state = .ready
+            }
+            
+            Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
         } catch let error as APIErrorResponse {
             if error.error.code == LLMOpenAIError.insufficientQuota.openAIErrorMessage {
                 LLMOpenAI.logger.error("""
@@ -177,13 +183,16 @@ public class LLMOpenAI: LLM {
                 """)
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
             }
+        } catch let error as LLMOpenAIError {
+            LLMOpenAI.logger.error("""
+            SpeziLLMOpenAI: OpenAI inference failed with the OpenAIError: \(error.localizedDescription).
+            """)
+            await finishGenerationWithError(error, on: continuation)
         } catch {
             LLMOpenAI.logger.error("""
             SpeziLLMOpenAI: OpenAI inference failed with a generation error.
             """)
             await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
-        
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
     }
 }

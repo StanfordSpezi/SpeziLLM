@@ -91,6 +91,36 @@
         }
       }
     },
+    "LLM_INVALID_FUNCTION_ARGUMENTS_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM Function Call could not be executed."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_FUNCTION_ARGUMENTS_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The parameters specified by the LLM Function Call do not match the argument sent by OpenAI. "
+          }
+        }
+      }
+    },
+    "LLM_INVALID_FUNCTION_ARGUMENTS_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the specified OpenAI Function Call schema is reflected within the SpeziLLM Function Call definition."
+          }
+        }
+      }
+    },
     "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {

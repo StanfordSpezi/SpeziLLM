@@ -19,18 +19,34 @@ jobs:
   buildandtest:
     name: Build and Test Swift Package
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    strategy:
+      matrix:
+        include:
+          - buildConfig: Debug
+            artifactname: SpeziLLM-Package.xcresult
+          - buildConfig: Release
+            artifactname: SpeziLLM-Package-Release.xcresult
     with:
-      artifactname: SpeziLLM-Package.xcresult
+      artifactname: ${{ matrix.artifactname }}
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziLLM-Package
+      buildConfig: ${{ matrix.buildConfig }}
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    strategy:
+      matrix:
+        include:
+          - buildConfig: Debug
+            artifactname: TestApp.xcresult
+          - buildConfig: Release
+            artifactname: TestApp-Release.xcresult
     with:
-      artifactname: TestApp.xcresult
+      artifactname: ${{ matrix.artifactname }}
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
+      buildConfig: ${{ matrix.buildConfig }}
   uploadcoveragereport:
     name: Upload Coverage Report
     needs: [buildandtest, buildandtestuitests]

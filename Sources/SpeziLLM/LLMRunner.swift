@@ -189,8 +189,9 @@ public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
 
     /// Upon deinit, cancel all ``LLMRunnerInferenceTask``'s.
     deinit {
+        let runnerTasks = runnerTasks
         Task {
-            for runnerTask in await runnerTasks.values {
+            for runnerTask in runnerTasks.values {
                 await runnerTask.task?.cancel()
             }
         }

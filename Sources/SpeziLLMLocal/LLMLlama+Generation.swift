@@ -48,7 +48,7 @@ extension LLMLlama {
             return
         }
         
-        // Tokenizes the entire context of the `LLM?
+        // Tokenizes the entire context of the `LLM`
         guard let tokens = try? await tokenize() else {
             Self.logger.error("""
             SpeziLLMLocal: Tokenization failed as illegal context exists.
@@ -85,6 +85,9 @@ extension LLMLlama {
         batch.logits[Int(batch.n_tokens) - 1] = 1
         
         if llama_decode(self.modelContext, batch) != 0 {
+            Self.logger.error("""
+            SpeziLLMLocal: Initial prompt decoding as failed!
+            """)
             await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
             return
         }
