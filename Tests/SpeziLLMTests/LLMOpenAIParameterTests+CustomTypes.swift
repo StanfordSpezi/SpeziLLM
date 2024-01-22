@@ -9,6 +9,7 @@
 @testable import SpeziLLMOpenAI
 import XCTest
 
+
 final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
         static var itemSchema: SpeziLLMOpenAI.LLMFunctionParameterItemSchema = .init(

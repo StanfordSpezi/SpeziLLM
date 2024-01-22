@@ -9,6 +9,7 @@
 @testable import SpeziLLMOpenAI
 import XCTest
 
+
 final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
     struct Parameters: Encodable {
         static let shared = Self()

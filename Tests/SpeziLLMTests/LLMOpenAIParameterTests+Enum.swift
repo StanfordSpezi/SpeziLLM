@@ -9,6 +9,7 @@
 @testable import SpeziLLMOpenAI
 import XCTest
 
+
 final class LLMOpenAIParameterEnumTests: XCTestCase {
     enum CustomEnumType: String, LLMFunctionParameterEnum, Encodable {
         case optionA
