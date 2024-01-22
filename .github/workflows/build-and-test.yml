@@ -40,7 +40,7 @@ jobs:
           - buildConfig: Debug
             artifactname: TestApp.xcresult
           - buildConfig: Release
-            artifactname: TestAppResult.xcresult
+            artifactname: TestApp-Release.xcresult
     with:
       artifactname: ${{ matrix.artifactname }}
       runsonlabels: '["macOS", "self-hosted"]'
