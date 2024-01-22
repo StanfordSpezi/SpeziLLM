@@ -90,14 +90,13 @@ extension LLMOpenAI {
                         """)
                         
                         await MainActor.run {
-                            if let functionCallResponse {
-                                self.context.append(forFunction: functionName, response: functionCallResponse)
-                            } else {
-                                self.context.append(
-                                    forFunction: functionName,
-                                    response: "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
-                                )
-                            }
+                            let defaultResponse = "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
+
+                            // Return `defaultResponse` in case of `nil` or empty return of the function call
+                            self.context.append(
+                                forFunction: functionName,
+                                response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
+                            )
                         }
                     }
                 }

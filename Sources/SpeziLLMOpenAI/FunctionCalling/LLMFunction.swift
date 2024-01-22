@@ -20,7 +20,10 @@
 /// enabling the LLM to understand the purpose of the available function call.
 /// The actual logic that is executed upon a function call by the LLM resides in the ``LLMFunction/execute()`` function.
 /// ``LLMFunction/execute()`` returns a `String?`, containing all the information the Spezi application wants to provide to the LLM upon a function call,
-/// and is automatically injected into the LLM conversation by `SpeziLLM`. In case of a `nil` return value, the function call completion is automatically injected into the LLM conversation.
+/// and is automatically injected into the LLM conversation by `SpeziLLM`.
+/// In case of a `nil` return value, indicating a successful function run without producing any actionable output, a text indicating the function call completion is automatically injected into the LLM conversation.
+/// Don't use the `nil` return value as an escape hatch to return no proper value in case of an exception within the function. Either properly handle the exception directly within the ``LLMFunction`` or rethrow the exception.
+/// The rethrown exception will then be handled by ``SpeziLLMOpenAI`` and surfaced to the user.
 ///
 /// The ``LLMFunction`` can get dependencies injected by the initializing component (e.g., a `View`) via a custom-implemented initializer.
 /// The protocol puts no requirements upon the shape of the initializer, enabling developers to pass in arbitrary dependencies necessary to perform the logic of the ``LLMFunction``.
@@ -72,6 +75,8 @@ public protocol LLMFunction {
     /// Performs the logic that is executed when the LLM calls a specific function.
     /// The output is automatically injected into the conversational history.
     ///
-    /// - Returns: `String`-based output of the function call that is then provided to the LLM. Can be `nil`.
+    /// - Returns: `String`-based output of the function call that is then provided to the LLM.
+    ///            Can be `nil`, indicating the function ran successfully but didn't produce any actionable output that should be passed to the LLM.
+    ///            In case of an exception within the function, don't use the `nil` return value but throw a proper exception that will be surfaced to the user by ``SpeziLLMOpenAI``.
     func execute() async throws -> String?
 }
