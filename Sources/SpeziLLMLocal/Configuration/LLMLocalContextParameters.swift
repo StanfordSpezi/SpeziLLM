@@ -102,13 +102,13 @@ public struct LLMLocalContextParameters: Sendable {
         }
     }
     
-    /// If `true`, use fp16 for KV cache, fp32 otherwise
-    var useFp16Cache: Bool {
+    /// If `true`, offload the KQV ops (including the KV cache) to GPU
+    var offloadKQV: Bool {
         get {
-            wrapped.f16_kv
+            wrapped.offload_kqv
         }
         set {
-            wrapped.f16_kv = newValue
+            wrapped.offload_kqv = newValue
         }
     }
     
@@ -144,7 +144,7 @@ public struct LLMLocalContextParameters: Sendable {
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
     ///   - ropeFreqScale: RoPE frequency scaling factor, defaults to `0` indicating the default from model.
     ///   - useMulMatQKernels: Usage of experimental `mul_mat_q` kernels, defaults to `true`.
-    ///   - useFp16Cache: Usage of fp16 for KV cache, fp32 otherwise, defaults to `true`.
+    ///   - offloadKQV: Offloads the KQV ops (including the KV cache) to GPU, defaults to `true`.
     ///   - computeAllLogits: `llama_eval()` call computes all logits, not just the last one. Defaults to `false`.
     ///   - embeddingsOnly: Embedding-only mode, defaults to `false`.
     public init(
@@ -156,7 +156,7 @@ public struct LLMLocalContextParameters: Sendable {
         ropeFreqBase: Float = 0.0,
         ropeFreqScale: Float = 0.0,
         useMulMatQKernels: Bool = true,
-        useFp16Cache: Bool = true,
+        offloadKQV: Bool = true,
         computeAllLogits: Bool = false,
         embeddingsOnly: Bool = false
     ) {
@@ -170,7 +170,7 @@ public struct LLMLocalContextParameters: Sendable {
         self.ropeFreqBase = ropeFreqBase
         self.ropeFreqScale = ropeFreqScale
         self.useMulMatQKernels = useMulMatQKernels
-        self.useFp16Cache = useFp16Cache
+        self.offloadKQV = offloadKQV
         self.computeAllLogits = computeAllLogits
         self.embeddingsOnly = embeddingsOnly
     }

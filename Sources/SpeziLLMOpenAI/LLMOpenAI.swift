@@ -73,6 +73,14 @@ import SpeziLLM
 /// ```
 @Observable
 public class LLMOpenAI: LLM {
+    /// Default values of ``LLMOpenAI``.
+    public enum Defaults {
+        /// Empty default of passed function calls (`_LLMFunctionCollection`).
+        /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAI/init(parameters:modelParameters:_:)``.
+        public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
+    }
+    
+    
     /// A Swift Logger that logs important information from the ``LLMOpenAI``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     
@@ -106,7 +114,7 @@ public class LLMOpenAI: LLM {
     public init(
         parameters: LLMOpenAIParameters,
         modelParameters: LLMOpenAIModelParameters = .init(),
-        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection
+        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters

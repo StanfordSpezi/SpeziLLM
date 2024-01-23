@@ -14,7 +14,7 @@ import llama
 /// Internally, these data points are passed as a llama.cpp `llama_model_params` C struct to the LLM.
 public struct LLMLocalParameters: Sendable {
     /// Typealias for an internal llama.cpp progress callback function
-    public typealias LlamaProgressCallback = (@convention(c) (Float, UnsafeMutableRawPointer?) -> Void)
+    public typealias LlamaProgressCallback = (@convention(c) (Float, UnsafeMutableRawPointer?) -> Bool)
     
     
     /// Defaults of possible LLMs parameter settings.
