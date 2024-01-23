@@ -18,7 +18,7 @@ struct LLMLocalChatTestView: View {
         if FeatureFlags.mockMode {
             LLMMock()
         } else {
-            LLMLlama(
+            LLMLocal(
                 modelPath: .cachesDirectory.appending(path: "llm.gguf"),    /// Loads the LLM from the passed cache directory
                 parameters: .init(maxOutputLength: 512), /// Limits the size of the generated response to 512 tokens
                 contextParameters: .init(contextWindowSize: 1024) /// Sets the context size of the model at 1024 tokens

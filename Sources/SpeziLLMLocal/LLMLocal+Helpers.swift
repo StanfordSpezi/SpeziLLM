@@ -11,8 +11,8 @@ import Foundation
 import llama
 
 
-/// Extension of ``LLMLlama`` handling the text tokenization.
-extension LLMLlama {
+/// Extension of ``LLMLocal`` handling the text tokenization.
+extension LLMLocal {
     /// BOS token of the LLM, used at the start of each prompt passage.
     private static let BOS: String = {
         "<s>"
@@ -44,14 +44,14 @@ extension LLMLlama {
     }()
     
     
-    /// Converts the current context of the model to the individual `LLMLlamaToken`'s based on the model's dictionary.
+    /// Converts the current context of the model to the individual `LLMLocalToken`'s based on the model's dictionary.
     /// This is a required tasks as LLMs internally processes tokens.
     ///
-    /// - Returns: The tokenized `String` as `LLMLlamaToken`'s.
-    func tokenize() async throws -> [LLMLlamaToken] {
+    /// - Returns: The tokenized `String` as `LLMLocalToken`'s.
+    func tokenize() async throws -> [LLMLocalToken] {
         let formattedChat = try await formatChat()
         
-        var tokens: [LLMLlamaToken] = .init(
+        var tokens: [LLMLocalToken] = .init(
             llama_tokenize_with_context(self.modelContext, std.string(formattedChat), self.parameters.addBosToken, true)
         )
         
@@ -73,15 +73,15 @@ extension LLMLlama {
         return tokens
     }
     
-    /// Converts an array of `LLMLlamaToken`s to an array of tupels of `LLMLlamaToken`s as well as their `String` representation.
+    /// Converts an array of `LLMLocalToken`s to an array of tupels of `LLMLocalToken`s as well as their `String` representation.
     ///
     /// - Parameters:
-    ///     - tokens: An array of `LLMLlamaToken`s that should be detokenized.
-    /// - Returns: An array of tupels of `LLMLlamaToken`s as well as their `String` representation.
+    ///     - tokens: An array of `LLMLocalToken`s that should be detokenized.
+    /// - Returns: An array of tupels of `LLMLocalToken`s as well as their `String` representation.
     /// 
     /// - Note: Used only for debug purposes
-    func detokenize(tokens: [LLMLlamaToken]) -> [(LLMLlamaToken, String)] {
-        tokens.reduce(into: [(LLMLlamaToken, String)]()) { partialResult, token in
+    func detokenize(tokens: [LLMLocalToken]) -> [(LLMLocalToken, String)] {
+        tokens.reduce(into: [(LLMLocalToken, String)]()) { partialResult, token in
             partialResult.append((token, String(llama_token_to_piece(self.modelContext, token))))
         }
     }
@@ -90,8 +90,8 @@ extension LLMLlama {
     ///
     /// - Parameters:
     ///     - batchSize: The current size of the `llama_batch`
-    /// - Returns: A sampled `LLMLLamaToken`
-    func sample(batchSize: Int32) -> LLMLlamaToken {
+    /// - Returns: A sampled `LLMLocalToken`
+    func sample(batchSize: Int32) -> LLMLocalToken {
         let nVocab = llama_n_vocab(model)
         let logits = llama_get_logits_ith(self.modelContext, batchSize - 1)
         
@@ -119,7 +119,7 @@ extension LLMLlama {
         return llama_sample_token(self.modelContext, &candidatesP)
     }
     
-    /// Builds a typical Llama2 prompt format out of the ``LLMLlama/context`` including the system prompt and all necessary instruction tokens.
+    /// Builds a typical Llama2 prompt format out of the ``LLMLocal/context`` including the system prompt and all necessary instruction tokens.
     ///
     /// The typical format of an Llama2 prompt looks like:
     /// """
@@ -137,7 +137,7 @@ extension LLMLlama {
               systemPrompt.role == .system,
               let initialUserPrompt = await self.context.indices.contains(1) ? self.context[1] : nil,
               initialUserPrompt.role == .user else {
-            throw LLMLlamaError.illegalContext
+            throw LLMLocalError.illegalContext
         }
         
         /// Build the initial prompt

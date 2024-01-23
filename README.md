@@ -45,7 +45,7 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 
 Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
 - [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base infrastructure of LLM execution in the Spezi ecosystem.
-- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Integration with [Meta's Llama2 models](https://ai.meta.com/llama/).
+- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs like [Meta's Llama2 models](https://ai.meta.com/llama/).
 - [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
 - [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with [OpenAIs GPT models](https://openai.com/gpt-4) via using OpenAIs API service.
 
@@ -82,7 +82,7 @@ class TestAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code example below showcases the interaction with the `LLMLlama` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
+The code example below showcases the interaction with the `LLMLocal` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
 Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
 
 ```swift
@@ -90,7 +90,7 @@ struct LocalLLMChatView: View {
    @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   @State var model: LLMLlama = .init(
+   @State var model: LLMLocal = .init(
         modelPath: ...
    )
    @State var responseText: String
