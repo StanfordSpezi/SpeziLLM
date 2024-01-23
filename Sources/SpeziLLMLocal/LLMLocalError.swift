@@ -10,7 +10,7 @@ import Foundation
 import SpeziLLM
 
 
-/// The ``LLMLocalError`` describes possible errors that occur during the execution of ``LLMLocal`` via the SpeziLLM `LLMRunner`.
+/// Describes possible errors that occur during the execution of ``LLMLocal`` via the SpeziLLM `LLMRunner`.
 public enum LLMLocalError: LLMError {
     /// Indicates that the local model file is not found.
     case modelNotFound

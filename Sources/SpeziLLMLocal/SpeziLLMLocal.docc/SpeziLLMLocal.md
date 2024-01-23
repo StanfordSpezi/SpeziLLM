@@ -25,6 +25,9 @@ You need to add the SpeziLLM Swift package to
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
 
 > Important: If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
+ 
+> Important: If one uses the `SpeziLLMLocal` target within an Xcode application, ensure to set the following ["Build Setting" of the respective target](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/): `C++ and Objective-C interoperability` to `C++ / Objective-C++`. Otherwise, your application won't compile and you'll get complex compile error. 
+> On the other hand, if one uses `SpeziLLMLocal` within an [SPM package](https://www.swift.org/documentation/package-manager/), ensure to properly set the `swiftSettings` of the respective target using `SpeziLLMLocal` to `swiftSettings: [.interoperabilityMode(.Cxx)]`.
 
 ## Spezi LLM Local Components
 

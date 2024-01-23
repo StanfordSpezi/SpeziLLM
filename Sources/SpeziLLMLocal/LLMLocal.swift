@@ -13,11 +13,17 @@ import SpeziChat
 import SpeziLLM
 
 
-/// The ``LLMLocal`` is a Spezi `LLM` and utilizes the llama.cpp library to locally execute an LLM on-device.
-/// 
+/// Enables the local execution of Spezi `LLM`s.
+///
+/// The ``LLMLocal`` is a Spezi `LLM` and utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to locally execute a large language model on-device.
+/// The main properties of the ``LLMLocal`` are ``LLMLocal/context`` and ``LLMLocal/state``. Use these properties to access the conversational history of the `LLM` as well as the current generation state.
+///
 /// - Important: ``LLMLocal`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks. A code example on how to use ``LLMLocal`` in combination with the `LLMRunner` can be
 /// found in the documentation of the `LLMRunner`.
+///
+/// - Important: If one uses the `SpeziLLMLocal` target within an Xcode application, ensure to set the following ["Build Setting" of the respective target](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/): `C++ and Objective-C interoperability` to `C++ / Objective-C++`. Otherwise, your application won't compile and you'll get complex compile error.
+/// On the other hand, if one uses `SpeziLLMLocal` within an [SPM package](https://www.swift.org/documentation/package-manager/), ensure to properly set the `swiftSettings` of the consuming target to `swiftSettings: [.interoperabilityMode(.Cxx)]`.
 @Observable
 public class LLMLocal: LLM {
     /// A Swift Logger that logs important information from the ``LLMLocal``.

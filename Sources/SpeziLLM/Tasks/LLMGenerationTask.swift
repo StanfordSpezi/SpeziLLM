@@ -10,7 +10,8 @@ import Foundation
 import SpeziChat
 
 
-/// The ``LLMGenerationTask`` with the specific responsibility to handle LLM generation tasks.
+/// Handles LLM generation tasks via the ``LLMRunner``.
+/// 
 /// It wraps a Spezi ``LLM`` and performs management overhead tasks.
 ///
 /// A code example on how to use ``LLMGenerationTask`` in combination with the ``LLMRunner`` can be

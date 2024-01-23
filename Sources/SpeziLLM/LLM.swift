@@ -10,8 +10,9 @@ import Foundation
 import SpeziChat
 
 
-/// The ``LLM`` protocol provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem,
-/// regardless of the execution locality (local or remote) or the specific model type.
+/// Abstraction layer for the usage of Large Language Models within the Spezi ecosystem
+///
+/// The ``LLM`` protocol is an abstraction layer of LLMs, regardless of the execution locality (local or remote) or the specific model type.
 /// Developers can use the ``LLM`` protocol to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
 ///
 /// The ``LLM`` contains the ``LLM/context`` property which holds the entire history of the model interactions.

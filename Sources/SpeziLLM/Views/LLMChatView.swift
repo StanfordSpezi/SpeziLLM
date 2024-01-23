@@ -11,7 +11,8 @@ import SpeziViews
 import SwiftUI
 
 
-/// Presents a basic chat view that enables users to chat with a Spezi ``LLM`` in a typical chat-like fashion.
+/// Basic chat view that enables users to chat with a Spezi ``LLM``.
+/// 
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
 /// The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
 ///

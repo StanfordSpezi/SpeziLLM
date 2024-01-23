@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// The ``LLMRunnerConfiguration`` represents the configuration of the Spezi ``LLMRunner``.
+/// Represents the configuration of the Spezi ``LLMRunner``.
 public struct LLMRunnerConfiguration: Sendable {
     /// The task priority of the initiated LLM inference tasks.
     public let taskPriority: TaskPriority

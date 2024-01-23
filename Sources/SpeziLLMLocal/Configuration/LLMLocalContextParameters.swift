@@ -10,7 +10,8 @@ import Foundation
 import llama
 
 
-/// The ``LLMLocalContextParameters`` represents the context parameters of the LLM.
+/// Represents the context parameters of the LLM.
+/// 
 /// Internally, these data points are passed as a llama.cpp `llama_context_params` C struct to the LLM.
 public struct LLMLocalContextParameters: Sendable {
     // swiftlint:disable identifier_name

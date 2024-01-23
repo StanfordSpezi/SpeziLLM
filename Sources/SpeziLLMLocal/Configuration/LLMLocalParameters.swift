@@ -10,7 +10,8 @@ import Foundation
 import llama
 
 
-/// The ``LLMLocalParameters`` represents the parameters of the LLM.
+/// Represents the parameters of the LLM.
+/// 
 /// Internally, these data points are passed as a llama.cpp `llama_model_params` C struct to the LLM.
 public struct LLMLocalParameters: Sendable {
     /// Typealias for an internal llama.cpp progress callback function

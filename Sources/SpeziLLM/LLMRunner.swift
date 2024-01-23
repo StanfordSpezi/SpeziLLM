@@ -9,9 +9,9 @@
 import Foundation
 import Spezi
 
-/// The ``LLMRunner`` is a Spezi `Module` that handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
-/// A ``LLMRunner`` wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
+/// Handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
 ///
+/// The ``LLMRunner`` is a Spezi `Module` that that wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
 /// The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration`` as well as a set of ``LLMRunnerSetupTask``s as arguments.
 ///
 /// The runner manages a set of ``LLMGenerationTask``'s as well as the respective LLM execution backends in order to enable

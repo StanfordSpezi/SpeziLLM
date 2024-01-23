@@ -10,7 +10,8 @@ import Foundation
 import llama
 
 
-/// The ``LLMLocalSamplingParameters`` represents the sampling parameters of the LLM.
+/// Represents the sampling parameters of the LLM.
+/// 
 /// Internally, these data points are passed as a llama.cpp `llama_sampling_params` C struct to the LLM.
 public struct LLMLocalSamplingParameters: Sendable {
     /// Helper enum for the Mirostat sampling method

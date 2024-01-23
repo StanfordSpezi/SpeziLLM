@@ -11,7 +11,9 @@ import SpeziChat
 
 extension Chat {
     /// Append an `ChatEntity/Role/assistant` output to the `Chat`.
-    /// Automatically overwrites the last `ChatEntity/Role/assistant` message if there is one, otherwise create a new one.
+    ///
+    /// Automatically appends to the last `ChatEntity/Role/assistant` message if there is one, otherwise create a new one.
+    /// If the `overwrite` parameter is `true`, the existing message is overwritten.
     ///
     /// - Parameters:
     ///     - output: The `ChatEntity/Role/assistant` output `String` (part) that should be appended.

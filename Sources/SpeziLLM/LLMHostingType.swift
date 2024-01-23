@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-/// The ``LLMHostingType`` indicates the hosting platform that a Spezi ``LLM`` should run on.
+/// Indicates the hosting platform that a Spezi ``LLM`` should run on.
 public enum LLMHostingType: String, CaseIterable {
     /// Local, on-device execution of the ``LLM``.
     case local

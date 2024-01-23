@@ -11,6 +11,7 @@ import Foundation
 
 extension LocalizedStringResource.BundleDescription {
     /// Convenience method to create a `BundleDescription.atURL()` from a given Bundle instance.
+    /// 
     /// - Parameter bundle: The Bundle instance to retrieve the Bundle URL from.
     public static func atURL(from bundle: Bundle) -> LocalizedStringResource.BundleDescription {
         .atURL(bundle.bundleURL)
