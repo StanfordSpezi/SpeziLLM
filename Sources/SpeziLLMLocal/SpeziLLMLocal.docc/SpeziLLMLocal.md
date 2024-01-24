@@ -26,8 +26,34 @@ You need to add the SpeziLLM Swift package to
 
 > Important: If your application is not yet configured to use Spezi, follow the [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) to set up the core Spezi infrastructure.
  
-> Important: If one uses the `SpeziLLMLocal` target within an Xcode application, ensure to set the following ["Build Setting" of the respective target](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/): `C++ and Objective-C interoperability` to `C++ / Objective-C++`. Otherwise, your application won't compile and you'll get complex compile error. 
-> On the other hand, if one uses `SpeziLLMLocal` within an [SPM package](https://www.swift.org/documentation/package-manager/), ensure to properly set the `swiftSettings` of the respective target using `SpeziLLMLocal` to `swiftSettings: [.interoperabilityMode(.Cxx)]`.
+> Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/), introduced in Xcode 15 and Swift 5.9. Keep in mind that this is true for nested dependencies, one needs to set this configuration recursivly for the entire dependency tree towards the llama.cpp SPM package.
+> 
+> **For Xcode projects:**
+> - Open your [build settings in Xcode](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/) by selecting *PROJECT_NAME > TARGET_NAME > Build Settings*.
+> - Within the *Build Settings*, search for the `C++ and Objective-C Interoperability` setting and set it to `C++ / Objective-C++`. This enables the project to use the C++ headers from llama.cpp.
+> 
+> **For SPM packages:**
+> - Open the `Package.swift` file of your [SPM package]((https://www.swift.org/documentation/package-manager/))
+> - Within the package `target` that consumes the llama.cpp package, add the `interoperabilityMode(_:)` Swift build setting like that:
+> ```swift
+> /// Adds the dependency to the Spezi LLM SPM package
+> dependencies: [
+>     .package(url: "https://github.com/StanfordSpezi/SpeziLLM", .upToNextMinor(from: "0.6.0"))
+> ],
+> targets: [
+>   .target(
+>       name: "ExampleConsumingTarget",
+>       /// State the dependence of the target to SpeziLLMLocal
+>       dependencies: [
+>           .product(name: "SpeziLLMLocal", package: "SpeziLLM")
+>       ],
+>       /// Important: Configure the `.interoperabilityMode(_:)` within the `swiftSettings`
+>       swiftSettings: [
+>           .interoperabilityMode(.Cxx)
+>       ]
+>   )
+> ]
+>```
 
 ## Spezi LLM Local Components
 
@@ -38,7 +64,7 @@ The core component of the ``SpeziLLMLocal`` target is the ``LLMLocal`` class whi
 
 > Tip: In order to download the model file of the Language model to the local device, SpeziLLM provides the [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) target which provides model download and storage functionalities.
 
-``LLMLocal`` offers a variety of configuration possibilities, such as the used model file, the context window, the maximum output size or the batch size. These options can be set via the ``LLMLocal/init(modelPath:parameters:contextParameters:samplingParameters:)`` initializer and the ``LLMLocalParameters``, ``LLMLocalContextParameters``, and ``LLMLocalSamplingParameters`` types. Keep in mind that the model file must be in the popular `.gguf` format!
+``LLMLocal`` offers a variety of configuration possibilities, such as the used model file, the context window, the maximum output size or the batch size. These options can be set via the ``LLMLocal/init(modelPath:parameters:contextParameters:samplingParameters:formatChat:)`` initializer and the ``LLMLocalParameters``, ``LLMLocalContextParameters``, and ``LLMLocalSamplingParameters`` types. Keep in mind that the model file must be in the popular `.gguf` format!
 
 - Important: ``LLMLocal`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles all management overhead tasks.
 

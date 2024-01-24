@@ -23,8 +23,8 @@ import SpeziLLM
 /// all management overhead tasks. A code example on how to use ``LLMLocal`` in combination with the `LLMRunner` can be
 /// found in the documentation of the `LLMRunner`.
 ///
-/// - Important: If one uses the `SpeziLLMLocal` target within an Xcode application, ensure to set the following ["Build Setting" of the respective target](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/): `C++ and Objective-C interoperability` to `C++ / Objective-C++`. Otherwise, your application won't compile and you'll get complex compile error.
-/// On the other hand, if one uses `SpeziLLMLocal` within an [SPM package](https://www.swift.org/documentation/package-manager/), ensure to properly set the `swiftSettings` of the consuming target to `swiftSettings: [.interoperabilityMode(.Cxx)]`.
+/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),
+/// introduced in Xcode 15 and Swift 5.9. Please refer to <doc:SpeziLLMLocal#Setup> for more information.
 @Observable
 public class LLMLocal: LLM {
     /// A Swift Logger that logs important information from the ``LLMLocal``.
@@ -56,7 +56,7 @@ public class LLMLocal: LLM {
     ///   - parameters: Parameterize the ``LLMLocal`` via ``LLMLocalParameters``.
     ///   - contextParameters: Configure the context of the ``LLMLocal`` via ``LLMLocalContextParameters``.
     ///   - samplingParameters: Parameterize the sampling methods of the ``LLMLocal`` via ``LLMLocalSamplingParameters``.
-    ///   - formatChat: Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`.
+    ///   - formatChat: Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`, defaults to Llama2 prompt format.
     public init(
         modelPath: URL,
         parameters: LLMLocalParameters = .init(),
