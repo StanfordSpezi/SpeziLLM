@@ -16,7 +16,8 @@ import SpeziLLM
 /// Enables the local execution of Spezi `LLM`s.
 ///
 /// The ``LLMLocal`` is a Spezi `LLM` and utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to locally execute a large language model on-device.
-/// The main properties of the ``LLMLocal`` are ``LLMLocal/context`` and ``LLMLocal/state``. Use these properties to access the conversational history of the `LLM` as well as the current generation state.
+/// The main properties of the ``LLMLocal`` are ``LLMLocal/context`` and ``LLMLocal/state``.
+/// Use these properties to access the conversational history of the `LLM` as well as the current generation state.
 ///
 /// - Important: ``LLMLocal`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks. A code example on how to use ``LLMLocal`` in combination with the `LLMRunner` can be
@@ -38,6 +39,8 @@ public class LLMLocal: LLM {
     let contextParameters: LLMLocalContextParameters
     /// Sampling parameters of the llama.cpp ``LLM``.
     let samplingParameters: LLMLocalSamplingParameters
+    /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`.
+    let formatChat: ((Chat) throws -> String)
     /// The on-device `URL` where the model is located.
     private let modelPath: URL
     /// A pointer to the allocated model via llama.cpp.
@@ -53,16 +56,19 @@ public class LLMLocal: LLM {
     ///   - parameters: Parameterize the ``LLMLocal`` via ``LLMLocalParameters``.
     ///   - contextParameters: Configure the context of the ``LLMLocal`` via ``LLMLocalContextParameters``.
     ///   - samplingParameters: Parameterize the sampling methods of the ``LLMLocal`` via ``LLMLocalSamplingParameters``.
+    ///   - formatChat: Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`.
     public init(
         modelPath: URL,
         parameters: LLMLocalParameters = .init(),
         contextParameters: LLMLocalContextParameters = .init(),
-        samplingParameters: LLMLocalSamplingParameters = .init()
+        samplingParameters: LLMLocalSamplingParameters = .init(),
+        formatChat: @escaping ((Chat) throws -> String) = PromptFormattingDefaults.llama2
     ) {
         self.modelPath = modelPath
         self.parameters = parameters
         self.contextParameters = contextParameters
         self.samplingParameters = samplingParameters
+        self.formatChat = formatChat
         Task { @MainActor in
             self.context.append(systemMessage: parameters.systemPrompt)
         }
