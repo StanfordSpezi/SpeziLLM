@@ -10,9 +10,37 @@ import Foundation
 import llama
 
 
-/// The ``LLMLocalContextParameters`` represents the context parameters of the LLM.
+/// Represents the context parameters of the LLM.
+/// 
 /// Internally, these data points are passed as a llama.cpp `llama_context_params` C struct to the LLM.
 public struct LLMLocalContextParameters: Sendable {
+    // swiftlint:disable identifier_name
+    /// Swift representation of the `ggml_type` of llama.cpp, indicating data types within KV caches.
+    public enum GGMLType: UInt32 {
+        case f32 = 0
+        case f16
+        case q4_0
+        case q4_1
+        case q5_0 = 6
+        case q5_1
+        case q8_0
+        case q8_1
+        /// k-quantizations
+        case q2_k
+        case q3_k
+        case q4_k
+        case q5_k
+        case q6_k
+        case q8_k
+        case iq2_xxs
+        case iq2_xs
+        case i8
+        case i16
+        case i32
+    }
+    // swiftlint:enable identifier_name
+    
+    
     /// Wrapped C struct from the llama.cpp library, later-on passed to the LLM
     private var wrapped: llama_context_params
     
@@ -102,13 +130,33 @@ public struct LLMLocalContextParameters: Sendable {
         }
     }
     
-    /// If `true`, use fp16 for KV cache, fp32 otherwise
-    var useFp16Cache: Bool {
+    /// If `true`, offload the KQV ops (including the KV cache) to GPU
+    var offloadKQV: Bool {
         get {
-            wrapped.f16_kv
+            wrapped.offload_kqv
         }
         set {
-            wrapped.f16_kv = newValue
+            wrapped.offload_kqv = newValue
+        }
+    }
+    
+    /// ``GGMLType`` of the key of the KV cache
+    var kvKeyType: GGMLType {
+        get {
+            GGMLType(rawValue: wrapped.type_k.rawValue) ?? .f16
+        }
+        set {
+            wrapped.type_k = ggml_type(rawValue: newValue.rawValue)
+        }
+    }
+    
+    /// ``GGMLType`` of the value of the KV cache
+    var kvValueType: GGMLType {
+        get {
+            GGMLType(rawValue: wrapped.type_v.rawValue) ?? .f16
+        }
+        set {
+            wrapped.type_v = ggml_type(rawValue: newValue.rawValue)
         }
     }
     
@@ -144,7 +192,9 @@ public struct LLMLocalContextParameters: Sendable {
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
     ///   - ropeFreqScale: RoPE frequency scaling factor, defaults to `0` indicating the default from model.
     ///   - useMulMatQKernels: Usage of experimental `mul_mat_q` kernels, defaults to `true`.
-    ///   - useFp16Cache: Usage of fp16 for KV cache, fp32 otherwise, defaults to `true`.
+    ///   - offloadKQV: Offloads the KQV ops (including the KV cache) to GPU, defaults to `true`.
+    ///   - kvKeyType: ``GGMLType`` of the key of the KV cache, defaults to ``GGMLType/f16``.
+    ///   - kvValueType: ``GGMLType`` of the value of the KV cache, defaults to ``GGMLType/f16``.
     ///   - computeAllLogits: `llama_eval()` call computes all logits, not just the last one. Defaults to `false`.
     ///   - embeddingsOnly: Embedding-only mode, defaults to `false`.
     public init(
@@ -156,7 +206,9 @@ public struct LLMLocalContextParameters: Sendable {
         ropeFreqBase: Float = 0.0,
         ropeFreqScale: Float = 0.0,
         useMulMatQKernels: Bool = true,
-        useFp16Cache: Bool = true,
+        offloadKQV: Bool = true,
+        kvKeyType: GGMLType = .f16,
+        kvValueType: GGMLType = .f16,
         computeAllLogits: Bool = false,
         embeddingsOnly: Bool = false
     ) {
@@ -170,7 +222,9 @@ public struct LLMLocalContextParameters: Sendable {
         self.ropeFreqBase = ropeFreqBase
         self.ropeFreqScale = ropeFreqScale
         self.useMulMatQKernels = useMulMatQKernels
-        self.useFp16Cache = useFp16Cache
+        self.offloadKQV = offloadKQV
+        self.kvKeyType = kvKeyType
+        self.kvValueType = kvValueType
         self.computeAllLogits = computeAllLogits
         self.embeddingsOnly = embeddingsOnly
     }

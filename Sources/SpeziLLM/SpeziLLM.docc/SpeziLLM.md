@@ -90,7 +90,7 @@ class LocalLLMAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLlama` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target.
+The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLocal` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target.
 
 ```swift
 import SpeziLLMLocal
@@ -101,7 +101,7 @@ struct LocalLLMChatView: View {
    @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   @State var model: LLMLlama = .init(
+   @State var model: LLMLocal = .init(
         modelPath: ...
    )
    @State var responseText: String

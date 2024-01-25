@@ -11,7 +11,7 @@ import Observation
 import SpeziViews
 
 
-/// The ``LLMLocalDownloadManager`` manages the download and storage of Large Language Models (LLM) to the local device.
+/// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
 /// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
 /// passing a download `URL` as well as a storage `URL` to the ``LLMLocalDownloadManager``.
@@ -22,42 +22,6 @@ import SpeziViews
 /// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
 @Observable
 public final class LLMLocalDownloadManager: NSObject {
-    /// Defaults of possible LLMs to download via the ``LLMLocalDownloadManager``.
-    public enum LLMUrlDefaults {
-        /// LLama 2 7B model in its chat variation (~3.5GB)
-        public static var llama2ChatModelUrl: URL {
-            guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf") else {
-                preconditionFailure("""
-                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
-                """)
-            }
-            
-            return url
-        }
-        
-        /// LLama 2 13B model in its chat variation (~7GB)
-        public static var llama2Chat13BModelUrl: URL {
-            guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-13B-chat-GGML/resolve/main/llama-2-13b-chat.ggmlv3.q4_0.bin") else {
-                preconditionFailure("""
-                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
-                """)
-            }
-            
-            return url
-        }
-        
-        /// Tiny LLama2 1B model (~700MB)
-        public static var tinyLLama2ModelUrl: URL {
-            guard let url = URL(string: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF/resolve/main/tinyllama-1.1b-chat-v0.3.Q4_0.gguf") else {
-                preconditionFailure("""
-                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
-                """)
-            }
-            
-            return url
-        }
-    }
-    
     /// An enum containing all possible states of the ``LLMLocalDownloadManager``.
     public enum DownloadState: Equatable {
         case idle

@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
+@_exported import struct OpenAI.Model
 import Spezi
 import SpeziOnboarding
 import SwiftUI

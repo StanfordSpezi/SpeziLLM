@@ -11,7 +11,9 @@ import SpeziChat
 
 extension Chat {
     /// Append an `ChatEntity/Role/assistant` output to the `Chat`.
-    /// Automatically overwrites the last `ChatEntity/Role/assistant` message if there is one, otherwise create a new one.
+    ///
+    /// Automatically appends to the last `ChatEntity/Role/assistant` message if there is one, otherwise create a new one.
+    /// If the `overwrite` parameter is `true`, the existing message is overwritten.
     ///
     /// - Parameters:
     ///     - output: The `ChatEntity/Role/assistant` output `String` (part) that should be appended.
@@ -37,13 +39,24 @@ extension Chat {
         self.append(.init(role: .user, content: input))
     }
     
-    /// Append an `ChatEntity/Role/system` prompt to the `Chat` at the first position.
+    /// Append an `ChatEntity/Role/system` prompt to the `Chat`.
     ///
     /// - Parameters:
     ///     - systemPrompt: The `ChatEntity/Role/system` prompt of the `Chat`, inserted at the very beginning.
+    ///     - insertAtStart: Defines if the system prompt should be inserted at the start of the conversational context, defaults to `true`.
     @MainActor
-    public mutating func append(systemMessage systemPrompt: String) {
-        self.insert(.init(role: .system, content: systemPrompt), at: 0)
+    public mutating func append(systemMessage systemPrompt: String, insertAtStart: Bool = true) {
+        if insertAtStart {
+            if let index = self.lastIndex(where: { $0.role == .system }) {
+                // Insert new system prompt after the existing ones
+                self.insert(.init(role: .system, content: systemPrompt), at: index + 1)
+            } else {
+                // If no system prompt exists yet, insert at the very beginning
+                self.insert(.init(role: .system, content: systemPrompt), at: 0)
+            }
+        } else {
+            self.append(.init(role: .system, content: systemPrompt))
+        }
     }
     
     /// Append a `ChatEntity/Role/function` response from a function call to the `Chat.

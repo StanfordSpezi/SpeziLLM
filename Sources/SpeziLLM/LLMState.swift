@@ -8,7 +8,8 @@
 
 import Foundation
 
-/// The ``LLMState`` describes possible states that the LLM can be in.
+/// Describes possible states that the LLM can be in.
+///
 /// Based on the ``LLMState``, `SpeziLLM` performs proper actions on the model as well as state management.
 public enum LLMState: CustomStringConvertible, Equatable {
     /// The Spezi ``LLM`` is allocated, but the underlying llama.cpp model has not yet been initialized.

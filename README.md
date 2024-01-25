@@ -45,7 +45,7 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 
 Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
 - [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base infrastructure of LLM execution in the Spezi ecosystem.
-- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Integration with [Meta's Llama2 models](https://ai.meta.com/llama/).
+- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs like [Meta's Llama2 models](https://ai.meta.com/llama/).
 - [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
 - [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with [OpenAIs GPT models](https://openai.com/gpt-4) via using OpenAIs API service.
 
@@ -58,17 +58,42 @@ The section below highlights the setup and basic use of the [SpeziLLMLocal](http
 
 The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device via the [llama.cpp framework](https://github.com/ggerganov/llama.cpp). The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level C or C++ code is necessary, building on top of the infrastructure of the [SpeziLLM target](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm).
 
+> [!IMPORTANT]
+> Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/), introduced in Xcode 15 and Swift 5.9. Keep in mind that this is true for nested dependencies, one needs to set this configuration recursivly for the entire dependency tree towards the llama.cpp SPM package. <!-- markdown-link-check-disable-line -->
+> 
+> **For Xcode projects:**
+> - Open your [build settings in Xcode](https://developer.apple.com/documentation/xcode/configuring-the-build-settings-of-a-target/) by selecting *PROJECT_NAME > TARGET_NAME > Build Settings*.
+> - Within the *Build Settings*, search for the `C++ and Objective-C Interoperability` setting and set it to `C++ / Objective-C++`. This enables the project to use the C++ headers from llama.cpp.
+>
+> **For SPM packages:**
+> - Open the `Package.swift` file of your [SPM package]((https://www.swift.org/documentation/package-manager/)) <!-- markdown-link-check-disable-line -->
+> - Within the package `target` that consumes the llama.cpp package, add the `interoperabilityMode(_:)` Swift build setting like that:
+> ```swift
+> /// Adds the dependency to the Spezi LLM SPM package
+> dependencies: [
+>     .package(url: "https://github.com/StanfordSpezi/SpeziLLM", .upToNextMinor(from: "0.6.0"))
+> ],
+> targets: [
+>   .target(
+>       name: "ExampleConsumingTarget",
+>       /// State the dependence of the target to SpeziLLMLocal
+>       dependencies: [
+>           .product(name: "SpeziLLMLocal", package: "SpeziLLM")
+>       ],
+>       /// Important: Configure the `.interoperabilityMode(_:)` within the `swiftSettings`
+>       swiftSettings: [
+>           .interoperabilityMode(.Cxx)
+>       ]
+>   )
+> ]
+> ```
+
 #### Setup
 
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
 In the example below, the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalRunnerSetupTask` from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target. This prepares the `LLMRunner` to locally execute Language Models.
 
 ```
-import Spezi
-import SpeziLLM
-import SpeziLLMLocal
-import SpeziLLMOpenAI
-
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
@@ -82,7 +107,7 @@ class TestAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code example below showcases the interaction with the `LLMLlama` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
+The code example below showcases the interaction with the `LLMLocal` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
 Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
 
 ```swift
@@ -90,7 +115,7 @@ struct LocalLLMChatView: View {
    @Environment(LLMRunner.self) var runner: LLMRunner
 
    // The locally executed LLM
-   @State var model: LLMLlama = .init(
+   @State var model: LLMLocal = .init(
         modelPath: ...
    )
    @State var responseText: String

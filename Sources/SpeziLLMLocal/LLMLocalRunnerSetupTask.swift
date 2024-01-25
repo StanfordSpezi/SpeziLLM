@@ -11,8 +11,9 @@ import Spezi
 import SpeziLLM
 
 
-/// The ``LLMLocalRunnerSetupTask`` sets up the local environment in order to execute Spezi `LLM`s.
-/// It needs to be stated within the `LLMRunner` initializer.
+/// Sets up the environment in order to locally execute Spezi `LLM`s.
+///
+/// The ``LLMLocalRunnerSetupTask`` needs to be stated within the `LLMRunner` initializer in the Spezi `Configuration`.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {

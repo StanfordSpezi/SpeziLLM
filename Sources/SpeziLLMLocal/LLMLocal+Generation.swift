@@ -11,10 +11,10 @@ import llama
 import SpeziLLM
 
 
-/// Extension of ``LLMLlama`` handling the text generation.
-extension LLMLlama {
+/// Extension of ``LLMLocal`` handling the text generation.
+extension LLMLocal {
     /// Typealias for the llama.cpp `llama_token`.
-    typealias LLMLlamaToken = llama_token
+    typealias LLMLocalToken = llama_token
     
     
     /// Based on the input prompt, generate the output with llama.cpp
@@ -35,7 +35,7 @@ extension LLMLlama {
         if self.modelContext == nil {
             guard let context = llama_new_context_with_model(model, self.contextParameters.llamaCppRepresentation) else {
                 Self.logger.error("SpeziLLMLocal: Failed to initialize context")
-                await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
+                await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
                 return
             }
             self.modelContext = context
@@ -44,7 +44,7 @@ extension LLMLlama {
         // Check if the maximal output generation length is smaller or equals to the context window size.
         guard self.parameters.maxOutputLength <= self.contextParameters.contextWindowSize else {
             Self.logger.error("SpeziLLMLocal: Error: n_kv_req \(self.parameters.maxOutputLength, privacy: .public) > n_ctx, the required KV cache size is not big enough")
-            await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
+            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
         
@@ -55,7 +55,7 @@ extension LLMLlama {
             Ensure the content of the context is structured in: System Prompt, User prompt, and an
             arbitrary number of assistant responses and follow up user prompts.
             """)
-            await finishGenerationWithError(LLMLlamaError.illegalContext, on: continuation)
+            await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
             return
         }
         
@@ -65,7 +65,7 @@ extension LLMLlama {
             SpeziLLMLocal: Input prompt is too long with \(tokens.count, privacy: .public) tokens for the configured
             context window size of \(self.contextParameters.contextWindowSize, privacy: .public) tokens.
             """)
-            await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
+            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
         
@@ -88,7 +88,7 @@ extension LLMLlama {
             Self.logger.error("""
             SpeziLLMLocal: Initial prompt decoding as failed!
             """)
-            await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
+            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
         
@@ -138,7 +138,7 @@ extension LLMLlama {
             let decodeOutput = llama_decode(self.modelContext, batch)
             if decodeOutput != 0 {      // = 0 Success, > 0 Warning, < 0 Error
                 Self.logger.error("SpeziLLMLocal: Decoding of generated output failed. Output: \(decodeOutput, privacy: .public)")
-                await finishGenerationWithError(LLMLlamaError.generationError, on: continuation)
+                await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
                 return
             }
         }

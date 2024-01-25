@@ -10,9 +10,11 @@ import Foundation
 import Spezi
 
 
-/// The ``LLMRunnerSetupTask`` provides an abstraction of different runner-related setup `Task`'s.
-/// These setup tasks must be stated within the Spezi ``LLMRunner`` initializer in order to properly configure the local environment for executing Spezi `LLM`s.
-/// 
+/// Provides an abstraction of different ``LLMRunner``-related setup `Task`'s.
+///
+/// These setup tasks must be stated within the Spezi ``LLMRunner`` initializer in the Spezi `Configuration` in order to
+/// properly configure the local environment for executing Spezi `LLM`s.
+///
 /// ```swift
 /// class LLMAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {

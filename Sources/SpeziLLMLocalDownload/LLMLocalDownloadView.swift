@@ -11,7 +11,8 @@ import SpeziViews
 import SwiftUI
 
 
-/// The ``LLMLocalDownloadView`` provides an out-of-the-box onboarding view for downloading locally executed Spezi `LLM`s to the device.
+/// Provides an onboarding view for downloading locally executed Spezi `LLM`s to the device.
+/// 
 /// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
 ///
 /// The ``LLMLocalDownloadView/init(llmDownloadUrl:llmStorageUrl:action:)`` initializer accepts the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.

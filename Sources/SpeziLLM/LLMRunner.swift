@@ -9,9 +9,9 @@
 import Foundation
 import Spezi
 
-/// The ``LLMRunner`` is a Spezi `Module` that handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
-/// A ``LLMRunner`` wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
+/// Handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
 ///
+/// The ``LLMRunner`` is a Spezi `Module` that that wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
 /// The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration`` as well as a set of ``LLMRunnerSetupTask``s as arguments.
 ///
 /// The runner manages a set of ``LLMGenerationTask``'s as well as the respective LLM execution backends in order to enable
@@ -19,7 +19,7 @@ import Spezi
 ///
 /// ### Usage
 ///
-/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLlama` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/spezillmlocal) target.
+/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLocal` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/spezillmlocal) target.
 ///
 /// ```swift
 /// class LocalLLMAppDelegate: SpeziAppDelegate {
@@ -43,7 +43,7 @@ import Spezi
 ///    @Environment(LLMRunner.self) var runner: LLMRunner
 ///
 ///    // The executed LLM
-///    @State var model: LLMLlama = .init(
+///    @State var model: LLMLocal = .init(
 ///         modelPath: ...
 ///    )
 ///    @State var responseText: String

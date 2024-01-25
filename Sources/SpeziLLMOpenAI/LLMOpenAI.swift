@@ -22,11 +22,13 @@ import SpeziLLM
 /// Generate output via the OpenAI GPT models.
 /// 
 /// ``LLMOpenAI`` is a Spezi `LLM` and provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
+/// The main properties of the ``LLMOpenAI`` are ``LLMOpenAI/context`` and ``LLMOpenAI/state``.
+/// Use these properties to access the conversational history of the `LLM` as well as the current generation state.
 ///
 /// - Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles
 /// all management overhead tasks.
 ///
-/// > Tip: ``SpeziLLMOpenAI`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:Function-Calling> DocC article.
+/// > Tip: ``SpeziLLMOpenAI`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// ### Usage
 ///
@@ -73,6 +75,14 @@ import SpeziLLM
 /// ```
 @Observable
 public class LLMOpenAI: LLM {
+    /// Default values of ``LLMOpenAI``.
+    public enum Defaults {
+        /// Empty default of passed function calls (`_LLMFunctionCollection`).
+        /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAI/init(parameters:modelParameters:_:)``.
+        public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
+    }
+    
+    
     /// A Swift Logger that logs important information from the ``LLMOpenAI``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     
@@ -106,7 +116,7 @@ public class LLMOpenAI: LLM {
     public init(
         parameters: LLMOpenAIParameters,
         modelParameters: LLMOpenAIModelParameters = .init(),
-        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection
+        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
