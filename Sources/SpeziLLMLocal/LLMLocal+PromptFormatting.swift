@@ -113,6 +113,7 @@ extension LLMLocal {
                 }
             }
             
+            /// Model starts responding after
             if chat.last?.role == .user {
                 prompt += "Output: "
             }
