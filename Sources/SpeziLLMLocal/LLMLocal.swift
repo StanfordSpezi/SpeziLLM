@@ -23,7 +23,7 @@ import SpeziLLM
 /// all management overhead tasks. A code example on how to use ``LLMLocal`` in combination with the `LLMRunner` can be
 /// found in the documentation of the `LLMRunner`.
 ///
-/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),
+/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),     <!-- markdown-link-check-disable-line -->
 /// introduced in Xcode 15 and Swift 5.9. Please refer to <doc:SpeziLLMLocal#Setup> for more information.
 @Observable
 public class LLMLocal: LLM {
