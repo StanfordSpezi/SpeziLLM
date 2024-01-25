@@ -76,7 +76,7 @@ extension LLMLocal {
             return prompt
         }
         
-        /// Prompt formatting closure for the [Llama2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) model
+        /// Prompt formatting closure for the [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) model
         public static let phi2: ((Chat) throws -> String) = { chat in
             // Ensure that system prompt as well as a first user prompt exist
             guard let systemPrompt = chat.first,
