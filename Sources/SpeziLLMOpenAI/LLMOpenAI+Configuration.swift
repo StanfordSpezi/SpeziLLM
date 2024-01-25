@@ -33,19 +33,21 @@ extension LLMOpenAI {
     /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
     var openAIChatQuery: ChatQuery {
         get async {
-            await .init(
+            let functions: [ChatFunctionDeclaration] = self.functions.values.compactMap { function in
+                let functionType = Swift.type(of: function)
+                
+                return .init(
+                    name: functionType.name,
+                    description: functionType.description,
+                    parameters: function.schema
+                )
+            }
+            
+            return await .init(
                 model: self.parameters.modelType,
                 messages: self.openAIContext,
                 responseFormat: self.modelParameters.responseFormat,
-                functions: self.functions.values.compactMap { function in
-                    let functionType = Swift.type(of: function)
-                    
-                    return .init(
-                        name: functionType.name,
-                        description: functionType.description,
-                        parameters: function.schema
-                    )
-                },
+                functions: functions.isEmpty ? nil : functions,
                 temperature: self.modelParameters.temperature,
                 topP: self.modelParameters.topP,
                 n: self.modelParameters.completionsPerOutput,
