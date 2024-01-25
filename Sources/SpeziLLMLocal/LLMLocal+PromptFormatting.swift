@@ -96,21 +96,25 @@ extension LLMLocal {
             /// """
             var prompt = """
             System: \(systemPrompt.content)
-            Instruct: \(initialUserPrompt.content)
+            Instruct: \(initialUserPrompt.content)\n
             """
             
             for chatEntry in chat.dropFirst(2) {
                 if chatEntry.role == .assistant {
                     /// Append response from assistant to the Phi-2 prompt structure
                     prompt += """
-                    Output: \(chatEntry.content)
+                    Output: \(chatEntry.content)\n
                     """
                 } else if chatEntry.role == .user {
                     /// Append response from assistant to the Phi-2 prompt structure
                     prompt += """
-                    Instruct: \(chatEntry.content)
+                    Instruct: \(chatEntry.content)\n
                     """
                 }
+            }
+            
+            if chat.last?.role == .user {
+                prompt += "Output: "
             }
             
             return prompt
