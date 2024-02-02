@@ -29,7 +29,11 @@ import SpeziLLM
 public class LLMLocal: LLM {
     /// A Swift Logger that logs important information from the ``LLMLocal``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
+    
+    
     public let type: LLMHostingType = .local
+    public var injectIntoContext: Bool
+    
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: Chat = []
     
@@ -56,18 +60,21 @@ public class LLMLocal: LLM {
     ///   - parameters: Parameterize the ``LLMLocal`` via ``LLMLocalParameters``.
     ///   - contextParameters: Configure the context of the ``LLMLocal`` via ``LLMLocalContextParameters``.
     ///   - samplingParameters: Parameterize the sampling methods of the ``LLMLocal`` via ``LLMLocalSamplingParameters``.
+    ///   - injectIntoContext: Indicates if the inference output by the ``LLM`` should automatically be inserted into the ``LLM/context``, as described by ``LLM/injectIntoContext``.
     ///   - formatChat: Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`, defaults to Llama2 prompt format.
     public init(
         modelPath: URL,
         parameters: LLMLocalParameters = .init(),
         contextParameters: LLMLocalContextParameters = .init(),
         samplingParameters: LLMLocalSamplingParameters = .init(),
+        injectIntoContext: Bool = false,
         formatChat: @escaping ((Chat) throws -> String) = PromptFormattingDefaults.llama2
     ) {
         self.modelPath = modelPath
         self.parameters = parameters
         self.contextParameters = contextParameters
         self.samplingParameters = samplingParameters
+        self.injectIntoContext = injectIntoContext
         self.formatChat = formatChat
         Task { @MainActor in
             self.context.append(systemMessage: parameters.systemPrompt)

@@ -14,11 +14,18 @@ import SpeziChat
 @Observable
 public class LLMMock: LLM {
     public let type: LLMHostingType = .mock
+    public var injectIntoContext: Bool
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: Chat = []
     
     
-    public init() {}
+    /// Creates a ``LLMMock`` instance.
+    ///
+    /// - Parameters:
+    ///    - injectIntoContext: Indicates if the inference output by the ``LLM`` should automatically be inserted into the ``LLM/context``, as described by ``LLM/injectIntoContext``.
+    public init(injectIntoContext: Bool = false) {
+        self.injectIntoContext = injectIntoContext
+    }
     
     
     public func setup(runnerConfig: LLMRunnerConfiguration) async throws {

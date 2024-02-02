@@ -21,7 +21,7 @@ public actor LLMGenerationTask {
     let model: any LLM
     /// The configuration of the ``LLMRunner``.
     let runnerConfig: LLMRunnerConfiguration
-    /// A task managing the ``LLM` output generation.
+    /// A task managing the ``LLM`` output generation.
     var task: Task<(), Never>?
     
     

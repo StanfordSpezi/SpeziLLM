@@ -9,7 +9,7 @@
 import OpenAI
 
 
-/// Helper to process the returned stream by the LLM output generation call.
+/// Helper to process the returned stream by the LLM output generation call, especially in regards to the function call and a possible stop reason
 struct LLMOpenAIStreamResult {
     struct FunctionCall {
         var name: String?
@@ -23,26 +23,29 @@ struct LLMOpenAIStreamResult {
     }
     
     
-    let id: Int
-    var content: String?
+    var deltaContent: String?
     var role: Chat.Role?
     var functionCall: FunctionCall?
-    var finishReason: String?
-    
-    
-    init(id: Int, content: String? = nil, role: Chat.Role? = nil, functionCall: FunctionCall? = nil, finishReason: String? = nil) {
-        self.id = id
-        self.content = content
-        self.role = role
-        self.functionCall = functionCall
-        self.finishReason = finishReason
+    private var finishReasonBase: String?
+    var finishReason: LLMOpenAIFinishReason {
+        guard let finishReasonBase else {
+            return .null
+        }
+        
+        return .init(rawValue: finishReasonBase) ?? .null
     }
     
     
-    mutating func append(choice: ChatStreamResult.Choice) {
-        if let deltaContent = choice.delta.content {
-            self.content = (self.content ?? "") + deltaContent
-        }
+    init(deltaContent: String? = nil, role: Chat.Role? = nil, functionCall: FunctionCall? = nil, finishReason: String? = nil) {
+        self.deltaContent = deltaContent
+        self.role = role
+        self.functionCall = functionCall
+        self.finishReasonBase = finishReason
+    }
+    
+    
+    mutating func append(choice: ChatStreamResult.Choice) -> Self {
+        self.deltaContent = choice.delta.content
 
         if let role = choice.delta.role {
             self.role = role
@@ -63,8 +66,10 @@ struct LLMOpenAIStreamResult {
             self.functionCall = newFunctionCall
         }
 
-        if let finishReason = choice.finishReason {
-            self.finishReason = (self.finishReason ?? "") + finishReason
+        if let finishReasonBase = choice.finishReason {
+            self.finishReasonBase = (self.finishReasonBase ?? "") + finishReasonBase
         }
+        
+        return self
     }
 }

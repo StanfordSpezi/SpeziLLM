@@ -15,9 +15,10 @@ import SpeziLLMOpenAI
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            LLMRunner {
-                LLMLocalRunnerSetupTask()
-                LLMOpenAIRunnerSetupTask()
+            LLMRunnerNew {
+                LLMMockPlatform()
+                LLMLocalPlatform()
+                LLMOpenAIPlatform()
             }
         }
     }

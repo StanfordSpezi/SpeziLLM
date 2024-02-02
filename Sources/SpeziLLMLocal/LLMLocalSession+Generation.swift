@@ -11,8 +11,8 @@ import llama
 import SpeziLLM
 
 
-/// Extension of ``LLMLocal`` handling the text generation.
-extension LLMLocal {
+/// Extension of ``LLMLocalSession`` handling the text generation.
+extension LLMLocalSession {
     /// Typealias for the llama.cpp `llama_token`.
     typealias LLMLocalToken = llama_token
     
@@ -24,16 +24,18 @@ extension LLMLocal {
     func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async {
+        Self.logger.debug("SpeziLLMLocal: Local LLM started a new inference")
+        
         await MainActor.run {
             self.state = .generating
         }
         
         // Log the most important parameters of the LLM
-        Self.logger.debug("SpeziLLMLocal: n_length = \(self.parameters.maxOutputLength, privacy: .public), n_ctx = \(self.contextParameters.contextWindowSize, privacy: .public), n_batch = \(self.contextParameters.batchSize, privacy: .public), n_kv_req = \(self.parameters.maxOutputLength, privacy: .public)")
+        Self.logger.debug("SpeziLLMLocal: n_length = \(self.schema.parameters.maxOutputLength, privacy: .public), n_ctx = \(self.schema.contextParameters.contextWindowSize, privacy: .public), n_batch = \(self.schema.contextParameters.batchSize, privacy: .public), n_kv_req = \(self.schema.parameters.maxOutputLength, privacy: .public)")
         
         // Allocate new model context, if not already present
         if self.modelContext == nil {
-            guard let context = llama_new_context_with_model(model, self.contextParameters.llamaCppRepresentation) else {
+            guard let context = llama_new_context_with_model(model, schema.contextParameters.llamaCppRepresentation) else {
                 Self.logger.error("SpeziLLMLocal: Failed to initialize context")
                 await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
                 return
@@ -42,8 +44,8 @@ extension LLMLocal {
         }
 
         // Check if the maximal output generation length is smaller or equals to the context window size.
-        guard self.parameters.maxOutputLength <= self.contextParameters.contextWindowSize else {
-            Self.logger.error("SpeziLLMLocal: Error: n_kv_req \(self.parameters.maxOutputLength, privacy: .public) > n_ctx, the required KV cache size is not big enough")
+        guard schema.parameters.maxOutputLength <= schema.contextParameters.contextWindowSize else {
+            Self.logger.error("SpeziLLMLocal: Error: n_kv_req \(self.schema.parameters.maxOutputLength, privacy: .public) > n_ctx, the required KV cache size is not big enough")
             await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
@@ -59,11 +61,15 @@ extension LLMLocal {
             return
         }
         
+        guard await !checkCancellation(on: continuation) else {
+            return
+        }
+        
         // Check if the input token count is smaller than the context window size decremented by 4 (space for end tokens).
-        guard tokens.count <= self.contextParameters.contextWindowSize - 4 else {
+        guard tokens.count <= schema.contextParameters.contextWindowSize - 4 else {
             Self.logger.error("""
             SpeziLLMLocal: Input prompt is too long with \(tokens.count, privacy: .public) tokens for the configured
-            context window size of \(self.contextParameters.contextWindowSize, privacy: .public) tokens.
+            context window size of \(self.schema.contextParameters.contextWindowSize, privacy: .public) tokens.
             """)
             await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
@@ -84,11 +90,19 @@ extension LLMLocal {
         // llama_decode will output logits only for the last token of the prompt
         batch.logits[Int(batch.n_tokens) - 1] = 1
         
+        guard await !checkCancellation(on: continuation) else {
+            return
+        }
+        
         if llama_decode(self.modelContext, batch) != 0 {
             Self.logger.error("""
             SpeziLLMLocal: Initial prompt decoding as failed!
             """)
             await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
+            return
+        }
+        
+        guard await !checkCancellation(on: continuation) else {
             return
         }
         
@@ -99,13 +113,17 @@ extension LLMLocal {
         // Calculate the token generation rate
         let startTime = Date()
         
-        while decodedTokens <= self.parameters.maxOutputLength {
+        while decodedTokens <= schema.parameters.maxOutputLength {
+            guard await !checkCancellation(on: continuation) else {
+                return
+            }
+            
             let nextTokenId = sample(batchSize: batch.n_tokens)
             
             // Either finish the generation once EOS token appears, the maximum output length of the answer is reached or the context window is reached
             if nextTokenId == llama_token_eos(self.model)
-                || decodedTokens == self.parameters.maxOutputLength
-                || batchTokenIndex == self.contextParameters.contextWindowSize {
+                || decodedTokens == schema.parameters.maxOutputLength
+                || batchTokenIndex == schema.contextParameters.contextWindowSize {
                 continuation.finish()
                 await MainActor.run {
                     self.state = .ready
@@ -125,7 +143,7 @@ extension LLMLocal {
             """)
             
             // Automatically inject the yielded string piece into the `LLMLocal/context`
-            if injectIntoContext {
+            if schema.injectIntoContext {
                 let nextStringPiece = nextStringPiece
                 await MainActor.run {
                     context.append(assistantOutput: nextStringPiece)
@@ -162,5 +180,7 @@ extension LLMLocal {
         await MainActor.run {
             self.state = .ready
         }
+        
+        Self.logger.debug("SpeziLLMLocal: Local LLM completed an inference")
     }
 }

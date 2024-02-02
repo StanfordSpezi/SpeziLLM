@@ -17,42 +17,40 @@ extension LLMOpenAI {
         while true {
             let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
             
-            var llmStreamResults: [LLMOpenAIStreamResult] = []
+            var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             for try await chatStreamResult in chatStream {
-                // Important to iterate over all choices as LLM could choose to call multiple functions
+                // Important to iterate over all choices as LLM could choose to call multiple functions / generate multiple choices
                 for choice in chatStreamResult.choices {
-                    // Already existing stream result
-                    if let existingIndex = llmStreamResults.firstIndex(where: { $0.id == choice.index }) {
-                        var existingLLMStreamResult = llmStreamResults[existingIndex]
-                        existingLLMStreamResult.append(choice: choice)
-                        llmStreamResults[existingIndex] = existingLLMStreamResult
-                    // New stream result
-                    } else {
-                        var newLLMStreamResult = LLMOpenAIStreamResult(id: choice.index)
-                        newLLMStreamResult.append(choice: choice)
-                        llmStreamResults.append(newLLMStreamResult)
-                    }
+                    llmStreamResults[choice.index] = llmStreamResults[
+                        choice.index,
+                        default: .init()
+                    ].append(choice: choice)
                 }
                 
                 // Append assistant messages during the streaming to ensure that they are visible to the user during processing
-                let assistantContentResults = llmStreamResults.filter { llmStreamResult in
-                    llmStreamResult.role == .assistant && !(llmStreamResult.content?.isEmpty ?? true)
+                let assistantResults = llmStreamResults.values.filter { llmStreamResult in
+                    llmStreamResult.role == .assistant && !(llmStreamResult.deltaContent?.isEmpty ?? true)
                 }
                 
                 // Only consider the first found assistant content result
-                guard let content = assistantContentResults.first?.content else {
+                guard let content = assistantResults.first?.deltaContent else {
                     continue
                 }
                 
-                await MainActor.run {
-                    self.context.append(assistantOutput: content, overwrite: true)
+                // Automatically inject the yielded string piece into the `LLMLocal/context`
+                if injectIntoContext {
+                    await MainActor.run {
+                        context.append(assistantOutput: content)
+                    }
                 }
+                
+                continuation.yield(content)
             }
             
-            let functionCalls = llmStreamResults.compactMap { $0.functionCall }
+            let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }
             
-            // Exit the while loop if we don't have any function calls.
+            // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
                 break
             }

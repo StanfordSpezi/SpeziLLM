@@ -19,7 +19,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
     ///    - multipleOf: Defines that the LLM parameter needs to be a multiple of the init argument.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
@@ -45,7 +45,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped? = nil,
@@ -67,7 +67,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil
     ) {
@@ -88,7 +88,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enumValues: Defines all cases of the `String` parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
@@ -118,7 +118,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
@@ -156,7 +156,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped.Element? = nil,
@@ -190,7 +190,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
@@ -222,7 +222,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,

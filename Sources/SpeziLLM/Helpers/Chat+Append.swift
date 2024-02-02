@@ -68,4 +68,10 @@ extension Chat {
     public mutating func append(forFunction functionName: String, response functionResponse: String) {
         self.append(.init(role: .function(name: functionName), content: functionResponse))
     }
+    
+    /// Resets the `Chat`, deleting all content persisted in there.
+    @MainActor
+    public mutating func reset() {
+        self = []
+    }
 }

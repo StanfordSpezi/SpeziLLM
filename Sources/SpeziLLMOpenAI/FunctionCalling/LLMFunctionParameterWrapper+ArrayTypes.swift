@@ -22,7 +22,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
@@ -60,7 +60,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minimum: T.Element? = nil,
@@ -94,7 +94,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
@@ -126,7 +126,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,

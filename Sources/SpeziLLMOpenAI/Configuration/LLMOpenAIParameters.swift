@@ -23,6 +23,8 @@ public struct LLMOpenAIParameters: Sendable {
     let modelType: Model
     /// The to-be-used system prompt of the LLM.
     let systemPrompt: String
+    /// Indicates if a model access test should be made during LLM setup.
+    let modelAccessTest: Bool
     /// Separate OpenAI token that overrides the one defined within the ``LLMRemoteRunnerSetupTask``.
     let overwritingToken: String?
     
@@ -32,14 +34,17 @@ public struct LLMOpenAIParameters: Sendable {
     /// - Parameters:
     ///   - modelType: The to-be-used OpenAI model such as GPT3.5 or GPT4.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
+    ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIRunnerSetupTask``.
     public init(
         modelType: Model,
         systemPrompt: String = Defaults.defaultOpenAISystemPrompt,
+        modelAccessTest: Bool = false,
         overwritingToken: String? = nil
     ) {
         self.modelType = modelType
         self.systemPrompt = systemPrompt
+        self.modelAccessTest = modelAccessTest
         self.overwritingToken = overwritingToken
     }
 }

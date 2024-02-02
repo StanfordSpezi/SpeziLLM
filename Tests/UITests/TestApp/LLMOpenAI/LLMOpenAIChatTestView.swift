@@ -14,30 +14,29 @@ import SwiftUI
 
 struct LLMOpenAIChatTestView: View {
     @State var showOnboarding = false
-
-    /// The Spezi `LLM` that is configured and executed on the `LLMRunner`
-    private var model: LLM = {
-        if FeatureFlags.mockMode {
-            LLMMock()
-        } else {
-            LLMOpenAI(
-                parameters: .init(
-                    modelType: .gpt4_1106_preview,
-                    systemPrompt: "You're a helpful assistant that answers questions from users."
-                )
-            ) {
-                LLMOpenAIFunctionWeather()
-                LLMOpenAIFunctionHealthData()
-                LLMOpenAIFunctionPerson()
-            }
-        }
-    }()
     
     
     var body: some View {
-        LLMChatView(
-            model: model
-        )
+        Group {
+            if FeatureFlags.mockMode {
+                LLMChatViewNew(
+                    schema: LLMMockSchema()
+                )
+            } else {
+                LLMChatViewNew(
+                    schema: LLMOpenAISchema(
+                        parameters: .init(
+                            modelType: .gpt4_turbo_preview,
+                            systemPrompt: "You're a helpful assistant that answers questions from users."
+                        )
+                    ) {
+                        LLMOpenAIFunctionWeather()
+                        LLMOpenAIFunctionHealthData()
+                        LLMOpenAIFunctionPerson()
+                    }
+                )
+            }
+        }
             .navigationTitle("LLM_OPENAI_CHAT_VIEW_TITLE")
             .toolbar {
                 ToolbarItem {

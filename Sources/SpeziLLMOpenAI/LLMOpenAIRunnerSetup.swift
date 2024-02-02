@@ -48,7 +48,6 @@ public class LLMOpenAIRunnerSetupTask: LLMRunnerSetupTask {
     private static var wrappedOpenAIModel: OpenAI?
     
     
-    @Module.Model private var tokenSaver: LLMOpenAITokenSaver
     @Dependency private var secureStorage: SecureStorage
     
     public let type: LLMHostingType = .cloud
@@ -64,10 +63,6 @@ public class LLMOpenAIRunnerSetupTask: LLMRunnerSetupTask {
         self.timeout = timeout
     }
     
-    
-    public func configure() {
-        self.tokenSaver = LLMOpenAITokenSaver(secureStorage: secureStorage)
-    }
     
     public func setupRunner(
         runnerConfig: LLMRunnerConfiguration

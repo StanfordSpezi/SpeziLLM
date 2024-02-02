@@ -31,6 +31,7 @@ import SpeziChat
 /// @Observable
 /// public class LLMTest: LLM {
 ///     public let type: LLMHostingType = .local
+///     public var injectIntoContext: Bool = false
 ///     @MainActor public var state: LLMState = .uninitialized
 ///     @MainActor public var context: Chat = []
 ///
@@ -41,10 +42,14 @@ import SpeziChat
 public protocol LLM: AnyObject {
     /// The type of the ``LLM`` as represented by the ``LLMHostingType``.
     var type: LLMHostingType { get }
+    /// Indicates if the inference output by the ``LLM`` is automatically injected into the ``LLM/context``,
+    /// without the consumer manually iterating over the resulting `AsyncThrowingStream` from ``LLMGenerationTask/generate()`` (just await its completion).
+    /// - Important: The resulting `AsyncThrowingStream` still yields the generated token pieces in both cases!
+    var injectIntoContext: Bool { get set }
     /// The state of the ``LLM`` indicated by the ``LLMState``.
     @MainActor var state: LLMState { get set }
     /// The current context state of the ``LLM``, includes the entire prompt history including system prompts, user input, and model responses.
-    @MainActor var context: Chat { get set }
+    @MainActor var context: Chat { get set } // TODO: really writeable?
     
     
     /// Performs any setup-related actions for the ``LLM``.

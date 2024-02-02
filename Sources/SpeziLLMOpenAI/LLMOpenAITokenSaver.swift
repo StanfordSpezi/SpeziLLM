@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Spezi
 import SpeziSecureStorage
 import SwiftUI
 
@@ -50,8 +51,8 @@ import SwiftUI
 /// }
 /// ```
 @Observable
-public class LLMOpenAITokenSaver {
-    private let secureStorage: SecureStorage
+public class LLMOpenAITokenSaver: Module, EnvironmentAccessible, DefaultInitializable {
+    @Dependency @ObservationIgnored private var secureStorage: SecureStorage
     
     
     /// Indicates if a token is present within the Spezi `SecureStorage`.
@@ -102,7 +103,5 @@ public class LLMOpenAITokenSaver {
     }
     
     
-    init(secureStorage: SecureStorage) {
-        self.secureStorage = secureStorage
-    }
+    public required init() {}
 }

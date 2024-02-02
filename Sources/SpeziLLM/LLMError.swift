@@ -40,3 +40,10 @@ public enum LLMRunnerError: LLMError {
 
 /// The ``LLMError`` defines a common error protocol which should be used for defining errors within the SpeziLLM ecosystem.
 public protocol LLMError: LocalizedError, Equatable {}
+
+
+extension CancellationError: LLMError {
+    public static func == (lhs: CancellationError, rhs: CancellationError) -> Bool {
+        true
+    }
+}

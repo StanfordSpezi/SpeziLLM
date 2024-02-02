@@ -31,6 +31,15 @@
         }
       }
     },
+    "LLM_FUNCTION_CALL_ERROR_DESCRIPTION" : {
+
+    },
+    "LLM_FUNCTION_CALL_ERROR_FAILURE_REASON" : {
+
+    },
+    "LLM_FUNCTION_CALL_ERROR_RECOVERY_SUGGESTION" : {
+
+    },
     "LLM_GENERATION_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -120,6 +129,15 @@
           }
         }
       }
+    },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_DESCRIPTION" : {
+
+    },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_FAILURE_REASON" : {
+
+    },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_RECOVERY_SUGGESTION" : {
+
     },
     "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
       "localizations" : {

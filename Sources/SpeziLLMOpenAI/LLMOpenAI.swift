@@ -86,14 +86,16 @@ public class LLMOpenAI: LLM {
     /// A Swift Logger that logs important information from the ``LLMOpenAI``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLM")
     
-    @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: SpeziChat.Chat = []
     
     public let type: LLMHostingType = .cloud
+    public var injectIntoContext: Bool
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
     let functions: [String: LLMFunction]
     @ObservationIgnored private var wrappedModel: OpenAI?
+    
+    @MainActor public var state: LLMState = .uninitialized
+    @MainActor public var context: SpeziChat.Chat = []
     
     
     var model: OpenAI {
@@ -112,14 +114,17 @@ public class LLMOpenAI: LLM {
     /// - Parameters:
     ///    - parameters: LLM Parameters
     ///    - modelParameters: LLM Model Parameters
+    ///    - injectIntoContext: Indicates if the inference output by the ``LLM`` should automatically be inserted into the ``LLM/context``, as described by ``LLM/injectIntoContext``.
     ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
         parameters: LLMOpenAIParameters,
         modelParameters: LLMOpenAIModelParameters = .init(),
+        injectIntoContext: Bool = false,
         @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
+        self.injectIntoContext = injectIntoContext
         self.functions = functionsCollection().functions
         
         Task { @MainActor in
@@ -205,4 +210,23 @@ public class LLMOpenAI: LLM {
             await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
     }
+}
+
+
+class OpenAPIChat {
+    private weak var openAI: LLMOpenAI?
+    
+    @MainActor var state: LLMState = .uninitialized // TODO: separate chat state
+    @MainActor var context: SpeziChat.Chat = []
+
+    
+    init(openAI: LLMOpenAI) {
+        self.openAI = openAI
+    }
+    
+    
+    // TODO: genreation methods
+    
+    // TODO: close method?
+    // TODO: deinit?
 }

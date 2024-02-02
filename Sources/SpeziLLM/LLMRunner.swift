@@ -8,6 +8,7 @@
 
 import Foundation
 import Spezi
+import SpeziChat
 
 /// Handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
 ///

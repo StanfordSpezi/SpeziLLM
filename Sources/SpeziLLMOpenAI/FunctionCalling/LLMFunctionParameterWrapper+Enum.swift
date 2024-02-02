@@ -16,7 +16,7 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil
     ) {
@@ -35,7 +35,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil
     ) {
@@ -57,7 +57,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
@@ -91,7 +91,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
