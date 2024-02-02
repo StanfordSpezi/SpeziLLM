@@ -16,11 +16,11 @@ struct LLMLocalChatTestView: View {
     var body: some View {
         Group {
             if FeatureFlags.mockMode {
-                LLMChatViewNew(
+                LLMChatView(
                     schema: LLMMockSchema()
                 )
             } else {
-                LLMChatViewNew(
+                LLMChatView(
                     schema: LLMLocalSchema(
                         modelPath: .cachesDirectory.appending(path: "llm.gguf"),
                         parameters: .init(maxOutputLength: 512),

@@ -12,7 +12,7 @@ import SwiftUI
 
 
 /// Basic chat view that enables users to chat with a Spezi ``LLM``.
-/// 
+///
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
 /// The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
 ///
@@ -33,61 +33,73 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct LLMChatView: View {
+public struct LLMChatView<L: LLMSchema>: View {
     /// A ``LLMRunner`` is responsible for executing the ``LLM``. Must be configured via the Spezi `Configuration`.
     @Environment(LLMRunner.self) private var runner
     /// A SpeziLLM ``LLM`` that is used for the text generation within the chat view
-    @State private var model: any LLM
+    private let schema: L
     
+    @State private var llmSession: L.Platform.Session?
     
     /// Indicates if the input field is disabled.
     @MainActor var inputDisabled: Bool {
-        model.state.representation == .processing
+        llmSession?.state.representation == .processing
     }
+
     
     public var body: some View {
-        ChatView(
-            $model.context,
-            disableInput: inputDisabled,
-            exportFormat: .pdf
-        )
-            .onChange(of: model.context) { oldValue, newValue in
-                /// Once the user enters a message in the chat, send a request to the local LLM.
-                if oldValue.count != newValue.count,
-                   let lastChat = newValue.last, lastChat.role == .user {
-                    Task {
-                        do {
-                            let stream = try await runner(with: model).generate()
-                            
-                            for try await token in stream {
-                                model.context.append(assistantOutput: token)
+        Group {
+            if let llmSession {
+                let contextBinding = Binding { llmSession.context } set: { llmSession.context = $0 }
+                
+                ChatView(
+                    contextBinding,
+                    disableInput: inputDisabled,
+                    exportFormat: .pdf,
+                    messagePendingAnimation: .automatic
+                )
+                    .onChange(of: llmSession.context) { oldValue, newValue in
+                        /// Once the user enters a message in the chat, send a request to the local LLM.
+                        if oldValue.count != newValue.count,
+                           let lastChat = newValue.last, lastChat.role == .user {
+                            Task {
+                                do {
+                                    let stream = try await llmSession.generate()
+                                    
+                                    for try await token in stream {
+                                        llmSession.context.append(assistantOutput: token)
+                                    }
+                                } catch let error as LLMError {
+                                    llmSession.state = .error(error: error)
+                                } catch {
+                                    llmSession.state = .error(error: LLMRunnerError.setupError)
+                                }
                             }
-                        } catch let error as LLMError {
-                            model.state = .error(error: error)
-                        } catch {
-                            model.state = .error(error: LLMRunnerError.setupError)
                         }
                     }
-                }
+                        .viewStateAlert(state: llmSession.state)
+            } else {
+                ProgressView()
             }
-                .viewStateAlert(state: model.state)
+        }
+            .task {
+                self.llmSession = await runner(with: schema)
+            }
     }
     
-    
-    /// Creates a ``LLMChatView`` that provides developers with a basic chat view towards a SpeziLLM ``LLM``.
+
+    /// Creates a ``LLMChatViewNew`` that provides developers with a basic chat view towards a SpeziLLM ``LLM``.
     ///
     /// - Parameters:
     ///   - model: The SpeziLLM ``LLM`` that should be used for the text generation.
-    public init(
-        model: any LLM
-    ) {
-        self._model = State(wrappedValue: model)
+    public init(schema: L) {
+        self.schema = schema
     }
 }
 
 
 #Preview {
     LLMChatView(
-        model: LLMMock()
+        schema: LLMMockSchema()
     )
 }

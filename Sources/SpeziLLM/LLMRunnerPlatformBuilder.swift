@@ -11,7 +11,7 @@ import Spezi
 import SwiftUI
 
 
-/// A result builder used to aggregate multiple Spezi ``LLMPlatform``s within the ``LLMRunnerNew``.
+/// A result builder used to aggregate multiple Spezi ``LLMPlatform``s within the ``LLMRunner``.
 @resultBuilder
 @_documentation(visibility: internal)
 public enum LLMRunnerPlatformBuilder: DependencyCollectionBuilder {

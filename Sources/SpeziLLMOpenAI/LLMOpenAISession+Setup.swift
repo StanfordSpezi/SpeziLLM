@@ -55,7 +55,7 @@ extension LLMOpenAISession {
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return false
             } catch {
-                LLMOpenAI.logger.error("""
+                Self.logger.error("""
                 SpeziLLMOpenAI: Couldn't access the specified OpenAI model.
                 Ensure the model exists and the configured API key is able to access the model.
                 Error: \(error)

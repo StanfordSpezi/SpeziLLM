@@ -19,11 +19,11 @@ struct LLMOpenAIChatTestView: View {
     var body: some View {
         Group {
             if FeatureFlags.mockMode {
-                LLMChatViewNew(
+                LLMChatView(
                     schema: LLMMockSchema()
                 )
             } else {
-                LLMChatViewNew(
+                LLMChatView(
                     schema: LLMOpenAISchema(
                         parameters: .init(
                             modelType: .gpt4_turbo_preview,
