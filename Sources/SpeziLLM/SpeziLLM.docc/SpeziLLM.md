@@ -43,7 +43,7 @@ Ensure the property always contains all necessary information, as the ``LLM/gene
 > Important: An ``LLM`` shouldn't be executed on it's own but always used together with the ``LLMRunner``.
     Please refer to the ``LLMRunner`` documentation for a complete code example.
 
-### Usage
+#### Usage
 
 An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
 The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.

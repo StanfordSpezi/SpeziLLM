@@ -7,6 +7,9 @@
 //
 
 
+/// A mock ``LLMPlatform``, used for testing purposes.
+///
+/// The platform is associated with the ``LLMMockSchema`` and enables the execution of the ``LLMMockSession``.
 public actor LLMMockPlatform: LLMPlatform {
     @MainActor public let state: LLMPlatformState = .idle
     

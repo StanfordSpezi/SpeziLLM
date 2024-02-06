@@ -11,10 +11,10 @@ import Spezi
 import SwiftUI
 
 
-/// A result builder used to aggregate multiple Spezi ``LLMPlatform``s within the ``LLMRunner``.
+/// Result builder used to aggregate multiple Spezi ``LLMPlatform``s stated within the ``LLMRunner``.
 @resultBuilder
 @_documentation(visibility: internal)
-public enum LLMRunnerPlatformBuilder: DependencyCollectionBuilder {
+public enum LLMPlatformBuilder: DependencyCollectionBuilder {
     /// An auto-closure expression, providing the default dependency value, building the ``DependencyCollection``.
     public static func buildExpression<L: LLMPlatform>(_ expression: @escaping @autoclosure () -> L) -> DependencyCollection {
         DependencyCollection(singleEntry: expression)

@@ -50,15 +50,21 @@ public actor LLMOpenAIPlatform: LLMPlatform, DefaultInitializable {
     
     func register() async throws {
         try await semaphore.waitUnlessCancelled()
-        await MainActor.run {
-            state = .processing
+        
+        if await state != .processing {
+            await MainActor.run {
+                state = .processing
+            }
         }
     }
     
     func unregister() async {
-        semaphore.signal()
-        await MainActor.run {
-            state = .idle
+        let otherTasksWaiting = semaphore.signal()
+        
+        if !otherTasksWaiting {
+            await MainActor.run {
+                state = .idle
+            }
         }
     }
 }

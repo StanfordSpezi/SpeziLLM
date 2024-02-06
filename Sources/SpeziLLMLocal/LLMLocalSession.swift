@@ -47,7 +47,6 @@ public class LLMLocalSession: LLMSession {
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
         try await platform.register()
-        try Task.checkCancellation()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         

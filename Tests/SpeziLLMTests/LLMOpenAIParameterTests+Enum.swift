@@ -60,8 +60,8 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
         }
     }
     
-    let llm = LLMOpenAI(
-        parameters: .init(modelType: .gpt4_1106_preview)
+    let llm = LLMOpenAISchema(
+        parameters: .init(modelType: .gpt4_turbo_preview)
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }

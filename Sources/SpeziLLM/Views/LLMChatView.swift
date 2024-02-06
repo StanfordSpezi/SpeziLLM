@@ -11,10 +11,10 @@ import SpeziViews
 import SwiftUI
 
 
-/// Basic chat view that enables users to chat with a Spezi ``LLM``.
+/// Basic chat view that enables users to interact with an LLM.
 ///
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
-/// The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
+/// The ``LLMChatView`` takes an ``LLMSchema`` instance as parameter within the ``LLMChatView/init(schema:)``. The ``LLMSchema`` defines the type and properties of the LLM that will be used by the ``LLMChatView`` to generate responses to user prompts.
 ///
 /// > Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
 /// > For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
@@ -22,27 +22,27 @@ import SwiftUI
 /// ### Usage
 ///
 /// An example usage of the ``LLMChatView`` can be seen in the following example.
-/// The example uses the ``LLMMock`` as the passed ``LLM`` instance in order to provide a default output generation stream.
+/// The example uses the ``LLMMockSchema`` to generate responses to user prompts.
 ///
 /// ```swift
 /// struct LLMLocalChatTestView: View {
 ///     var body: some View {
 ///         LLMChatView(
-///             model: LLMMock()
+///             schema: LLMMockSchema()
 ///         )
 ///     }
 /// }
 /// ```
 public struct LLMChatView<L: LLMSchema>: View {
-    /// A ``LLMRunner`` is responsible for executing the ``LLM``. Must be configured via the Spezi `Configuration`.
+    /// The ``LLMRunner`` is responsible for executing the ``LLMSchema`` by turning it into a ``LLMSession``.
     @Environment(LLMRunner.self) private var runner
-    /// A SpeziLLM ``LLM`` that is used for the text generation within the chat view
+    /// The ``LLMSchema`` that defines the type and properties of the used LLM.
     private let schema: L
     
+    /// The LLM in execution, as defined by the ``LLMSchema``.
     @State private var llmSession: L.Platform.Session?
-    
     /// Indicates if the input field is disabled.
-    @MainActor var inputDisabled: Bool {
+    @MainActor private var inputDisabled: Bool {
         llmSession?.state.representation == .processing
     }
 
@@ -59,11 +59,12 @@ public struct LLMChatView<L: LLMSchema>: View {
                     messagePendingAnimation: .automatic
                 )
                     .onChange(of: llmSession.context) { oldValue, newValue in
-                        /// Once the user enters a message in the chat, send a request to the local LLM.
+                        // Once the user enters a message in the chat, send a request to the local LLM.
                         if oldValue.count != newValue.count,
                            let lastChat = newValue.last, lastChat.role == .user {
                             Task {
                                 do {
+                                    // Trigger an output generation based on the `LLMSession/context`.
                                     let stream = try await llmSession.generate()
                                     
                                     for try await token in stream {
@@ -72,7 +73,7 @@ public struct LLMChatView<L: LLMSchema>: View {
                                 } catch let error as LLMError {
                                     llmSession.state = .error(error: error)
                                 } catch {
-                                    llmSession.state = .error(error: LLMRunnerError.setupError)
+                                    llmSession.state = .error(error: LLMDefaultError.unknown(error))
                                 }
                             }
                         }
@@ -83,15 +84,16 @@ public struct LLMChatView<L: LLMSchema>: View {
             }
         }
             .task {
+                // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
                 self.llmSession = await runner(with: schema)
             }
     }
     
 
-    /// Creates a ``LLMChatViewNew`` that provides developers with a basic chat view towards a SpeziLLM ``LLM``.
+    /// Creates a ``LLMChatView`` that provides developers with a basic chat view to interact with a Spezi LLM.
     ///
     /// - Parameters:
-    ///   - model: The SpeziLLM ``LLM`` that should be used for the text generation.
+    ///   - model: The ``LLMSchema`` that defines the to-be-used LLM to generate outputs based on user input.
     public init(schema: L) {
         self.schema = schema
     }
@@ -102,4 +104,9 @@ public struct LLMChatView<L: LLMSchema>: View {
     LLMChatView(
         schema: LLMMockSchema()
     )
+        .previewWith {
+            LLMRunner {
+                LLMMockPlatform()
+            }
+        }
 }

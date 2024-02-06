@@ -31,7 +31,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.4")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.5")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.0.0"),
         .package(url: "https://github.com/groue/Semaphore.git", exact: "0.0.8")
     ],
@@ -68,6 +68,7 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziLLM"),
                 .product(name: "OpenAI", package: "OpenAI"),
+                .product(name: "Semaphore", package: "Semaphore"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),

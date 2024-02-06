@@ -11,6 +11,13 @@ import SpeziChat
 
 
 @Observable
+/// A mock ``LLMSession``, used for testing purposes.
+///
+/// The ``LLMMockSession`` is created by the configuration defined in the ``LLMMockSchema``.
+/// The ``LLMMockSession`` is then executed by the ``LLMMockPlatform``.
+///
+/// The ``LLMMockSession`` generates an example output String ("Mock Message from SpeziLLM!") with a 1 second startup time
+/// as well as 0.5 seconds between each `String` piece generation.
 public class LLMMockSession: LLMSession {
     let platform: LLMMockPlatform
     let schema: LLMMockSchema
