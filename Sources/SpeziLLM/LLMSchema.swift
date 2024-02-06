@@ -27,6 +27,7 @@
 /// }
 /// ```
 public protocol LLMSchema {
+    /// The ``LLMPlatform`` responsible for turning the ``LLMSchema`` towards a ``LLMSession``.
     associatedtype Platform: LLMPlatform
     
     

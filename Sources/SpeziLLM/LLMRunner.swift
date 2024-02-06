@@ -73,7 +73,7 @@ public actor LLMRunner: Module, EnvironmentAccessible {
         }
     }
     
-    /// Creates the ``LLMRunner`` which is responsible for executing the Spezi ``LLM``'s.
+    /// Creates the ``LLMRunner`` which is responsible for executing LLMs within the Spezi ecosystem.
     ///
     /// - Parameters:
     ///   - dependencies: A result builder that aggregates all stated ``LLMPlatform``s.

@@ -24,6 +24,8 @@ import SpeziChat
 ///
 /// The actual compute-intensive inference should be performed within a `Task`. The `Task` instance should be stored within the ``LLMSession`` in order to properly cancel the task at hand if requested to do so.
 ///
+/// - Warning: The ``LLMSession`` shouldn't be created manually but always through an ``LLMPlatform`` which in turn is automatically chosen for a given ``LLMSchema`` via the ``LLMRunner``.
+///
 /// - Important: A ``LLMSession`` is a `class`-bound `protocol` and must therefore be implemented by a Swift `class`.
 /// In addition, the ``LLMSession`` must be annotated with the `@Observable` macro in order to track the ``LLMSession/context`` changes, otherwise a runtime crash will occur during inference.
 ///
