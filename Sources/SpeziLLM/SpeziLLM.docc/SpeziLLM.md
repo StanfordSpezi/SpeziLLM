@@ -148,20 +148,24 @@ struct LLMLocalChatTestView: View {
 
 ## Topics
 
-### Model
+### LLM abstraction
 
-- ``LLM``
+- ``LLMSchema``
+- ``LLMSession``
 - ``LLMState``
 - ``LLMError``
-- ``LLMHostingType``
 
-### Execution
+### LLM Execution
 
 - ``LLMRunner``
-- ``LLMRunnerConfiguration``
-- ``LLMGenerationTask``
-- ``LLMRunnerSetupTask``
+- ``LLMPlatform``
 
 ### Views
 
 - ``LLMChatView``
+
+### Mocks
+
+- ``LLMMockPlatform``
+- ``LLMMockSchema``
+- ``LLMMockSession``
