@@ -37,7 +37,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.buttons["Next"].tap()
         
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4")
-        XCTAssert(app.pickerWheels["GPT 4"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["GPT 4 Turbo Preview"].waitForExistence(timeout: 2))
         sleep(1)
         
         XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
