@@ -20,8 +20,48 @@ import SpeziLLM
 import SpeziSecureStorage
 
 
+/// Represents an ``LLMOpenAISchema`` in execution.
+///
+/// The ``LLMOpenAISession`` is the executable version of the OpenAI LLM containing context and state as defined by the ``LLMOpenAISchema``.
+/// It provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
+///
+/// The inference is started by ``LLMOpenAISession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAISession/cancel()``.
+/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAISession/context`` property, containing all the conversational history with the LLM.
+///
+/// - Warning: The ``LLMOpenAISession`` shouldn't be created manually but always through the ``LLMOpenAIPlatform`` via the `LLMRunner`.
+///
+/// - Tip: ``LLMOpenAISession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
+///
+/// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
+///
+/// ### Usage
+///
+/// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
+///
+/// ```swift
+/// struct LLMLocalDemoView: View {
+///     @Environment(LLMRunner.self) var runner: LLMRunner
+///     @State var responseText = ""
+///
+///     var body: some View {
+///         Text(responseText)
+///             .task {
+///                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
+///                 let llmSession: LLMOpenAISession = await runner(
+///                     with: LLMOpenAISchema(
+///                         // ...
+///                     )
+///                 )
+///
+///                 for try await token in try await llmSession.generate() {
+///                     responseText.append(token)
+///                 }
+///             }
+///     }
+/// }
+/// ```
 @Observable
-public class LLMOpenAISession: LLMSession {
+public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
@@ -30,8 +70,10 @@ public class LLMOpenAISession: LLMSession {
     let schema: LLMOpenAISchema
     let secureStorage: SecureStorage
     
-    /// A task managing the ``LLMOpenAISession`` output generation.
-    private var task: Task<(), Never>?
+    /// A set of `Task`s managing the ``LLMOpenAISession`` output generation.
+    @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
+    /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
+    @ObservationIgnored private var lock = NSLock()
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: SpeziChat.Chat = []
@@ -48,6 +90,13 @@ public class LLMOpenAISession: LLMSession {
     }
     
     
+    /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
+    /// Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
+    ///
+    /// - Parameters:
+    ///     - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
+    ///     - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
+    ///     - secureStorage: Reference to the `SecureStorage` from `SpeziStorage` in order to securely persist the token.
     init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, secureStorage: SecureStorage) {
         self.platform = platform
         self.schema = schema
@@ -62,16 +111,16 @@ public class LLMOpenAISession: LLMSession {
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
-        try await platform.register()
+        try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         // Execute the output generation of the LLM
-        task = Task(priority: platform.configuration.taskPriority) {
+        let task = Task(priority: platform.configuration.taskPriority) {
             // Unregister as soon as `Task` finishes
             defer {
                 Task {
-                    await platform.unregister()
+                    await platform.signal()
                 }
             }
             
@@ -89,16 +138,23 @@ public class LLMOpenAISession: LLMSession {
             // Execute the inference
             await _generate(continuation: continuation)
         }
+        _ = lock.withLock {
+            tasks.insert(task)
+        }
         
         return stream
     }
     
     public func cancel() {
-        task?.cancel()
+        lock.withLock {
+            for task in tasks {
+                task.cancel()
+            }
+        }
     }
     
     
     deinit {
-        task?.cancel()
+        cancel()
     }
 }

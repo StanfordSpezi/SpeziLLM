@@ -16,5 +16,6 @@ public struct LLMMockSchema: LLMSchema {
     public let injectIntoContext = false
     
     
+    /// Initializer for the ``LLMMockSchema``.
     public init() {}
 }

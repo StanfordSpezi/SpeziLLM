@@ -12,8 +12,49 @@ import SpeziChat
 import SpeziLLM
 
 
+/// Represents an ``LLMLocalSchema`` in execution.
+///
+/// The ``LLMLocalSession`` is the executable version of the local LLM containing context and state as defined by the ``LLMLocalSchema``.
+/// It utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to locally execute a large language model on-device.
+///
+/// The inference is started by ``LLMLocalSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMLocalSession/cancel()``.
+/// The ``LLMLocalSession`` exposes its current state via the ``LLMLocalSession/context`` property, containing all the conversational history with the LLM.
+///
+/// - Warning: The ``LLMLocalSession`` shouldn't be created manually but always through the ``LLMLocalPlatform`` via the `LLMRunner`.
+///
+/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),     <!-- markdown-link-check-disable-line -->
+/// introduced in Xcode 15 and Swift 5.9. Please refer to <doc:SpeziLLMLocal#Setup> for more information.
+///
+/// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
+///
+/// ### Usage
+///
+/// The example below demonstrates a minimal usage of the ``LLMLocalSession`` via the `LLMRunner`.
+///
+/// ```swift
+/// struct LLMLocalDemoView: View {
+///     @Environment(LLMRunner.self) var runner: LLMRunner
+///     @State var responseText = ""
+///
+///     var body: some View {
+///         Text(responseText)
+///             .task {
+///                 // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
+///                 let llmSession: LLMLocalSession = await runner(
+///                     with: LLMLocalSchema(
+///                         // ...
+///                     )
+///                 )
+///
+///                 for try await token in try await llmSession.generate() {
+///                     responseText.append(token)
+///                 }
+///             }
+///     }
+/// }
+/// ```
 @Observable
-public class LLMLocalSession: LLMSession {
+public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// A Swift Logger that logs important information from the ``LLMLocal``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
     
@@ -22,7 +63,7 @@ public class LLMLocalSession: LLMSession {
     let schema: LLMLocalSchema
     
     /// A task managing the ``LLMLocalSession`` output generation.
-    private var task: Task<(), Never>?
+    @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: Chat = []
@@ -33,6 +74,12 @@ public class LLMLocalSession: LLMSession {
     @ObservationIgnored var modelContext: OpaquePointer?
     
     
+    /// Creates an instance of a ``LLMLocalSession`` responsible for LLM inference.
+    /// Only the ``LLMLocalPlatform`` should create an instance of ``LLMLocalSession``.
+    ///
+    /// - Parameters:
+    ///     - platform: Reference to the ``LLMLocalPlatform`` where the ``LLMLocalSession`` is running on.
+    ///     - schema: The configuration of the local LLM expressed by the ``LLMLocalSchema``.
     init(_ platform: LLMLocalPlatform, schema: LLMLocalSchema) {
         self.platform = platform
         self.schema = schema
@@ -46,7 +93,7 @@ public class LLMLocalSession: LLMSession {
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
-        try await platform.register()
+        try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
@@ -55,7 +102,7 @@ public class LLMLocalSession: LLMSession {
             // Unregister as soon as `Task` finishes
             defer {
                 Task {
-                    await platform.unregister()
+                    await platform.signal()
                 }
             }
             
@@ -83,6 +130,6 @@ public class LLMLocalSession: LLMSession {
     
     
     deinit {
-        task?.cancel()
+        cancel()
     }
 }

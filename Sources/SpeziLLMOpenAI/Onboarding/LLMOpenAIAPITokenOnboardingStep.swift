@@ -14,7 +14,7 @@ import SwiftUI
 
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
-/// > Warning: Ensure that the ``LLMOpenAIRunnerSetupTask`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 public struct LLMOpenAIAPITokenOnboardingStep: View {
     @Environment(LLMOpenAITokenSaver.self) private var tokenSaver
     

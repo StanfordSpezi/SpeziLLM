@@ -12,7 +12,7 @@
 /// The `LLMFunction` is the Spezi-based implementation of an [OpenAI LLM function](https://platform.openai.com/docs/guides/function-calling).  <!-- markdown-link-check-disable-line -->
 /// It enables a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
 ///
-/// Upon initializing the ``LLMOpenAI``, developers can pass an array of ``LLMFunction``s via ``LLMOpenAI/init(parameters:modelParameters:_:)``.
+/// Upon initializing the ``LLMOpenAISchema``, developers can pass an array of ``LLMFunction``s via ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.
 /// These functions are then made available to OpenAI's GPT models and can be called if the model decides to do so, based on the current conversational context.
 /// An ``LLMFunction`` can have multiple ``LLMFunction/Parameter``s (`@Parameter`) to tailor the requested functionality of the LLM.
 ///
@@ -30,7 +30,7 @@
 ///
 /// # Usage
 ///
-/// The code below demonstrates a short example of the base usage of ``LLMFunction``s with ``LLMOpenAI``.
+/// The code below demonstrates a short example of the base usage of ``LLMFunction``s with ``LLMOpenAISchema``.
 /// In case the user asks the LLM about the weather in a specific location, the LLM will request to call the `WeatherFunction` to provide a (in this example dummy) weather reading.
 ///
 /// ```swift
@@ -49,7 +49,7 @@
 ///
 /// // Enclosing view to display an LLM chat
 /// struct LLMOpenAIChatTestView: View {
-///     private let model = LLMOpenAI(
+///     private let schema = LLMOpenAISchema(
 ///         parameters: .init(
 ///             modelType: .gpt4_1106_preview,
 ///             systemPrompt: "You're a helpful assistant that answers questions from users."
@@ -60,7 +60,7 @@
 ///
 ///     var body: some View {
 ///         LLMChatView(
-///             model: model
+///             schema: schema
 ///         )
 ///     }
 /// }

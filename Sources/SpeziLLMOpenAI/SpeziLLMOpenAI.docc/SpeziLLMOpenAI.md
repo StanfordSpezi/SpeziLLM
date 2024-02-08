@@ -172,20 +172,27 @@ Now the OpenAI API Key entry view will appear within your application's onboardi
 
 ## Topics
 
-### Model
+### LLM Local abstraction
 
-- ``LLMOpenAI``
+- ``LLMOpenAISchema``
+- ``LLMOpenAISession``
 
-### Configuration
+### LLM Execution
 
-- ``LLMOpenAIParameters``
-- ``LLMOpenAIModelParameters``
-
-### Setup
-
-- ``LLMOpenAIRunnerSetupTask``
+- ``LLMOpenAIPlatform``
+- ``LLMOpenAIPlatformConfiguration``
 
 ### Onboarding
 
 - ``LLMOpenAIAPITokenOnboardingStep``
 - ``LLMOpenAIModelOnboardingStep``
+- ``LLMOpenAITokenSaver``
+
+### LLM Configuration
+
+- ``LLMOpenAIParameters``
+- ``LLMOpenAIModelParameters``
+
+### Misc
+
+- ``LLMOpenAIError

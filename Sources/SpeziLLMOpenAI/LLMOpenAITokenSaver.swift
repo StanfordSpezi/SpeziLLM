@@ -28,7 +28,7 @@ import SwiftUI
 ///     override var configuration: Configuration {
 ///         Configuration {
 ///             LLMRunner {
-///                 LLMOpenAIRunnerSetupTask()
+///                 LLMOpenAIPlatform()
 ///             }
 ///         }
 ///     }

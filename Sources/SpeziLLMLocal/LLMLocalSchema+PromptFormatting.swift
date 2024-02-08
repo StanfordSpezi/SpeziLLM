@@ -13,7 +13,7 @@ extension LLMLocalSchema {
     /// Holds default prompt formatting strategies for [Llama2](https://ai.meta.com/llama/) as well as [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) models.
     public enum PromptFormattingDefaults {
         /// Prompt formatting closure for the [Llama2](https://ai.meta.com/llama/) model
-        public static let llama2: ((Chat) throws -> String) = { chat in
+        public static let llama2: (@Sendable (Chat) throws -> String) = { chat in
             /// BOS token of the LLM, used at the start of each prompt passage.
             let BOS = "<s>"
             /// EOS token of the LLM, used at the end of each prompt passage.
@@ -77,7 +77,7 @@ extension LLMLocalSchema {
         }
         
         /// Prompt formatting closure for the [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) model
-        public static let phi2: ((Chat) throws -> String) = { chat in
+        public static let phi2: (@Sendable (Chat) throws -> String) = { chat in
             // Ensure that system prompt as well as a first user prompt exist
             guard let systemPrompt = chat.first,
                   systemPrompt.role == .system,

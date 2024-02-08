@@ -127,16 +127,22 @@ struct LocalLLMChatView: View {
 
 ## Topics
 
-### Model
+### LLM Local abstraction
 
-- ``LLMLocal``
+- ``LLMLocalSchema``
+- ``LLMLocalSession``
 
-### Configuration
+### LLM Execution
+
+- ``LLMLocalPlatform``
+- ``LLMLocalPlatformConfiguration``
+
+### LLM Configuration
 
 - ``LLMLocalParameters``
 - ``LLMLocalContextParameters``
 - ``LLMLocalSamplingParameters``
 
-### Setup
+### Misc
 
-- ``LLMLocalRunnerSetupTask``
+- ``LLMLocalError

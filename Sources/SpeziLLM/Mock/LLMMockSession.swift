@@ -18,15 +18,21 @@ import SpeziChat
 /// The ``LLMMockSession`` generates an example output String ("Mock Message from SpeziLLM!") with a 1 second startup time
 /// as well as 0.5 seconds between each `String` piece generation.
 @Observable
-public class LLMMockSession: LLMSession {
+public final class LLMMockSession: LLMSession, @unchecked Sendable {
     let platform: LLMMockPlatform
     let schema: LLMMockSchema
-    private var task: Task<(), Never>?
+    
+    @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: Chat = []
     
     
+    /// Initializer for the ``LLMMockSession``.
+    ///
+    /// - Parameters:
+    ///     - platform: The mock LLM platform.
+    ///     - schema: The mock LLM schema.
     init(_ platform: LLMMockPlatform, schema: LLMMockSchema) {
         self.platform = platform
         self.schema = schema
@@ -89,5 +95,10 @@ public class LLMMockSession: LLMSession {
                 context.append(assistantOutput: piece)
             }
         }
+    }
+    
+    
+    deinit {
+        cancel()
     }
 }

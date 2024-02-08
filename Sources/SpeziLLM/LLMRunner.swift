@@ -24,26 +24,46 @@ import SpeziChat
 ///
 /// ### Usage
 ///
-/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a ``LLMChatView``.
+/// The code section below showcases a complete, bare-bone code example on how to use the ``LLMRunner`` with the ``LLMSchema``.
+/// The example is structured as a SwiftUI `View` with a `Button` to trigger LLM inference via the ``LLMMockSchema``. The generated output stream is displayed in a `Text` field.
 ///
 /// ```swift
-/// class LLMAppDelegate: SpeziAppDelegate {
-///     override var configuration: Configuration {
-///         Configuration {
-///             // Configure the runner with the respective `LLMPlatform`s
-///             LLMRunner {
-///                 LLMMockPlatform()
-///             }
-///         }
-///     }
-/// }
+/// struct LLMDemoView: View {
+///     // The runner responsible for executing the LLM.
+///     @Environment(LLMRunner.self) var runner: LLMRunner
 ///
-/// struct LLMChatView: View {
+///     // The LLM in execution, as defined by the ``LLMSchema``.
+///     @State var llmSession: LLMMockSession?
+///     @State var responseText = ""
+///
 ///     var body: some View {
-///         LLMChatView(
-///             schema: LLMMockSchema()
-///         )
+///         VStack {
+///             Button {
+///                 Task {
+///                     try await executePrompt(prompt: "Hello LLM!")
+///                 }
+///             } label: {
+///                 Text("Start LLM inference")
+///             }
+///
+///             Text(responseText)
+///         }
+///             .task {
+///                 // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
+///                 self.llmSession = await runner(with: LLMMockSchema())
+///             }
 ///     }
+///
+///     func executePrompt(prompt: String) async throws {
+///         // Performing the LLM inference, returning a stream of outputs.
+///         guard let stream = try await llmSession?.generate() else {
+///             return
+///         }
+///
+///         for try await token in stream {
+///             responseText.append(token)
+///         }
+///    }
 /// }
 /// ```
 public actor LLMRunner: Module, EnvironmentAccessible {

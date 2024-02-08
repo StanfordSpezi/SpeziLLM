@@ -12,7 +12,7 @@ import SpeziChat
 
 /// Represents an LLM in execution.
 ///
-/// The ``LLMSession`` is the executable version of the configuration of the LLM as defined by the ``LLMSchema``.
+/// The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``.
 /// The ``LLMPlatform`` is responsible for turning the ``LLMSchema`` towards the ``LLMSession`` and is able to pass arbitrary dependencies to the ``LLMSession``.
 ///
 /// ``LLMSession`` does the heavy lifting of actually providing the inference logic of the LLMs to generate `String`-based output on the ``LLMSession/context`` input.
@@ -64,7 +64,7 @@ import SpeziChat
 ///     }
 /// }
 /// ```
-public protocol LLMSession: AnyObject {
+public protocol LLMSession: AnyObject, Sendable {
     /// The state of the ``LLMSession`` indicated by the ``LLMState``.
     @MainActor var state: LLMState { get set }
     /// The current context state of the ``LLMSession``, includes the entire prompt history including system prompts, user input, and model responses.

@@ -11,6 +11,11 @@ import OpenAI
 
 
 extension LLMOpenAISession {
+    /// Set up the OpenAI LLM execution client.
+    ///
+    /// - Parameters:
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    /// - Returns: `true` if the setup was successful, `false` otherwise.
     func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {

@@ -14,6 +14,7 @@ public actor LLMMockPlatform: LLMPlatform {
     @MainActor public let state: LLMPlatformState = .idle
     
     
+    /// Initializer for the ``LLMMockPlatform``.
     public init() {}
     
     

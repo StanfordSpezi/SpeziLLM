@@ -36,8 +36,8 @@ The available ``LLMFunction``s are then declared via ``LLMOpenAI/init(parameters
 
 ### Example
 
-A full code example of using a ``LLMFunction`` with the ``LLMOpenAI`` can be found below.
-As LLMs cannot access real time information, the ``LLMOpenAI`` model is provided with a weather ``LLMFunction``, enabling the LLM to fetch up-to-date weather information for a specific location.
+A full code example of using a ``LLMFunction`` using the ``LLMOpenAISchema`` (configuration of the LLM) can be found below.
+As LLMs cannot access real time information, the OpenAI model is provided with a weather ``LLMFunction``, enabling the LLM to fetch up-to-date weather information for a specific location.
 
 ```swift
 // The defined `LLMFunction` made available to the OpenAI LLM
@@ -55,7 +55,7 @@ struct WeatherFunction: LLMFunction {
 
 // Enclosing view to display an LLM chat
 struct LLMOpenAIChatTestView: View {
-    private let model = LLMOpenAI(
+    private let schema = LLMOpenAISchema(
         parameters: .init(
             modelType: .gpt4_1106_preview,
             systemPrompt: "You're a helpful assistant that answers questions from users."
@@ -66,7 +66,7 @@ struct LLMOpenAIChatTestView: View {
 
     var body: some View {
         LLMChatView(
-            model: model
+            schema: schema
         )
     }
 }

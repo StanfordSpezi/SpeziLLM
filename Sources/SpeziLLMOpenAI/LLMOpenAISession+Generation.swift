@@ -12,8 +12,13 @@ import SpeziChat
 
 
 extension LLMOpenAISession {
-    // swiftlint:disable:next identifier_name function_body_length cyclomatic_complexity
-    func _generate(continuation: AsyncThrowingStream<String, Error>.Continuation) async {
+    /// Based on the input prompt, generate the output via the OpenAI API.
+    ///
+    /// - Parameters:
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
+        continuation: AsyncThrowingStream<String, Error>.Continuation
+    ) async {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {
             self.state = .generating
