@@ -17,7 +17,7 @@
 ///
 /// The example below demonstrates a concrete implementation of the ``LLMSchema`` with the ``LLMMockPlatform``.
 ///
-/// ```
+/// ```swift
 /// public struct LLMMockSchema: LLMSchema {
 ///     public typealias Platform = LLMMockPlatform
 ///

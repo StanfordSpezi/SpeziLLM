@@ -93,7 +93,7 @@ The target enables developers to easily execute medium-size Language Models (LLM
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
 In the example below, the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalPlatform` from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target. This prepares the `LLMRunner` to locally execute Language Models.
 
-```
+```swift
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {

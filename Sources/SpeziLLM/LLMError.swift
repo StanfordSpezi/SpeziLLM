@@ -49,7 +49,7 @@ public enum LLMDefaultError: LLMError {
 ///
 /// An example conformance to the ``LLMError`` can be found in the `SpeziLLMLocal` target.
 ///
-/// ```
+/// ```swift
 /// public enum LLMLocalError: LLMError {
 ///     case modelNotFound
 ///

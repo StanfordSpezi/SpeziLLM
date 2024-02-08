@@ -29,7 +29,7 @@ import Spezi
 ///
 /// The example below demonstrates a concrete implementation of the ``LLMPlatform`` with the ``LLMMockSchema`` and ``LLMMockSession``.
 ///
-/// ```
+/// ```swift
 /// public actor LLMMockPlatform: LLMPlatform {
 ///     @MainActor public let state: LLMPlatformState = .idle
 ///

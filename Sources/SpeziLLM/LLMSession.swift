@@ -33,7 +33,7 @@ import SpeziChat
 ///
 /// The example below demonstrates a concrete implementation of the ``LLMSession`` with the ``LLMMockPlatform`` and ``LLMMockSchema``.
 ///
-/// ```
+/// ```swift
 /// @Observable
 /// public class LLMMockSession: LLMSession {
 ///     let platform: LLMMockPlatform

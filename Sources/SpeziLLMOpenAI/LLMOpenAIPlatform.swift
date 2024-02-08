@@ -27,7 +27,7 @@ import SpeziSecureStorage
 ///
 /// The example below demonstrates the setup of the ``LLMOpenAIPlatform`` within the Spezi `Configuration`.
 ///
-/// ```
+/// ```swift
 /// class TestAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
 ///         Configuration {

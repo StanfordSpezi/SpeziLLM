@@ -27,7 +27,7 @@ import SpeziLLM
 ///
 /// The example below demonstrates the setup of the ``LLMLocalPlatform`` within the Spezi `Configuration`.
 ///
-/// ```
+/// ```swift
 /// class TestAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
 ///         Configuration {
