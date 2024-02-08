@@ -24,8 +24,7 @@ let package = Package(
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"])
     ],
     dependencies: [
-        // .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.5")),
-        .package(url: "https://github.com/MacPaw/OpenAI", branch: "main"),
+        .package(url: "https://github.com/MacPaw/OpenAI", revision: "35afc9a6ee127b8f22a85a31aec2036a987478af"),    // No new release from MacPaw, use latest commit to main until release is tagged
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.8")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.0"),
