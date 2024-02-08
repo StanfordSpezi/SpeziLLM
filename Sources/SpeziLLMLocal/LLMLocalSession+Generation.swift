@@ -50,7 +50,7 @@ extension LLMLocalSession {
             return
         }
         
-        // Tokenizes the entire context of the `LLM`
+        // Tokenizes the entire context of the LLM
         guard let tokens = try? await tokenize() else {
             Self.logger.error("""
             SpeziLLMLocal: Tokenization failed as illegal context exists.

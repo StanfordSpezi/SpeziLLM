@@ -39,7 +39,7 @@ import SpeziSecureStorage
 /// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
 ///
 /// ```swift
-/// struct LLMLocalDemoView: View {
+/// struct LLMOpenAIDemoView: View {
 ///     @Environment(LLMRunner.self) var runner: LLMRunner
 ///     @State var responseText = ""
 ///
@@ -49,7 +49,11 @@ import SpeziSecureStorage
 ///                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
 ///                 let llmSession: LLMOpenAISession = await runner(
 ///                     with: LLMOpenAISchema(
-///                         // ...
+///                         parameters: .init(
+///                             modelType: .gpt3_5Turbo,
+///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
+///                             overwritingToken: "abc123"
+///                         )
 ///                     )
 ///                 )
 ///
@@ -82,7 +86,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     var model: OpenAI {
         guard let model = wrappedModel else {
             preconditionFailure("""
-            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAI` before being initialized.
+            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAISession` before being initialized.
             Ensure that the `LLMOpenAIRunnerSetupTask` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }

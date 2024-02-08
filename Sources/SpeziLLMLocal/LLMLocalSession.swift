@@ -42,7 +42,7 @@ import SpeziLLM
 ///                 // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
 ///                 let llmSession: LLMLocalSession = await runner(
 ///                     with: LLMLocalSchema(
-///                         // ...
+///                         modelPath: URL(string: "URL to the local model file")!
 ///                     )
 ///                 )
 ///
@@ -55,9 +55,8 @@ import SpeziLLM
 /// ```
 @Observable
 public final class LLMLocalSession: LLMSession, @unchecked Sendable {
-    /// A Swift Logger that logs important information from the ``LLMLocal``.
+    /// A Swift Logger that logs important information from the ``LLMLocalSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
-    
     
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema

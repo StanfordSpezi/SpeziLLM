@@ -23,13 +23,13 @@ public struct LLMLocalSchema: LLMSchema {
     
     /// The on-device `URL` where the model is located.
     let modelPath: URL
-    /// Parameters of the llama.cpp ``LLM``.
+    /// Parameters of the llama.cpp LLM.
     let parameters: LLMLocalParameters
-    /// Context parameters of the llama.cpp ``LLM``.
+    /// Context parameters of the llama.cpp LLM.
     let contextParameters: LLMLocalContextParameters
-    /// Sampling parameters of the llama.cpp ``LLM``.
+    /// Sampling parameters of the llama.cpp LLM.
     let samplingParameters: LLMLocalSamplingParameters
-    /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the `LLM`.
+    /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let formatChat: (@Sendable (Chat) throws -> String)
     public let injectIntoContext: Bool
     

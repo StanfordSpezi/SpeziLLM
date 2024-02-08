@@ -32,7 +32,7 @@ The two main components of ``SpeziLLMLocalDownload`` are the ``LLMLocalDownloadV
 
 ### Download View
 
-The ``LLMLocalDownloadView`` provides an out-of-the-box onboarding view for downloading locally executed [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLM`s](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) to the device.
+The ``LLMLocalDownloadView`` provides an out-of-the-box onboarding view for downloading locally executed [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) LLMs to the device.
 It can be combined with the [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation) [`OnboardingStack`](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation/spezionboarding/onboardingstack) to create an easy onboarding flow within the application.
 The ``LLMLocalDownloadView`` automatically checks if the model already exists on disk, and if not, offers the start of the download via a button click. The download process itself includes the presentation of a percentage progress view in order to give the user a better feeling for the download progress.
 

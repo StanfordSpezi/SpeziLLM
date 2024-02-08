@@ -11,7 +11,7 @@ import SpeziViews
 import SwiftUI
 
 
-/// Provides an onboarding view for downloading locally executed Spezi `LLM`s to the device.
+/// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
 /// 
 /// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
 ///

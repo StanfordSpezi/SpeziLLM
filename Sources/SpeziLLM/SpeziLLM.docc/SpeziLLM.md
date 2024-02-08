@@ -28,7 +28,7 @@ You need to add the SpeziLLM Swift package to
 
 ## Spezi LLM Components
 
-The two main components of ``SpeziLLM`` are the `LLM` abstractions which are composed of the ``LLMSchema``, ``LLMSession``, and ``LLMPlatform`` as well as the ``LLMRunner`` execution capability. The following section highlights the usage of these parts.
+The two main components of ``SpeziLLM`` are the LLM abstractions which are composed of the ``LLMSchema``, ``LLMSession``, and ``LLMPlatform`` as well as the ``LLMRunner`` execution capability. The following section highlights the usage of these parts.
 
 ### LLM abstractions
 

@@ -12,7 +12,7 @@ import SwiftUI
 
 /// Defines a collection of ``SpeziLLMOpenAI`` ``LLMFunction``s.
 ///
-/// You can not create a `_LLMFunctionCollection` yourself. Please use the ``LLMOpenAI`` that internally creates a `_LLMFunctionCollection` with the passed ``LLMFunction``s.
+/// You can not create a `_LLMFunctionCollection` yourself. Please use the ``LLMOpenAISchema`` that internally creates a `_LLMFunctionCollection` with the passed ``LLMFunction``s.
 public struct _LLMFunctionCollection {  // swiftlint:disable:this type_name
     var functions: [String: LLMFunction] = [:]
     

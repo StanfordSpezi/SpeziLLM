@@ -91,14 +91,14 @@ The target enables developers to easily execute medium-size Language Models (LLM
 #### Setup
 
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
-In the example below, the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalRunnerSetupTask` from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target. This prepares the `LLMRunner` to locally execute Language Models.
+In the example below, the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target which is responsible for providing LLM functionality within the Spezi ecosystem is configured with the `LLMLocalPlatform` from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target. This prepares the `LLMRunner` to locally execute Language Models.
 
 ```
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
             LLMRunner {
-                LLMLocalRunnerSetupTask()
+                LLMLocalPlatform()
             }
         }
     }
@@ -107,27 +107,30 @@ class TestAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code example below showcases the interaction with the `LLMLocal` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above..
-Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
+The code example below showcases the interaction with local LLMs through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
+
+The `LLMLocalSchema` defines the type and configurations of the to-be-executed `LLMLocalSession`. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the `LLMLocalPlatform`. The inference via `LLMLocalSession/generate()` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
 ```swift
-struct LocalLLMChatView: View {
-   @Environment(LLMRunner.self) var runner: LLMRunner
+struct LLMLocalDemoView: View {
+    @Environment(LLMRunner.self) var runner: LLMRunner
+    @State var responseText = ""
 
-   // The locally executed LLM
-   @State var model: LLMLocal = .init(
-        modelPath: ...
-   )
-   @State var responseText: String
+    var body: some View {
+        Text(responseText)
+            .task {
+                // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
+                let llmSession: LLMLocalSession = await runner(
+                    with: LLMLocalSchema(
+                        modelPath: URL(string: "URL to the local model file")!
+                    )
+                )
 
-   func executePrompt(prompt: String) {
-        // Execute the query on the runner, returning a stream of outputs
-        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
-
-        for try await token in stream {
-            responseText.append(token)
-       }
-   }
+                for try await token in try await llmSession.generate() {
+                    responseText.append(token)
+                }
+            }
+    }
 }
 ```
 
@@ -142,7 +145,7 @@ In addition, `SpeziLLMOpenAI` provides developers with a declarative Domain Spec
 
 #### Setup
 
-In order to use `LLMOpenAI`, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
+In order to use OpenAI LLMs within the Spezi ecosystem, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the `LLMOpenAIPlatform`. Only after, the `LLMRunner` can be used for inference of OpenAI LLMs.
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
@@ -150,7 +153,7 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
          Configuration {
              LLMRunner {
-                LLMOpenAIRunnerSetupTask()
+                LLMOpenAIPlatform()
             }
         }
     }
@@ -159,29 +162,33 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code example below showcases the interaction with the `LLMOpenAI` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
-Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
+The code example below showcases the interaction with an OpenAI LLM through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
+
+The `LLMOpenAISchema` defines the type and configurations of the to-be-executed `LLMOpenAISession`. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the `LLMOpenAIPlatform`. The inference via `LLMOpenAISession/generate()` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
 ```swift
-struct LLMOpenAIChatView: View {
+struct LLMOpenAIDemoView: View {
     @Environment(LLMRunner.self) var runner: LLMRunner
-    
-    @State var model: LLMOpenAI = .init(
-        parameters: .init(
-            modelType: .gpt3_5Turbo,
-            systemPrompt: "You're a helpful assistant that answers questions from users.",
-            overwritingToken: "abc123"
-        )
-    )
-    @State var responseText: String
+    @State var responseText = ""
 
-    func executePrompt(prompt: String) {
-        // Execute the query on the runner, returning a stream of outputs
-        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
+    var body: some View {
+        Text(responseText)
+            .task {
+                // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
+                let llmSession: LLMOpenAISession = await runner(
+                    with: LLMOpenAISchema(
+                        parameters: .init(
+                            modelType: .gpt3_5Turbo,
+                            systemPrompt: "You're a helpful assistant that answers questions from users.",
+                            overwritingToken: "abc123"
+                        )
+                    )
+                )
 
-        for try await token in stream {
-            responseText.append(token)
-        }
+                for try await token in try await llmSession.generate() {
+                    responseText.append(token)
+                }
+            }
     }
 }
 ```
