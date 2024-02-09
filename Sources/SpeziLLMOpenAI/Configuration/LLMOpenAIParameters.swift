@@ -22,7 +22,7 @@ public struct LLMOpenAIParameters: Sendable {
     /// The to-be-used OpenAI model.
     let modelType: Model
     /// The to-be-used system prompt of the LLM.
-    let systemPrompt: String
+    let systemPrompt: String?
     /// Indicates if a model access test should be made during LLM setup.
     let modelAccessTest: Bool
     /// Separate OpenAI token that overrides the one defined within the ``LLMRemoteRunnerSetupTask``.
@@ -38,7 +38,7 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
         modelType: Model,
-        systemPrompt: String = Defaults.defaultOpenAISystemPrompt,
+        systemPrompt: String? = Defaults.defaultOpenAISystemPrompt,
         modelAccessTest: Bool = false,
         overwritingToken: String? = nil
     ) {

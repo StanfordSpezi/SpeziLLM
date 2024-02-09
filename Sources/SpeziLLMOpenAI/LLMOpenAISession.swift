@@ -107,8 +107,10 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
         self.secureStorage = secureStorage
         
         // Inject system prompt into context
-        Task { @MainActor in
-            context.append(systemMessage: schema.parameters.systemPrompt)
+        if let systemPrompt = schema.parameters.systemPrompt {
+            Task { @MainActor in
+                context.append(systemMessage: systemPrompt)
+            }
         }
     }
     

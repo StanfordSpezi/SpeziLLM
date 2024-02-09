@@ -84,8 +84,10 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         self.schema = schema
         
         // Inject system prompt into context
-        Task { @MainActor in
-            context.append(systemMessage: schema.parameters.systemPrompt)
+        if let systemPrompt = schema.parameters.systemPrompt {
+            Task { @MainActor in
+                context.append(systemMessage: systemPrompt)
+            }
         }
     }
     
