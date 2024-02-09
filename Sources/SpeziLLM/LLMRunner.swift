@@ -106,7 +106,7 @@ public actor LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// Convenience initializer for the creation of an ``LLMRunner`` that doesn't support any ``LLMPlatform``s
     /// Helpful for stating a Spezi `Dependency` to the ``LLMRunner``.
     public init() {
-        self.init({})
+        self.init {}
     }
     
     
