@@ -66,7 +66,7 @@ import SpeziChat
 ///    }
 /// }
 /// ```
-public actor LLMRunner: Module, EnvironmentAccessible {
+public actor LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// The ``State`` describes the current state of the ``LLMRunner``.
     /// As of now, the ``State`` is quite minimal with only ``LLMRunner/State-swift.enum/idle`` and ``LLMRunner/State-swift.enum/processing`` states.
     public enum State {
@@ -101,6 +101,12 @@ public actor LLMRunner: Module, EnvironmentAccessible {
         @LLMPlatformBuilder _ dependencies: @Sendable () -> DependencyCollection
     ) {
         self._llmPlatformModules = Dependency(using: dependencies())
+    }
+    
+    /// Convenience initializer for the creation of an ``LLMRunner`` that doesn't support any ``LLMPlatform``s
+    /// Helpful for stating a Spezi `Dependency` to the ``LLMRunner``.
+    public init() {
+        self.init({})
     }
     
     
