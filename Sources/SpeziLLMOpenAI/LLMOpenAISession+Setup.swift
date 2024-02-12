@@ -55,23 +55,9 @@ extension LLMOpenAISession {
         }
         
         // Check access to the specified OpenAI model
-        if schema.parameters.modelAccessTest {
-            do {
-                _ = try await self.model.model(query: .init(model: schema.parameters.modelType))
-            } catch let error as URLError {
-                Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API - \(error)")
-                await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
-                return false
-            } catch {
-                if let apiError = error as? APIErrorResponse, apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
-                    Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(apiError)")
-                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
-                } else {
-                    Self.logger.error("SpeziLLMOpenAI: Couldn't access the specified OpenAI model during setup - \(error)")
-                    await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
-                }
-                return false
-            }
+        guard schema.parameters.modelAccessTest,
+              await modelAccessTest(continuation: continuation) else {
+            return false
         }
         
         await MainActor.run {
@@ -79,5 +65,30 @@ extension LLMOpenAISession {
         }
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
         return true
+    }
+    
+    /// Tests access to the OpenAI model.
+    ///
+    /// - Parameters:
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    /// - Returns: `true` if the model access test was successful, `false` otherwise.
+    private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+        do {
+            _ = try await self.model.model(query: .init(model: schema.parameters.modelType))
+            return true
+        } catch let error as URLError {
+            Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API - \(error)")
+            await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
+        } catch {
+            if let apiError = error as? APIErrorResponse, apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
+                Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(apiError)")
+                await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+            } else {
+                Self.logger.error("SpeziLLMOpenAI: Couldn't access the specified OpenAI model during setup - \(error)")
+                await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
+            }
+        }
+        
+        return false
     }
 }
