@@ -206,7 +206,37 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please ensure that the specified OpenAI API key is valid."
+            "value" : "Please ensure that the configured OpenAI API key is valid and able to access OpenAI models."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key missing."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key wasn't set before using the APIs generational capabilities."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the API Key is set before dispatching the first inference."
           }
         }
       }

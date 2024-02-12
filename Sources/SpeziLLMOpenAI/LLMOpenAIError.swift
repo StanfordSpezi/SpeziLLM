@@ -12,6 +12,8 @@ import SpeziLLM
 
 /// Errors that can occur by interacting with the OpenAI API.
 public enum LLMOpenAIError: LLMError {
+    /// OpenAI API token is missing.
+    case missingAPIToken
     /// OpenAI API token is invalid.
     case invalidAPIToken
     /// Connectivity error
@@ -45,6 +47,8 @@ public enum LLMOpenAIError: LLMError {
     
     public var errorDescription: String? {
         switch self {
+        case .missingAPIToken:
+            String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
@@ -70,6 +74,8 @@ public enum LLMOpenAIError: LLMError {
     
     public var recoverySuggestion: String? {
         switch self {
+        case .missingAPIToken:
+            String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
@@ -95,6 +101,8 @@ public enum LLMOpenAIError: LLMError {
 
     public var failureReason: String? {
         switch self {
+        case .missingAPIToken:
+            String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .connectivityIssues:
@@ -121,6 +129,7 @@ public enum LLMOpenAIError: LLMError {
     
     public static func == (lhs: LLMOpenAIError, rhs: LLMOpenAIError) -> Bool {  // swiftlint:disable:this cyclomatic_complexity
         switch (lhs, rhs) {
+        case (.missingAPIToken, .missingAPIToken): true
         case (.invalidAPIToken, .invalidAPIToken): true
         case (.connectivityIssues, .connectivityIssues): true
         case (.storageError, .storageError): true

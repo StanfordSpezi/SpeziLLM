@@ -36,10 +36,13 @@ extension LLMOpenAISession {
                 LLMOpenAIConstants.credentialsUsername,
                 server: LLMOpenAIConstants.credentialsServer
             ) else {
-                preconditionFailure("""
-                SpeziLLM: OpenAI Token wasn't properly set, please ensure that the token is either passed directly via the Spezi `Configuration`
+                Self.logger.error("""
+                SpeziLLMOpenAI: Missing OpenAI API token.
+                Please ensure that the token is either passed directly via the Spezi `Configuration`
                 or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
                 """)
+                await finishGenerationWithError(LLMOpenAIError.missingAPIToken, on: continuation)
+                return false
             }
             
             // Initialize the OpenAI model
@@ -60,12 +63,13 @@ extension LLMOpenAISession {
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return false
             } catch {
-                Self.logger.error("""
-                SpeziLLMOpenAI: Couldn't access the specified OpenAI model.
-                Ensure the model exists and the configured API key is able to access the model.
-                Error: \(error)
-                """)
-                await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
+                if let apiError = error as? APIErrorResponse, apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
+                    Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(apiError)")
+                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+                } else {
+                    Self.logger.error("SpeziLLMOpenAI: Couldn't access the specified OpenAI model during setup - \(error)")
+                    await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
+                }
                 return false
             }
         }

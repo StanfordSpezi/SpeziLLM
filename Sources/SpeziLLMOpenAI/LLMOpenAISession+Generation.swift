@@ -58,6 +58,19 @@ extension LLMOpenAISession {
                     
                     continuation.yield(content)
                 }
+            } catch let error as APIErrorResponse {
+                switch error.error.code {
+                case LLMOpenAIError.invalidAPIToken.openAIErrorMessage:
+                    Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(error)")
+                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+                case LLMOpenAIError.insufficientQuota.openAIErrorMessage:
+                    Self.logger.error("SpeziLLMOpenAI: Insufficient OpenAI API quota - \(error)")
+                    await finishGenerationWithError(LLMOpenAIError.insufficientQuota, on: continuation)
+                default:
+                    Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
+                    await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
+                }
+                return
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
