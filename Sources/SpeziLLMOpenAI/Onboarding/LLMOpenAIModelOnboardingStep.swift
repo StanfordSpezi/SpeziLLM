@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-@_exported import struct OpenAI.Model
 import Spezi
 import SpeziOnboarding
 import SwiftUI
@@ -15,14 +14,14 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
-        public static let models = [Model.gpt3_5Turbo, Model.gpt4_turbo_preview]
+        public static let models: [LLMOpenAIModelType] = [.gpt3_5Turbo, .gpt4_turbo_preview]
     }
     
     
-    @State private var modelSelection: Model
+    @State private var modelSelection: LLMOpenAIModelType
     private let actionText: String
-    private let action: (Model) -> Void
-    private let models: [Model]
+    private let action: (LLMOpenAIModelType) -> Void
+    private let models: [LLMOpenAIModelType]
     
     
     public var body: some View {
@@ -60,8 +59,8 @@ public struct LLMOpenAIModelOnboardingStep: View {
     ///   - action: Action that should be performed after the openAI model selection has been done, selection is passed as closure argument.
     public init(
         actionText: LocalizedStringResource? = nil,
-        models: [Model] = Default.models,
-        _ action: @escaping (Model) -> Void
+        models: [LLMOpenAIModelType] = Default.models,
+        _ action: @escaping (LLMOpenAIModelType) -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
@@ -77,8 +76,8 @@ public struct LLMOpenAIModelOnboardingStep: View {
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
-        models: [Model] = Default.models,
-        _ action: @escaping (Model) -> Void
+        models: [LLMOpenAIModelType] = Default.models,
+        _ action: @escaping (LLMOpenAIModelType) -> Void
     ) {
         self.actionText = String(actionText)
         self.models = models
@@ -88,7 +87,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
 }
 
 
-extension Model {
+extension LLMOpenAIModelType {
     fileprivate var formattedModelDescription: String {
         self.replacing("-", with: " ").capitalized.replacing("Gpt", with: "GPT")
     }
