@@ -77,6 +77,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
             
             continuation.finish()
             await MainActor.run {
+                context.completeAssistantStreaming()
                 self.state = .ready
             }
         }

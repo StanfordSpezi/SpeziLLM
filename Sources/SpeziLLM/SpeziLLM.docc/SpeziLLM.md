@@ -95,6 +95,7 @@ struct LLMDemoView: View {
             } label: {
                 Text("Start LLM inference")
             }
+                .disabled(llmSession == nil)
 
             Text(responseText)
         }

@@ -175,9 +175,10 @@ extension LLMLocalSession {
         Self.logger.debug("SpeziLLMLocal: Decoded \(decodedTokens, privacy: .public) tokens in \(String(format: "%.2f", elapsedTime), privacy: .public) s, speed: \(String(format: "%.2f", Double(decodedTokens) / elapsedTime), privacy: .public)) t/s")
 
         llama_print_timings(self.modelContext)
-         
+        
         continuation.finish()
         await MainActor.run {
+            context.completeAssistantStreaming()
             self.state = .ready
         }
         

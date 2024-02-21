@@ -24,16 +24,15 @@ let package = Package(
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"])
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/MacPaw/OpenAI",
-            revision: "35afc9a6ee127b8f22a85a31aec2036a987478af"    // No new release from MacPaw, use commit on main until release is tagged
-        ),
+        .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.6")),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.8")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.5")),
+        //.package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.6")),
+        //.package(path: "../SpeziChat"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", branch: "feat/speech-capabilities"),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.0.0"),
         .package(url: "https://github.com/groue/Semaphore.git", exact: "0.0.8")
     ],

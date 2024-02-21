@@ -58,6 +58,10 @@ extension LLMOpenAISession {
                     
                     continuation.yield(content)
                 }
+                
+                await MainActor.run {
+                    context.completeAssistantStreaming()
+                }
             } catch let error as APIErrorResponse {
                 switch error.error.code {
                 case LLMOpenAIError.invalidAPIToken.openAIErrorMessage:

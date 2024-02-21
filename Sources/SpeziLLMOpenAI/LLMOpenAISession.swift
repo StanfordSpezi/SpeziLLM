@@ -144,6 +144,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             // Execute the inference
             await _generate(continuation: continuation)
         }
+        
         _ = lock.withLock {
             tasks.insert(task)
         }

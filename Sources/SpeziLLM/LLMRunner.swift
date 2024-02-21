@@ -45,6 +45,7 @@ import SpeziChat
 ///             } label: {
 ///                 Text("Start LLM inference")
 ///             }
+///                 .disabled(llmSession == nil)
 ///
 ///             Text(responseText)
 ///         }
@@ -128,8 +129,8 @@ public actor LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
         // Searches for the respective `LLMPlatform` associated with the `LLMSchema`.
         guard let platform = llmPlatforms[ObjectIdentifier(L.self)] else {
             preconditionFailure("""
-            The designated `LLMPlatform` to run the `LLMSchema` was not configured within the Spezi `Configuration`.
-            Ensure that the `LLMRunner` is set up with all required `LLMPlatform`s
+            The designated `LLMPlatform` \(String(describing: L.Platform.Session.self)) to run the `LLMSchema` \(String(describing: L.self)) was not configured within the Spezi `Configuration`.
+            Ensure that the `LLMRunner` is set up with all required `LLMPlatform`s.
             """)
         }
         

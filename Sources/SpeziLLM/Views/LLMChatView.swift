@@ -37,58 +37,61 @@ public struct LLMChatView<L: LLMSchema>: View {
     /// The ``LLMRunner`` is responsible for executing the ``LLMSchema`` by turning it into a ``LLMSession``.
     @Environment(LLMRunner.self) private var runner
     /// The ``LLMSchema`` that defines the type and properties of the used LLM.
-    private let schema: L
+    private let schema: L?
     
     /// The LLM in execution, as defined by the ``LLMSchema``.
     @State private var llm: L.Platform.Session?
+    @State private var muted = true
+    
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
-        llm?.state.representation == .processing
+        llm == nil || llm?.state.representation == .processing
     }
-
+    @MainActor private var contextBinding: Binding<Chat> {
+        Binding {
+            llm?.context ?? []
+        } set: {
+            llm?.context = $0
+        }
+    }
+    
     
     public var body: some View {
-        Group {
-            if let llm {
-                let contextBinding = Binding { llm.context } set: { llm.context = $0 }
-                
-                ChatView(
-                    contextBinding,
-                    disableInput: inputDisabled,
-                    exportFormat: .pdf,
-                    messagePendingAnimation: .automatic
-                )
-                    .onChange(of: llm.context) { oldValue, newValue in
-                        // Once the user enters a message in the chat, send a generation request to the LLM.
-                        if oldValue.count != newValue.count,
-                           let lastChat = newValue.last, lastChat.role == .user {
-                            Task {
-                                do {
-                                    // Trigger an output generation based on the `LLMSession/context`.
-                                    let stream = try await llm.generate()
-                                    
-                                    for try await token in stream {
-                                        llm.context.append(assistantOutput: token)
-                                    }
-                                } catch let error as LLMError {
-                                    llm.state = .error(error: error)
-                                } catch {
-                                    llm.state = .error(error: LLMDefaultError.unknown(error))
-                                }
+        ChatView(
+            contextBinding,
+            disableInput: inputDisabled,
+            exportFormat: .pdf,
+            messagePendingAnimation: .automatic
+        )
+            .speak(contextBinding.wrappedValue, muted: muted)
+            .speechToolbarButton(muted: $muted)
+            .viewStateAlert(state: llm?.state ?? .loading)
+            .onChange(of: contextBinding.wrappedValue) { oldValue, newValue in
+                // Once the user enters a message in the chat, send a generation request to the LLM.
+                if oldValue.count != newValue.count,
+                   let lastChat = newValue.last, lastChat.role == .user,
+                   let llm {
+                    Task {
+                        do {
+                            // Trigger an output generation based on the `LLMSession/context`.
+                            let stream = try await llm.generate()
+                            
+                            for try await token in stream {
+                                llm.context.append(assistantOutput: token)
                             }
+                        } catch let error as LLMError {
+                            llm.state = .error(error: error)
+                        } catch {
+                            llm.state = .error(error: LLMDefaultError.unknown(error))
                         }
                     }
-                    .viewStateAlert(state: llm.state)
-            } else {
-                // Temporarily show an empty `ChatView` until `LLMSession` is instantiated
-                ChatView(
-                    .constant([])
-                )
+                }
             }
-        }
             .task {
                 // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
-                self.llm = await runner(with: schema)
+                if let schema {
+                    self.llm = await runner(with: schema)
+                }
             }
     }
     
@@ -100,13 +103,35 @@ public struct LLMChatView<L: LLMSchema>: View {
     public init(schema: L) {
         self.schema = schema
     }
+    
+    public init(session: Binding<L.Platform.Session?>) {
+        self.schema = nil
+        self.llm = session.wrappedValue
+    }
 }
 
 
-#Preview {
+#Preview("LLMSchema") {
     LLMChatView(
         schema: LLMMockSchema()
     )
+        .previewWith {
+            LLMRunner {
+                LLMMockPlatform()
+            }
+        }
+}
+
+#Preview("LLMSession") {
+    @State var llm: LLMMockSession?
+    
+    // TODO: Remove generic type constraint
+    return LLMChatView<LLMMockSchema>(
+        session: $llm
+    )
+        .task {
+            llm = LLMMockSession(.init(), schema: .init())
+        }
         .previewWith {
             LLMRunner {
                 LLMMockPlatform()
