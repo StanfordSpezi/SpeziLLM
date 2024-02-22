@@ -18,8 +18,6 @@ import Spezi
 /// Use ``LLMPlatform/callAsFunction(with:)`` with an ``LLMSchema`` parameter to get an executable ``LLMSession`` that does the actual inference.
 /// ``LLMPlatform/state`` indicates if the ``LLMPlatform`` is currently ``LLMPlatformState/idle`` or ``LLMPlatformState/processing``.
 ///
-/// We enforce the implementation of the ``LLMPlatform`` as a [Swift Actor](https://developer.apple.com/documentation/swift/actor), ensuring concurrency-proof execution of the LLM.
-///
 /// - Important: ``LLMPlatform``s shouldn't be used directly but used via the ``LLMRunner`` that delegates the requests towards the specific ``LLMPlatform``.
 /// The ``LLMRunner`` must be configured with all to-be-supported ``LLMPlatform``s within the Spezi `Configuration`.
 ///
@@ -40,7 +38,7 @@ import Spezi
 ///     }
 /// }
 /// ```
-public protocol LLMPlatform: Module, EnvironmentAccessible, AnyActor {
+public protocol LLMPlatform: Module, EnvironmentAccessible {
     /// The ``LLMSchema`` that is bound to the ``LLMPlatform``.
     associatedtype Schema: LLMSchema
     /// The ``LLMSession`` that is created from the ``LLMSchema`` by the ``LLMPlatform``.
@@ -59,7 +57,7 @@ public protocol LLMPlatform: Module, EnvironmentAccessible, AnyActor {
     ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///
     /// - Returns: The ready to use ``LLMSession``.
-    func callAsFunction(with: Schema) async -> Session
+    func callAsFunction(with: Schema) -> Session
 }
 
 

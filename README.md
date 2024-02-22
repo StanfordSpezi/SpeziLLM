@@ -113,14 +113,14 @@ The `LLMLocalSchema` defines the type and configurations of the to-be-executed `
 
 ```swift
 struct LLMLocalDemoView: View {
-    @Environment(LLMRunner.self) var runner: LLMRunner
+    @Environment(LLMRunner.self) var runner
     @State var responseText = ""
 
     var body: some View {
         Text(responseText)
             .task {
                 // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
-                let llmSession: LLMLocalSession = await runner(
+                let llmSession: LLMLocalSession = runner(
                     with: LLMLocalSchema(
                         modelPath: URL(string: "URL to the local model file")!
                     )
@@ -168,14 +168,14 @@ The `LLMOpenAISchema` defines the type and configurations of the to-be-executed 
 
 ```swift
 struct LLMOpenAIDemoView: View {
-    @Environment(LLMRunner.self) var runner: LLMRunner
+    @Environment(LLMRunner.self) var runner
     @State var responseText = ""
 
     var body: some View {
         Text(responseText)
             .task {
                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
-                let llmSession: LLMOpenAISession = await runner(
+                let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
                             modelType: .gpt3_5Turbo,

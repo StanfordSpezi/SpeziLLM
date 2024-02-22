@@ -7,11 +7,11 @@
 //
 
 import Foundation
+import os
 import Semaphore
 import Spezi
 import SpeziLLM
 import SpeziSecureStorage
-
 
 /// LLM execution platform of an ``LLMOpenAISchema``.
 ///
@@ -38,7 +38,10 @@ import SpeziSecureStorage
 ///     }
 /// }
 /// ```
-public actor LLMOpenAIPlatform: LLMPlatform, DefaultInitializable {
+public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Sendable {
+    /// A Swift Logger that logs important information from the ``LLMLocalSession``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    
     /// Enforce an arbitrary number of concurrent execution jobs of OpenAI LLMs.
     private let semaphore: AsyncSemaphore
     let configuration: LLMOpenAIPlatformConfiguration
@@ -46,7 +49,6 @@ public actor LLMOpenAIPlatform: LLMPlatform, DefaultInitializable {
     @MainActor public var state: LLMPlatformState = .idle
     @Dependency private var tokenSaver: LLMOpenAITokenSaver
     @Dependency private var secureStorage: SecureStorage
-    
     
     /// Creates an instance of the ``LLMOpenAIPlatform``.
     ///
@@ -58,24 +60,28 @@ public actor LLMOpenAIPlatform: LLMPlatform, DefaultInitializable {
     }
     
     /// Convenience initializer for the ``LLMOpenAIPlatform``.
-    public init() {
+    public required convenience init() {
         self.init(configuration: .init())
     }
     
     
-    public nonisolated func configure() {
-        Task {
-            // If token passed via init
-            if let apiToken = configuration.apiToken {
-                try await secureStorage.store(
+    public func configure() {
+        // If token passed via init
+        if let apiToken = configuration.apiToken {
+            do {
+                try secureStorage.store(
                     credentials: Credentials(username: LLMOpenAIConstants.credentialsUsername, password: apiToken),
                     server: LLMOpenAIConstants.credentialsServer
                 )
+            } catch {
+                preconditionFailure("""
+                SpeziLLMOpenAI: Configured OpenAI API token could not be stored within the SpeziSecureStorage.
+                """)
             }
         }
     }
     
-    public func callAsFunction(with llmSchema: LLMOpenAISchema) async -> LLMOpenAISession {
+    public func callAsFunction(with llmSchema: LLMOpenAISchema) -> LLMOpenAISession {
         LLMOpenAISession(self, schema: llmSchema, secureStorage: secureStorage)
     }
     

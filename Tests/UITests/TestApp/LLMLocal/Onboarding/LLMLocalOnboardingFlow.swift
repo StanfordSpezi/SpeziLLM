@@ -28,6 +28,8 @@ struct LLMLocalOnboardingFlow: View {
 }
 
 
+#if DEBUG
 #Preview {
     LLMLocalOnboardingFlow()
 }
+#endif

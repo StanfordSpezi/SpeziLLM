@@ -6,23 +6,38 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SpeziLLM
 import SpeziOnboarding
 import SwiftUI
 
 
 struct LLMLocalTestView: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
-    
+    let mockMode: Bool
     
     var body: some View {
-        LLMLocalChatTestView()
+        LLMLocalChatTestView(mockMode: mockMode)
             .sheet(isPresented: !$completedOnboardingFlow) {
                 LLMLocalOnboardingFlow()
             }
     }
+    
+    
+    init(mockMode: Bool = false) {
+        self.mockMode = mockMode
+    }
 }
 
 
+#if DEBUG
 #Preview {
-    LLMLocalTestView()
+    NavigationStack {
+        LLMLocalTestView(mockMode: true)
+    }
+        .previewWith {
+            LLMRunner {
+                LLMMockPlatform()
+            }
+        }
 }
+#endif

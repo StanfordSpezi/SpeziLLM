@@ -11,66 +11,65 @@ import SpeziViews
 import SwiftUI
 
 
-/// Basic chat view that enables users to interact with an LLM.
+/// Chat view that enables users to interact with an LLM based on an ``LLMSession``.
+///
+/// The ``LLMChatView`` takes an ``LLMSession`` instance as parameter within the ``LLMChatView/init(session:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``.
 ///
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
-/// The ``LLMChatView`` takes an ``LLMSchema`` instance as parameter within the ``LLMChatView/init(schema:)``. The ``LLMSchema`` defines the type and properties of the LLM that will be used by the ``LLMChatView`` to generate responses to user prompts.
 ///
-/// > Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
-/// > For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
+/// - Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
+/// For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
+///
+/// - Tip: To add text-to-speech capabilities to the ``LLMChatView``, use the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation) and more specifically the `View/speak(_:muted:)` and `View/speechToolbarButton(enabled:muted:)` view modifiers.
+/// For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
 ///
 /// ### Usage
 ///
-/// An example usage of the ``LLMChatView`` can be seen in the following example.
-/// The example uses the ``LLMMockSchema`` to generate responses to user prompts.
+/// The next code examples demonstrate how to use the ``LLMChatView`` with ``LLMSession``s.
+///
+/// The ``LLMChatView`` must be passed a ``LLMSession``, meaning a ready-to-use LLM, resulting in the need for the developer to manually allocate the ``LLMSession`` via the ``LLMRunner`` and ``LLMSchema`` (which includes state management).
+///
+/// In order to simplify the usage of an ``LLMSession``, SpeziLLM provides the ``LLMSessionProvider`` property wrapper that conveniently instantiates an ``LLMSchema`` to an ``LLMSession``.
+/// The `@LLMSessionProvider` wrapper abstracts away the necessity to use the ``LLMRunner`` from the SwiftUI `Environment` within a `.task()` view modifier to instantiate the ``LLMSession``.
+/// In addition, state handling becomes easier, as one doesn't have to deal with the optionality of the ``LLMSession`` anymore.
+///
+/// In addition, one is able to use the  text-to-speech capabilities of [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation) via the `View/speak(_:muted:)` and `View/speechToolbarButton(enabled:muted:)` view modifiers.
 ///
 /// ```swift
-/// struct LLMLocalChatTestView: View {
+/// struct LLMChatTestView: View {
+///     // Use the convenience property wrapper to instantiate the `LLMMockSession`
+///     @LLMSessionProvider(schema: LLMMockSchema()) var llm: LLMMockSession
+///     @State var muted = true
+///
 ///     var body: some View {
-///         LLMChatView(
-///             schema: LLMMockSchema()
-///         )
+///         LLMChatView(session: $llm)
+///             .speak(llm.context, muted: muted)
+///             .speechToolbarButton(muted: $muted)
 ///     }
 /// }
 /// ```
-public struct LLMChatView<L: LLMSchema>: View {
-    /// The ``LLMRunner`` is responsible for executing the ``LLMSchema`` by turning it into a ``LLMSession``.
-    @Environment(LLMRunner.self) private var runner
-    /// The ``LLMSchema`` that defines the type and properties of the used LLM.
-    private let schema: L?
-    
+public struct LLMChatView<Session: LLMSession>: View {
     /// The LLM in execution, as defined by the ``LLMSchema``.
-    @State private var llm: L.Platform.Session?
-    @State private var muted = true
+    @Binding private var llm: Session
     
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
-        llm == nil || llm?.state.representation == .processing
-    }
-    @MainActor private var contextBinding: Binding<Chat> {
-        Binding {
-            llm?.context ?? []
-        } set: {
-            llm?.context = $0
-        }
+        llm.state.representation == .processing
     }
     
     
     public var body: some View {
         ChatView(
-            contextBinding,
+            $llm.context,
             disableInput: inputDisabled,
             exportFormat: .pdf,
             messagePendingAnimation: .automatic
         )
-            .speak(contextBinding.wrappedValue, muted: muted)
-            .speechToolbarButton(muted: $muted)
-            .viewStateAlert(state: llm?.state ?? .loading)
-            .onChange(of: contextBinding.wrappedValue) { oldValue, newValue in
+            .viewStateAlert(state: llm.state)
+            .onChange(of: llm.context) { oldValue, newValue in
                 // Once the user enters a message in the chat, send a generation request to the LLM.
                 if oldValue.count != newValue.count,
-                   let lastChat = newValue.last, lastChat.role == .user,
-                   let llm {
+                   let lastChat = newValue.last, lastChat.role == .user {
                     Task {
                         do {
                             // Trigger an output generation based on the `LLMSession/context`.
@@ -87,54 +86,33 @@ public struct LLMChatView<L: LLMSchema>: View {
                     }
                 }
             }
-            .task {
-                // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
-                if let schema {
-                    self.llm = await runner(with: schema)
+    }
+    
+    
+    /// Creates a ``LLMChatView`` with a `Binding` of a ``LLMSession`` that provides developers with a basic chat view to interact with a Spezi LLM.
+    ///
+    /// - Parameters:
+    ///   - model: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
+    public init(session: Binding<Session>) {
+        self._llm = session
+    }
+}
+
+
+#if DEBUG
+#Preview {
+    @State var llm = LLMMockSession(.init(), schema: .init())
+    
+    
+    return NavigationStack {
+        LLMChatView(session: $llm)
+            .speak(llm.context, muted: true)
+            .speechToolbarButton(muted: .constant(true))
+            .previewWith {
+                LLMRunner {
+                    LLMMockPlatform()
                 }
             }
     }
-    
-
-    /// Creates a ``LLMChatView`` that provides developers with a basic chat view to interact with a Spezi LLM.
-    ///
-    /// - Parameters:
-    ///   - model: The ``LLMSchema`` that defines the to-be-used LLM to generate outputs based on user input.
-    public init(schema: L) {
-        self.schema = schema
-    }
-    
-    public init(session: Binding<L.Platform.Session?>) {
-        self.schema = nil
-        self.llm = session.wrappedValue
-    }
 }
-
-
-#Preview("LLMSchema") {
-    LLMChatView(
-        schema: LLMMockSchema()
-    )
-        .previewWith {
-            LLMRunner {
-                LLMMockPlatform()
-            }
-        }
-}
-
-#Preview("LLMSession") {
-    @State var llm: LLMMockSession?
-    
-    // TODO: Remove generic type constraint
-    return LLMChatView<LLMMockSchema>(
-        session: $llm
-    )
-        .task {
-            llm = LLMMockSession(.init(), schema: .init())
-        }
-        .previewWith {
-            LLMRunner {
-                LLMMockPlatform()
-            }
-        }
-}
+#endif

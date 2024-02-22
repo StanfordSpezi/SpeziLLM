@@ -65,7 +65,7 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
         llama_backend_init(configuration.nonUniformMemoryAccess)
     }
     
-    public func callAsFunction(with llmSchema: LLMLocalSchema) async -> LLMLocalSession {
+    nonisolated public func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
     

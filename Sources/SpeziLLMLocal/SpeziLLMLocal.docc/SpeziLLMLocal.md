@@ -98,14 +98,14 @@ Ensure the property always contains all necessary information, as the ``LLMLocal
 
 ```swift
 struct LLMLocalDemoView: View {
-    @Environment(LLMRunner.self) var runner: LLMRunner
+    @Environment(LLMRunner.self) var runner
     @State var responseText = ""
 
     var body: some View {
         Text(responseText)
             .task {
                 // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
-                let llmSession: LLMLocalSession = await runner(
+                let llmSession: LLMLocalSession = runner(
                     with: LLMLocalSchema(
                         modelPath: URL(string: "URL to the local model file")!
                     )

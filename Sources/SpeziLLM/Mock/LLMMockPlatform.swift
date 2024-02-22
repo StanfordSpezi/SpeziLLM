@@ -18,7 +18,7 @@ public actor LLMMockPlatform: LLMPlatform {
     public init() {}
     
     
-    public func callAsFunction(with: LLMMockSchema) async -> LLMMockSession {
+    nonisolated public func callAsFunction(with: LLMMockSchema) -> LLMMockSession {
         LLMMockSession(self, schema: with)
     }
 }

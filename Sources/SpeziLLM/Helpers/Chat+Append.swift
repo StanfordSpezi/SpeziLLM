@@ -16,25 +16,30 @@ extension Chat {
     /// If the `overwrite` parameter is `true`, the existing message is overwritten.
     ///
     /// - Parameters:
-    ///     - output: The `ChatEntity/Role/assistant` output `String` (part) that should be appended. Can contain Markdown-formatted text.
-    ///     - overwrite: Indicates if the already present content of the assistant message should be overwritten.
+    ///    - output: The `ChatEntity/Role/assistant` output `String` (part) that should be appended. Can contain Markdown-formatted text.
+    ///    - complete: Indicates if the `ChatEntity` is complete after appending to it one last time via the ``append(assistantOutput:complete:overwrite:)`` function.
+    ///    - overwrite: Indicates if the already present content of the assistant message should be overwritten.
     @MainActor
     public mutating func append(assistantOutput output: String, complete: Bool = false, overwrite: Bool = false) {
-        if self.last?.role == .assistant {
-            self[self.count - 1] = .init(
-                role: .assistant,
-                content: overwrite ? output : ((self.last?.content ?? "") + output),
-                complete: complete
-            )
-        } else {
+        guard let lastChatEntity = self.last,
+              lastChatEntity.role == .assistant else {
             self.append(.init(role: .assistant, content: output, complete: complete))
+            return
         }
+        
+        self[self.count - 1] = .init(
+            role: .assistant,
+            content: overwrite ? output : (lastChatEntity.content + output),
+            complete: complete,
+            id: lastChatEntity.id,
+            date: lastChatEntity.date
+        )
     }
     
     /// Append an `ChatEntity/Role/user` input to the `Chat`.
     ///
     /// - Parameters:
-    ///     - input: The `ChatEntity/Role/user` input that should be appended. Can contain Markdown-formatted text.
+    ///    - input: The `ChatEntity/Role/user` input that should be appended. Can contain Markdown-formatted text.
     @MainActor
     public mutating func append(userInput input: String) {
         self.append(.init(role: .user, content: input))
@@ -43,8 +48,8 @@ extension Chat {
     /// Append an `ChatEntity/Role/system` prompt to the `Chat`.
     ///
     /// - Parameters:
-    ///     - systemPrompt: The `ChatEntity/Role/system` prompt of the `Chat`, inserted at the very beginning. Can contain Markdown-formatted text.
-    ///     - insertAtStart: Defines if the system prompt should be inserted at the start of the conversational context, defaults to `true`.
+    ///    - systemPrompt: The `ChatEntity/Role/system` prompt of the `Chat`, inserted at the very beginning. Can contain Markdown-formatted text.
+    ///    - insertAtStart: Defines if the system prompt should be inserted at the start of the conversational context, defaults to `true`.
     @MainActor
     public mutating func append(systemMessage systemPrompt: String, insertAtStart: Bool = true) {
         if insertAtStart {
@@ -63,8 +68,8 @@ extension Chat {
     /// Append a `ChatEntity/Role/function` response from a function call to the `Chat.
     ///
     /// - Parameters:
-    ///     - functionName: The name of the `ChatEntity/Role/function` that is called by the LLM.
-    ///     - functionResponse: The response `String` of the `ChatEntity/Role/function` that is called by the LLM.
+    ///    - functionName: The name of the `ChatEntity/Role/function` that is called by the LLM.
+    ///    - functionResponse: The response `String` of the `ChatEntity/Role/function` that is called by the LLM.
     @MainActor
     public mutating func append(forFunction functionName: String, response functionResponse: String) {
         self.append(.init(role: .function(name: functionName), content: functionResponse))
@@ -74,15 +79,17 @@ extension Chat {
     /// Marks the latest chat entry as `ChatEntity/completed`, if the role of the chat is `ChatEntity/Role/assistant`.
     @MainActor
     public mutating func completeAssistantStreaming() {
-        guard let lastChatEntry = self.last,
-              lastChatEntry.role == .assistant else {
+        guard let lastChatEntity = self.last,
+              lastChatEntity.role == .assistant else {
             return
         }
         
         self[self.count - 1] = .init(
             role: .assistant,
-            content: lastChatEntry.content,
-            complete: true
+            content: lastChatEntity.content,
+            complete: true,
+            id: lastChatEntity.id,
+            date: lastChatEntity.date
         )
     }
 }

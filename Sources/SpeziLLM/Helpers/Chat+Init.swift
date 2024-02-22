@@ -14,7 +14,7 @@ extension Chat {
     ///
     /// - Parameters:
     ///    - systemMessages: `String`s that should be used as system messages.
-    public init(systemMessages: String...) {
+    public init(systemMessages: [String]) {
         self = systemMessages.map { systemMessage in
             .init(role: .system, content: systemMessage)
         }

@@ -89,14 +89,14 @@ Ensure the property always contains all necessary information, as the ``LLMOpenA
 
 ```swift
 struct LLMOpenAIDemoView: View {
-    @Environment(LLMRunner.self) var runner: LLMRunner
+    @Environment(LLMRunner.self) var runner
     @State var responseText = ""
 
     var body: some View {
         Text(responseText)
             .task {
                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
-                let llmSession: LLMOpenAISession = await runner(
+                let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
                             modelType: .gpt3_5Turbo,

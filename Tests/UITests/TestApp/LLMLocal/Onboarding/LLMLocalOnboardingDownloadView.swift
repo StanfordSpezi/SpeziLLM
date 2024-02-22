@@ -19,8 +19,8 @@ struct LLMLocalOnboardingDownloadView: View {
     
     var body: some View {
         LLMLocalDownloadView(
-            llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, /// By default, download the Llama2 model
-            llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") /// Store the downloaded LLM in the caches directory
+            downloadDescription: "LLM_DOWNLOAD_DESCRIPTION",
+            llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl /// By default, download the Llama2 model
         ) {
             onboardingNavigationPath.nextStep()
         }
@@ -28,8 +28,10 @@ struct LLMLocalOnboardingDownloadView: View {
 }
 
 
+#if DEBUG
 #Preview {
     OnboardingStack {
         LLMLocalOnboardingDownloadView()
     }
 }
+#endif

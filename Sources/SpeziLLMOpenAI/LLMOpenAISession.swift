@@ -40,14 +40,14 @@ import SpeziSecureStorage
 ///
 /// ```swift
 /// struct LLMOpenAIDemoView: View {
-///     @Environment(LLMRunner.self) var runner: LLMRunner
+///     @Environment(LLMRunner.self) var runner
 ///     @State var responseText = ""
 ///
 ///     var body: some View {
 ///         Text(responseText)
 ///             .task {
 ///                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
-///                 let llmSession: LLMOpenAISession = await runner(
+///                 let llmSession: LLMOpenAISession = runner(
 ///                     with: LLMOpenAISchema(
 ///                         parameters: .init(
 ///                             modelType: .gpt3_5Turbo,
@@ -87,7 +87,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
         guard let model = wrappedModel else {
             preconditionFailure("""
             SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAISession` before being initialized.
-            Ensure that the `LLMOpenAIRunnerSetupTask` is passed to the `LLMRunner` within the Spezi `Configuration`.
+            Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
         return model
@@ -106,9 +106,9 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
         self.schema = schema
         self.secureStorage = secureStorage
         
-        // Inject system prompt into context
-        if let systemPrompt = schema.parameters.systemPrompt {
-            Task { @MainActor in
+        // Inject system prompts into context
+        Task { @MainActor in
+            schema.parameters.systemPrompts.forEach { systemPrompt in
                 context.append(systemMessage: systemPrompt)
             }
         }

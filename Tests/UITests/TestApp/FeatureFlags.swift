@@ -9,7 +9,7 @@
 import Foundation
 
 
-enum FeatureFlags {
+enum FeatureFlags: Sendable {
     /// Configures the LLMs to mock all generated responses in order to simplify development and write UI Tests.
     static let mockMode = ProcessInfo.processInfo.arguments.contains("--mockMode")
 }
