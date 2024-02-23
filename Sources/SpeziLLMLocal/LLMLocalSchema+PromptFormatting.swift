@@ -146,20 +146,12 @@ extension LLMLocalSchema {
         }
         
         /// Prompt formatting closure for the [Gemma](https://ai.google.dev/gemma/docs/formatting) models
+        /// - Important: System prompts are ignored as Gemma doesn't support them
         public static let gemma: (@Sendable (Chat) throws -> String) = { chat in
             /// Start token of Gemma
             let startToken = "<start_of_turn>"
             /// End token of Gemma
             let endToken = "<end_of_turn>"
-            
-            /// Gemma doesn't allow for system prompts
-            guard !chat.contains(where: {
-                switch $0.role {
-                case .system, .function: true
-                default: false
-                }}) else {
-                throw LLMLocalError.illegalContext
-            }
             
             /// Build the initial Gemma prompt structure
             ///
@@ -194,7 +186,7 @@ extension LLMLocalSchema {
             
             /// Model starts responding after
             if chat.last?.role == .user {
-                prompt += "\(startToken)model"
+                prompt += "\(startToken)model\n"
             }
             
             return prompt
