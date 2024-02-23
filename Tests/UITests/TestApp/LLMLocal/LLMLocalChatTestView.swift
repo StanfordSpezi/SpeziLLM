@@ -27,8 +27,7 @@ struct LLMLocalChatTestView: View {
                     with: LLMLocalSchema(
                         modelPath: .cachesDirectory.appending(path: "llm.gguf"),
                         parameters: .init(maxOutputLength: 512),
-                        contextParameters: .init(contextWindowSize: 1024),
-                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama2
+                        contextParameters: .init(contextWindowSize: 1024)
                     )
                 )
             }
