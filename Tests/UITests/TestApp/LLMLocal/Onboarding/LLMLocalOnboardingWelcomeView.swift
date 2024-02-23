@@ -55,9 +55,11 @@ struct LLMLocalOnboardingWelcomeView: View {
 }
 
 
+#if DEBUG
 #Preview {
     OnboardingStack {
         LLMLocalOnboardingWelcomeView()
         LLMLocalOnboardingDownloadView()
     }
 }
+#endif

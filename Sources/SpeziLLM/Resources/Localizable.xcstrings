@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "LLM_SETUP_ERROR_DESCRIPTION" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -12,6 +13,7 @@
       }
     },
     "LLM_SETUP_ERROR_FAILURE_REASON" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -22,6 +24,7 @@
       }
     },
     "LLM_SETUP_ERROR_RECOVERY_SUGGESTION" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -80,6 +83,15 @@
           }
         }
       }
+    },
+    "LLM_UNKNOWN_ERROR_DESCRIPTION" : {
+
+    },
+    "LLM_UNKNOWN_ERROR_FAILURE_REASON" : {
+
+    },
+    "LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION" : {
+
     }
   },
   "version" : "1.0"

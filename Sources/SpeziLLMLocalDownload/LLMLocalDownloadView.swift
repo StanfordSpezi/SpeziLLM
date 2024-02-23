@@ -11,11 +11,11 @@ import SpeziViews
 import SwiftUI
 
 
-/// Provides an onboarding view for downloading locally executed Spezi `LLM`s to the device.
+/// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
 /// 
 /// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
 ///
-/// The ``LLMLocalDownloadView/init(llmDownloadUrl:llmStorageUrl:action:)`` initializer accepts the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
+/// The ``LLMLocalDownloadView/init(downloadDescription:llmDownloadUrl:llmStorageUrl:action:)-9hraf`` initializer accepts a download description displayed in the view, the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
 ///
 /// The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
 ///
@@ -37,6 +37,7 @@ import SwiftUI
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(
+///             downloadDescription: "The Llama2 7B model will be downloaded",
 ///             llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, // Download the Llama2 7B model
 ///             llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") // Store the downloaded LLM in the caches directory
 ///         ) {
@@ -50,6 +51,8 @@ public struct LLMLocalDownloadView: View {
     @State private var downloadManager: LLMLocalDownloadManager
     /// The action that should be performed when pressing the primary button of the view.
     private let action: () async throws -> Void
+    /// Description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
+    private let downloadDescription: Text
     
     /// Indicates the state of the view, get's derived from the ``LLMLocalDownloadManager/state``.
     @State private var viewState: ViewState = .idle
@@ -109,7 +112,7 @@ public struct LLMLocalDownloadView: View {
             .font(.system(size: 100))
             .foregroundColor(.accentColor)
             .accessibilityHidden(true)
-        Text("LLM_DOWNLOAD_DESCRIPTION", bundle: .module)
+        downloadDescription
             .multilineTextAlignment(.center)
             .padding(.vertical, 16)
     }
@@ -171,10 +174,12 @@ public struct LLMLocalDownloadView: View {
     /// Creates a ``LLMLocalDownloadView`` that presents an onboarding view that helps with downloading the necessary LLM files from remote servers.
     ///
     /// - Parameters:
+    ///   - downloadDescription: Localized description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
     ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
     ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     public init(
+        downloadDescription: LocalizedStringResource,
         llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl,
         llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
         action: @escaping () async throws -> Void
@@ -185,11 +190,41 @@ public struct LLMLocalDownloadView: View {
                 llmStorageUrl: llmStorageUrl
             )
         )
+        self.downloadDescription = Text(downloadDescription)
+        self.action = action
+    }
+    
+    /// Creates a ``LLMLocalDownloadView`` that presents an onboarding view that helps with downloading the necessary LLM files from remote servers.
+    ///
+    /// - Parameters:
+    ///   - downloadDescription: Description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
+    ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
+    ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
+    ///   - action: The action that should be performed when pressing the primary button of the view.
+    @_disfavoredOverload
+    public init<S: StringProtocol>(
+        downloadDescription: S,
+        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl,
+        llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
+        action: @escaping () async throws -> Void
+    ) {
+        self._downloadManager = State(
+            wrappedValue: LLMLocalDownloadManager(
+                llmDownloadUrl: llmDownloadUrl,
+                llmStorageUrl: llmStorageUrl
+            )
+        )
+        self.downloadDescription = Text(verbatim: String(downloadDescription))
         self.action = action
     }
 }
 
 
+#if DEBUG
 #Preview {
-    LLMLocalDownloadView(action: {})
+    LLMLocalDownloadView(
+        downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
+        action: {}
+    )
 }
+#endif

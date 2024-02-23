@@ -17,7 +17,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
     ///    - multipleOf: Defines that the LLM parameter needs to be a multiple of the init argument.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
@@ -44,7 +44,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil,
         minimum: T? = nil,
@@ -66,7 +66,7 @@ extension _LLMFunctionParameterWrapper where T == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         const: (any StringProtocol)? = nil
     ) {
@@ -87,7 +87,7 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enumValues: Defines all cases of the `String` parameter.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,

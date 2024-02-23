@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Spezi
 import SpeziSecureStorage
 import SwiftUI
 
@@ -16,7 +17,7 @@ import SwiftUI
 /// The ``LLMOpenAITokenSaver`` provides the ``LLMOpenAITokenSaver/token`` property to easily read and write to the `SecureStorage`.
 /// If a SwiftUI `Binding` is required (e.g., for a `TextField`), one can use the ``LLMOpenAITokenSaver/tokenBinding`` property.
 ///
-/// One needs to specify the ``LLMOpenAIRunnerSetupTask`` within the Spezi `Configuration` to be able to access the ``LLMOpenAITokenSaver`` from within the SwiftUI `Environment`.
+/// One needs to specify the ``LLMOpenAIPlatform`` within the Spezi `Configuration` to be able to access the ``LLMOpenAITokenSaver`` from within the SwiftUI `Environment`.
 ///
 /// ### Usage
 ///
@@ -27,7 +28,7 @@ import SwiftUI
 ///     override var configuration: Configuration {
 ///         Configuration {
 ///             LLMRunner {
-///                 LLMOpenAIRunnerSetupTask()
+///                 LLMOpenAIPlatform()
 ///             }
 ///         }
 ///     }
@@ -50,8 +51,8 @@ import SwiftUI
 /// }
 /// ```
 @Observable
-public class LLMOpenAITokenSaver {
-    private let secureStorage: SecureStorage
+public class LLMOpenAITokenSaver: Module, EnvironmentAccessible, DefaultInitializable {
+    @Dependency @ObservationIgnored private var secureStorage: SecureStorage
     
     
     /// Indicates if a token is present within the Spezi `SecureStorage`.
@@ -102,7 +103,5 @@ public class LLMOpenAITokenSaver {
     }
     
     
-    init(secureStorage: SecureStorage) {
-        self.secureStorage = secureStorage
-    }
+    public required init() {}
 }

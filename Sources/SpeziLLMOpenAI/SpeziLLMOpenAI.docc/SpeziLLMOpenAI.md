@@ -30,7 +30,7 @@ A module that allows you to interact with GPT-based Large Language Models (LLMs)
     }
     @Column {
         @Image(source: "ChatView", alt: "Screenshot displaying the usage of the LLMOpenAI with the SpeziChat Chat View."){
-            ``LLMOpenAI``
+            ``LLMOpenAISession``
         }
     }
 }
@@ -47,7 +47,7 @@ You need to add the SpeziLLM Swift package to
 
 ## Spezi LLM OpenAI Components
 
-The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class which conforms to the [`LLM` protocol of SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm). ``LLMOpenAI`` uses the OpenAI API to perform textual inference on the GPT-3.5 or GPT-4 models from OpenAI.
+The core components of the ``SpeziLLMOpenAI`` target are the ``LLMOpenAISchema``, ``LLMOpenAISession`` as well as ``LLMOpenAIPlatform``. They heavily use the OpenAI API to perform textual inference on the GPT-3.5 or GPT-4 models from OpenAI.
 
 > Important: To utilize an LLM from OpenAI, an OpenAI API Key is required. Ensure that the OpenAI account associated with the key has enough resources to access the specified model as well as enough credits to perform the actual inference.
 
@@ -55,13 +55,13 @@ The core component of the ``SpeziLLMOpenAI`` target is the ``LLMOpenAI`` class w
 
 ### LLM OpenAI
 
-``LLMOpenAI`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAI/init(parameters:modelParameters:_:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
+``LLMOpenAISchema`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
 
-- Important: ``LLMOpenAI`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles all management overhead tasks.
+- Important: The OpenAI LLM abstractions shouldn't be used on it's own but always used together with the Spezi `LLMRunner`.
 
 #### Setup
 
-In order to use ``LLMOpenAI``, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMOpenAI``.
+In order to use OpenAI LLMs, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the ``LLMOpenAIPlatform``. Only after, the `LLMRunner` can be used to do inference via OpenAI LLMs.
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
@@ -69,7 +69,7 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
          Configuration {
              LLMRunner {
-                LLMOpenAIRunnerSetupTask()
+                LLMOpenAIPlatform()
             }
         }
     }
@@ -78,41 +78,38 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code example below showcases the interaction with the ``LLMOpenAI`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
-Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
+The code example below showcases the interaction with the OpenAI LLMs within the Spezi ecosystem through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
 
-The ``LLMOpenAI`` contains the ``LLMOpenAI/context`` property which holds the entire history of the model interactions.
-This includes the system prompt, user input, but also assistant responses.
-Ensure the property always contains all necessary information, as the ``LLMOpenAI/generate(continuation:)`` function executes the inference based on the ``LLMOpenAI/context``
+The ``LLMOpenAISchema`` defines the type and configurations of the to-be-executed ``LLMOpenAISession``. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the ``LLMOpenAIPlatform``. The inference via ``LLMOpenAISession/generate()`` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
-> Tip: The model can be queried via the `LLMGenerationTask/generate()` and `LLMGenerationTask/generate(prompt:)` calls (returned from wrapping the ``LLMOpenAI`` in the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target).
-    The first method takes no input prompt at all but uses the current context of the model (so `LLM/context`) to query the model.
-    The second takes a `String`-based input from the user and appends it to the  context of the model (so `LLM/context`) before querying the model.
+The ``LLMOpenAISession`` contains the ``LLMOpenAISession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLMOpenAISession/generate()`` function executes the inference based on the ``LLMOpenAISession/context``
 
-> Important: The ``LLMOpenAI`` should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
+> Important: The OpenAI LLM abstractions should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
 
 ```swift
-struct LLMOpenAIChatView: View {
-    // The runner responsible for executing the OpenAI LLM.
-    @Environment(LLMRunner.self) var runner: LLMRunner
+struct LLMOpenAIDemoView: View {
+    @Environment(LLMRunner.self) var runner
+    @State var responseText = ""
 
-    // The OpenAI LLM
-    @State var model: LLMOpenAI = .init(
-        parameters: .init(
-            modelType: .gpt3_5Turbo,
-            systemPrompt: "You're a helpful assistant that answers questions from users.",
-            overwritingToken: "abc123"
-        )
-    )
-    @State var responseText: String
+    var body: some View {
+        Text(responseText)
+            .task {
+                // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
+                let llmSession: LLMOpenAISession = runner(
+                    with: LLMOpenAISchema(
+                        parameters: .init(
+                            modelType: .gpt3_5Turbo,
+                            systemPrompt: "You're a helpful assistant that answers questions from users.",
+                            overwritingToken: "abc123"
+                        )
+                    )
+                )
 
-    func executePrompt(prompt: String) {
-        // Execute the query on the runner, returning a stream of outputs
-        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
-
-        for try await token in stream {
-            responseText.append(token)
-        }
+                for try await token in try await llmSession.generate() {
+                    responseText.append(token)
+                }
+            }
     }
 }
 ```
@@ -131,9 +128,6 @@ First, create a new view to show the onboarding step:
 
 ```swift
 import SpeziOnboarding
-import SpeziLLMOpenAI
-import SwiftUI
-
 
 struct OpenAIAPIKey: View {
     @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
@@ -150,13 +144,9 @@ This view can then be added to the `OnboardingFlow` within the Spezi Template Ap
 
 ```swift
 import SpeziOnboarding
-import SpeziLLMOpenAI
-import SwiftUI
-
 
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
-    
     
     var body: some View {
         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
@@ -172,20 +162,28 @@ Now the OpenAI API Key entry view will appear within your application's onboardi
 
 ## Topics
 
-### Model
+### LLM Local abstraction
 
-- ``LLMOpenAI``
+- ``LLMOpenAISchema``
+- ``LLMOpenAISession``
 
-### Configuration
+### LLM Execution
 
-- ``LLMOpenAIParameters``
-- ``LLMOpenAIModelParameters``
-
-### Setup
-
-- ``LLMOpenAIRunnerSetupTask``
+- ``LLMOpenAIPlatform``
+- ``LLMOpenAIPlatformConfiguration``
 
 ### Onboarding
 
 - ``LLMOpenAIAPITokenOnboardingStep``
 - ``LLMOpenAIModelOnboardingStep``
+- ``LLMOpenAITokenSaver``
+- ``LLMOpenAIModelType``
+
+### LLM Configuration
+
+- ``LLMOpenAIParameters``
+- ``LLMOpenAIModelParameters``
+
+### Misc
+
+- ``LLMOpenAIError``

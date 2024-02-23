@@ -17,7 +17,7 @@ public typealias LLMFunctionParameterItemSchema = JSONSchema.Items
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public class _LLMFunctionParameterWrapper<T: Decodable, D: StringProtocol>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
     private var injectedValue: T?
     var schema: LLMFunctionParameterPropertySchema
     
@@ -50,7 +50,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable, D: StringProtocol>: LLMF
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
-    public convenience init(description: D) where T: LLMFunctionParameter {
+    public convenience init<D: StringProtocol>(description: D) where T: LLMFunctionParameter {
         self.init(schema: .init(
             type: T.schema.type,
             description: String(description),   // Take description from the property wrapper, all other things from self defined schema
@@ -105,6 +105,6 @@ extension LLMFunction {
     ///     }
     /// }
     /// ```
-    public typealias Parameter<WrappedValue, Description> =
-        _LLMFunctionParameterWrapper<WrappedValue, Description> where WrappedValue: Decodable, Description: StringProtocol
+    public typealias Parameter<WrappedValue> =
+        _LLMFunctionParameterWrapper<WrappedValue> where WrappedValue: Decodable
 }

@@ -8,15 +8,16 @@
 
 import Foundation
 
-/// Represents the configuration of the Spezi ``LLMRunner``.
-public struct LLMRunnerConfiguration: Sendable {
+
+/// Represents the configuration of the Spezi ``LLMLocalPlatform``.
+public struct LLMLocalPlatformConfiguration: Sendable {
     /// The task priority of the initiated LLM inference tasks.
-    public let taskPriority: TaskPriority
+    let taskPriority: TaskPriority
     /// Indicates if this is a device with non-unified memory access.
-    public let nonUniformMemoryAccess: Bool
+    let nonUniformMemoryAccess: Bool
     
     
-    /// Creates the ``LLMRunnerConfiguration`` which configures the Spezi ``LLMRunner``.
+    /// Creates the ``LLMLocalPlatformConfiguration`` which configures the Spezi ``LLMLocalPlatform``.
     ///
     /// - Parameters:
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.

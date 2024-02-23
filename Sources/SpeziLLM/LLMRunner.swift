@@ -8,192 +8,204 @@
 
 import Foundation
 import Spezi
+import SpeziChat
 
-/// Handles the execution of Large Language Models (LLMs) in the Spezi ecosystem.
+/// Manages the execution of LLMs in the Spezi ecosystem.
 ///
-/// The ``LLMRunner`` is a Spezi `Module` that that wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
-/// The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration`` as well as a set of ``LLMRunnerSetupTask``s as arguments.
+/// The ``LLMRunner`` is a Spezi `Module` available for access through the SwiftUI `Environment` that is responsible for turning a ``LLMSchema`` towards an executable and stateful ``LLMSession``.
+/// The ``LLMRunner`` delegates the creation of the ``LLMSession``s to the respective ``LLMPlatform``s, allowing for customized creation and dependency injection for each LLM type.
 ///
-/// The runner manages a set of ``LLMGenerationTask``'s as well as the respective LLM execution backends in order to enable
-/// a smooth and efficient model execution.
+/// Within the Spezi ecosystem, the ``LLMRunner`` is set up via the Spezi `Configuration` by taking a trailing closure argument within ``LLMRunner/init(_:)``.
+/// The closure aggregates multiple stated ``LLMPlatform``s via is the ``LLMPlatformBuilder``, enabling easy and dynamic configuration of all wanted ``LLMPlatform``s.
+///
+/// The main functionality of the ``LLMRunner`` is``LLMRunner/callAsFunction(with:)``, turning a ``LLMSchema`` to an executable ``LLMSession`` via the respective ``LLMPlatform``.
+/// The created ``LLMSession`` then holds the LLM context and is able to perform the actual LLM inference.
+/// For one-shot LLM inference tasks, the ``LLMRunner`` provides ``LLMRunner/oneShot(with:chat:)-2a1du`` and ``LLMRunner/oneShot(with:chat:)-24coq``, enabling the ``LLMRunner`` to deal with the LLM state management and reducing the burden on developers by just returning an `AsyncThrowingStream` or `String` directly.
 ///
 /// ### Usage
 ///
-/// The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLocal` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/spezillmlocal) target.
+/// The code section below showcases a complete, bare-bone code example on how to use the ``LLMRunner`` with the ``LLMSchema``.
+/// The example is structured as a SwiftUI `View` with a `Button` to trigger LLM inference via the ``LLMMockSchema``. The generated output stream is displayed in a `Text` field.
+///
+/// - Tip: SpeziLLM provides the `@LLMSessionProvider` property wrapper (`View/LLMSessionProvider`) that drastically simplifies the state management of using the ``LLMSchema`` with the ``LLMRunner``. Refer to the docs for more information.
 ///
 /// ```swift
-/// class LocalLLMAppDelegate: SpeziAppDelegate {
-///     override var configuration: Configuration {
-///         Configuration {
-///             // Configure the runner responsible for executing LLMs
-///             LLMRunner(
-///                 runnerConfig: .init(
-///                     taskPriority: .medium
-///                 )
-///             ) {
-///                 // Runner setup tasks conforming to `LLMRunnerSetupTask` protocol
-///                 LLMLocalRunnerSetupTask()
+/// struct LLMDemoView: View {
+///     // The runner responsible for executing the LLM.
+///     @Environment(LLMRunner.self) var runner
+///
+///     // The LLM in execution, as defined by the ``LLMSchema``.
+///     @State var llmSession: LLMMockSession?
+///     @State var responseText = ""
+///
+///     var body: some View {
+///         VStack {
+///             Button {
+///                 Task {
+///                     try await executePrompt(prompt: "Hello LLM!")
+///                 }
+///             } label: {
+///                 Text("Start LLM inference")
 ///             }
+///                 .disabled(if: llmSession)
+///
+///             Text(responseText)
 ///         }
+///             .task {
+///                 // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
+///                 self.llmSession = runner(with: LLMMockSchema())
+///             }
 ///     }
-/// }
 ///
-/// struct LocalLLMChatView: View {
-///    // The runner responsible for executing the LLM.
-///    @Environment(LLMRunner.self) var runner: LLMRunner
+///     func executePrompt(prompt: String) async throws {
+///         await MainActor.run {
+///             llmSession?.context.append(userInput: prompt)
+///         }
 ///
-///    // The executed LLM
-///    @State var model: LLMLocal = .init(
-///         modelPath: ...
-///    )
-///    @State var responseText: String
-///
-///    func executePrompt(prompt: String) {
-///         // Execute the query on the runner, returning a stream of outputs
-///         let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
+///         // Performing the LLM inference, returning a stream of outputs.
+///         guard let stream = try await llmSession?.generate() else {
+///             return
+///         }
 ///
 ///         for try await token in stream {
 ///             responseText.append(token)
-///        }
+///         }
 ///    }
 /// }
 /// ```
-public actor LLMRunner: Module, DefaultInitializable, EnvironmentAccessible {
+public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// The ``State`` describes the current state of the ``LLMRunner``.
     /// As of now, the ``State`` is quite minimal with only ``LLMRunner/State-swift.enum/idle`` and ``LLMRunner/State-swift.enum/processing`` states.
     public enum State {
         case idle
         case processing
-        case error(LocalizedError)
     }
     
-    
-    /// The configuration of the runner represented by ``LLMRunnerConfiguration``.
-    private let runnerConfiguration: LLMRunnerConfiguration
-    /// Indicates if the ``LLMRunner`` should lazily perform the passed ``LLMRunnerSetupTask``'s.
-    private let lazyRunnerSetup: Bool
-    /// Holds all dependencies of the ``LLMRunner`` as expressed by all stated ``LLMRunnerSetupTask``'s in the ``init(runnerConfig:_:)``.
-    /// Is required to enable the injection of `Dependency`s into the ``LLMRunnerSetupTask``'s.
-    @Dependency private var runnerSetupTaskModules: [any Module]
-    /// All to be performed ``LLMRunner``-related setup tasks, mapped to the respective ``LLMHostingType``.
-    /// Derived from the ``LLMRunnerSetupTask``'s passed within the ``init(runnerConfig:_:)``.
-    private var runnerSetupTasks: [LLMHostingType: any LLMRunnerSetupTask] = [:]
-    
-    /// Stores all currently available ``LLMGenerationTask``'s, one for each Spezi ``LLM``, identified by the ``LLMTaskIdentifier``.
-    private var runnerTasks: [LLMTaskIdentifier: LLMGenerationTask] = [:]
-    /// Indicates for which ``LLMHostingType`` the runner backend is already initialized.
-    private var runnerBackendInitialized: [LLMHostingType: Bool] = [:]
 
-    /// The ``State`` of the runner, derived from the individual ``LLMGenerationTask``'s.
+    /// Holds all configured ``LLMPlatform``s of the ``LLMRunner`` as expressed by all stated ``LLMPlatform``'s in the ``LLMRunner/init(_:)``.
+    @Dependency private var llmPlatformModules: [any Module]
+    /// Maps the ``LLMSchema`` (identified by the `ObjectIdentifier`) towards the respective ``LLMPlatform``.
+    var llmPlatforms: [ObjectIdentifier: any LLMPlatform] = [:]
+
+    /// The ``State`` of the runner, derived from the individual ``LLMPlatform``'s.
     @MainActor public var state: State {
-        get async {
-            var state: State = .idle
-            
-            for runnerTask in await self.runnerTasks.values where await runnerTask.state == .generating {
-                state = .processing
-            }
-            
-            return state
+        var state: State = .idle
+        
+        for platform in self.llmPlatforms.values where platform.state == .processing {
+            state = .processing
         }
+        
+        return state
     }
     
-    /// Creates the ``LLMRunner`` which is responsible for executing the Spezi ``LLM``'s.
+    /// Creates the ``LLMRunner`` which is responsible for executing LLMs within the Spezi ecosystem.
     ///
     /// - Parameters:
-    ///   - runnerConfig: The configuration of the ``LLMRunner`` represented by the ``LLMRunnerConfiguration``.
-    ///   - dependencies: A result builder that aggregates all stated ``LLMRunnerSetupTask``'s as dependencies.
+    ///   - dependencies: A result builder that aggregates all stated ``LLMPlatform``s.
     public init(
-        runnerConfig: LLMRunnerConfiguration = .init(),
-        lazyRunnerSetup: Bool = true,
-        @LLMRunnerSetupTaskBuilder _ dependencies: @Sendable () -> DependencyCollection
+        @LLMPlatformBuilder _ dependencies: @Sendable () -> DependencyCollection
     ) {
-        self.runnerConfiguration = runnerConfig
-        self.lazyRunnerSetup = lazyRunnerSetup
-        self._runnerSetupTaskModules = Dependency(using: dependencies())
-        
-        for modelType in LLMHostingType.allCases {
-            self.runnerBackendInitialized[modelType] = false
+        self._llmPlatformModules = Dependency(using: dependencies())
+    }
+    
+    /// Convenience initializer for the creation of an ``LLMRunner`` that doesn't support any ``LLMPlatform``s
+    /// Helpful for stating a Spezi `Dependency` to the ``LLMRunner``.
+    public required convenience init() {
+        self.init {}
+    }
+    
+    
+    public func configure() {
+        self.llmPlatforms = _llmPlatformModules.wrappedValue.compactMap { platform in
+            platform as? (any LLMPlatform)
+        }
+        .reduce(into: [:]) { partialResult, platform in
+            partialResult[platform.schemaId] = platform
         }
     }
     
-    /// Convenience initializer for the creation of a ``LLMRunner``.
-    public init() {
-        self.init(runnerConfig: .init()) {}
-    }
-    
-    public nonisolated func configure() {
-        Task {
-            await mapRunnerSetupTasks()
-        }
-    }
-    
-    private func mapRunnerSetupTasks() async {
-        for module in runnerSetupTaskModules {
-            guard let task = module as? any LLMRunnerSetupTask else {
-                preconditionFailure("SpeziLLM: Reached inconsistent state. \(type(of: module)) is not a \((any LLMRunnerSetupTask).self)")
-            }
-            
-            runnerSetupTasks[task.type] = task
-            
-            if !lazyRunnerSetup {
-                try? await task.setupRunner(runnerConfig: self.runnerConfiguration)
-                runnerBackendInitialized[task.type] = true
-            }
-        }
-    }
-    
-    
-    /// This call-as-a-function ``LLMRunner`` usage wraps a Spezi ``LLM`` and makes it ready for execution.
-    /// It manages a set of all ``LLMGenerationTask``'s, guaranteeing efficient model execution.
+    /// Turns the received ``LLMSchema`` to an executable ``LLMSession``.
+    ///
+    /// The ``LLMRunner`` uses the configured ``LLMPlatform``s to create an executable ``LLMSession`` from the passed ``LLMSchema``
     ///
     /// - Parameters:
-    ///   - with: The ``LLM`` that should be executed.
+    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///
-    /// - Returns: The ready to use ``LLMGenerationTask``.
-    public func callAsFunction(with model: any LLM) async throws -> LLMGenerationTask {
-        let modelType = model.type
-        /// If necessary, setup of the runner backend
-        if runnerBackendInitialized[modelType] != true && modelType != .mock {
-            /// Initializes the required runner backends for the respective ``LLMHostingType``.
-            guard let task = self.runnerSetupTasks[modelType] else {
-                preconditionFailure("""
-                    A LLMRunnerSetupTask setting up the runner for a specific LLM environment was not found.
-                    Please ensure that a LLMRunnerSetupTask is passed to the Spezi LLMRunner within the Spezi Configuration.
-                """)
-            }
-            
-            do {
-                try await task.setupRunner(runnerConfig: self.runnerConfiguration)
-            } catch {
-                // Adjust `LLM/state` to not initialized in order to allow for new errors to surface and trigger and alert
-                await MainActor.run {
-                    model.state = .uninitialized
-                }
-                throw error
-            }
-            
-            runnerBackendInitialized[modelType] = true
+    /// - Returns: The ready to use ``LLMSession``.
+    public func callAsFunction<L: LLMSchema>(with llmSchema: L) -> L.Platform.Session {
+        // Searches for the respective `LLMPlatform` associated with the `LLMSchema`.
+        guard let platform = llmPlatforms[ObjectIdentifier(L.self)] else {
+            preconditionFailure("""
+            The designated `LLMPlatform` \(String(describing: L.Platform.Session.self)) to run the `LLMSchema` \(String(describing: L.self)) was not configured within the Spezi `Configuration`.
+            Ensure that the `LLMRunner` is set up with all required `LLMPlatform`s.
+            """)
         }
         
-        /// Check if a fitting ``LLMRunnerInferenceTask`` for that model already exists
-        let taskIdentifier = LLMTaskIdentifier(fromModel: model)
-        guard let runnerTask = runnerTasks[taskIdentifier] else {
-            let runnerTask = LLMGenerationTask(model: model, runnerConfig: runnerConfiguration)
-            runnerTasks[taskIdentifier] = runnerTask
-            return runnerTask
+        // Checks the conformance of the related `LLMSession` to `Observable`.
+        guard L.Platform.Session.self is Observable.Type else {
+            preconditionFailure("""
+            The passed `LLMSchema` \(String(describing: L.self)) corresponds to a not observable `LLMSession` type (found session was \(String(describing: L.Platform.Session.self))).
+            Ensure that the used `LLMSession` type (\(String(describing: L.Platform.Session.self))) conforms to the `Observable` protocol via the `@Observable` macro.
+            """)
         }
         
-        return runnerTask
+        // Delegates the creation of the `LLMSession` to the configured `LLMPlatform`s.
+        return platform.determinePlatform(for: llmSchema)
     }
     
-
-    /// Upon deinit, cancel all ``LLMRunnerInferenceTask``'s.
-    deinit {
-        let runnerTasks = runnerTasks
-        Task {
-            for runnerTask in runnerTasks.values {
-                await runnerTask.task?.cancel()
-            }
+    /// One-shot mechanism to turn the received ``LLMSchema`` into an `AsyncThrowingStream`.
+    ///
+    /// Directly returns an `AsyncThrowingStream` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
+    ///
+    /// - Parameters:
+    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - chat: The context of the LLM used for the inference.
+    ///
+    /// - Returns: The ready to use `AsyncThrowingStream`.
+    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> AsyncThrowingStream<String, Error> {
+        let llmSession = callAsFunction(with: llmSchema)
+        await MainActor.run {
+            llmSession.context = chat
         }
+        
+        return try await llmSession.generate()
+    }
+    
+    /// One-shot mechanism to turn the received ``LLMSchema`` into a completed output `String`.
+    ///
+    /// Directly returns the finished output `String` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
+    ///
+    /// - Parameters:
+    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - chat: The context of the LLM used for the inference.
+    ///
+    /// - Returns: The completed output `String`.
+    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> String {
+        var output = ""
+        
+        for try await stringPiece in try await oneShot(with: llmSchema, chat: chat) {
+            output.append(stringPiece)
+        }
+        
+        return output
+    }
+}
+
+extension LLMPlatform {
+    /// Determine the correct ``LLMPlatform`` for the passed ``LLMSchema``.
+    fileprivate func determinePlatform<L: LLMSchema>(for schema: L) -> L.Platform.Session {
+        guard let schema = schema as? Schema else {
+            preconditionFailure("""
+            Reached inconsistent state. Ensure that the specified LLMSchema matches the schema defined within the LLMPlatform.
+            """)
+        }
+        
+        guard let session = self(with: schema) as? L.Platform.Session else {
+            preconditionFailure("""
+            Reached inconsistent state. Ensure that the specified LLMSession matches the session defined within the LLMPlatform.
+            """)
+        }
+        
+        return session
     }
 }

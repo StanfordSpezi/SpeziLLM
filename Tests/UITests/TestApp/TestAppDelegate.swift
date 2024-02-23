@@ -16,8 +16,9 @@ class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
             LLMRunner {
-                LLMLocalRunnerSetupTask()
-                LLMOpenAIRunnerSetupTask()
+                LLMMockPlatform()
+                LLMLocalPlatform()
+                LLMOpenAIPlatform()
             }
         }
     }

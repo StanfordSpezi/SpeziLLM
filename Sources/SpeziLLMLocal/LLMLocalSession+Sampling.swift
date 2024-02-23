@@ -10,7 +10,7 @@ import Foundation
 import llama
 
 
-extension LLMLocal {
+extension LLMLocalSession {
     /// Based on the current state of the context, sample the to be inferred output via the temperature method
     ///
     /// - Parameters:
@@ -33,14 +33,14 @@ extension LLMLocal {
         )
         
         // Sample via the temperature method
-        let minKeep = Int(max(1, self.samplingParameters.outputProbabilities))
-        llama_sample_top_k(self.modelContext, &candidatesP, self.samplingParameters.topK, minKeep)
-        llama_sample_tail_free(self.modelContext, &candidatesP, self.samplingParameters.tfs, minKeep)
-        llama_sample_typical(self.modelContext, &candidatesP, self.samplingParameters.typicalP, minKeep)
-        llama_sample_top_p(self.modelContext, &candidatesP, self.samplingParameters.topP, minKeep)
-        llama_sample_min_p(self.modelContext, &candidatesP, self.samplingParameters.minP, minKeep)
-        llama_sample_temp(self.modelContext, &candidatesP, self.samplingParameters.temperature)
+        let minKeep = Int(max(1, schema.samplingParameters.outputProbabilities))
+        llama_sample_top_k(modelContext, &candidatesP, schema.samplingParameters.topK, minKeep)
+        llama_sample_tail_free(modelContext, &candidatesP, schema.samplingParameters.tfs, minKeep)
+        llama_sample_typical(modelContext, &candidatesP, schema.samplingParameters.typicalP, minKeep)
+        llama_sample_top_p(modelContext, &candidatesP, schema.samplingParameters.topP, minKeep)
+        llama_sample_min_p(modelContext, &candidatesP, schema.samplingParameters.minP, minKeep)
+        llama_sample_temp(modelContext, &candidatesP, schema.samplingParameters.temperature)
         
-        return llama_sample_token(self.modelContext, &candidatesP)
+        return llama_sample_token(modelContext, &candidatesP)
     }
 }

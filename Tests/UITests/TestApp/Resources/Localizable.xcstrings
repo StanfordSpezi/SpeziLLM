@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "LLM_DOWNLOAD_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
+          }
+        }
+      }
+    },
     "LLM_LOCAL_CHAT_VIEW_TITLE" : {
       "localizations" : {
         "en" : {

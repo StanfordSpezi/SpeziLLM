@@ -31,6 +31,36 @@
         }
       }
     },
+    "LLM_FUNCTION_CALL_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM Function Call has failed."
+          }
+        }
+      }
+    },
+    "LLM_FUNCTION_CALL_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM Function Call executed on the device has thrown an error."
+          }
+        }
+      }
+    },
+    "LLM_FUNCTION_CALL_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the input query or restart the application."
+          }
+        }
+      }
+    },
     "LLM_GENERATION_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -121,6 +151,36 @@
         }
       }
     },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM called an unknown function."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM has tried to call a function that doesn't exist."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_FUNCTION_CALL_NAME_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the input query."
+          }
+        }
+      }
+    },
     "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -146,7 +206,37 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please ensure that the specified OpenAI API key is valid."
+            "value" : "Please ensure that the configured OpenAI API key is valid and able to access OpenAI models."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key missing."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key wasn't set before using the APIs generational capabilities."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_TOKEN_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that the API Key is set before dispatching the first inference."
           }
         }
       }

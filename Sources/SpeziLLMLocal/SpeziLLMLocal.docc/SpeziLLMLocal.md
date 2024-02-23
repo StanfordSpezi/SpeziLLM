@@ -57,32 +57,28 @@ You need to add the SpeziLLM Swift package to
 
 ## Spezi LLM Local Components
 
-The core component of the ``SpeziLLMLocal`` target is the ``LLMLocal`` class which conforms to the [`LLM` protocol of SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llm). ``LLMLocal`` heavily utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to perform the inference of the Language Model. 
+The core components of the ``SpeziLLMLocal`` target are ``LLMLocalSchema``, ``LLMLocalSession`` as well as ``LLMLocalPlatform``. They heavily utilize the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to perform the inference of the Language Model. ``LLMLocalSchema`` defines the type and configuration of the LLM, ``LLMLocalSession`` represents the ``LLMLocalSchema`` in execution while ``LLMLocalPlatform`` is the LLM execution platform.
 
-> Important: To execute a LLM locally, ``LLMLocal`` requires the model file being present on the local device. 
+> Important: To execute a LLM locally, the model file must be present on the local device. 
 > The model must be in the popular `.gguf` format introduced by the [llama.cpp library](https://github.com/ggerganov/llama.cpp)
 
 > Tip: In order to download the model file of the Language model to the local device, SpeziLLM provides the [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) target which provides model download and storage functionalities.
 
-``LLMLocal`` offers a variety of configuration possibilities, such as the used model file, the context window, the maximum output size or the batch size. These options can be set via the ``LLMLocal/init(modelPath:parameters:contextParameters:samplingParameters:formatChat:)`` initializer and the ``LLMLocalParameters``, ``LLMLocalContextParameters``, and ``LLMLocalSamplingParameters`` types. Keep in mind that the model file must be in the popular `.gguf` format!
+``LLMLocalSchema`` offers a variety of configuration possibilities, such as the used model file, the context window, the maximum output size or the batch size. These options can be set via the ``LLMLocalSchema/init(modelPath:parameters:contextParameters:samplingParameters:injectIntoContext:formatChat:)`` initializer and the ``LLMLocalParameters``, ``LLMLocalContextParameters``, and ``LLMLocalSamplingParameters`` types. Keep in mind that the model file must be in the popular `.gguf` format!
 
-- Important: ``LLMLocal`` shouldn't be used on it's own but always wrapped by the Spezi `LLMRunner` as the runner handles all management overhead tasks.
+- Important: ``LLMLocalSchema``, ``LLMLocalSession`` as well as ``LLMLocalPlatform`` shouldn't be used on it's own but always used together with the Spezi `LLMRunner`!
 
 ### Setup
 
-In order to use the ``LLMLocal``, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration`. Only after, the `LLMRunner` can be used to execute the ``LLMLocal`` locally.
+In order to use local LLMs within Spezi, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the ``LLMLocalPlatform``. Only after, the `LLMRunner` can be used to execute LLMs locally.
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
 class LocalLLMAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            LLMRunner(
-                runnerConfig: .init(
-                    taskPriority: .medium
-                )
-            ) {
-                LLMLocalRunnerSetupTask()
+            LLMRunner {
+                LLMLocalPlatform()
             }
         }
     }
@@ -91,52 +87,56 @@ class LocalLLMAppDelegate: SpeziAppDelegate {
 
 ### Usage
 
-The code example below showcases the interaction with the ``LLMLocal`` through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner).
-Based on a `String` prompt, the `LLMGenerationTask/generate(prompt:)` method returns an `AsyncThrowingStream` which yields the inferred characters until the generation has completed.
+The code example below showcases the interaction with the local LLM abstractions through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
 
-The ``LLMLocal`` contains the ``LLMLocal/context`` property which holds the entire history of the model interactions.
-This includes the system prompt, user input, but also assistant responses.
-Ensure the property always contains all necessary information, as the ``LLMLocal/generate(continuation:)`` function executes the inference based on the ``LLMLocal/context``
+The ``LLMLocalSchema`` defines the type and configurations of the to-be-executed ``LLMLocalSession``. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the ``LLMLocalPlatform``. The inference via ``LLMLocalSession/generate()`` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
-> Tip: The model can be queried via the `LLMGenerationTask/generate()` and `LLMGenerationTask/generate(prompt:)` calls (returned from wrapping the ``LLMLocal`` in the `LLMRunner` from the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) target).
-    The first method takes no input prompt at all but uses the current context of the model (so `LLM/context`) to query the model.
-    The second takes a `String`-based input from the user and appends it to the  context of the model (so `LLM/context`) before querying the model.
+The ``LLMLocalSession`` contains the ``LLMLocalSession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLMLocalSession/generate()`` function executes the inference based on the ``LLMLocalSession/context``.
 
-> Important: The ``LLMLocal`` should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
+> Important: The local LLM abstractions should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
 
 ```swift
-struct LocalLLMChatView: View {
-   @Environment(LLMRunner.self) var runner: LLMRunner
+struct LLMLocalDemoView: View {
+    @Environment(LLMRunner.self) var runner
+    @State var responseText = ""
 
-   // The locally executed LLM
-   @State var model: LLMLocal = .init(
-        modelPath: ...
-   )
-   @State var responseText: String
+    var body: some View {
+        Text(responseText)
+            .task {
+                // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
+                let llmSession: LLMLocalSession = runner(
+                    with: LLMLocalSchema(
+                        modelPath: URL(string: "URL to the local model file")!
+                    )
+                )
 
-   func executePrompt(prompt: String) {
-        // Execute the query on the runner, returning a stream of outputs
-        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
-
-        for try await token in stream {
-            responseText.append(token)
-       }
-   }
+                for try await token in try await llmSession.generate() {
+                    responseText.append(token)
+                }
+            }
+    }
 }
 ```
 
 ## Topics
 
-### Model
+### LLM Local abstraction
 
-- ``LLMLocal``
+- ``LLMLocalSchema``
+- ``LLMLocalSession``
 
-### Configuration
+### LLM Execution
+
+- ``LLMLocalPlatform``
+- ``LLMLocalPlatformConfiguration``
+
+### LLM Configuration
 
 - ``LLMLocalParameters``
 - ``LLMLocalContextParameters``
 - ``LLMLocalSamplingParameters``
 
-### Setup
+### Misc
 
-- ``LLMLocalRunnerSetupTask``
+- ``LLMLocalError``

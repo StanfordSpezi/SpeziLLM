@@ -28,60 +28,44 @@ You need to add the SpeziLLM Swift package to
 
 ## Spezi LLM Components
 
-The two main components of ``SpeziLLM`` are the ``LLM`` abstraction as well as the ``LLMRunner`` execution capability. The following section highlights the usage of these parts.
+The two main components of ``SpeziLLM`` are the LLM abstractions which are composed of the ``LLMSchema``, ``LLMSession``, and ``LLMPlatform`` as well as the ``LLMRunner`` execution capability. The following section highlights the usage of these parts.
 
-### LLM abstraction
+### LLM abstractions
 
-The ``LLM`` protocol provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem,
+``SpeziLLM`` provides three main parts abstracting LLMs:
+- ``LLMSchema``: Configuration of the to-be-used LLM, containing all information necessary for the creation of an executable ``LLMSession``.
+- ``LLMSession``: Executable version of the LLM containing context and state as defined by the ``LLMSchema``.
+- ``LLMPlatform``: Responsible for turning the received ``LLMSchema`` to an executable ``LLMSession``.
+
+These protocols provides an abstraction layer for the usage of Large Language Models within the Spezi ecosystem,
 regardless of the execution locality (local or remote) or the specific model type.
-Developers can use the ``LLM`` protocol to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
+Developers can use these protocols to conform their LLM interface implementations to a standard which is consistent throughout the Spezi ecosystem.
 
-The ``LLM`` contains the ``LLM/context`` property which holds the entire history of the model interactions.
-This includes the system prompt, user input, but also assistant responses.
-Ensure the property always contains all necessary information, as the ``LLM/generate(continuation:)`` function executes the inference based on the ``LLM/context``.
+The actual inference logic as well as state is held within the ``LLMSession``. It requires implementation of the ``LLMSession/generate()`` as well as ``LLMSession/cancel()`` functions, starting and cancelling the inference by the LLM respectively.
+In addition, it contains the ``LLMSession/context`` in which the entire conversational history with the LLM is held as well as the ``LLMSession/state`` describing the current execution state of the session. 
 
-> Important: An ``LLM`` shouldn't be executed on it's own but always used together with the ``LLMRunner``.
+> Important: Any of the three aforementioned LLM abstractions shouldn't be used on it's own but always together with the ``LLMRunner``.
     Please refer to the ``LLMRunner`` documentation for a complete code example.
-
-### Usage
-
-An example conformance of the ``LLM`` looks like the code sample below (lots of details were omitted for simplicity).
-The key point is the need to implement the ``LLM/setup(runnerConfig:)`` as well as the ``LLM/generate(continuation:)`` functions, whereas the ``LLM/setup(runnerConfig:)`` has an empty default implementation as not every ``LLMHostingType`` requires the need for a setup closure.
-
-```swift
-@Observable
-public class LLMTest: LLM {
-    public let type: LLMHostingType = .local
-    @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: Chat = []
-
-    public func setup(/* */) async throws {}
-    public func generate(/* */) async {}
-}
-```
 
 ### LLM runner
 
-The ``LLMRunner`` is a Spezi `Module` that handles the execution of Language Models in the Spezi ecosystem, regardless of their execution locality (local or remote) or the specific model type. A ``LLMRunner`` wraps a Spezi ``LLM`` during it's execution, handling all management overhead tasks of the models execution.
+The ``LLMRunner`` is a Spezi `Module` accessible via the SwiftUI `Environment` that handles the execution of Language Models in the Spezi ecosystem, regardless of their execution locality (represented by the ``LLMPlatform``) or the specific model type. 
+A ``LLMRunner`` is responsible for turning a ``LLMSchema`` towards an executable and stateful ``LLMSession`` by using the underlying ``LLMPlatform``.
 
-The runner manages a set of ``LLMGenerationTask``'s as well as the respective LLM execution backends in order to enable a smooth and efficient model execution.
+The ``LLMRunner`` is configured with the supported ``LLMPlatform``s, enabling the runner to delegate the LLM execution to the correct ``LLMPlatform``.
 
 #### Setup
 
-The ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the ``LLMRunnerConfiguration`` as well as a set of ``LLMRunnerSetupTask``s as arguments.
+Before usage, the ``LLMRunner`` needs to be initialized in the Spezi `Configuration` with the supported ``LLMPlatform``s.
 
 ```swift
 class LocalLLMAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
-            // Configure the runner responsible for executing LLMs
-            LLMRunner(
-                runnerConfig: .init(
-                    taskPriority: .medium
-                )
-            ) {
-                // Runner setup tasks conforming to `LLMRunnerSetupTask` protocol
-                LLMLocalRunnerSetupTask()
+            // Configure the runner responsible for executing LLMs.
+            LLMRunner {
+                // State the `LLMPlatform`s supported by the `LLMRunner`.
+                LLMMockPlatform()
             }
         }
     }
@@ -90,78 +74,147 @@ class LocalLLMAppDelegate: SpeziAppDelegate {
 
 #### Usage
 
-The code section below showcases a complete code example on how to use the ``LLMRunner`` in combination with a `LLMLocal` (locally executed Language Model) from the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal) target.
+The code section below showcases a complete, bare-bone code example on how to use the ``LLMRunner`` with the ``LLMSchema``.
+The example is structured as a SwiftUI `View` with a `Button` to trigger LLM inference via the ``LLMMockSchema``. The generated output stream is displayed in a `Text` field.
+
+- Tip: SpeziLLM provides the `@LLMSessionProvider` property wrapper (`View/LLMSessionProvider`) that drastically simplifies the state management of using the ``LLMSchema`` with the ``LLMRunner``. Refer to the docs below for more information.
 
 ```swift
-import SpeziLLMLocal
-// ...
+struct LLMDemoView: View {
+    // The runner responsible for executing the LLM.
+    @Environment(LLMRunner.self) var runner
 
-struct LocalLLMChatView: View {
-   // The runner responsible for executing the local LLM.
-   @Environment(LLMRunner.self) var runner: LLMRunner
+    // The LLM in execution, as defined by the ``LLMSchema``.
+    @State var llmSession: LLMMockSession?
+    @State var responseText = ""
 
-   // The locally executed LLM
-   @State var model: LLMLocal = .init(
-        modelPath: ...
-   )
-   @State var responseText: String
+    var body: some View {
+        VStack {
+            Button {
+                Task {
+                    try await executePrompt(prompt: "Hello LLM!")
+                }
+            } label: {
+                Text("Start LLM inference")
+            }
+                .disabled(if: llmSession)
 
-   func executePrompt(prompt: String) {
-        // Execute the query on the runner, returning a stream of outputs
-        let stream = try await runner(with: model).generate(prompt: "Hello LLM!")
+            Text(responseText)
+        }
+            .task {
+                // Instantiate the `LLMSchema` to an `LLMSession` via the `LLMRunner`.
+                self.llmSession = runner(with: LLMMockSchema())
+            }
+    }
+
+    func executePrompt(prompt: String) async throws {
+        await MainActor.run {
+            llmSession?.context.append(userInput: prompt)
+        }
+
+        // Performing the LLM inference, returning a stream of outputs.
+        guard let stream = try await llmSession?.generate() else {
+            return
+        }
 
         for try await token in stream {
             responseText.append(token)
-       }
+        }
    }
+}
+```
+
+As show in the example above, a simple LLM inference task with the ``LLMSession`` quickly becomes complex.
+That's why SpeziLLM provides the `@LLMSessionProvider` property wrapper (`View/LLMSessionProvider`) that enables the convenient instantiation of the passed ``LLMSchema`` (defining the LLM) to a to-be-used ``LLMSession`` (LLM in execution).
+The instantiation is done by the ``LLMRunner`` which determines the correct ``LLMPlatform`` for the ``LLMSchema`` to run on.
+An example of using the `@LLMSessionProvider` property wrapper can be found below:
+
+```swift
+struct LLMDemoView: View {
+    // Use the convenience property wrapper to instantiate the `LLMMockSession`
+    @LLMSessionProvider(schema: LLMMockSchema()) var llm: LLMMockSession
+    @State var responseText = ""
+
+    var body: some View {
+        VStack {
+            Button {
+                Task { @MainActor in
+                    llm.context.append(userInput: "Hello!")
+
+                    for try await token in try await llm.generate() {
+                        responseText.append(token)
+                    }
+                }
+            } label: {
+                Text("Start LLM inference")
+            }
+                .disabled(llm.state.representation == .processing)
+
+            Text(responseText)
+        }
+    }
 }
 ```
 
 ### LLM Chat View
 
-The ``LLMChatView`` presents a basic chat view that enables users to chat with a Spezi ``LLM`` in a typical chat-like fashion. The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
-The ``LLMChatView`` takes an ``LLM`` instance as well as initial assistant prompt as arguments to configure the chat properly.
+The ``LLMChatView`` and ``LLMChatViewSchema`` present a basic chat views that enables users to chat with a Spezi LLM in a typical chat-like fashion. The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
+The ``LLMChatViewSchema`` takes an ``LLMSchema`` instance to define which LLM in what configuration should be used for the text inference.
+The ``LLMChatView`` is passed an ``LLMSession`` that represents the LLM in execution containing state and context.
 
-> Tip: The ``LLMChatView`` builds on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
+> Tip: The ``LLMChatView`` and ``LLMChatViewSchema`` build on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
     For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
 
 #### Usage
 
-An example usage of the ``LLMChatView`` can be seen in the following example.
-The example uses the ``LLMMock`` as the passed ``LLM`` instance in order to provide a default output generation stream.
+An example usage of the ``LLMChatViewSchema`` can be seen in the following example.
+The example uses the ``LLMMockSchema`` as the passed ``LLMSchema`` instance in order to provide a mock output generation stream.
+Keep in mind that one cannot access the underlying context or state of the ``LLMSession`` when using the ``LLMChatViewSchema``.
 
 ```swift
-struct LLMLocalChatTestView: View {
+struct LLMDemoChatView: View {
     var body: some View {
-        LLMChatView(
-            model: LLMMock(),
-            initialAssistantPrompt: [
-                .init(
-                    role: .assistant,
-                    content: "Hello!"
-                )
-            ]
-        )
+        LLMChatViewSchema(with: LLMMockSchema())
+    }
+}
+```
+
+An example of using the lower-level ``LLMChatView`` can be seen in the following example.
+Here, the user has full control over the ``LLMSession`` and can access the context or state of the LLM.
+SpeziLLM provides the `@LLMSessionProvider` property wrapper (`View/LLMSessionProvider`) that enables the convenient instantiation of the passed ``LLMSchema`` (defining the LLM) to a to-be-used ``LLMSession`` (LLM in execution).
+
+```swift
+struct LLMDemoChatView: View {
+    // Use the convenience property wrapper to instantiate the `LLMMockSession`
+    @LLMSessionProvider(schema: LLMMockSchema()) var llm: LLMMockSession
+
+    var body: some View {
+        LLMChatView(session: $llm)
     }
 }
 ```
 
 ## Topics
 
-### Model
+### LLM abstraction
 
-- ``LLM``
+- ``LLMSchema``
+- ``LLMSession``
 - ``LLMState``
 - ``LLMError``
-- ``LLMHostingType``
 
-### Execution
+### LLM Execution
 
 - ``LLMRunner``
-- ``LLMRunnerConfiguration``
-- ``LLMGenerationTask``
-- ``LLMRunnerSetupTask``
+- ``LLMPlatform``
 
 ### Views
 
 - ``LLMChatView``
+- ``LLMChatViewSchema``
+
+### Mocks
+
+- ``LLMMockPlatform``
+- ``LLMMockSchema``
+- ``LLMMockSession``

@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// A result builder used to aggregate multiple ``LLMFunction``s within the ``LLMOpenAI``.
+/// A result builder used to aggregate multiple ``LLMFunction``s within the ``LLMOpenAISchema``.
 @resultBuilder
 public enum LLMFunctionBuilder {
     /// If declared, provides contextual type information for statement expressions to translate them into partial results.

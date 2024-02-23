@@ -18,7 +18,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         minItems: Int? = nil,
         maxItems: Int? = nil,
@@ -52,7 +52,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init(
+    public convenience init<D: StringProtocol>(
         description: D,
         minItems: Int? = nil,
         maxItems: Int? = nil,

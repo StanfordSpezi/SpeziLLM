@@ -8,7 +8,8 @@
 
 import OpenAI
 
-extension LLMOpenAI {
+
+extension LLMOpenAISession {
     /// Map the ``LLMOpenAI/context`` to the OpenAI `[Chat]` representation.
     private var openAIContext: [Chat] {
         get async {
@@ -33,7 +34,7 @@ extension LLMOpenAI {
     /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
     var openAIChatQuery: ChatQuery {
         get async {
-            let functions: [ChatFunctionDeclaration] = self.functions.values.compactMap { function in
+            let functions: [ChatFunctionDeclaration] = schema.functions.values.compactMap { function in
                 let functionType = Swift.type(of: function)
                 
                 return .init(
@@ -44,19 +45,19 @@ extension LLMOpenAI {
             }
             
             return await .init(
-                model: self.parameters.modelType,
+                model: schema.parameters.modelType,
                 messages: self.openAIContext,
-                responseFormat: self.modelParameters.responseFormat,
+                responseFormat: schema.modelParameters.responseFormat,
                 functions: functions.isEmpty ? nil : functions,
-                temperature: self.modelParameters.temperature,
-                topP: self.modelParameters.topP,
-                n: self.modelParameters.completionsPerOutput,
-                stop: self.modelParameters.stopSequence.isEmpty ? nil : self.modelParameters.stopSequence,
-                maxTokens: self.modelParameters.maxOutputLength,
-                presencePenalty: self.modelParameters.presencePenalty,
-                frequencyPenalty: self.modelParameters.frequencyPenalty,
-                logitBias: self.modelParameters.logitBias.isEmpty ? nil : self.modelParameters.logitBias,
-                user: self.modelParameters.user
+                temperature: schema.modelParameters.temperature,
+                topP: schema.modelParameters.topP,
+                n: schema.modelParameters.completionsPerOutput,
+                stop: schema.modelParameters.stopSequence.isEmpty ? nil : schema.modelParameters.stopSequence,
+                maxTokens: schema.modelParameters.maxOutputLength,
+                presencePenalty: schema.modelParameters.presencePenalty,
+                frequencyPenalty: schema.modelParameters.frequencyPenalty,
+                logitBias: schema.modelParameters.logitBias.isEmpty ? nil : schema.modelParameters.logitBias,
+                user: schema.modelParameters.user
             )
         }
     }
