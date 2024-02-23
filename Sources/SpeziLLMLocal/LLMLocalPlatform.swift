@@ -62,10 +62,11 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
     
     public nonisolated func configure() {
         // Initialize the llama.cpp backend
-        llama_backend_init(configuration.nonUniformMemoryAccess)
+        llama_backend_init()
+        llama_numa_init(configuration.nonUniformMemoryAccess.wrappedValue)
     }
     
-    nonisolated public func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
+    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
     

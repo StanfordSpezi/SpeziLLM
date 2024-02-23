@@ -45,6 +45,28 @@ extension LLMLocalDownloadManager {
             return url
         }
         
+        /// Gemma 7B model with `Q4_K_M` quantization (~5GB)
+        public static var gemma7BModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/rahuldshetty/gemma-7b-it-gguf-quantized/resolve/main/gemma-7b-it-Q4_K_M.gguf") else {
+                preconditionFailure("""
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
+        }
+        
+        /// Gemma 2B model with `Q4_K_M` quantization (~1.5GB)
+        public static var gemma2BModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/rahuldshetty/gemma-2b-gguf-quantized/resolve/main/gemma-2b-Q4_K_M.gguf") else {
+                preconditionFailure("""
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
+        }
+        
         /// Tiny LLama 1.1B model with `Q5_K_M` quantization in its chat variation (~800MB)
         public static var tinyLLama2ModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q5_K_M.gguf") else {
