@@ -57,12 +57,14 @@ public struct LLMChatView<Session: LLMSession>: View {
         llm.state.representation == .processing
     }
     
+    /// Defines the export format of the ``Chat``
+    private let exportFormat: ChatView.ChatExportFormat?
     
     public var body: some View {
         ChatView(
             $llm.context,
             disableInput: inputDisabled,
-            exportFormat: .pdf,
+            exportFormat: exportFormat,
             messagePendingAnimation: .automatic
         )
             .viewStateAlert(state: llm.state)
@@ -92,9 +94,13 @@ public struct LLMChatView<Session: LLMSession>: View {
     /// Creates a ``LLMChatView`` with a `Binding` of a ``LLMSession`` that provides developers with a basic chat view to interact with a Spezi LLM.
     ///
     /// - Parameters:
-    ///   - model: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
-    public init(session: Binding<Session>) {
+    ///   - session: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
+    ///   - exportFormat: An optional ``ChatView.ChatExportFormat`` that defines the format of the to-be-exported ``Chat``
+    ///         - Can be .pdf, .json, .text, or .none (default is .pdf)
+    ///         -  If .none, the chatview will present no export button in the toolbar
+    public init(session: Binding<Session>, exportFormat: ChatView.ChatExportFormat? = .pdf) {
         self._llm = session
+        self.exportFormat = exportFormat
     }
 }
 
