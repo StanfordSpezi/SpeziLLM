@@ -13,7 +13,7 @@ import SwiftUI
 
 /// Chat view that enables users to interact with an LLM based on an ``LLMSession``.
 ///
-/// The ``LLMChatView`` takes an ``LLMSession`` instance as parameter within the ``LLMChatView/init(session:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``.
+/// The ``LLMChatView`` takes an ``LLMSession`` instance and an optional ``ChatView.ChatExportFormat?`` as parameters within the ``LLMChatView/init(session:exportFormat:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``. The ``ChatView.ChatExportFormat?`` defaults to .pdf, and can be any of .pdf, .text, .json, or .none.
 ///
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
 ///
