@@ -28,6 +28,7 @@ import SwiftUI
 /// The next code examples demonstrate how to use the ``LLMChatView`` with ``LLMSession``s.
 ///
 /// The ``LLMChatView`` must be passed a ``LLMSession``, meaning a ready-to-use LLM, resulting in the need for the developer to manually allocate the ``LLMSession`` via the ``LLMRunner`` and ``LLMSchema`` (which includes state management).
+/// The ``LLMChatView`` may also be passed a ``ChatView.ChatExportFormat?`` to determine the export format of the to-be-exported ``Chat``. This parameter may be omitted, in which case the ``exportFormat`` will be ``.pdf``. If ``.none`` is passed, no share button will be displayed in the toolbar.
 ///
 /// In order to simplify the usage of an ``LLMSession``, SpeziLLM provides the ``LLMSessionProvider`` property wrapper that conveniently instantiates an ``LLMSchema`` to an ``LLMSession``.
 /// The `@LLMSessionProvider` wrapper abstracts away the necessity to use the ``LLMRunner`` from the SwiftUI `Environment` within a `.task()` view modifier to instantiate the ``LLMSession``.
@@ -42,7 +43,7 @@ import SwiftUI
 ///     @State var muted = true
 ///
 ///     var body: some View {
-///         LLMChatView(session: $llm)
+///         LLMChatView(session: $llm, exportFormat: .none)
 ///             .speak(llm.context, muted: muted)
 ///             .speechToolbarButton(muted: $muted)
 ///     }
