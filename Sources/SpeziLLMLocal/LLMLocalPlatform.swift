@@ -8,8 +8,8 @@
 
 import Foundation
 import llama
-import Semaphore
 import Spezi
+import SpeziFoundation
 import SpeziLLM
 
 
@@ -71,7 +71,7 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
     }
     
     nonisolated func exclusiveAccess() async throws {
-        try await semaphore.waitUnlessCancelled()
+        try await semaphore.waitCheckingCancellation()
         await MainActor.run {
             state = .processing
         }
