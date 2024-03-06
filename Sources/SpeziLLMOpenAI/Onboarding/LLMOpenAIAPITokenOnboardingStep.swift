@@ -23,6 +23,8 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     
     
     public var body: some View {
+        @Bindable var tokenSaver = tokenSaver
+        
         OnboardingView(
             titleView: {
                 OnboardingTitleView(
@@ -34,10 +36,12 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
                     VStack(spacing: 0) {
                         Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
                             .multilineTextAlignment(.center)
-                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: tokenSaver.tokenBinding)
+                        
+                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: $tokenSaver.token)
                             .frame(height: 50)
                             .textFieldStyle(.roundedBorder)
                             .padding(.vertical, 16)
+                        
                         Text((try? AttributedString(
                             markdown: String(
                                 localized: "OPENAI_API_KEY_SUBTITLE_HINT",
@@ -53,12 +57,17 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
                 OnboardingActionsView(
                     verbatim: actionText,
                     action: {
+                        tokenSaver.store()
                         action()
                     }
                 )
                     .disabled(!tokenSaver.tokenPresent)
             }
         )
+            .onDisappear {
+                // Persist the collected OpenAI token in the secure enclave
+                tokenSaver.store()
+            }
     }
     
     

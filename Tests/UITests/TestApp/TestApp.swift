@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Spezi
 import SwiftUI
 
 
@@ -34,7 +35,7 @@ struct UITestsApp: App {
     }
     
     
-    @UIApplicationDelegateAdaptor(TestAppDelegate.self) var appDelegate
+    @ApplicationDelegateAdaptor(TestAppDelegate.self) var appDelegate
     @State private var path = NavigationPath()
     
     
