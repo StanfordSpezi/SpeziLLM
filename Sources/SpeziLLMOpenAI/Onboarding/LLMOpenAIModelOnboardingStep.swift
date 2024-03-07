@@ -39,7 +39,11 @@ public struct LLMOpenAIModelOnboardingStep: View {
                             .tag(model.formattedModelDescription)
                     }
                 }
+                    #if !os(macOS)
                     .pickerStyle(.wheel)
+                    #else
+                    .pickerStyle(PopUpButtonPickerStyle())
+                    #endif
                     .accessibilityIdentifier("modelPicker")
             },
             actionView: {
@@ -82,7 +86,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
         self.actionText = String(actionText)
         self.models = models
         self.action = action
-        self._modelSelection = State(initialValue: models.first ?? .gpt3_5Turbo)
+        self._modelSelection = State(initialValue: models.first?.formattedModelDescription ?? .gpt3_5Turbo.formattedModelDescription)
     }
 }
 

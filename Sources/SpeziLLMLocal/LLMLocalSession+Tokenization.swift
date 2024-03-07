@@ -20,9 +20,33 @@ extension LLMLocalSession {
         // Format the chat into a prompt that conforms to the prompt structure of the respective LLM
         let formattedChat = try await schema.formatChat(self.context)
         
+        // C++ vector doesn't conform to Swift sequence on VisionOS SDK (Swift C++ Interop bug),
+        // therefore requiring workaround for VisionSDK
+        #if !os(visionOS)
         var tokens: [LLMLocalToken] = .init(
             llama_tokenize_with_context(self.modelContext, std.string(formattedChat), schema.parameters.addBosToken, true)
         )
+        #else
+        // Swift String to C++ String buggy on VisionOS, workaround via C-based `char` array
+        guard let cString = formattedChat.cString(using: .utf8) else {
+            fatalError("SpeziLLMLocal: Couldn't bridge the LLM Swift-based String context to a C-based String.")
+        }
+        
+        let cxxTokensVector = llama_tokenize_with_context_from_char_array(self.modelContext, cString, schema.parameters.addBosToken, true)
+        
+        // Get C array from C++ vector containing the tokenized content
+        guard var cxxTokensArray = vectorToIntArray(cxxTokensVector) else {
+            fatalError("SpeziLLMLocal: Couldn't get C array containing the tokenized content from C++ vector.")
+        }
+        
+        // Extract tokens from C array to a Swift array
+        var tokens: [LLMLocalToken] = []
+        
+        for _ in 0...cxxTokensVector.size() {
+            tokens.append(cxxTokensArray.pointee)
+            cxxTokensArray = cxxTokensArray.advanced(by: 1)
+        }
+        #endif
         
         // Truncate tokens if there wouldn't be enough context size for the generated output
         if tokens.count > Int(schema.contextParameters.contextWindowSize) - schema.parameters.maxOutputLength {
