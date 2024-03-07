@@ -27,12 +27,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.6")),
-        //.package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.2.0")),
-        .package(path: "../llama.cpp"),
+        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.2.1")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "1.0.4"),
-        // .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", branch: "feat/fix-macos-support"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.9")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
