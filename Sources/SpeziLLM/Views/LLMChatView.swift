@@ -13,7 +13,7 @@ import SwiftUI
 
 /// Chat view that enables users to interact with an LLM based on an ``LLMSession``.
 ///
-/// The ``LLMChatView`` takes an ``LLMSession`` instance and an optional ``ChatView.ChatExportFormat`` as parameters within the ``LLMChatView/init(session:exportFormat:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``. The ``ChatView.ChatExportFormat`` defaults to .pdf, and can be any of .pdf, .text, .json, or .none.
+/// The ``LLMChatView`` takes an ``LLMSession`` instance and an optional ``SpeziChat/ChatView/ChatExportFormat`` as parameters within the ``LLMChatView/init(session:exportFormat:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``. The ``SpeziChat/ChatView/ChatExportFormat`` defaults to .pdf, and can be any of .pdf, .text, .json, or .none.
 ///
 /// The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
 ///
@@ -28,7 +28,7 @@ import SwiftUI
 /// The next code examples demonstrate how to use the ``LLMChatView`` with ``LLMSession``s.
 ///
 /// The ``LLMChatView`` must be passed a ``LLMSession``, meaning a ready-to-use LLM, resulting in the need for the developer to manually allocate the ``LLMSession`` via the ``LLMRunner`` and ``LLMSchema`` (which includes state management).
-/// The ``LLMChatView`` may also be passed a ``ChatView.ChatExportFormat`` to determine the export format of the to-be-exported ``Chat``. This parameter may be omitted, in which case the ``exportFormat`` will be ``.pdf``. If ``.none`` is passed, no share button will be displayed in the toolbar.
+/// The ``LLMChatView`` may also be passed a ``ChatView/ChatExportFormat`` to determine the export format of the to-be-exported ``Chat``. This parameter may be omitted, in which case the format will be ``.pdf``. If ``.none`` is passed, no share button will be displayed in the toolbar.
 ///
 /// In order to simplify the usage of an ``LLMSession``, SpeziLLM provides the ``LLMSessionProvider`` property wrapper that conveniently instantiates an ``LLMSchema`` to an ``LLMSession``.
 /// The `@LLMSessionProvider` wrapper abstracts away the necessity to use the ``LLMRunner`` from the SwiftUI `Environment` within a `.task()` view modifier to instantiate the ``LLMSession``.

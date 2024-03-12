@@ -160,7 +160,7 @@ struct LLMDemoView: View {
 
 The ``LLMChatView`` and ``LLMChatViewSchema`` present a basic chat views that enables users to chat with a Spezi LLM in a typical chat-like fashion. The input can be either typed out via the iOS keyboard or provided as voice input and transcribed into written text.
 The ``LLMChatViewSchema`` takes an ``LLMSchema`` instance to define which LLM in what configuration should be used for the text inference.
-The ``LLMChatView`` is passed an ``LLMSession`` that represents the LLM in execution containing state and context, and an optional ``ChatView.ChatExportFormat`` that defines the format of the to-be-exported ``Chat`` (can be any of .pdf, .text, .json, or .none, defaults to .pdf).
+The ``LLMChatView`` is passed an ``LLMSession`` that represents the LLM in execution containing state and context, and an optional ``ChatView/ChatExportFormat`` that defines the format of the to-be-exported ``Chat`` (can be any of .pdf, .text, .json, or .none, defaults to .pdf).
 
 > Tip: The ``LLMChatView`` and ``LLMChatViewSchema`` build on top of the [SpeziChat package](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation).
     For more details, please refer to the DocC documentation of the [`ChatView`](https://swiftpackageindex.com/stanfordspezi/spezichat/documentation/spezichat/chatview).
