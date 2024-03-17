@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Key" : {
+      "extractionState" : "manual"
+    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -37,6 +40,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LLM OpenAI Chat"
+          }
+        }
+      }
+    },
+    "LLM_OPENAI_MODEL_SELECTED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model Selected"
+          }
+        }
+      }
+    },
+    "Model Selected" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model Selected"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }

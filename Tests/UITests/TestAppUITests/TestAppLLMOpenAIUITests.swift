@@ -42,6 +42,15 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
         app.buttons["Next"].tap()
+        
+        let alert = app.alerts["Model Selected"]
+        XCTAssertTrue(alert.exists, "The `Model Selected` alert did not appear.")
+        XCTAssertTrue(alert.staticTexts["gpt-4-turbo-preview"].exists, "The correct model was not registered.")
+        
+        let okButton = alert.buttons["OK"]
+        XCTAssertTrue(okButton.exists, "The OK button on the alert was not found.")
+        okButton.tap()
+        
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         
         app.terminate()
@@ -58,6 +67,14 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         app.buttons["Next"].tap()
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
+        
+        let alert2 = app.alerts["Model Selected"]
+        XCTAssertTrue(alert2.exists, "The `Model Selected` alert did not appear.")
+        XCTAssertTrue(alert2.staticTexts["gpt-3.5-turbo"].exists, "The alert message is not correct.")
+        
+        let okButton2 = alert2.buttons["OK"]
+        XCTAssertTrue(okButton2.exists, "The OK button on the alert was not found.")
+        okButton2.tap()
         
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
