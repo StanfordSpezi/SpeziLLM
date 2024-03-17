@@ -143,14 +143,16 @@ extension LLMLocalSession {
             """)
             
             // Automatically inject the yielded string piece into the `LLMLocal/context`
-            if schema.injectIntoContext {
+            if schema.injectIntoContext && nextTokenId != 0 {
                 let nextStringPiece = nextStringPiece
                 await MainActor.run {
                     context.append(assistantOutput: nextStringPiece)
                 }
             }
             
-            continuation.yield(nextStringPiece)
+            if nextTokenId != 0 {
+                continuation.yield(nextStringPiece)
+            }
             
             // Prepare the next batch
             llama_batch_clear(&batch)

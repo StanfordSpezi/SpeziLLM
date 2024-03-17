@@ -15,10 +15,14 @@ struct LLMLocalTestView: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
     let mockMode: Bool
     
+    
     var body: some View {
         LLMLocalChatTestView(mockMode: mockMode)
             .sheet(isPresented: !$completedOnboardingFlow) {
                 LLMLocalOnboardingFlow()
+                    #if os(macOS)
+                    .frame(minWidth: 400, minHeight: 550)
+                    #endif
             }
     }
     

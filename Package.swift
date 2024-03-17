@@ -15,7 +15,9 @@ let package = Package(
     name: "SpeziLLM",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v17)
+        .iOS(.v17),
+        .visionOS(.v1),
+        .macOS(.v14)
     ],
     products: [
         .library(name: "SpeziLLM", targets: ["SpeziLLM"]),
@@ -25,14 +27,13 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.6")),
-        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.1.8")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.1.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziSpeech", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.8")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.0.0"),
-        .package(url: "https://github.com/groue/Semaphore.git", exact: "0.0.8")
+        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.2.1")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "1.0.4"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.9")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
     ],
     targets: [
         .target(
@@ -48,7 +49,7 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziLLM"),
                 .product(name: "llama", package: "llama.cpp"),
-                .product(name: "Semaphore", package: "Semaphore"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "Spezi", package: "Spezi")
             ],
             swiftSettings: [
@@ -67,11 +68,10 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziLLM"),
                 .product(name: "OpenAI", package: "OpenAI"),
-                .product(name: "Semaphore", package: "Semaphore"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
-                .product(name: "SpeziSpeechRecognizer", package: "SpeziSpeech"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ]
         ),

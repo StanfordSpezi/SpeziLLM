@@ -39,12 +39,12 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
         modelType: Model,
-        systemPrompt: String = Defaults.defaultOpenAISystemPrompt,
+        systemPrompt: String? = Defaults.defaultOpenAISystemPrompt,
         modelAccessTest: Bool = false,
         overwritingToken: String? = nil
     ) {
         self.modelType = modelType
-        self.systemPrompts = [systemPrompt]
+        self.systemPrompts = systemPrompt.map { [$0] } ?? []
         self.modelAccessTest = modelAccessTest
         self.overwritingToken = overwritingToken
     }

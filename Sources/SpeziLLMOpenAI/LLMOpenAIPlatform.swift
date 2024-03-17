@@ -8,8 +8,8 @@
 
 import Foundation
 import os
-import Semaphore
 import Spezi
+import SpeziFoundation
 import SpeziLLM
 import SpeziSecureStorage
 
@@ -86,7 +86,7 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     }
     
     func exclusiveAccess() async throws {
-        try await semaphore.waitUnlessCancelled()
+        try await semaphore.waitCheckingCancellation()
         
         if await state != .processing {
             await MainActor.run {

@@ -11,10 +11,27 @@ import SwiftUI
 
 
 struct LLMOpenAIOnboardingView: View {
+    #if os(macOS)
+    @Environment(\.dismiss) private var dismiss
+    #endif
+    
+    
     var body: some View {
         OnboardingStack {
             LLMOpenAITokenOnboarding()
             LLMOpenAIModelOnboarding()
         }
+            #if os(macOS)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.headline)
+                    }
+                }
+            }
+            #endif
     }
 }

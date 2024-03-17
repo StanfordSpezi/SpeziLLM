@@ -13,11 +13,26 @@ import SwiftUI
 
 struct LLMOpenAITokenOnboarding: View {
     @Environment(OnboardingNavigationPath.self) private var path
+    #if os(macOS)
+    @Environment(\.dismiss) private var dismiss
+    #endif
 
     
     var body: some View {
         LLMOpenAIAPITokenOnboardingStep {
             path.nextStep()
         }
+            #if os(visionOS)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.headline)
+                    }
+                }
+            }
+            #endif
     }
 }

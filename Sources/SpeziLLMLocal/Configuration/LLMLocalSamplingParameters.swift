@@ -236,7 +236,9 @@ public struct LLMLocalSamplingParameters: Sendable {
             )
         }
         set {
-            wrapped.cfg_negative_prompt = std.string(newValue.negativePrompt)
+            if let negativePrompt = newValue.negativePrompt {
+                wrapped.cfg_negative_prompt = std.string(negativePrompt)
+            }
             wrapped.cfg_scale = newValue.scale
         }
     }

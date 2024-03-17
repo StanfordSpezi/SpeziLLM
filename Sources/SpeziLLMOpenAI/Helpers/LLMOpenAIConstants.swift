@@ -9,6 +9,6 @@
 
 /// Constants used throughout the `SpeziLLMOpenAI` target.
 enum LLMOpenAIConstants {
-    static let credentialsServer = "openapi.org"
+    static let credentialsServer = "openai.com"
     static let credentialsUsername = "OpenAIGPT"
 }
