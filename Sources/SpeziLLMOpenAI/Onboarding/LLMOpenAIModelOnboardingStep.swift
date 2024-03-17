@@ -36,7 +36,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
                 Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $modelSelection) {
                     ForEach(models, id: \.self) { model in
                         Text(model.formattedModelDescription)
-                            .tag(model.formattedModelDescription)
+                            .tag(model)
                     }
                 }
                     #if !os(macOS)
