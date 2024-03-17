@@ -17,7 +17,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
-        app.launchArguments = ["--mockMode"]
+        app.launchArguments = ["--mockMode", "--resetKeychain"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
     }
     
@@ -64,9 +64,10 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         sleep(1)
-        
         app.buttons["Next"].tap()
+        
         XCTAssert(app.pickerWheels["GPT 3.5 Turbo"].waitForExistence(timeout: 2))
+        app.buttons["Next"].tap()
         
         let alert2 = app.alerts["Model Selected"]
         XCTAssertTrue(alert2.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")

@@ -55,17 +55,6 @@
         }
       }
     },
-    "Model Selected" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Model Selected"
-          }
-        }
-      }
-    },
     "OK" : {
       "localizations" : {
         "en" : {
