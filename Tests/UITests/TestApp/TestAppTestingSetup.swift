@@ -17,7 +17,7 @@ private struct TestAppTestingSetup: ViewModifier {
     func body(content: Content) -> some View {
         content
             .task {
-                if FeatureFlags.resetKeychain {
+                if FeatureFlags.resetSecureStorage {
                     do {
                         try secureStorage.deleteAllCredentials()
                     } catch {
