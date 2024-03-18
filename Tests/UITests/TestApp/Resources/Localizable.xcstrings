@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Key" : {
-      "extractionState" : "manual"
-    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -45,7 +42,6 @@
       }
     },
     "LLM_OPENAI_MODEL_SELECTED" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {

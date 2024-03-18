@@ -7,31 +7,22 @@
 //
 
 import Security
+import SpeziSecureStorage
 import SwiftUI
 
 
-private struct HealthGPTAppTestingSetup: ViewModifier {
-    func resetKeychain() {
-        let secItemClasses = [
-            kSecClassGenericPassword,
-            kSecClassInternetPassword,
-            kSecClassCertificate,
-            kSecClassKey,
-            kSecClassIdentity
-        ]
-
-        for itemClass in secItemClasses {
-            let spec: [String: Any] = [kSecClass as String: itemClass]
-            SecItemDelete(spec as CFDictionary)
-        }
-    }
-
-
+private struct TestAppTestingSetup: ViewModifier {
+    @Environment(SecureStorage.self) var secureStorage
+    
     func body(content: Content) -> some View {
         content
             .task {
                 if FeatureFlags.resetKeychain {
-                    resetKeychain()
+                    do {
+                        try secureStorage.deleteAllCredentials()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
                 }
             }
     }
@@ -40,6 +31,6 @@ private struct HealthGPTAppTestingSetup: ViewModifier {
 
 extension View {
     func testingSetup() -> some View {
-        self.modifier(HealthGPTAppTestingSetup())
+        self.modifier(TestAppTestingSetup())
     }
 }
