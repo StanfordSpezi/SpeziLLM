@@ -13,11 +13,24 @@ import SwiftUI
 
 struct LLMOpenAIModelOnboarding: View {
     @Environment(OnboardingNavigationPath.self) private var path
-
+    @State private var showingAlert = false
+    @State private var modelSelection = ""
     
     var body: some View {
-        LLMOpenAIModelOnboardingStep { _ in
-            path.removeLast()
+        Group {
+            LLMOpenAIModelOnboardingStep { model in
+                modelSelection = model
+                self.showingAlert.toggle()
+            }
+        }
+        .alert(isPresented: $showingAlert) {
+            Alert(
+                title: Text("LLM_OPENAI_MODEL_SELECTED"),
+                message: Text(modelSelection),
+                dismissButton: .default(Text("OK"), action: {
+                    path.removeLast()
+                })
+            )
         }
     }
 }

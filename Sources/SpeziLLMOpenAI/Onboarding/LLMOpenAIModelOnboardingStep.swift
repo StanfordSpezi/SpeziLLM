@@ -36,7 +36,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
                 Picker(String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module), selection: $modelSelection) {
                     ForEach(models, id: \.self) { model in
                         Text(model.formattedModelDescription)
-                            .tag(model.formattedModelDescription)
+                            .tag(model)
                     }
                 }
                     #if !os(macOS)
@@ -86,7 +86,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
         self.actionText = String(actionText)
         self.models = models
         self.action = action
-        self._modelSelection = State(initialValue: models.first?.formattedModelDescription ?? .gpt3_5Turbo.formattedModelDescription)
+        self._modelSelection = State(initialValue: models.first ?? .gpt3_5Turbo)
     }
 }
 
