@@ -51,6 +51,7 @@ import SwiftUI
 public struct LLMChatView<Session: LLMSession>: View {
     /// The LLM in execution, as defined by the ``LLMSchema``.
     @Binding private var llm: Session
+    private let exportFormat: ChatView.ChatExportFormat?
     
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
@@ -62,7 +63,7 @@ public struct LLMChatView<Session: LLMSession>: View {
         ChatView(
             $llm.context,
             disableInput: inputDisabled,
-            exportFormat: .pdf,
+            exportFormat: exportFormat,
             messagePendingAnimation: .automatic
         )
             .viewStateAlert(state: llm.state)
@@ -90,11 +91,16 @@ public struct LLMChatView<Session: LLMSession>: View {
     
     
     /// Creates a ``LLMChatView`` with a `Binding` of a ``LLMSession`` that provides developers with a basic chat view to interact with a Spezi LLM.
-    ///
+    /// 
     /// - Parameters:
-    ///   - model: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
-    public init(session: Binding<Session>) {
+    ///   - session: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
+    ///   - exportFormat: Optional parameter that allows a user to export the chat. Defaults to not display the export button and does not allow the user to export the chat.
+    public init(
+        session: Binding<Session>,
+        exportFormat: ChatView.ChatExportFormat? = nil
+    ) {
         self._llm = session
+        self.exportFormat = exportFormat
     }
 }
 
