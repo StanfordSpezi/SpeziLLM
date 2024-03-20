@@ -10,6 +10,7 @@ import Spezi
 import SpeziLLM
 import SpeziLLMLocal
 import SpeziLLMOpenAI
+import SpeziSecureStorage
 
 
 class TestAppDelegate: SpeziAppDelegate {
@@ -20,6 +21,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 LLMLocalPlatform()
                 LLMOpenAIPlatform()
             }
+            SecureStorage()
         }
     }
 }
