@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SpeziChat
 import SwiftUI
 
 
@@ -32,21 +33,29 @@ import SwiftUI
 ///     }
 /// }
 /// ```
+///
+/// The ``LLMChatViewSchema`` may also be passed a `ChatView/ChatExportFormat` to enable the chat export functionality and define the format of the to-be-exported `SpeziChat/Chat`; possible export formats are `.pdf`, `.text`, and `.json`.
 public struct LLMChatViewSchema<Schema: LLMSchema>: View {
     @LLMSessionProvider<Schema> var llm: Schema.Platform.Session
+    private let exportFormat: ChatView.ChatExportFormat?
     
     
     public var body: some View {
-        LLMChatView(session: $llm)
+        LLMChatView(session: $llm, exportFormat: exportFormat)
     }
     
     
     /// Creates a ``LLMChatViewSchema`` with an ``LLMSchema`` that provides developers with a basic chat view to interact with a Spezi LLM.
-    ///
+    /// 
     /// - Parameters:
     ///   - schema: The ``LLMSchema`` that defines the to-be-used LLM to generate outputs based on user input.
-    public init(with schema: Schema) {
+    ///   - exportFormat: An optional `ChatView/ChatExportFormat` to enable the chat export functionality and define the format of the to-be-exported `SpeziChat/Chat`.
+    public init(
+        with schema: Schema,
+        exportFormat: ChatView.ChatExportFormat? = nil
+    ) {
         self._llm = LLMSessionProvider(schema: schema)
+        self.exportFormat = exportFormat
     }
 }
 
