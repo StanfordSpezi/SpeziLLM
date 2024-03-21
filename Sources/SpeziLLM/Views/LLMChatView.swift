@@ -28,9 +28,8 @@ import SwiftUI
 /// The next code examples demonstrate how to use the ``LLMChatView`` with ``LLMSession``s.
 ///
 /// The ``LLMChatView`` must be passed a ``LLMSession``, meaning a ready-to-use LLM, resulting in the need for the developer to manually allocate the ``LLMSession`` via the ``LLMRunner`` and ``LLMSchema`` (which includes state management).
-/// The ``LLMChatView`` may also be passed a `ChatView/ChatExportFormat` to enable the chat export functionality and define the format of the to-be-exported `SpeziChat/Chat`.
-/// The `ChatView/ChatExportFormat` defaults to `.none`; possible export formats are `.pdf`, `.text`, and `.json`.
-/// 
+/// The ``LLMChatView`` may also be passed a `ChatView/ChatExportFormat` to enable the chat export functionality and define the format of the to-be-exported `SpeziChat/Chat`; possible export formats are `.pdf`, `.text`, and `.json`.
+///
 /// In order to simplify the usage of an ``LLMSession``, SpeziLLM provides the ``LLMSessionProvider`` property wrapper that conveniently instantiates an ``LLMSchema`` to an ``LLMSession``.
 /// The `@LLMSessionProvider` wrapper abstracts away the necessity to use the ``LLMRunner`` from the SwiftUI `Environment` within a `.task()` view modifier to instantiate the ``LLMSession``.
 /// In addition, state handling becomes easier, as one doesn't have to deal with the optionality of the ``LLMSession`` anymore.
@@ -53,14 +52,13 @@ import SwiftUI
 public struct LLMChatView<Session: LLMSession>: View {
     /// The LLM in execution, as defined by the ``LLMSchema``.
     @Binding private var llm: Session
-    
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
         llm.state.representation == .processing
     }
-    
     /// Defines the export format of the to-be-exported `SpeziChat/Chat`
-    private let exportFormat: ChatView.ChatExportFormat
+    private let exportFormat: ChatView.ChatExportFormat?
+    
     
     public var body: some View {
         ChatView(
@@ -98,7 +96,10 @@ public struct LLMChatView<Session: LLMSession>: View {
     /// - Parameters:
     ///   - session: A `Binding` of a  ``LLMSession`` that contains the ready-to-use LLM to generate outputs based on user input.
     ///   - exportFormat: An optional `ChatView/ChatExportFormat` to enable the chat export functionality and define the format of the to-be-exported `SpeziChat/Chat`.
-    public init(session: Binding<Session>, exportFormat: ChatView.ChatExportFormat = .none) {
+    public init(
+        session: Binding<Session>,
+        exportFormat: ChatView.ChatExportFormat? = nil
+    ) {
         self._llm = session
         self.exportFormat = exportFormat
     }
