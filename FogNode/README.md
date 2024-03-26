@@ -47,6 +47,9 @@ Lastly, start the container services via Docker Compose:
 - On Linux, execute `docker compose --platform=linux up` to start the service, use the `-d` flag to run it in the background like: `docker compose --platform=linux up -d`. The service is automatically advertised by Avahi via mDNS from the Docker service.
 - On macOS, run `docker compose up` to start the service. In addition, because of technical limitations of Avahi within a Docker container on macOS, one has to manually run the mDNS advertisement via Bonjour: `dns-sd -R "SpeziLLMFog Service" _https._tcp spezillmfog.local 443`. It advertises the service under the `spezillmfog.local` domain name with the `"SpeziLLMFog Service"` user-friendly name.
 
-#### Development
+### Development
 
-For development purposes, the `docker-compose.dev.yml` file starts up the fog node without TLS certificates and with the usage of the Firebase Emulator. In that case, one doesn't have to execute the setup script mentioned above (as no certificates are required without a TLS connection) and doesn't have to get the Firebase service account key from the Firebase Console. 
+For development purposes, the `docker-compose.dev.yml` file starts up the fog node without TLS certificates and with the usage of the Firebase Emulator. In that case, one doesn't have to execute the setup script mentioned above (as no certificates are required without a TLS connection) and doesn't have to get the Firebase service account key from the Firebase Console.
+In addition, this development compose file doesn't include an mDNS advertisement service. The developer is responsible for advertising the service. On macOS, which is the primary development environment for SpeziLLMFog, this can be done via Bonjour and the `dns-sd -R "SpeziLLMFog Service" _http._tcp spezillmfog.local 80` command. Note that the service advertises an `http` service with port 80, in contrast to the production setup with HTTPS and port 443 (secure traffic).
+
+Another file for development purposes is the `docker-compose.avahi.yml` file. One container advertises an mDNS service via Avahi, another container discovers this service via an Avahi Sidecar. This setup is incredibly useful to test mDNS announcements on the Linux platform.
