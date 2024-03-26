@@ -14,6 +14,7 @@ import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
+import SpeziSecureStorage
 
 
 class TestAppDelegate: SpeziAppDelegate {
@@ -40,6 +41,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl, host: "spezillmfog.local"))
                 LLMOpenAIPlatform()
             }
+            SecureStorage()
         }
     }
 }

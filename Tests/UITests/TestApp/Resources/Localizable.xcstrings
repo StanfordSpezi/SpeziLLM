@@ -101,6 +101,26 @@
         }
       }
     },
+    "LLM_OPENAI_MODEL_SELECTED" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model Selected"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
     "SPEZI_LLM_TEST_NAVIGATION_TITLE" : {
       "localizations" : {
         "en" : {

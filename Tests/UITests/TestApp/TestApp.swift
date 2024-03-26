@@ -53,6 +53,7 @@ struct UITestsApp: App {
                     }
                     .navigationTitle("SPEZI_LLM_TEST_NAVIGATION_TITLE")
             }
+                .testingSetup()
                 .spezi(appDelegate)
         }
     }

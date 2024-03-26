@@ -11,6 +11,7 @@
 		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
+		63EF9CF02BA7398C001D92D7 /* TestAppTestingSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */; };
 		9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A59F2B5B5CB20005645E /* SpeziLLM */; };
 		9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A12B5B5CB20005645E /* SpeziLLMLocal */; };
 		9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */; };
@@ -60,6 +61,7 @@
 		2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppLLMOpenAIUITests.swift; sourceTree = "<group>"; };
 		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
+		63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppTestingSetup.swift; sourceTree = "<group>"; };
 		9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionHealthData.swift; sourceTree = "<group>"; };
 		9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionPerson.swift; sourceTree = "<group>"; };
 		9756D24B2B0316240006B6BD /* Binding+Negate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Binding+Negate.swift"; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				97DD56B42B02F72D00389331 /* LLMOpenAI */,
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
 				9761794F2B034E0400E1046E /* TestAppDelegate.swift */,
+				63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */,
 				976179532B03501100E1046E /* FeatureFlags.swift */,
 				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
 			);
@@ -401,6 +404,7 @@
 				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
 				976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */,
 				97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */,
+				63EF9CF02BA7398C001D92D7 /* TestAppTestingSetup.swift in Sources */,
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
 				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
 				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
