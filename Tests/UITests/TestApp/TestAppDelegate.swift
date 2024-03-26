@@ -19,11 +19,15 @@ import SpeziSecureStorage
 
 class TestAppDelegate: SpeziAppDelegate {
     private nonisolated static var caCertificateUrl: URL {
-        guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
-            preconditionFailure("CA Certificate path not properly formed!")
+        if FeatureFlags.mockMode {
+            return URL.temporaryDirectory   // Dummy URL instead of CA cert
+        } else {
+            guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
+                preconditionFailure("CA Certificate not found!")
+            }
+            
+            return url
         }
-        
-        return url
     }
     
     override var configuration: Configuration {

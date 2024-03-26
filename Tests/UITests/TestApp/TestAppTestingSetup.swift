@@ -14,6 +14,7 @@ import SwiftUI
 private struct TestAppTestingSetup: ViewModifier {
     @Environment(SecureStorage.self) var secureStorage
     
+    
     func body(content: Content) -> some View {
         content
             .task {
