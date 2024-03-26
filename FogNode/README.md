@@ -46,3 +46,7 @@ Once the script ran through, the last output of the script should be a warning a
 Lastly, start the container services via Docker Compose:
 - On Linux, execute `docker compose --platform=linux up` to start the service, use the `-d` flag to run it in the background like: `docker compose --platform=linux up -d`. The service is automatically advertised by Avahi via mDNS from the Docker service.
 - On macOS, run `docker compose up` to start the service. In addition, because of technical limitations of Avahi within a Docker container on macOS, one has to manually run the mDNS advertisement via Bonjour: `dns-sd -R "SpeziLLMFog Service" _https._tcp spezillmfog.local 443`. It advertises the service under the `spezillmfog.local` domain name with the `"SpeziLLMFog Service"` user-friendly name.
+
+#### Development
+
+For development purposes, the `docker-compose.dev.yml` file starts up the fog node without TLS certificates and with the usage of the Firebase Emulator. In that case, one doesn't have to execute the setup script mentioned above (as no certificates are required without a TLS connection) and doesn't have to get the Firebase service account key from the Firebase Console. 

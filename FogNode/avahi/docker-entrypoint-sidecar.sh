@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #
 # This source file is part of the Stanford Spezi open source project
 #
@@ -5,8 +7,6 @@
 #
 # SPDX-License-Identifier: MIT
 #
-
-#!/bin/sh
 
 # Remove the D-Bus PID file if it exists to avoid startup error
 rm -f /run/dbus/dbus.pid

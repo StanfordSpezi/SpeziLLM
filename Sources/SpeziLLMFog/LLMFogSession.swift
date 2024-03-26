@@ -6,7 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if os(iOS)
 import FirebaseAuth
+#endif
 import Foundation
 import class OpenAI.OpenAI
 import os
@@ -146,6 +148,8 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     public func setup(
         continuation: AsyncThrowingStream<String, Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
+        // Only perform Firebase ID token authentication on the Fog node on iOS
+        #if os(iOS)
         // Get user ID token from Firebase (Firebase automatically refreshes token that expire in the next five minutes)
         guard let userToken = try? await Auth.auth().currentUser?.getIDToken() else {
             Self.logger.error("""
@@ -157,6 +161,10 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
         }
         
         self.userToken = userToken
+        #else
+        // Use empty Firebase ID token on visionOS and macOS
+        self.userToken = ""
+        #endif
         
         // Setup the model, if not already done
         if wrappedModel == nil {

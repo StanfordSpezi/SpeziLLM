@@ -78,6 +78,10 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 }
 ```
 
+- Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates) as well as the usage of the Firebase emulator (not the real Firebase cloud instance). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
+On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. In addition, one has to specify the usage of the Firebase emulator via the `host` and `port` parameters in the `FirebaseAccountConfiguration`, like: `FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword, emulatorSettings: (host: "localhost", port: 9099))`.
+If used in development mode, no custom CA certificate or Firebase `GoogleService-Info.plist` file is required, ensuring a smooth and straightforward development process.
+
 #### Usage
 
 The code example below showcases the interaction with a Fog LLM through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.

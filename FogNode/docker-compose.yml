@@ -13,22 +13,22 @@ services:
     image: traefik:v2.5
     restart: unless-stopped
     command:
-      # - "--api.insecure=true" # Enables the dashboard and API insecurely
-      # - "--log.level=DEBUG" # Adjust the log level as needed (DEBUG, INFO, WARN, ERROR, FATAL, PANIC)
-      # - "--accesslog=true" # Enables access logs
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
       - "--providers.file.filename=/etc/traefik/certs/dynamic_conf.yml"   # Configures TLS certs
       - "--entrypoints.websecure.address=:443"
     ports:
       - "443:443"
-      # - "8080:8080" # Expose port 8080 for the dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./certs/webservice:/etc/traefik/certs"   # Mount TLS certs into container
       - "./traefik/dynamic_conf.yml:/etc/traefik/certs/dynamic_conf.yml"  # Mount TLS config into container
     networks:
       - web
+    depends_on:
+      - ollama
+      - auth-service
+      - avahi
   
   # LLM inference service Ollama
   ollama:
@@ -42,8 +42,8 @@ services:
       - "traefik.http.routers.ollama.service=ollama-service"
       - "traefik.http.services.ollama-service.loadbalancer.server.port=11434"
       - "traefik.http.routers.ollama.middlewares=auth@docker"
-      - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:3000/"
-      - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://auth-service:3000/"   # Authorizes incoming LLM inference jobs via Firebase
+      - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"     # Forwards all headers to authorization service
     volumes:
       - ollama_storage:/root/.ollama
     networks:
@@ -57,10 +57,6 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3000
-      # Adjust if using the Firebase emulator
-      # - USE_FIREBASE_EMULATOR=true
-      # - FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
-      # - FIREBASE_PROJECT_ID=spezillmfognode
     labels:
       - "traefik.enable=false"
     volumes:

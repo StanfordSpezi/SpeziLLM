@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if os(iOS)
 import SpeziAccount
 import SwiftUI
 
@@ -33,3 +34,4 @@ struct AccountSetupHeader: View {
             .multilineTextAlignment(.center)
     }
 }
+#endif

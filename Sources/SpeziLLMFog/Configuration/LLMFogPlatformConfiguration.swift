@@ -14,7 +14,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
     /// Name of the to-be-discovered service within the local network.
     let host: String
     /// Root CA certificate which should be trusted for the TLS network connection.
-    let caCertificate: URL
+    let caCertificate: URL?
     /// Task priority of the initiated LLM inference tasks.
     let taskPriority: TaskPriority
     /// Number of concurrent streams to the Fog LLM.
@@ -28,15 +28,15 @@ public struct LLMFogPlatformConfiguration: Sendable {
     /// Creates the ``LLMFogPlatformConfiguration`` which configures the Spezi ``LLMFogPlatform``.
     ///
     /// - Parameters:
-    ///   - caCertificate: The root CA certificate which should be trusted for the TLS network connection. The host certificate must be signed via the CA certificate.
     ///   - host: The name of the to-be-discovered service within the local network via mDNS. The hostname must match the issued TLS certificate of the fog node. Defaults to `spezillmfog.local` which is used for the mDNS advertisements as well as the TLS certificate.
+    ///   - caCertificate: The root CA certificate which should be trusted for the TLS network connection. The host certificate must be signed via the CA certificate.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     ///   - concurrentStreams: Indicates the number of concurrent streams to the Fog LLM, defaults to `5`.
     ///   - timeout: Indicates the maximum network timeout of Fog LLM requests in seconds. defaults to `60`.
     ///   - mDnsBrowsingTimeout: Duration of mDNS browsing for Fog LLM services, default to `100ms`.
     public init(
-        caCertificate: URL,
         host: String = "spezillmfog.local",
+        caCertificate: URL? = nil,
         taskPriority: TaskPriority = .userInitiated,
         concurrentStreams: Int = 5,
         timeout: TimeInterval = 60,

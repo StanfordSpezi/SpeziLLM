@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if os(iOS)
 import SpeziAccount
 import SwiftUI
 
@@ -60,3 +61,4 @@ struct AccountSheet: View {
         }
     }
 }
+#endif

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # This source file is part of the Stanford Spezi open source project
 #
@@ -5,8 +7,6 @@
 #
 # SPDX-License-Identifier: MIT
 #
-
-#!/bin/bash
 
 cd certs
 

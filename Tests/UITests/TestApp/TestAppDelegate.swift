@@ -8,8 +8,10 @@
 
 import Foundation
 import Spezi
+#if os(iOS)
 import SpeziAccount
 import SpeziFirebaseAccount
+#endif
 import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
@@ -18,31 +20,32 @@ import SpeziSecureStorage
 
 
 class TestAppDelegate: SpeziAppDelegate {
-    private nonisolated static var caCertificateUrl: URL {
-        if FeatureFlags.mockMode {
-            return URL.temporaryDirectory   // Dummy URL instead of CA cert
-        } else {
-            guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
-                preconditionFailure("CA Certificate not found!")
-            }
-            
-            return url
+    private nonisolated static var caCertificateUrl: URL? {
+        guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
+            preconditionFailure("CA Certificate not found!")
         }
+        
+        return url
     }
     
     override var configuration: Configuration {
         Configuration {
+            #if os(iOS)
             AccountConfiguration(configuration: [
                 .requires(\.userId),
                 .requires(\.password)
             ])
             
-            FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword)
+            FirebaseAccountConfiguration(
+                authenticationMethods: .emailAndPassword,
+                emulatorSettings: (host: "localhost", port: 9099)
+            )
+            #endif
             
             LLMRunner {
                 LLMMockPlatform()
                 LLMLocalPlatform()
-                LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl, host: "spezillmfog.local"))
+                LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
                 LLMOpenAIPlatform()
             }
             SecureStorage()

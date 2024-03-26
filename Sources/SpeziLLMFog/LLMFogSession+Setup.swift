@@ -24,26 +24,32 @@ extension LLMFogSession {
             self.state = .loading
         }
         
-        // Load the specified CA certificate and strip out irrelevant data
-        guard let caCertificateContents = try? String(contentsOf: platform.configuration.caCertificate, encoding: .utf8)
-                .replacingOccurrences(of: "-----BEGIN CERTIFICATE-----", with: "")
-                .replacingOccurrences(of: "-----END CERTIFICATE-----", with: "")
-                .replacingOccurrences(of: "\n", with: ""),
-              let caCertificateData = Data(base64Encoded: caCertificateContents),
-              let caCertificate = SecCertificateCreateWithData(nil, caCertificateData as CFData) else {
-            Self.logger.error("""
-            SpeziLLMFog: The to-be-trusted CA certificate ensuring encrypted traffic to the fog LLM couldn't be read.
-            Please ensure that the certificate is in the `.crt` format and available under the specified URL.
-            """)
-            await finishGenerationWithError(LLMFogError.missingCaCertificate, on: continuation)
-            return false
+        var caCertificate: SecCertificate?
+        
+        if let caCertificateUrl = platform.configuration.caCertificate {
+            // Load the specified CA certificate and strip out irrelevant data
+            guard let caCertificateContents = try? String(contentsOf: caCertificateUrl, encoding: .utf8)
+                    .replacingOccurrences(of: "-----BEGIN CERTIFICATE-----", with: "")
+                    .replacingOccurrences(of: "-----END CERTIFICATE-----", with: "")
+                    .replacingOccurrences(of: "\n", with: ""),
+                  let caCertificateData = Data(base64Encoded: caCertificateContents),
+                  let caCreatedCertificate = SecCertificateCreateWithData(nil, caCertificateData as CFData) else {
+                Self.logger.error("""
+                SpeziLLMFog: The to-be-trusted CA certificate ensuring encrypted traffic to the fog LLM couldn't be read.
+                Please ensure that the certificate is in the `.crt` format and available under the specified URL.
+                """)
+                await finishGenerationWithError(LLMFogError.missingCaCertificate, on: continuation)
+                return false
+            }
+            
+            caCertificate = caCreatedCertificate
         }
         
         let fogServiceAddress: String
         
         do {
             // Discover and resolve fog service
-            fogServiceAddress = try await resolveFogService()
+            fogServiceAddress = try await resolveFogService(secureTraffic: caCertificate != nil)
         } catch is CancellationError {
             Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
             continuation.finish()
@@ -62,6 +68,8 @@ extension LLMFogSession {
                 configuration: .init(
                     token: overwritingToken,
                     host: fogServiceAddress,
+                    port: (caCertificate != nil) ? 443 : 80,
+                    scheme: (caCertificate != nil) ? "https" : "http",
                     timeoutInterval: platform.configuration.timeout,
                     caCertificate: caCertificate,
                     expectedHost: platform.configuration.host
@@ -82,6 +90,8 @@ extension LLMFogSession {
                 configuration: .init(
                     token: userToken,
                     host: fogServiceAddress,
+                    port: (caCertificate != nil) ? 443 : 80,
+                    scheme: (caCertificate != nil) ? "https" : "http",
                     timeoutInterval: platform.configuration.timeout,
                     caCertificate: caCertificate,
                     expectedHost: platform.configuration.host
@@ -97,10 +107,13 @@ extension LLMFogSession {
     }
     
     /// Resolves a Spezi Fog LLM computing resource to an IP address.
-    private func resolveFogService() async throws -> String {
+    private func resolveFogService(secureTraffic: Bool = true) async throws -> String {
         // Browse for configured mDNS services
         let browser = NWBrowser(
-            for: .bonjour(type: "_https._tcp", domain: platform.configuration.host + "."),
+            for: .bonjour(
+                type: secureTraffic ? "_https._tcp" : "_http._tcp",
+                domain: platform.configuration.host + "."
+            ),
             using: .init()
         )
         

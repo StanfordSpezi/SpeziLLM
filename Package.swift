@@ -33,6 +33,7 @@ let package = Package(
         .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "10.13.0"),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.2.1")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziAccount", from: "1.2.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFirebase", from: "1.0.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "1.0.4"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
@@ -85,10 +86,13 @@ let package = Package(
         .target(
             name: "SpeziLLMFog",
             dependencies: [
-                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
-                .product(name: "SpeziFirebaseAccount", package: "SpeziFirebase"),
-                .product(name: "OpenAI", package: "OpenAI"),
-                .product(name: "Spezi", package: "Spezi")
+                .target(name: "SpeziLLM"),
+                .product(name: "Spezi", package: "Spezi"),
+                // As SpeziAccount, SpeziFirebase and the firebase-ios-sdk currently don't support visionOS and macOS, perform fog node token authentication only on iOS
+                .product(name: "SpeziAccount", package: "SpeziAccount", condition: .when(platforms: [.iOS])),
+                .product(name: "SpeziFirebaseAccount", package: "SpeziFirebase", condition: .when(platforms: [.iOS])),
+                .product(name: "FirebaseAuth", package: "firebase-ios-sdk", condition: .when(platforms: [.iOS])),
+                .product(name: "OpenAI", package: "OpenAI")
             ]
         ),
         .testTarget(

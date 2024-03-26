@@ -6,6 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if os(iOS)
+import SpeziAccount
+#endif
 import SpeziChat
 import SpeziLLM
 import SpeziLLMFog
@@ -21,7 +24,9 @@ struct LLMFogChatTestView: View {
     )
     
     @State var showOnboarding = false
+    #if os(iOS)
     @State var presentingAccount = false
+    #endif
     
     
     var body: some View {
@@ -33,6 +38,7 @@ struct LLMFogChatTestView: View {
             }
         }
             .navigationTitle("LLM_FOG_CHAT_VIEW_TITLE")
+            #if os(iOS)
             .sheet(isPresented: $presentingAccount) {
                 AccountSheet()
             }
@@ -40,22 +46,7 @@ struct LLMFogChatTestView: View {
                 AccountSheet()
             }
             .verifyRequiredAccountDetails()
-        /*
-            .toolbar {
-                ToolbarItem {
-                    Button("LLM_OPENAI_CHAT_ONBOARDING_BUTTON") {
-                        showOnboarding.toggle()
-                    }
-                }
-            }
-         
-            .sheet(isPresented: $showOnboarding) {
-                LLMOpenAIOnboardingView()
-                    #if os(macOS)
-                    .frame(minWidth: 400, minHeight: 550)
-                    #endif
-            }
-         */
+            #endif
             .accentColor(.orange)  // Fog Orange
     }
 }

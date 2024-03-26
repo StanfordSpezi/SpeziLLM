@@ -8,7 +8,9 @@
 
 import Foundation
 import Spezi
+#if os(iOS)
 import SpeziFirebaseAccount
+#endif
 import SpeziFoundation
 import SpeziLLM
 
@@ -23,7 +25,7 @@ import SpeziLLM
 ///
 /// In order to establish a secure connection to the fog node, the TLS encryption mechanism is used.
 /// That results in the need for the ``LLMFogPlatform`` to be configured via ``LLMFogPlatform/init(configuration:)`` and
-/// ``LLMFogPlatformConfiguration/init(caCertificate:host:taskPriority:concurrentStreams:timeout:mDnsBrowsingTimeout:)`` with the custom
+/// ``LLMFogPlatformConfiguration/init(host:caCertificate:taskPriority:concurrentStreams:timeout:mDnsBrowsingTimeout:)`` with the custom
 /// root CA certificate in the `.crt` format that signed the web service certificate of the fog node. See the `FogNode/README.md` and specifically the `setup.sh` script for more details.
 ///
 /// - Important: ``LLMFogPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMFogPlatform``.
@@ -70,8 +72,10 @@ public actor LLMFogPlatform: LLMPlatform {
     let configuration: LLMFogPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
+    #if os(iOS)
     /// Dependency to the FirebaseAccountConfiguration, ensuring that it is present in the Spezi `Configuration`.
     @Dependency private var firebaseAuth: FirebaseAccountConfiguration?
+    #endif
     
     
     /// Creates an instance of the ``LLMFogPlatform``.
@@ -85,6 +89,7 @@ public actor LLMFogPlatform: LLMPlatform {
     
     
     public nonisolated func configure() {
+        #if os(iOS)
         Task {
             guard await firebaseAuth != nil else {
                 preconditionFailure("""
@@ -93,6 +98,7 @@ public actor LLMFogPlatform: LLMPlatform {
                 """)
             }
         }
+        #endif
     }
     
     public nonisolated func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
