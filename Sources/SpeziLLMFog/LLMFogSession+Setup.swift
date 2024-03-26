@@ -127,13 +127,10 @@ extension LLMFogSession {
                     if let remoteEndpoint = connection.currentPath?.remoteEndpoint,
                        case let .hostPort(host, _) = remoteEndpoint {
                         let ipAddress: String? = switch host {
-                            // No other way to get the current IP address from NWEndpoint
-                            case .ipv4(let ipv4Address):
-                                ipv4Address.debugDescription.components(separatedBy: "%").first
-                            case .ipv6(let ipv6Address):
-                                ipv6Address.debugDescription.components(separatedBy: "%").first
-                            default:
-                                nil
+                        // No other way to get the current IP address from NWEndpoint
+                        case .ipv4(let ipv4Address): ipv4Address.debugDescription.components(separatedBy: "%").first
+                        case .ipv6(let ipv6Address): ipv6Address.debugDescription.components(separatedBy: "%").first
+                        default: nil
                         }
                         
                         continuation.resume(returning: ipAddress)
