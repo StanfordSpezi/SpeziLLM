@@ -1,0 +1,9 @@
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/spezillmfog.local.crt
+      keyFile: /etc/traefik/certs/spezillmfog.local.key
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/spezillmfog.local.crt
+        keyFile: /etc/traefik/certs/spezillmfog.local.key

@@ -1,0 +1,276 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectivity Error with the Fog Node."
+          }
+        }
+      }
+    },
+    "LLM_CONNECTIVITY_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The network connection to the Fog Node servers couldn't be established, most probably the device doesn't have a proper connection to the Fog Node."
+          }
+        }
+      }
+    },
+    "LLM_CONNECTIVITY_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that the device has a stable internet connection and the Fog Node is running correctly."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generation Error occurred during Fog LLM inference."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Fog LLM API responded with an error during the output generation."
+          }
+        }
+      }
+    },
+    "LLM_GENERATION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the input query and ensure that the Fog Node is running correctly."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unauthorized access to the Fog LLM resource."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The ID token of the current Firebase User is not valid / not authorized to access the Fog LLM resource."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_TOKEN_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that a Firebase user is currently logged in and has the potentially required claims to the LLM resource."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_AUTHENTICATION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The user is currently not logged in."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_AUTHENTICATION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No user is currently logged in the application."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_AUTHENTICATION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please ensure that you logged in with a valid user."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_CA_CERT_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't establish a secure connection to the fog node."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_CA_CERT_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The root CA certificate that signed the Fog LLM certificates is missing."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_CA_CERT_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure that SpeziLLMFog is configured with the valid root CA certificate used to sign the Fog node certificates."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM model type could not be accessed on fog node."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The specified LLM model type is not present on the LLM Fog node."
+          }
+        }
+      }
+    },
+    "LLM_MODEL_ACCESS_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download the specified LLM model on the LLM Fog node."
+          }
+        }
+      }
+    },
+    "LLM_NO_MDNS_SERVICE_FOUND_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No LLM Fog node was found in the local network."
+          }
+        }
+      }
+    },
+    "LLM_NO_MDNS_SERVICE_FOUND_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Either, the LLM Fog node is not properly running or the device has network connectivity issues."
+          }
+        }
+      }
+    },
+    "LLM_NO_MDNS_SERVICE_FOUND_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure proper connectivity within the local network and the correct running of the LLM Fog node."
+          }
+        }
+      }
+    },
+    "LLM_SERIVE_DISCOVERY_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error during fog service discovery."
+          }
+        }
+      }
+    },
+    "LLM_SERIVE_DISCOVERY_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occurred during browsing for fog services within the local network."
+          }
+        }
+      }
+    },
+    "LLM_SERIVE_DISCOVERY_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure proper network connectivity so that the fog service can be discovered."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown Fog LLM error has occured."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "During service discovery of the LLM fog node, an unknown error occured."
+          }
+        }
+      }
+    },
+    "LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensure proper network connectivity and device configuration so that the fog service can be discovered."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

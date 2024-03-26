@@ -179,8 +179,13 @@ extension LLMLocalSession {
         llama_print_timings(self.modelContext)
         
         continuation.finish()
+        if schema.injectIntoContext {
+            await MainActor.run {
+                context.completeAssistantStreaming()
+            }
+        }
+        
         await MainActor.run {
-            context.completeAssistantStreaming()
             self.state = .ready
         }
         

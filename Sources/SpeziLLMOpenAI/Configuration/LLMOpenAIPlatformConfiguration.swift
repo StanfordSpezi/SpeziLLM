@@ -13,8 +13,11 @@ import Foundation
 public struct LLMOpenAIPlatformConfiguration: Sendable {
     /// The task priority of the initiated LLM inference tasks.
     let taskPriority: TaskPriority
+    /// Indicates the number of concurrent streams to the OpenAI API.
     let concurrentStreams: Int
+    /// The OpenAI API token on a global basis.
     let apiToken: String?
+    /// Maximum network timeout of OpenAI requests in seconds.
     let timeout: TimeInterval
     
     

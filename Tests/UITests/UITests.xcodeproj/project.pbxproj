@@ -28,12 +28,18 @@
 		976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9761794F2B034E0400E1046E /* TestAppDelegate.swift */; };
 		976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */; };
 		976179542B03501100E1046E /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179532B03501100E1046E /* FeatureFlags.swift */; };
+		976CE5152BA0E8DB00E21810 /* ca.crt in Resources */ = {isa = PBXBuildFile; fileRef = 976CE5142BA0E8DB00E21810 /* ca.crt */; };
+		976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 976CE5162BA2C05100E21810 /* GoogleService-Info.plist */; };
+		976CE5192BA2C49900E21810 /* AccountSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE5182BA2C49900E21810 /* AccountSheet.swift */; };
+		976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */; };
 		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
 		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
 		977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */; };
 		977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977E499F2B035563001485D4 /* LLMLocalTestView.swift */; };
 		97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */; };
 		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
+		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
+		97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +73,10 @@
 		9761794F2B034E0400E1046E /* TestAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
 		976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppLLMLocalUITests.swift; sourceTree = "<group>"; };
 		976179532B03501100E1046E /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		976CE5142BA0E8DB00E21810 /* ca.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ca.crt; sourceTree = "<group>"; };
+		976CE5162BA2C05100E21810 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		976CE5182BA2C49900E21810 /* AccountSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSheet.swift; sourceTree = "<group>"; };
+		976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSetupHeader.swift; sourceTree = "<group>"; };
 		9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIOnboardingView.swift; sourceTree = "<group>"; };
 		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
 		977438092B05709700EC6527 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -75,6 +85,7 @@
 		977E499F2B035563001485D4 /* LLMLocalTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMLocalTestView.swift; sourceTree = "<group>"; };
 		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
 		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
+		97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogChatTestView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +94,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */,
+				97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */,
 				9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */,
 				9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */,
 				9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */,
@@ -127,6 +139,7 @@
 				977447212B992D3A00D1F85E /* TestApp.entitlements */,
 				9756D25A2B0316790006B6BD /* Resources */,
 				97DD56B32B02F72D00389331 /* LLMLocal */,
+				97C93FCE2B999DA40023F4B9 /* LLMFog */,
 				97DD56B42B02F72D00389331 /* LLMOpenAI */,
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
 				9761794F2B034E0400E1046E /* TestAppDelegate.swift */,
@@ -185,10 +198,21 @@
 		9756D25A2B0316790006B6BD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				976CE5142BA0E8DB00E21810 /* ca.crt */,
+				976CE5162BA2C05100E21810 /* GoogleService-Info.plist */,
 				9756D2562B0316740006B6BD /* Localizable.xcstrings */,
 				9756D2572B0316740006B6BD /* Localizable.xcstrings.license */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		976CE51A2BA2C4C600E21810 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				976CE5182BA2C49900E21810 /* AccountSheet.swift */,
+				976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */,
+			);
+			path = Account;
 			sourceTree = "<group>";
 		};
 		97A25C912B28DDAB0073B990 /* Onboarding */ = {
@@ -198,6 +222,15 @@
 				97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		97C93FCE2B999DA40023F4B9 /* LLMFog */ = {
+			isa = PBXGroup;
+			children = (
+				976CE51A2BA2C4C600E21810 /* Account */,
+				97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */,
+			);
+			path = LLMFog;
 			sourceTree = "<group>";
 		};
 		97DD56B32B02F72D00389331 /* LLMLocal */ = {
@@ -244,6 +277,7 @@
 				9722A5A12B5B5CB20005645E /* SpeziLLMLocal */,
 				9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */,
 				9722A5A52B5B5CB20005645E /* SpeziLLMOpenAI */,
+				97A36E142B999EA60034D821 /* SpeziLLMFog */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -317,6 +351,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */,
+				976CE5152BA0E8DB00E21810 /* ca.crt in Resources */,
+				976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */,
 				2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */,
 				9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */,
 			);
@@ -357,11 +393,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */,
 				9748DBEE2B5C811F00B917EE /* LLMOpenAIFunctionPerson.swift in Sources */,
 				9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */,
 				9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */,
 				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
 				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
+				976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */,
 				97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */,
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
 				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
@@ -373,6 +411,7 @@
 				97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
 				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
+				976CE5192BA2C49900E21810 /* AccountSheet.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -709,6 +748,10 @@
 		9722A5A52B5B5CB20005645E /* SpeziLLMOpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziLLMOpenAI;
+		};
+		97A36E142B999EA60034D821 /* SpeziLLMFog */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMFog;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

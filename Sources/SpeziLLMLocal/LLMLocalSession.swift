@@ -65,7 +65,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: Chat = []
+    @MainActor public var context: LLMContext = []
     
     /// A pointer to the allocated model via llama.cpp.
     @ObservationIgnored var model: OpaquePointer?

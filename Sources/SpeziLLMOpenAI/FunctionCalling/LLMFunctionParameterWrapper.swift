@@ -10,9 +10,9 @@ import OpenAI
 
 
 /// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
-public typealias LLMFunctionParameterPropertySchema = JSONSchema.Property
+public typealias LLMFunctionParameterPropertySchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property
 /// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
-public typealias LLMFunctionParameterItemSchema = JSONSchema.Items
+public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property.Items
 
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
@@ -59,7 +59,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
             required: T.schema.required,
             pattern: T.schema.pattern,
             const: T.schema.const,
-            enumValues: T.schema.enumValues,
+            enum: T.schema.enum,
             multipleOf: T.schema.multipleOf,
             minimum: T.schema.minimum,
             maximum: T.schema.maximum,
@@ -108,3 +108,8 @@ extension LLMFunction {
     public typealias Parameter<WrappedValue> =
         _LLMFunctionParameterWrapper<WrappedValue> where WrappedValue: Decodable
 }
+
+
+/// Ensuring `Sendable` conformances of ``LLMFunctionParameterPropertySchema`` and ``LLMFunctionParameterItemSchema``
+extension LLMFunctionParameterPropertySchema: @unchecked Sendable {}
+extension LLMFunctionParameterItemSchema: @unchecked Sendable {}

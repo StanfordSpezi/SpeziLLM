@@ -109,7 +109,7 @@ struct LLMOpenAIFunctionHealthData: LLMFunction {
     static let name: String = "get_health_data"
     static let description: String = "Get the health data of a patient based on health data types."
     
-    @Parameter(description: "The types of health data that are requested", enumValues: ["allergies", "medications"])
+    @Parameter(description: "The types of health data that are requested", enum: ["allergies", "medications"])
     var healthDataTypes: [String]   // Use an `array` of `String`s as parameter
     
     func execute() async throws -> String? {

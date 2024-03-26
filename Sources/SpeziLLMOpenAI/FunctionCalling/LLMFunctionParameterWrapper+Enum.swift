@@ -24,7 +24,7 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
             type: .string,
             description: String(description),
             const: const.map { String($0) },
-            enumValues: T.allCases.map { String($0.rawValue) }
+            enum: T.allCases.map { String($0.rawValue) }
         ))
     }
 }
@@ -43,7 +43,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
             type: .string,
             description: String(description),
             const: const.map { String($0) },
-            enumValues: T.Wrapped.allCases.map { String($0.rawValue) }
+            enum: T.Wrapped.allCases.map { String($0.rawValue) }
         ))
     }
 }
@@ -70,7 +70,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
             items: .init(
                 type: .string,
                 const: const.map { String($0) },
-                enumValues: T.Element.allCases.map { String($0.rawValue) }
+                enum: T.Element.allCases.map { String($0.rawValue) }
             ),
             minItems: minItems,
             maxItems: maxItems,
@@ -104,7 +104,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
             items: .init(
                 type: .string,
                 const: const.map { String($0) },
-                enumValues: T.Wrapped.Element.allCases.map { String($0.rawValue) }
+                enum: T.Wrapped.Element.allCases.map { String($0.rawValue) }
             ),
             minItems: minItems,
             maxItems: maxItems,

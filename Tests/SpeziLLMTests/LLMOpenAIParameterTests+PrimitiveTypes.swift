@@ -34,7 +34,7 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
         var doubleParameter: Double
         @Parameter(description: "Primitive Bool Parameter", const: "false")
         var boolParameter: Bool
-        @Parameter(description: "Primitive String Parameter", format: .datetime, pattern: "/d/d/d/d", enumValues: ["1234", "5678"])
+        @Parameter(description: "Primitive String Parameter", format: .datetime, pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringParameter: String
         
         // swiftlint:enable attributes
@@ -95,7 +95,7 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
         XCTAssertEqual(schemaPrimitiveString.schema.description, "Primitive String Parameter")
         XCTAssertEqual(schemaPrimitiveString.schema.format, "date-time")
         XCTAssertEqual(schemaPrimitiveString.schema.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaPrimitiveString.schema.enumValues, ["1234", "5678"])
+        XCTAssertEqual(schemaPrimitiveString.schema.enum, ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

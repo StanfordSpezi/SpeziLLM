@@ -32,3 +32,9 @@ docs/
 
 # UITests Project
 !UITests.xcodeproj
+
+# Generated CA and TLS keys of the Fog webservice
+*.crt
+*.key
+*.srl
+*.csr

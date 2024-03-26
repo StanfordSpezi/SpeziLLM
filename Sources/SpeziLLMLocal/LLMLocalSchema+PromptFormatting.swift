@@ -6,14 +6,14 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziChat
+import SpeziLLM
 
 
 extension LLMLocalSchema {
     /// Holds default prompt formatting strategies for [Llama2](https://ai.meta.com/llama/) as well as [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) models.
     public enum PromptFormattingDefaults {
         /// Prompt formatting closure for the [Llama2](https://ai.meta.com/llama/) model
-        public static let llama2: (@Sendable (Chat) throws -> String) = { chat in     // swiftlint:disable:this closure_body_length
+        public static let llama2: (@Sendable (LLMContext) throws -> String) = { chat in     // swiftlint:disable:this closure_body_length
             /// BOS token of the LLM, used at the start of each prompt passage.
             let BOS = "<s>"
             /// EOS token of the LLM, used at the end of each prompt passage.
@@ -34,17 +34,17 @@ extension LLMLocalSchema {
             var systemPrompts: [String] = []
             var initialUserPrompt: String = ""
             
-            for chatEntity in chat {
-                if chatEntity.role != .system {
-                    if chatEntity.role == .user {
-                        initialUserPrompt = chatEntity.content
+            for contextEntity in chat {
+                if contextEntity.role != .system {
+                    if contextEntity.role == .user {
+                        initialUserPrompt = contextEntity.content
                         break
                     } else {
                         throw LLMLocalError.illegalContext
                     }
                 }
                 
-                systemPrompts.append(chatEntity.content)
+                systemPrompts.append(contextEntity.content)
             }
             
             /// Build the initial Llama2 prompt structure
@@ -65,22 +65,22 @@ extension LLMLocalSchema {
             \(initialUserPrompt) \(EOINST)
             """ + " "   // Add a spacer to the generated output from the model
             
-            for chatEntry in chat.dropFirst(2) {
-                if chatEntry.role == .assistant {
+            for contextEntity in chat.dropFirst(2) {
+                if contextEntity.role == .assistant() {
                     /// Append response from assistant to the Llama2 prompt structure
                     ///
                     /// A template for appending an assistant response to the overall prompt looks like:
                     /// {user_message_1} [/INST]){model_reply_1}</s>
                     prompt += """
-                    \(chatEntry.content)\(EOS)
+                    \(contextEntity.content)\(EOS)
                     """
-                } else if chatEntry.role == .user {
+                } else if contextEntity.role == .user {
                     /// Append response from user to the Llama2 prompt structure
                     ///
                     /// A template for appending an assistant response to the overall prompt looks like:
                     /// <s>[INST] {user_message_2} [/INST]
                     prompt += """
-                    \(BOS)\(BOINST) \(chatEntry.content) \(EOINST)
+                    \(BOS)\(BOINST) \(contextEntity.content) \(EOINST)
                     """ + " "   // Add a spacer to the generated output from the model
                 }
             }
@@ -89,7 +89,7 @@ extension LLMLocalSchema {
         }
         
         /// Prompt formatting closure for the [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) model
-        public static let phi2: (@Sendable (Chat) throws -> String) = { chat in
+        public static let phi2: (@Sendable (LLMContext) throws -> String) = { chat in
             guard chat.first?.role == .system else {
                 throw LLMLocalError.illegalContext
             }
@@ -97,17 +97,17 @@ extension LLMLocalSchema {
             var systemPrompts: [String] = []
             var initialUserPrompt: String = ""
             
-            for chatEntity in chat {
-                if chatEntity.role != .system {
-                    if chatEntity.role == .user {
-                        initialUserPrompt = chatEntity.content
+            for contextEntity in chat {
+                if contextEntity.role != .system {
+                    if contextEntity.role == .user {
+                        initialUserPrompt = contextEntity.content
                         break
                     } else {
                         throw LLMLocalError.illegalContext
                     }
                 }
                 
-                systemPrompts.append(chatEntity.content)
+                systemPrompts.append(contextEntity.content)
             }
             
             /// Build the initial Phi-2 prompt structure
@@ -123,16 +123,16 @@ extension LLMLocalSchema {
             Instruct: \(initialUserPrompt)\n
             """
             
-            for chatEntry in chat.dropFirst(2) {
-                if chatEntry.role == .assistant {
+            for contextEntity in chat.dropFirst(2) {
+                if contextEntity.role == .assistant() {
                     /// Append response from assistant to the Phi-2 prompt structure
                     prompt += """
-                    Output: \(chatEntry.content)\n
+                    Output: \(contextEntity.content)\n
                     """
-                } else if chatEntry.role == .user {
+                } else if contextEntity.role == .user {
                     /// Append response from assistant to the Phi-2 prompt structure
                     prompt += """
-                    Instruct: \(chatEntry.content)\n
+                    Instruct: \(contextEntity.content)\n
                     """
                 }
             }
@@ -147,7 +147,7 @@ extension LLMLocalSchema {
         
         /// Prompt formatting closure for the [Gemma](https://ai.google.dev/gemma/docs/formatting) models
         /// - Important: System prompts are ignored as Gemma doesn't support them
-        public static let gemma: (@Sendable (Chat) throws -> String) = { chat in
+        public static let gemma: (@Sendable (LLMContext) throws -> String) = { chat in
             /// Start token of Gemma
             let startToken = "<start_of_turn>"
             /// End token of Gemma
@@ -168,18 +168,18 @@ extension LLMLocalSchema {
             /// """
             var prompt = ""
             
-            for chatEntry in chat {
-                if chatEntry.role == .assistant {
+            for contextEntity in chat {
+                if contextEntity.role == .assistant() {
                     /// Append response from assistant to the Gemma prompt structure
                     prompt += """
                     \(startToken)model
-                    \(chatEntry.content)\(endToken)\n
+                    \(contextEntity.content)\(endToken)\n
                     """
-                } else if chatEntry.role == .user {
+                } else if contextEntity.role == .user {
                     /// Append response from assistant to the Gemma prompt structure
                     prompt += """
                     \(startToken)user
-                    \(chatEntry.content)\(endToken)\n
+                    \(contextEntity.content)\(endToken)\n
                     """
                 }
             }

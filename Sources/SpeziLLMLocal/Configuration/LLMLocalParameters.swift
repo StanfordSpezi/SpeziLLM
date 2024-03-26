@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import llama
+@preconcurrency import llama
 
 
 /// Represents the parameters of the LLM.

@@ -39,7 +39,7 @@ struct LLMOpenAIChatTestView: View {
                 
                 // Otherwise use the LLMChatView and pass a LLMSession Binding in there. Use the @LLMSessionProvider wrapper to instantiate the LLMSession
                 LLMChatView(session: $llm)
-                    .speak(llm.context, muted: muted)
+                    .speak(llm.context.chat, muted: muted)
                     .speechToolbarButton(muted: $muted)
             }
         }

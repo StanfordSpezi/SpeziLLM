@@ -6,10 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziChat
-
-
-extension Chat {
+extension LLMContext {
     /// Creates a new `Chat` array with an arbitrary number of system messages.
     ///
     /// - Parameters:
@@ -19,7 +16,6 @@ extension Chat {
             .init(role: .system, content: systemMessage)
         }
     }
-    
     
     /// Resets the `Chat` array, deleting all persisted content.
     @MainActor

@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  # LLM inference service Ollama
+  ollama:
+    image: ollama/ollama
+    ports: 
+      - "80:11434"  # Expose Ollama on port 80 without TLS and authentication for dev purposes
+    volumes:
+      - ollama_storage:/root/.ollama
+
+  # Advertises dummy mDNS service to sidecar container
+  avahi:
+    build:
+      context: avahi
+    hostname: spezillmfog.local
+    networks:
+      - avahi_network
+
+  # Receives advertised dummy mDNS service from avahi container
+  avahi-sidecar:
+    build:
+      context: avahi
+      dockerfile: Dockerfile-Sidecar
+    hostname: spezillmfog-sidecar.local
+    networks:
+      - avahi_network
+
+# Enables persistence of downloaded LLMs by Ollama
+volumes:
+  ollama_storage:
+
+# Enables to bridge mDNS advertise packages between the two avahi containers
+networks:
+  avahi_network:
+    driver: bridge

@@ -38,7 +38,7 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         var doubleParameter: Double?
         @Parameter(description: "Optional Bool Parameter", const: "false")
         var boolParameter: Bool?
-        @Parameter(description: "Optional String Parameter", format: .datetime, pattern: "/d/d/d/d", enumValues: ["1234", "5678"])
+        @Parameter(description: "Optional String Parameter", format: .datetime, pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringParameter: String?
         @Parameter(description: "Optional Int Array Parameter", minItems: 1, maxItems: 9, uniqueItems: true)
         var intArrayParameter: [Int]?
@@ -46,7 +46,7 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         var doubleArrayParameter: [Double]?
         @Parameter(description: "Optional Bool Array Parameter", const: "true")
         var boolArrayParameter: [Bool]?
-        @Parameter(description: "Optional String Array Parameter", pattern: "/d/d/d/d", enumValues: ["1234", "5678"])
+        @Parameter(description: "Optional String Array Parameter", pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringArrayParameter: [String]?
         @Parameter(description: "Optional String Array Nil Parameter")
         var arrayNilParameter: [String]?
@@ -119,7 +119,7 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         XCTAssertEqual(schemaOptionalString.schema.description, "Optional String Parameter")
         XCTAssertEqual(schemaOptionalString.schema.format, "date-time")
         XCTAssertEqual(schemaOptionalString.schema.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaOptionalString.schema.enumValues, ["1234", "5678"])
+        XCTAssertEqual(schemaOptionalString.schema.enum, ["1234", "5678"])
         
         let schemaArrayInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intArrayParameter"])
         XCTAssertEqual(schemaArrayInt.schema.type, .array)
@@ -147,7 +147,7 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         XCTAssertEqual(schemaArrayString.schema.description, "Optional String Array Parameter")
         XCTAssertEqual(schemaArrayString.schema.items?.type, .string)
         XCTAssertEqual(schemaArrayString.schema.items?.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaArrayString.schema.items?.enumValues, ["1234", "5678"])
+        XCTAssertEqual(schemaArrayString.schema.items?.enum, ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

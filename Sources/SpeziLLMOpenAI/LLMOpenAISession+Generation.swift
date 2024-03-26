@@ -9,6 +9,7 @@
 import Foundation
 import OpenAI
 import SpeziChat
+import SpeziLLM
 
 
 extension LLMOpenAISession {
@@ -49,6 +50,11 @@ extension LLMOpenAISession {
                         continue
                     }
                     
+                    guard await !checkCancellation(on: continuation) else {
+                        Self.logger.debug("SpeziLLMOpenAI: LLM inference cancelled because of Task cancellation.")
+                        return
+                    }
+                    
                     // Automatically inject the yielded string piece into the `LLMLocal/context`
                     if schema.injectIntoContext {
                         await MainActor.run {
@@ -59,8 +65,10 @@ extension LLMOpenAISession {
                     continuation.yield(content)
                 }
                 
-                await MainActor.run {
-                    context.completeAssistantStreaming()
+                if schema.injectIntoContext {
+                    await MainActor.run {
+                        context.completeAssistantStreaming()
+                    }
                 }
             } catch let error as APIErrorResponse {
                 switch error.error.code {
@@ -75,17 +83,34 @@ extension LLMOpenAISession {
                     await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
                 }
                 return
+            } catch let error as URLError {
+                Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
+                await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
+                return
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
                 return
             }
 
-            let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }
+            let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }.flatMap { $0 }
             
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
                 break
+            }
+            
+            // Inject the requested function calls into the LLM context
+            let functionCallContext: [LLMContextEntity.ToolCall] = functionCalls.compactMap { functionCall in
+                guard let functionCallId = functionCall.id,
+                      let functionCallName = functionCall.name else {
+                    return nil
+                }
+                
+                return .init(id: functionCallId, name: functionCallName, arguments: functionCall.arguments ?? "")
+            }
+            await MainActor.run {
+                context.append(functionCalls: functionCallContext)
             }
             
             // Parallelize function call execution
@@ -94,10 +119,12 @@ extension LLMOpenAISession {
                     for functionCall in functionCalls {
                         group.addTask {     // swiftlint:disable:this closure_body_length
                             Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? ""), Arguments: \(functionCall.arguments ?? "")
+                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
+                            Arguments: \(functionCall.arguments ?? "")
                             """)
 
                             guard let functionName = functionCall.name,
+                                  let functionID = functionCall.id,
                                   let functionArgument = functionCall.arguments?.data(using: .utf8),
                                   let function = self.schema.functions[functionName] else {
                                 Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
@@ -120,6 +147,12 @@ extension LLMOpenAISession {
                                 // Execute function
                                 // Errors thrown by the functions are surfaced to the user as an LLM generation error
                                 functionCallResponse = try await function.execute()
+                            } catch is CancellationError {
+                                guard await !self.checkCancellation(on: continuation) else {
+                                    Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
+                                    throw CancellationError()
+                                }
+                                return
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)
@@ -127,8 +160,8 @@ extension LLMOpenAISession {
                             }
                             
                             Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "") \
-                            Arguments: \(functionCall.arguments ?? "") \
+                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
+                            Arguments: \(functionCall.arguments ?? "")
                             Response: \(functionCallResponse ?? "<empty response>")
                             """)
                             
@@ -138,6 +171,7 @@ extension LLMOpenAISession {
                                 // Return `defaultResponse` in case of `nil` or empty return of the function call
                                 self.context.append(
                                     forFunction: functionName,
+                                    withID: functionID,
                                     response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
                                 )
                             }

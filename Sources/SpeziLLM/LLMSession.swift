@@ -41,7 +41,7 @@ import SpeziChat
 ///     private var task: Task<(), Never>?
 ///
 ///     @MainActor public var state: LLMState = .uninitialized
-///     @MainActor public var context: Chat = []
+///     @MainActor public var context: LLMContext = []
 ///
 ///     init(_ platform: LLMMockPlatform, schema: LLMMockSchema) {
 ///         self.platform = platform
@@ -68,7 +68,7 @@ public protocol LLMSession: AnyObject, Sendable {
     /// The state of the ``LLMSession`` indicated by the ``LLMState``.
     @MainActor var state: LLMState { get set }
     /// The current context state of the ``LLMSession``, includes the entire prompt history including system prompts, user input, and model responses.
-    @MainActor var context: Chat { get set }
+    @MainActor var context: LLMContext { get set }
     
     
     /// Starts the inference of the ``LLMSession`` based on the ``LLMSession/context``.

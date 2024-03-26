@@ -30,7 +30,7 @@ public struct LLMLocalSchema: LLMSchema {
     /// Sampling parameters of the llama.cpp LLM.
     let samplingParameters: LLMLocalSamplingParameters
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
-    let formatChat: (@Sendable (Chat) throws -> String)
+    let formatChat: (@Sendable (LLMContext) throws -> String)
     public let injectIntoContext: Bool
     
     
@@ -49,7 +49,7 @@ public struct LLMLocalSchema: LLMSchema {
         contextParameters: LLMLocalContextParameters = .init(),
         samplingParameters: LLMLocalSamplingParameters = .init(),
         injectIntoContext: Bool = false,
-        formatChat: @escaping (@Sendable (Chat) throws -> String) = PromptFormattingDefaults.llama2
+        formatChat: @escaping (@Sendable (LLMContext) throws -> String) = PromptFormattingDefaults.llama2
     ) {
         self.modelPath = modelPath
         self.parameters = parameters

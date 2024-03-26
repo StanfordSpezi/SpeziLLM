@@ -159,13 +159,13 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///
     /// - Parameters:
     ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
-    ///   - chat: The context of the LLM used for the inference.
+    ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The ready to use `AsyncThrowingStream`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> AsyncThrowingStream<String, Error> {
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, Error> {
         let llmSession = callAsFunction(with: llmSchema)
         await MainActor.run {
-            llmSession.context = chat
+            llmSession.context = context
         }
         
         return try await llmSession.generate()
@@ -180,10 +180,10 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///   - chat: The context of the LLM used for the inference.
     ///
     /// - Returns: The completed output `String`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> String {
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> String {
         var output = ""
         
-        for try await stringPiece in try await oneShot(with: llmSchema, chat: chat) {
+        for try await stringPiece in try await oneShot(with: llmSchema, context: context) {
             output.append(stringPiece)
         }
         
