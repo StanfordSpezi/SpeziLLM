@@ -17,7 +17,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
-        app.launchArguments = ["--mockMode", "--resetSecureStorage"]
+        app.launchArguments = ["--mockMode", "--resetSecureStorage", "--testMode"]
         #if !os(macOS)
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         #else
