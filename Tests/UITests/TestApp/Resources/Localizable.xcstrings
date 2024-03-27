@@ -26,7 +26,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Template Application demonstrates the usage of the Firebase Account Module."
+            "value" : "The authentication is provided via SpeziAccount and the Firebase Account Module."
           }
         }
       }

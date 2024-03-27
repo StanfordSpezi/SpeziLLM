@@ -213,9 +213,6 @@ The `SpeziLLMFog` target enables you to use LLMs running on [Fog node](https://e
 In order to use Fog LLMs within the Spezi ecosystem, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the `LLMFogPlatform`. Only after, the `LLMRunner` can be used for inference with Fog LLMs. See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 The `LLMFogPlatform` needs to be initialized with the custom root CA certificate that was used to sign the fog node web service certificate (see the `FogNode/README.md` documentation for more information). Copy the root CA certificate from the fog node as resource to the application using `SpeziLLMFog` and use it to initialize the `LLMFogPlatform` within the Spezi `Configuration`.
 
-As the `LLMFogPlatform` uses Firebase to verify the identify of users and determine their authorization to use fog LLM resources, one must setup [`SpeziAccount`](https://github.com/StanfordSpezi/SpeziAccount) as well as [`SpeziFirebaseAccount`](https://github.com/StanfordSpezi/SpeziFirebase) in the Spezi `Configuration`.
-Specifically, one must state the `AccountConfiguration` as well as the `FirebaseAccountConfiguration` in the `Configuration`, otherwise a crash upon startup of Spezi will occur. Resulting from that, the application must contain the [`GoogleService-Info.plist` file issued by Firebase](https://firebase.google.com/docs/ios/setup) so that the `FirebaseAccountConfiguration` is able to use the correct Firebase project.
-
 ```swift
 class LLMFogAppDelegate: SpeziAppDelegate {
     private nonisolated static var caCertificateUrl: URL {
@@ -225,15 +222,6 @@ class LLMFogAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
          Configuration {
              LLMRunner {
-                // Sets up SpeziAccount and the required account details
-                AccountConfiguration(configuration: [
-                    .requires(\.userId),
-                    .requires(\.password)
-                ])
-
-                // Sets up SpeziFirebaseAccount which serves as the identity provider for the SpeziAccount setup above
-                FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword)
-
                 // Set up the Fog platform with the custom CA certificate
                 LLMRunner {
                     LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
@@ -251,6 +239,9 @@ The code example below showcases the interaction with a Fog LLM through the the 
 The `LLMFogSchema` defines the type and configurations of the to-be-executed `LLMFogSession`. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the `LLMFogPlatform`. The inference via `LLMFogSession/generate()` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 The `LLMFogSession` automatically discovers all available LLM fog nodes within the local network upon setup and the dispatches the LLM inference jobs to the fog computing resource, streaming back the response and surfaces it to the user.
 
+> [!IMPORTANT]  
+> The `LLMFogSchema` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the `LLMFogParameters/init(modelType:systemPrompt:authToken:)`. The token is created via the closure upon every LLM inference request, as the `LLMFogSession` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
+
 ```swift
 struct LLMFogDemoView: View {
     @Environment(LLMRunner.self) var runner
@@ -265,6 +256,9 @@ struct LLMFogDemoView: View {
                         parameters: .init(
                             modelType: .llama7B,
                             systemPrompt: "You're a helpful assistant that answers questions from users.",
+                            authToken: {
+                                // Return authorization token as `String` or `nil` if no token is required by the Fog node.
+                            }
                         )
                     )
                 )
