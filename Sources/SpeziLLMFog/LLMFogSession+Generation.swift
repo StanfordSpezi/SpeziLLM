@@ -19,25 +19,23 @@ extension LLMFogSession {
         
         return regex
     }()
-    
-    private static let unauthorizedRegex: Regex = {
-        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
-            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
-        }
-        
-        return regex
-    }()
+
     
     /// Based on the input prompt, generate the output via some OpenAI API, e.g., Ollama.
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name
+    func _generate( // swiftlint:disable:this identifier_name function_body_length
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
+        }
+        
+        // Check if the node is still active by pinging it
+        guard await ensureFogNodeAvailability(continuation: continuation) else {
+            return
         }
         
         let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
@@ -94,5 +92,27 @@ extension LLMFogSession {
         await MainActor.run {
             self.state = .ready
         }
+    }
+    
+    private func ensureFogNodeAvailability(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+        guard let discoveredServiceAddress,
+              let discoveredServiceAddressUrl = URL(string: discoveredServiceAddress) else {
+            Self.logger.error("SpeziLLMFog: mDNS service could not be resolved to an IP.")
+            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
+            return false
+        }
+        
+        do {
+            _ = try await URLSession.shared.data(from: discoveredServiceAddressUrl)
+        } catch {
+            // If node not reachable anymore, try to discover another fog node, otherwise fail
+            guard await setup(continuation: continuation) else {
+                Self.logger.error("SpeziLLMFog: mDNS service could not be resolved to an IP.")
+                await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
+                return false
+            }
+        }
+        
+        return true
     }
 }

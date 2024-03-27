@@ -50,6 +50,7 @@ extension LLMFogSession {
         do {
             // Discover and resolve fog service
             fogServiceAddress = try await resolveFogService(secureTraffic: caCertificate != nil)
+            self.discoveredServiceAddress = fogServiceAddress
         } catch is CancellationError {
             Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
             continuation.finish()

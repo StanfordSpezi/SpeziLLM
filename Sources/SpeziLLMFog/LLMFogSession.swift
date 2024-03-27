@@ -77,6 +77,8 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     @ObservationIgnored var wrappedModel: OpenAI?
     /// The user token from Firebase used for the request to the Fog LLM
     @ObservationIgnored var userToken: String?
+    /// Discovered fog node advertising the LLM inference service
+    @ObservationIgnored var discoveredServiceAddress: String?
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
@@ -144,9 +146,8 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
         return stream
     }
     
-    // If called without the continuation parameter, we just mock a stream that isn't used
     public func setup(
-        continuation: AsyncThrowingStream<String, Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
+        continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async -> Bool {
         // Only perform Firebase ID token authentication on the Fog node on iOS
         #if os(iOS)
