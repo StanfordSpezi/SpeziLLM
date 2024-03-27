@@ -17,7 +17,7 @@ class TestAppLLMLocalUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
-        app.launchArguments = ["--mockMode", "--testMode"]
+        app.launchArguments = ["--mockMode", "--showOnboarding"]
         #if !os(macOS)
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         #else
