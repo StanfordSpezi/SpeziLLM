@@ -6,9 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-#if os(iOS)
-import FirebaseAuth
-#endif
 import Foundation
 import class OpenAI.OpenAI
 import os
@@ -75,8 +72,6 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var lock = NSLock()
     /// The wrapped client instance communicating with the Fog LLM
     @ObservationIgnored var wrappedModel: OpenAI?
-    /// The user token from Firebase used for the request to the Fog LLM
-    @ObservationIgnored var userToken: String?
     /// Discovered fog node advertising the LLM inference service
     @ObservationIgnored var discoveredServiceAddress: String?
     
@@ -129,11 +124,14 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
                 }
             }
             
-            // Setup the fog LLM
+            // Setup the fog LLM, if not already done
             guard await setup(continuation: continuation),
-                  await !checkCancellation(on: continuation)else {
+                  await !checkCancellation(on: continuation) else {
                 return
             }
+            
+            // Get fresh auth token
+            wrappedModel?.configuration.token = await schema.parameters.authToken()
             
             // Execute the inference
             await _generate(continuation: continuation)
@@ -147,26 +145,8 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     }
     
     public func setup(
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+        continuation: AsyncThrowingStream<String, Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
-        // Only perform Firebase ID token authentication on the Fog node on iOS
-        #if os(iOS)
-        // Get user ID token from Firebase (Firebase automatically refreshes token that expire in the next five minutes)
-        guard let userToken = try? await Auth.auth().currentUser?.getIDToken() else {
-            Self.logger.error("""
-            SpeziLLMFog: Current user could not be authenticated via Firebase.
-            Ensure that the user is correctly logged in via the Firebase login provider.
-            """)
-            continuation.finish(throwing: LLMFogError.userNotAuthenticated)
-            return false
-        }
-        
-        self.userToken = userToken
-        #else
-        // Use empty Firebase ID token on visionOS and macOS
-        self.userToken = ""
-        #endif
-        
         // Setup the model, if not already done
         if wrappedModel == nil {
             guard await _setup(continuation: continuation) else {

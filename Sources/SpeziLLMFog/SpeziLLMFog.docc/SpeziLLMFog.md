@@ -34,8 +34,6 @@ The core components of the ``SpeziLLMFog`` target are the ``LLMFogSchema``, ``LL
 
 > Important: ``SpeziLLMFog`` requires a `SpeziLLMFogNode` within the local network hosted on some computing resource that actually performs the inference requests. ``SpeziLLMFog`` provides the `SpeziLLMFogNode` Docker-based package that enables an out-of-the-box setup of these fog nodes. See the `FogNode` directory on the root level of the SPM package as well as the respective `README.md` for more details.
 
-> Tip: In order to utilize Fog LLMs, the user must be authenticated via the [`SpeziFirebaseAccount`](https://github.com/StanfordSpezi/SpeziFirebase) identify provider of [`SpeziAccount`](https://github.com/StanfordSpezi/SpeziAccount). The fog node then validates the identify of the client by checking the Firebase ID token that is automatically sent with every Fog LLM inference request.
-
 ### LLM Fog
 
 ``LLMFogSchema`` offers a variety of configuration possibilities that are supported by the Fog LLM APIs (mirroring the OpenAI API implementation), such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMFogSchema/init(parameters:modelParameters:injectIntoContext:)`` initializer and the ``LLMFogParameters`` and ``LLMFogModelParameters``.
@@ -50,9 +48,6 @@ As the to-be-used models are running on a Fog node within the local network, the
 In order to use Fog LLMs within the Spezi ecosystem, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the `LLMFogPlatform`. Only after, the `LLMRunner` can be used for inference with Fog LLMs. See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 The `LLMFogPlatform` needs to be initialized with the custom root CA certificate that was used to sign the fog node web service certificate (see the `FogNode/README.md` documentation for more information). Copy the root CA certificate from the fog node as resource to the application using `SpeziLLMFog` and use it to initialize the `LLMFogPlatform` within the Spezi `Configuration`.
 
-As the `LLMFogPlatform` uses Firebase to verify the identify of users and determine their authorization to use fog LLM resources, one must setup [`SpeziAccount`](https://github.com/StanfordSpezi/SpeziAccount) as well as [`SpeziFirebaseAccount`](https://github.com/StanfordSpezi/SpeziFirebase) in the Spezi `Configuration`.
-Specifically, one must state the `AccountConfiguration` as well as the `FirebaseAccountConfiguration` in the `Configuration`, otherwise a crash upon startup of Spezi will occur. Resulting from that, the application must contain the [`GoogleService-Info.plist` file issued by Firebase](https://firebase.google.com/docs/ios/setup) so that the `FirebaseAccountConfiguration` is able to use the correct Firebase project.
-
 ```swift
 class LLMFogAppDelegate: SpeziAppDelegate {
     private nonisolated static var caCertificateUrl: URL {
@@ -61,15 +56,6 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 
     override var configuration: Configuration {
         Configuration {
-            // Sets up SpeziAccount and the required account details
-            AccountConfiguration(configuration: [
-                .requires(\.userId),
-                .requires(\.password)
-            ])
-
-            // Sets up SpeziFirebaseAccount which serves as the identity provider for the SpeziAccount setup above
-            FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword)
-
             LLMRunner {
                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
             }
@@ -78,9 +64,8 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 }
 ```
 
-- Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates) as well as the usage of the Firebase emulator (not the real Firebase cloud instance). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
-On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. In addition, one has to specify the usage of the Firebase emulator via the `host` and `port` parameters in the `FirebaseAccountConfiguration`, like: `FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword, emulatorSettings: (host: "localhost", port: 9099))`.
-If used in development mode, no custom CA certificate or Firebase `GoogleService-Info.plist` file is required, ensuring a smooth and straightforward development process.
+- Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
+On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
 
 #### Usage
 
@@ -91,6 +76,8 @@ The ``LLMFogSession`` automatically discovers all available LLM fog nodes within
 
 The ``LLMFogSession`` contains the ``LLMFogSession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
 Ensure the property always contains all necessary information, as the ``LLMFogSession/generate()`` function executes the inference based on the ``LLMFogSession/context``.
+
+- Important: The ``LLMFogSchema`` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the ``LLMFogParameters/init(modelType:systemPrompt:authToken:)``. The token is created via the closure upon every LLM inference request, as the ``LLMFogSession`` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
 
 ```swift
 struct LLMFogDemoView: View {
@@ -105,7 +92,10 @@ struct LLMFogDemoView: View {
                     with: LLMFogSchema(
                         parameters: .init(
                             modelType: .llama7B,
-                            systemPrompt: "You're a helpful assistant that answers questions from users."
+                            systemPrompt: "You're a helpful assistant that answers questions from users.",
+                            authToken: { 
+                                // Return authorization token as `String` or `nil` if no token is required by the Fog node.
+                            }
                         )
                     )
                 )

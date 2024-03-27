@@ -38,8 +38,8 @@ public struct LLMFogParameters: Sendable {
     let modelType: FogModel
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
-    /// Separate user identification token issued by Firebase that overrides the one defined within the ``LLMFogPlatform``.
-    let overwritingToken: String?
+    /// Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    let authToken: @Sendable () async -> String?
     
     
     /// Creates the ``LLMFogParameters``.
@@ -47,13 +47,13 @@ public struct LLMFogParameters: Sendable {
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Google's Gemma models or Meta Llama models.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
-    ///   - overwritingToken: Separate user identification token issued by Firebase that overrides the one defined within the ``LLMFogPlatform``.
+    ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     public init(
         modelType: FogModel,
         systemPrompt: String? = nil,
-        overwritingToken: String? = nil
+        authToken: @Sendable @escaping () async -> String?
     ) {
-        self.init(modelType: modelType, systemPrompts: systemPrompt.map { [$0] } ?? [], overwritingToken: overwritingToken)
+        self.init(modelType: modelType, systemPrompts: systemPrompt.map { [$0] } ?? [], authToken: authToken)
     }
     
     /// Creates the ``LLMFogParameters``.
@@ -61,15 +61,15 @@ public struct LLMFogParameters: Sendable {
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Google's Gemma models or Meta Llama models.
     ///   - systemPrompts: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
-    ///   - overwritingToken: Separate uLser identification token issued by Firebase that overrides the one defined within the ``LLMFogPlatform``.
+    ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     @_disfavoredOverload
     public init(
         modelType: FogModel,
         systemPrompts: [String] = [],
-        overwritingToken: String? = nil
+        authToken: @Sendable @escaping () async -> String?
     ) {
         self.modelType = modelType
         self.systemPrompts = systemPrompts
-        self.overwritingToken = overwritingToken
+        self.authToken = authToken
     }
 }

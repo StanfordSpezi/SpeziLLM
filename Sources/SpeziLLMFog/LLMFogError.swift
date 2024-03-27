@@ -27,8 +27,6 @@ public enum LLMFogError: LLMError {
     case mDnsServicesNotFound
     /// Network error during mDNS service discovery.
     case mDnsServiceDiscoveryNetworkError
-    /// User is not logged in via Firebase
-    case userNotAuthenticated
     /// Unknown error
     case unknownError(Error)
     
@@ -49,8 +47,6 @@ public enum LLMFogError: LLMError {
             String(localized: LocalizedStringResource("LLM_NO_MDNS_SERVICE_FOUND_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .mDnsServiceDiscoveryNetworkError:
             String(localized: LocalizedStringResource("LLM_SERIVE_DISCOVERY_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        case .userNotAuthenticated:
-            String(localized: LocalizedStringResource("LLM_MISSING_AUTHENTICATION_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
@@ -72,8 +68,6 @@ public enum LLMFogError: LLMError {
             String(localized: LocalizedStringResource("LLM_NO_MDNS_SERVICE_FOUND_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .mDnsServiceDiscoveryNetworkError:
             String(localized: LocalizedStringResource("LLM_SERIVE_DISCOVERY_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        case .userNotAuthenticated:
-            String(localized: LocalizedStringResource("LLM_MISSING_AUTHENTICATION_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
@@ -95,8 +89,6 @@ public enum LLMFogError: LLMError {
             String(localized: LocalizedStringResource("LLM_NO_MDNS_SERVICE_FOUND_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .mDnsServiceDiscoveryNetworkError:
             String(localized: LocalizedStringResource("LLM_SERIVE_DISCOVERY_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
-        case .userNotAuthenticated:
-            String(localized: LocalizedStringResource("LLM_MISSING_AUTHENTICATION_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .unknownError:
             String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
@@ -112,7 +104,6 @@ public enum LLMFogError: LLMError {
         case (.missingCaCertificate, .missingCaCertificate): true
         case (.mDnsServicesNotFound, .mDnsServicesNotFound): true
         case (.mDnsServiceDiscoveryNetworkError, .mDnsServiceDiscoveryNetworkError): true
-        case (.userNotAuthenticated, .userNotAuthenticated): true
         case (.unknownError, .unknownError): true
         default: false
         }

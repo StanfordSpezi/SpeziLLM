@@ -8,9 +8,6 @@
 
 import Foundation
 import Spezi
-#if os(iOS)
-import SpeziFirebaseAccount
-#endif
 import SpeziFoundation
 import SpeziLLM
 
@@ -33,14 +30,9 @@ import SpeziLLM
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMPlatform` from SpeziLLM.
 ///
-/// - Important: As the ``LLMFogPlatform`` uses Firebase to verify the identify of users and determine their authorization to use fog LLM resources, one must setup [`SpeziAccount`](https://github.com/StanfordSpezi/SpeziAccount)
-///   as well as [`SpeziFirebaseAccount`](https://github.com/StanfordSpezi/SpeziFirebase) in the Spezi `Configuration`.
-///   Specifically, one must state the `AccountConfiguration` as well as the `FirebaseAccountConfiguration` in the `Configuration`, otherwise a crash upon startup of Spezi will occur.
-///
 /// ### Usage
 ///
 /// The example below demonstrates the setup of the ``LLMFogPlatform`` within the Spezi `Configuration`. The initializer requires the passing of a local `URL` to the root CA certificate in the `.crt` format that signed the web service certificate on the fog node. See the `FogNode/README.md` and specifically the `setup.sh` script for more details.
-/// It is important to note that the `AccountConfiguration` as well as the `FirebaseAccountConfiguration` have to be stated as well in order to use the ``LLMFogPlatform``.
 ///
 /// ```swift
 /// class TestAppDelegate: SpeziAppDelegate {
@@ -50,15 +42,6 @@ import SpeziLLM
 ///
 ///     override var configuration: Configuration {
 ///         Configuration {
-///             // Sets up SpeziAccount and the required account details
-///             AccountConfiguration(configuration: [
-///                 .requires(\.userId),
-///                 .requires(\.password)
-///             ])
-///
-///             // Sets up SpeziFirebaseAccount which serves as the identity provider for the SpeziAccount setup above
-///             FirebaseAccountConfiguration(authenticationMethods: .emailAndPassword)
-///
 ///             LLMRunner {
 ///                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
 ///             }
@@ -66,16 +49,16 @@ import SpeziLLM
 ///     }
 /// }
 /// ```
+///
+/// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
+/// On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
+
 public actor LLMFogPlatform: LLMPlatform {
     /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
     private let semaphore: AsyncSemaphore
     let configuration: LLMFogPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
-    #if os(iOS)
-    /// Dependency to the FirebaseAccountConfiguration, ensuring that it is present in the Spezi `Configuration`.
-    @Dependency private var firebaseAuth: FirebaseAccountConfiguration?
-    #endif
     
     
     /// Creates an instance of the ``LLMFogPlatform``.
@@ -87,19 +70,6 @@ public actor LLMFogPlatform: LLMPlatform {
         self.semaphore = AsyncSemaphore(value: configuration.concurrentStreams)
     }
     
-    
-    public nonisolated func configure() {
-        #if os(iOS)
-        Task {
-            guard await firebaseAuth != nil else {
-                preconditionFailure("""
-                SpeziLLMFog: Ensure that the `AccountConfiguration` and `FirebaseAccountConfiguration` are stated within the Spezi `Configuration`
-                to set up the required Firebase account authentication of the `LLMFogPlatform`.
-                """)
-            }
-        }
-        #endif
-    }
     
     public nonisolated func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
         LLMFogSession(self, schema: llmSchema)

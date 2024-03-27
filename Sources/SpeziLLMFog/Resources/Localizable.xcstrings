@@ -76,7 +76,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The ID token of the current Firebase User is not valid / not authorized to access the Fog LLM resource."
+            "value" : "The specified token is not valid / not authorized to access the Fog LLM resource."
           }
         }
       }
@@ -86,37 +86,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ensure that a Firebase user is currently logged in and has the potentially required claims to the LLM resource."
-          }
-        }
-      }
-    },
-    "LLM_MISSING_AUTHENTICATION_ERROR_DESCRIPTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The user is currently not logged in."
-          }
-        }
-      }
-    },
-    "LLM_MISSING_AUTHENTICATION_ERROR_FAILURE_REASON" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No user is currently logged in the application."
-          }
-        }
-      }
-    },
-    "LLM_MISSING_AUTHENTICATION_ERROR_RECOVERY_SUGGESTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please ensure that you logged in with a valid user."
+            "value" : "Ensure that the specified token is valid and has the potentially required claims to the LLM resource."
           }
         }
       }

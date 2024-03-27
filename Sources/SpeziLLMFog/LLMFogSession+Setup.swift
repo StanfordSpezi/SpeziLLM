@@ -63,42 +63,17 @@ extension LLMFogSession {
             return false
         }
         
-        // Overwrite user id token if passed
-        if let overwritingToken = schema.parameters.overwritingToken {
-            self.wrappedModel = OpenAI(
-                configuration: .init(
-                    token: overwritingToken,
-                    host: fogServiceAddress,
-                    port: (caCertificate != nil) ? 443 : 80,
-                    scheme: (caCertificate != nil) ? "https" : "http",
-                    timeoutInterval: platform.configuration.timeout,
-                    caCertificate: caCertificate,
-                    expectedHost: platform.configuration.host
-                )
+        self.wrappedModel = OpenAI(
+            configuration: .init(
+                token: await schema.parameters.authToken(),
+                host: fogServiceAddress,
+                port: (caCertificate != nil) ? 443 : 80,
+                scheme: (caCertificate != nil) ? "https" : "http",
+                timeoutInterval: platform.configuration.timeout,
+                caCertificate: caCertificate,
+                expectedHost: platform.configuration.host
             )
-        } else {
-            // Use firebase user id token otherwise
-            guard let userToken else {
-                Self.logger.error("""
-                SpeziLLMFog: Missing user token.
-                Please ensure that the user is logged in via SpeziAccount and the Firebase identity provider before dispatching the first inference.
-                """)
-                await finishGenerationWithError(LLMFogError.userNotAuthenticated, on: continuation)
-                return false
-            }
-            
-            self.wrappedModel = OpenAI(
-                configuration: .init(
-                    token: userToken,
-                    host: fogServiceAddress,
-                    port: (caCertificate != nil) ? 443 : 80,
-                    scheme: (caCertificate != nil) ? "https" : "http",
-                    timeoutInterval: platform.configuration.timeout,
-                    caCertificate: caCertificate,
-                    expectedHost: platform.configuration.host
-                )
-            )
-        }
+        )
         
         await MainActor.run {
             self.state = .ready

@@ -25,17 +25,12 @@ extension LLMFogSession {
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name function_body_length
+    func _generate( // swiftlint:disable:this identifier_name
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
-        }
-        
-        // Check if the node is still active by pinging it
-        guard await ensureFogNodeAvailability(continuation: continuation) else {
-            return
         }
         
         let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
@@ -70,7 +65,7 @@ extension LLMFogSession {
                 Self.logger.error("SpeziLLMFog: LLM model type could not be accessed on fog node - \(error.error.message)")
                 await finishGenerationWithError(LLMFogError.modelAccessError(error), on: continuation)
             } else if error.error.code == "401" || error.error.code == "403" {
-                Self.logger.error("SpeziLLMFog: LLM model could not be accessed as the Firebase User ID token is invalid.")
+                Self.logger.error("SpeziLLMFog: LLM model could not be accessed as the passed token is invalid.")
                 await finishGenerationWithError(LLMFogError.invalidAPIToken, on: continuation)
             } else {
                 Self.logger.error("SpeziLLMFog: Generation error occurred - \(error)")
@@ -92,27 +87,5 @@ extension LLMFogSession {
         await MainActor.run {
             self.state = .ready
         }
-    }
-    
-    private func ensureFogNodeAvailability(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
-        guard let discoveredServiceAddress,
-              let discoveredServiceAddressUrl = URL(string: discoveredServiceAddress) else {
-            Self.logger.error("SpeziLLMFog: mDNS service could not be resolved to an IP.")
-            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
-            return false
-        }
-        
-        do {
-            _ = try await URLSession.shared.data(from: discoveredServiceAddressUrl)
-        } catch {
-            // If node not reachable anymore, try to discover another fog node, otherwise fail
-            guard await setup(continuation: continuation) else {
-                Self.logger.error("SpeziLLMFog: mDNS service could not be resolved to an IP.")
-                await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
-                return false
-            }
-        }
-        
-        return true
     }
 }
