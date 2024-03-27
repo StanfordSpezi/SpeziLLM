@@ -32,12 +32,12 @@
 		976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 976CE5162BA2C05100E21810 /* GoogleService-Info.plist */; };
 		976CE5192BA2C49900E21810 /* AccountSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE5182BA2C49900E21810 /* AccountSheet.swift */; };
 		976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */; };
-		9770F28E2BB3C3F100478571 /* SpeziAccount in Frameworks */ = {isa = PBXBuildFile; productRef = 9770F28D2BB3C3F100478571 /* SpeziAccount */; };
-		9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */ = {isa = PBXBuildFile; productRef = 9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */; };
+		9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */; };
 		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
 		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
 		977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */; };
 		977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977E499F2B035563001485D4 /* LLMLocalTestView.swift */; };
+		979D41902BB3EBD8001953BD /* SpeziAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 979D418F2BB3EBD8001953BD /* SpeziAccount */; };
 		97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */; };
 		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
 		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
@@ -98,10 +98,10 @@
 				9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */,
 				9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */,
 				97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */,
-				9770F28E2BB3C3F100478571 /* SpeziAccount in Frameworks */,
 				9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */,
 				9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */,
 				9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */,
+				979D41902BB3EBD8001953BD /* SpeziAccount in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,8 +282,8 @@
 				9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */,
 				9722A5A52B5B5CB20005645E /* SpeziLLMOpenAI */,
 				97A36E142B999EA60034D821 /* SpeziLLMFog */,
-				9770F28D2BB3C3F100478571 /* SpeziAccount */,
 				9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */,
+				979D418F2BB3EBD8001953BD /* SpeziAccount */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -340,8 +340,8 @@
 			mainGroup = 2F6D138928F5F384007C25D6;
 			packageReferences = (
 				2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				9770F28C2BB3C3F100478571 /* XCRemoteSwiftPackageReference "SpeziAccount" */,
 				9770F28F2BB3C40C00478571 /* XCRemoteSwiftPackageReference "SpeziFirebase" */,
+				979D418E2BB3EBD8001953BD /* XCRemoteSwiftPackageReference "SpeziAccount" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -733,20 +733,20 @@
 				minimumVersion = 0.4.10;
 			};
 		};
-		9770F28C2BB3C3F100478571 /* XCRemoteSwiftPackageReference "SpeziAccount" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordSpezi/SpeziAccount";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.2.1;
-			};
-		};
 		9770F28F2BB3C40C00478571 /* XCRemoteSwiftPackageReference "SpeziFirebase" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/SpeziFirebase";
 			requirement = {
 				kind = upToNextMinorVersion;
 				minimumVersion = 1.0.1;
+			};
+		};
+		979D418E2BB3EBD8001953BD /* XCRemoteSwiftPackageReference "SpeziAccount" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StanfordSpezi/SpeziAccount";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.2.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -773,15 +773,15 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziLLMOpenAI;
 		};
-		9770F28D2BB3C3F100478571 /* SpeziAccount */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9770F28C2BB3C3F100478571 /* XCRemoteSwiftPackageReference "SpeziAccount" */;
-			productName = SpeziAccount;
-		};
 		9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9770F28F2BB3C40C00478571 /* XCRemoteSwiftPackageReference "SpeziFirebase" */;
 			productName = SpeziFirebaseAccount;
+		};
+		979D418F2BB3EBD8001953BD /* SpeziAccount */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 979D418E2BB3EBD8001953BD /* XCRemoteSwiftPackageReference "SpeziAccount" */;
+			productName = SpeziAccount;
 		};
 		97A36E142B999EA60034D821 /* SpeziLLMFog */ = {
 			isa = XCSwiftPackageProductDependency;
