@@ -7,7 +7,14 @@
 #
 
 # Stage 1: Build stage
-FROM node:21-alpine3.18 AS builder
+FROM node:21-alpine3.19 AS builder
+
+LABEL org.opencontainers.image.authors="Philipp Zagar <zagar@stanford.edu>" \
+      org.opencontainers.image.version="0.1" \
+      org.opencontainers.image.title="stanfordspezi/firebase-auth-service" \
+      org.opencontainers.image.description="SpeziLLMFog Firebase Authentication Service" \
+      org.opencontainers.image.url="https://ghcr.io/stanfordspezi/firebase-auth-service" \
+      org.opencontainers.image.source="https://github.com/StanfordSpezi/SpeziLLM"
 
 WORKDIR /usr/src/app
 
@@ -21,7 +28,7 @@ COPY src/ ./src
 RUN npm run build
 
 # Stage 2: Runtime stage
-FROM node:21-alpine3.18
+FROM node:21-alpine3.19
 
 WORKDIR /usr/src/app
 

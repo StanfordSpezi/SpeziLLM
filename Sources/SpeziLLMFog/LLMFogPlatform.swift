@@ -52,7 +52,6 @@ import SpeziLLM
 ///
 /// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
 /// On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
-
 public actor LLMFogPlatform: LLMPlatform {
     /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
     private let semaphore: AsyncSemaphore

@@ -6,7 +6,14 @@
 # SPDX-License-Identifier: MIT
 #
 
-FROM node:21-alpine3.18
+FROM alpine:3.19
+
+LABEL org.opencontainers.image.authors="Philipp Zagar <zagar@stanford.edu>" \
+      org.opencontainers.image.version="0.1" \
+      org.opencontainers.image.title="stanfordspezi/firebase-emulator-auth" \
+      org.opencontainers.image.description="SpeziLLMFog Firebase Emulator Auth" \
+      org.opencontainers.image.url="https://ghcr.io/stanfordspezi/firebase-emulator-auth" \
+      org.opencontainers.image.source="https://github.com/StanfordSpezi/SpeziLLM"
 
 # Install Firebase CLI
 RUN npm install -g firebase-tools
