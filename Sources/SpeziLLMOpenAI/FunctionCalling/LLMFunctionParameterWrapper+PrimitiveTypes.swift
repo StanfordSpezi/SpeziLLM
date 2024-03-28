@@ -86,13 +86,13 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
     ///    - format: Defines a required format of the parameter, allowing interoperable semantic validation of the value.
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    ///    - enumValues: Defines all cases of the `String` parameter.
+    ///    - enum: Defines all cases of the `String` parameter.
     public convenience init<D: StringProtocol>(
         description: D,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
-        enumValues: [any StringProtocol]? = nil
+        enum: [any StringProtocol]? = nil
     ) {
         self.init(schema: .init(
             type: .string,
@@ -100,7 +100,7 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
             format: format?.rawValue,
             pattern: pattern.map { String($0) },
             const: const.map { String($0) },
-            enumValues: enumValues.map { $0.map { String($0) } }
+            enum: `enum`.map { $0.map { String($0) } }
         ))
     }
 }

@@ -13,7 +13,7 @@ import SwiftUI
 
 struct LLMOpenAITokenOnboarding: View {
     @Environment(OnboardingNavigationPath.self) private var path
-    #if os(macOS)
+    #if os(visionOS)
     @Environment(\.dismiss) private var dismiss
     #endif
 

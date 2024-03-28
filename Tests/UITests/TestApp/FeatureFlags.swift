@@ -14,4 +14,6 @@ enum FeatureFlags: Sendable {
     static let mockMode = ProcessInfo.processInfo.arguments.contains("--mockMode")
     /// Resets all credentials in Secure Storage when the application is launched in order to facilitate testing of OpenAI API keys.
     static let resetSecureStorage = ProcessInfo.processInfo.arguments.contains("--resetSecureStorage")
+    /// Always show the onboarding when the application is launched. Makes it easy to modify and test the onboarding flow without the need to manually remove the application or reset the simulator.
+    static let showOnboarding = ProcessInfo.processInfo.arguments.contains("--showOnboarding")
 }

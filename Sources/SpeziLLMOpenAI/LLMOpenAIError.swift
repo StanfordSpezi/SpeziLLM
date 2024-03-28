@@ -32,8 +32,6 @@ public enum LLMOpenAIError: LLMError {
     case invalidFunctionCallArguments(Error)
     /// Exception during function call execution
     case functionCallError(Error)
-    /// Unknown error
-    case unknownError(Error)
     
     
     /// Maps the enum cases to error message from the OpenAI API
@@ -67,8 +65,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        case .unknownError:
-            String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
     }
     
@@ -94,8 +90,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        case .unknownError:
-            String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
     }
 
@@ -121,8 +115,6 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
-        case .unknownError:
-            String(localized: LocalizedStringResource("LLM_UNKNOWN_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
     }
     
@@ -139,7 +131,6 @@ public enum LLMOpenAIError: LLMError {
         case (.invalidFunctionCallName, .invalidFunctionCallName): true
         case (.invalidFunctionCallArguments, .invalidFunctionCallArguments): true
         case (.functionCallError, .functionCallError): true
-        case (.unknownError, .unknownError): true
         default: false
         }
     }

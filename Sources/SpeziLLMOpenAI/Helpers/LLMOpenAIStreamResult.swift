@@ -11,36 +11,36 @@ import OpenAI
 
 /// Helper to process the returned stream by the LLM output generation call, especially in regards to the function call and a possible stop reason
 struct LLMOpenAIStreamResult {
+    typealias Role = ChatQuery.ChatCompletionMessageParam.Role
+    typealias FinishReason = ChatStreamResult.Choice.FinishReason
+    
+    
     struct FunctionCall {
+        var id: String?
         var name: String?
         var arguments: String?
         
         
-        init(name: String? = nil, arguments: String? = nil) {
+        init(name: String? = nil, id: String? = nil, arguments: String? = nil) {
             self.name = name
+            self.id = id
             self.arguments = arguments
         }
     }
     
     
     var deltaContent: String?
-    var role: Chat.Role?
-    var functionCall: FunctionCall?
-    private var finishReasonBase: String?
-    var finishReason: LLMOpenAIFinishReason {
-        guard let finishReasonBase else {
-            return .null
-        }
-        
-        return .init(rawValue: finishReasonBase) ?? .null
-    }
+    var role: Role?
+    var finishReason: FinishReason?
+    var functionCall: [FunctionCall]
+    var currentFunctionCallIndex = -1
     
     
-    init(deltaContent: String? = nil, role: Chat.Role? = nil, functionCall: FunctionCall? = nil, finishReason: String? = nil) {
+    init(deltaContent: String? = nil, role: Role? = nil, finishReason: FinishReason? = nil, functionCall: [FunctionCall] = []) {
         self.deltaContent = deltaContent
         self.role = role
+        self.finishReason = finishReason
         self.functionCall = functionCall
-        self.finishReasonBase = finishReason
     }
     
     
@@ -50,24 +50,39 @@ struct LLMOpenAIStreamResult {
         if let role = choice.delta.role {
             self.role = role
         }
-
-        var newFunctionCall = self.functionCall ?? FunctionCall()
-
-        if let deltaName = choice.delta.functionCall?.name {
-            newFunctionCall.name = (self.functionCall?.name ?? "") + deltaName
+        
+        if let finishReason = choice.finishReason {
+            self.finishReason = finishReason
+        }
+        
+        guard let functionCallId = choice.delta.toolCalls?.last?.index else {
+            return self
+        }
+        
+        if functionCallId != currentFunctionCallIndex {
+            functionCall.append(FunctionCall())
+            currentFunctionCallIndex += 1
+        }
+        
+        var newFunctionCall = functionCall[currentFunctionCallIndex]
+        
+        if let functionCallId = choice.delta.toolCalls?.first?.id {
+            newFunctionCall.id = (newFunctionCall.id ?? "") + functionCallId
         }
 
-        if let deltaArguments = choice.delta.functionCall?.arguments {
-            newFunctionCall.arguments = (self.functionCall?.arguments ?? "") + deltaArguments
+        if let deltaName = choice.delta.toolCalls?.first?.function?.name {
+            newFunctionCall.name = (newFunctionCall.name ?? "") + deltaName
+        }
+
+        if let deltaArguments = choice.delta.toolCalls?.first?.function?.arguments {
+            newFunctionCall.arguments = (newFunctionCall.arguments ?? "") + deltaArguments
         }
         
         // Only assign back if there were changes
-        if choice.delta.functionCall?.name != nil || choice.delta.functionCall?.arguments != nil {
-            self.functionCall = newFunctionCall
-        }
-
-        if let finishReasonBase = choice.finishReason {
-            self.finishReasonBase = (self.finishReasonBase ?? "") + finishReasonBase
+        if choice.delta.toolCalls?.first?.id != nil ||
+            choice.delta.toolCalls?.first?.function?.name != nil ||
+            choice.delta.toolCalls?.first?.function?.arguments != nil {
+            functionCall[currentFunctionCallIndex] = newFunctionCall
         }
         
         return self

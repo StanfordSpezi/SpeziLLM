@@ -12,7 +12,7 @@ import SwiftUI
 
 /// Chat view that enables users to interact with an LLM based on an ``LLMSchema``.
 ///
-/// The ``LLMChatViewSchema`` takes an ``LLMSchema`` instance as parameter within the ``LLMChatViewSchema/init(with:)``.
+/// The ``LLMChatViewSchema`` takes an ``LLMSchema`` instance as parameter within the ``LLMChatViewSchema/init(with:exportFormat:)``.
 /// The ``LLMSchema`` defines the type and properties of the LLM that will be used by the ``LLMChatViewSchema`` to generate responses to user prompts.
 ///
 /// - Tip: The ``LLMChatViewSchema`` is a convenience abstraction of the ``LLMChatView``. Refer to ``LLMChatView`` for more details.

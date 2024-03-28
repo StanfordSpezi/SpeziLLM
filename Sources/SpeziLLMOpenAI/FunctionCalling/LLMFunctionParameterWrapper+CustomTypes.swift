@@ -32,7 +32,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 properties: T.Element.itemSchema.properties,
                 pattern: T.Element.itemSchema.pattern,
                 const: T.Element.itemSchema.const,
-                enumValues: T.Element.itemSchema.enumValues,
+                enum: T.Element.itemSchema.enum,
                 multipleOf: T.Element.itemSchema.multipleOf,
                 minimum: T.Element.itemSchema.minimum,
                 maximum: T.Element.itemSchema.maximum
@@ -66,7 +66,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 properties: T.Wrapped.Element.itemSchema.properties,
                 pattern: T.Wrapped.Element.itemSchema.pattern,
                 const: T.Wrapped.Element.itemSchema.const,
-                enumValues: T.Wrapped.Element.itemSchema.enumValues,
+                enum: T.Wrapped.Element.itemSchema.enum,
                 multipleOf: T.Wrapped.Element.itemSchema.multipleOf,
                 minimum: T.Wrapped.Element.itemSchema.minimum,
                 maximum: T.Wrapped.Element.itemSchema.maximum

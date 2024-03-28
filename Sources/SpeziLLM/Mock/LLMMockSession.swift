@@ -25,7 +25,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: Chat = []
+    @MainActor public var context: LLMContext = []
     
     
     /// Initializer for the ``LLMMockSession``.
@@ -37,6 +37,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
         self.platform = platform
         self.schema = schema
     }
+    
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {

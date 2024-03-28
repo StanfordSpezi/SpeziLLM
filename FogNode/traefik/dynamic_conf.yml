@@ -1,0 +1,17 @@
+#
+# This source file is part of the Stanford Spezi open source project
+#
+# SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+#
+# SPDX-License-Identifier: MIT
+#
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/spezillmfog.local.crt
+      keyFile: /etc/traefik/certs/spezillmfog.local.key
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/spezillmfog.local.crt
+        keyFile: /etc/traefik/certs/spezillmfog.local.key

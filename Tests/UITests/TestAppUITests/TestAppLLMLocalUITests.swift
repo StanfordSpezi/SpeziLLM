@@ -17,8 +17,12 @@ class TestAppLLMLocalUITests: XCTestCase {
         continueAfterFailure = false
         
         let app = XCUIApplication()
-        app.launchArguments = ["--mockMode"]
+        app.launchArguments = ["--mockMode", "--showOnboarding", "--testMode"]
+        #if !os(macOS)
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
+        #else
+        app.launch()
+        #endif
     }
     
     func testSpeziLLMLocal() throws {
@@ -39,7 +43,11 @@ class TestAppLLMLocalUITests: XCTestCase {
         sleep(1)
         
         // Chat
+        #if !os(macOS)
         try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        #else
+        try app.textFields["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        #endif
         
         XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
         app.buttons["Send Message"].tap()

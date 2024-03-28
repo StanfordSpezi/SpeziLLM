@@ -7,13 +7,7 @@
 //
 
 import Foundation
-import struct OpenAI.Chat
-import struct OpenAI.ChatFunctionDeclaration
-import struct OpenAI.ChatQuery
 import class OpenAI.OpenAI
-import struct OpenAI.Model
-import struct OpenAI.ChatStreamResult
-import struct OpenAI.APIErrorResponse
 import os
 import SpeziChat
 import SpeziLLM
@@ -80,8 +74,9 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var lock = NSLock()
     
     @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: SpeziChat.Chat = []
+    @MainActor public var context: LLMContext = []
     @ObservationIgnored var wrappedModel: OpenAI?
+    
     
     var model: OpenAI {
         guard let model = wrappedModel else {

@@ -85,8 +85,6 @@ The ``LLMOpenAISchema`` defines the type and configurations of the to-be-execute
 The ``LLMOpenAISession`` contains the ``LLMOpenAISession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
 Ensure the property always contains all necessary information, as the ``LLMOpenAISession/generate()`` function executes the inference based on the ``LLMOpenAISession/context``
 
-> Important: The OpenAI LLM abstractions should only be used together with the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner)!
-
 ```swift
 struct LLMOpenAIDemoView: View {
     @Environment(LLMRunner.self) var runner
@@ -162,7 +160,7 @@ Now the OpenAI API Key entry view will appear within your application's onboardi
 
 ## Topics
 
-### LLM Local abstraction
+### LLM OpenAI abstraction
 
 - ``LLMOpenAISchema``
 - ``LLMOpenAISession``

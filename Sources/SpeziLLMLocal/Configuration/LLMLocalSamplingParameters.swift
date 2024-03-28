@@ -13,7 +13,7 @@ import llama
 /// Represents the sampling parameters of the LLM.
 /// 
 /// Internally, these data points are passed as a llama.cpp `llama_sampling_params` C struct to the LLM.
-public struct LLMLocalSamplingParameters: Sendable {
+public struct LLMLocalSamplingParameters: Sendable {    // swiftlint:disable:this type_body_length
     /// Helper enum for the Mirostat sampling method
     public enum Mirostat {
         init(rawValue: Int, targetEntropy: Float = 5.0, learningRate: Float = 0.1) {
@@ -227,6 +227,9 @@ public struct LLMLocalSamplingParameters: Sendable {
         }
     }
     
+    // C++ vector doesn't conform to Swift sequence on VisionOS SDK (Swift C++ Interop bug),
+    // therefore requiring workaround for VisionSDK
+    #if !os(visionOS)
     /// Classifier-Free Guidance.
     var cfg: ClassifierFreeGuidance {
         get {
@@ -242,7 +245,7 @@ public struct LLMLocalSamplingParameters: Sendable {
             wrapped.cfg_scale = newValue.scale
         }
     }
-    
+
     
     /// Creates the ``LLMLocalContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
     /// Is passed to the underlying llama.cpp model in order to configure the context of the LLM.
@@ -298,4 +301,57 @@ public struct LLMLocalSamplingParameters: Sendable {
         self.mirostat = mirostat
         self.cfg = cfg
     }
+    #else
+    /// Creates the ``LLMLocalContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
+    /// Is passed to the underlying llama.cpp model in order to configure the context of the LLM.
+    ///
+    /// - Parameters:
+    ///   - rememberTokens: Number of previous tokens to remember.
+    ///   - outputProbabilities: If greater than 0, output the probabilities of top n\_probs tokens.
+    ///   - topK: Top-K Sampling: K most likely next words (<= 0 to use vocab size).
+    ///   - topP: Top-p Sampling: Smallest possible set of words whose cumulative probability exceeds the probability p (1.0 = disabled).
+    ///   - minP: Min-p Sampling (0.0 = disabled).
+    ///   - tfs: Tail Free Sampling (1.0 = disabled).
+    ///   - typicalP: Locally Typical Sampling.
+    ///   - temperature: Temperature Sampling: A higher value indicates more creativity of the model but also more hallucinations.
+    ///   - penaltyLastTokens: Last n tokens to penalize (0 = disable penalty, -1 = context size).
+    ///   - penaltyRepeat: Penalize repeated tokens (1.0 = disabled).
+    ///   - penaltyFrequency: Penalize frequency (0.0 = disabled).
+    ///   - penaltyPresence: Presence penalty (0.0 = disabled).
+    ///   - penalizeNewLines: Penalize new lines.
+    ///   - mirostat: Mirostat sampling.
+    public init(
+        rememberTokens: Int32 = 256,
+        outputProbabilities: Int32 = 0,
+        topK: Int32 = 40,
+        topP: Float = 0.95,
+        minP: Float = 0.05,
+        tfs: Float = 1.0,
+        typicalP: Float = 1.0,
+        temperature: Float = 0.8,
+        penaltyLastTokens: Int32 = 64,
+        penaltyRepeat: Float = 1.1,
+        penaltyFrequency: Float = 0.0,
+        penaltyPresence: Float = 0.0,
+        penalizeNewLines: Bool = true,
+        mirostat: Mirostat = .disabled
+    ) {
+        self.wrapped = llama_sampling_params()
+        
+        self.rememberTokens = rememberTokens
+        self.outputProbabilities = outputProbabilities
+        self.topK = topK
+        self.topP = topP
+        self.minP = minP
+        self.tfs = tfs
+        self.typicalP = typicalP
+        self.temperature = temperature
+        self.penaltyLastTokens = penaltyLastTokens
+        self.penaltyRepeat = penaltyRepeat
+        self.penaltyFrequency = penaltyFrequency
+        self.penaltyPresence = penaltyPresence
+        self.penalizeNewLines = penalizeNewLines
+        self.mirostat = mirostat
+    }
+    #endif
 }

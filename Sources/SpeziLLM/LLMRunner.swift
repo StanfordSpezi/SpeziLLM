@@ -20,7 +20,7 @@ import SpeziChat
 ///
 /// The main functionality of the ``LLMRunner`` is``LLMRunner/callAsFunction(with:)``, turning a ``LLMSchema`` to an executable ``LLMSession`` via the respective ``LLMPlatform``.
 /// The created ``LLMSession`` then holds the LLM context and is able to perform the actual LLM inference.
-/// For one-shot LLM inference tasks, the ``LLMRunner`` provides ``LLMRunner/oneShot(with:chat:)-2a1du`` and ``LLMRunner/oneShot(with:chat:)-24coq``, enabling the ``LLMRunner`` to deal with the LLM state management and reducing the burden on developers by just returning an `AsyncThrowingStream` or `String` directly.
+/// For one-shot LLM inference tasks, the ``LLMRunner`` provides ``LLMRunner/oneShot(with:context:)-1nwqi`` and ``LLMRunner/oneShot(with:context:)-5gae7``, enabling the ``LLMRunner`` to deal with the LLM state management and reducing the burden on developers by just returning an `AsyncThrowingStream` or `String` directly.
 ///
 /// ### Usage
 ///
@@ -159,13 +159,13 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///
     /// - Parameters:
     ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
-    ///   - chat: The context of the LLM used for the inference.
+    ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The ready to use `AsyncThrowingStream`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> AsyncThrowingStream<String, Error> {
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, Error> {
         let llmSession = callAsFunction(with: llmSchema)
         await MainActor.run {
-            llmSession.context = chat
+            llmSession.context = context
         }
         
         return try await llmSession.generate()
@@ -180,10 +180,10 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///   - chat: The context of the LLM used for the inference.
     ///
     /// - Returns: The completed output `String`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, chat: Chat) async throws -> String {
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> String {
         var output = ""
         
-        for try await stringPiece in try await oneShot(with: llmSchema, chat: chat) {
+        for try await stringPiece in try await oneShot(with: llmSchema, context: context) {
             output.append(stringPiece)
         }
         

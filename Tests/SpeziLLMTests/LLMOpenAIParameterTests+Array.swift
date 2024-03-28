@@ -34,7 +34,7 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
         var doubleArrayParameter: [Double]
         @Parameter(description: "Bool Array Parameter", const: "true")
         var boolArrayParameter: [Bool]
-        @Parameter(description: "String Array Parameter", pattern: "/d/d/d/d", enumValues: ["1234", "5678"])
+        @Parameter(description: "String Array Parameter", pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringArrayParameter: [String]
         
         // swiftlint:enable attributes
@@ -100,7 +100,7 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
         XCTAssertEqual(schemaArrayString.schema.description, "String Array Parameter")
         XCTAssertEqual(schemaArrayString.schema.items?.type, .string)
         XCTAssertEqual(schemaArrayString.schema.items?.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaArrayString.schema.items?.enumValues, ["1234", "5678"])
+        XCTAssertEqual(schemaArrayString.schema.items?.enum, ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

@@ -301,36 +301,6 @@
         }
       }
     },
-    "LLM_UNKNOWN_ERROR_DESCRIPTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An unknown OpenAI error has occured."
-          }
-        }
-      }
-    },
-    "LLM_UNKNOWN_ERROR_FAILURE_REASON" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The OpenAI API responded with an unknown error."
-          }
-        }
-      }
-    },
-    "LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please retry the query."
-          }
-        }
-      }
-    },
     "OPENAI_API_KEY_PROMPT" : {
       "localizations" : {
         "de" : {

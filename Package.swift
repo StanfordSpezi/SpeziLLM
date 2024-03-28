@@ -23,16 +23,17 @@ let package = Package(
         .library(name: "SpeziLLM", targets: ["SpeziLLM"]),
         .library(name: "SpeziLLMLocal", targets: ["SpeziLLMLocal"]),
         .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
-        .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"])
+        .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"]),
+        .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"])
     ],
     dependencies: [
-        .package(url: "https://github.com/MacPaw/OpenAI", .upToNextMinor(from: "0.2.6")),
+        .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.8")),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.2.1")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "1.0.4"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.1.9")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.0")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
     ],
     targets: [
@@ -73,6 +74,14 @@ let package = Package(
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
+            ]
+        ),
+        .target(
+            name: "SpeziLLMFog",
+            dependencies: [
+                .target(name: "SpeziLLM"),
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "OpenAI", package: "OpenAI")
             ]
         ),
         .testTarget(

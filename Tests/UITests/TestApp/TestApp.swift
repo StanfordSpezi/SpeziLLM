@@ -15,6 +15,7 @@ struct UITestsApp: App {
     enum Tests: String, CaseIterable, Identifiable {
         case llmOpenAI = "LLMOpenAI"
         case llmLocal = "LLMLocal"
+        case llmFog = "LLMFog"
         
         
         var id: RawValue {
@@ -30,6 +31,8 @@ struct UITestsApp: App {
                 LLMOpenAIChatTestView()
             case .llmLocal:
                 LLMLocalTestView()
+            case .llmFog:
+                LLMFogChatTestView()
             }
         }
     }

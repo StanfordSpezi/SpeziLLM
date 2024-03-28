@@ -13,16 +13,18 @@ import SwiftUI
 
 private struct TestAppTestingSetup: ViewModifier {
     @Environment(SecureStorage.self) var secureStorage
+    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
+    
     
     func body(content: Content) -> some View {
         content
             .task {
                 if FeatureFlags.resetSecureStorage {
-                    do {
-                        try secureStorage.deleteAllCredentials()
-                    } catch {
-                        print(error.localizedDescription)
-                    }
+                    try? secureStorage.deleteAllCredentials()
+                }
+                
+                if FeatureFlags.showOnboarding {
+                    completedOnboardingFlow = false
                 }
             }
     }

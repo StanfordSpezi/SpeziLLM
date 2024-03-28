@@ -19,7 +19,7 @@ protocol LLMFunctionParameterSchemaCollector {
 
 
 extension LLMFunction {
-    typealias LLMFunctionParameterSchema = JSONSchema
+    typealias LLMFunctionParameterSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters
     
     
     var schemaValueCollectors: [String: LLMFunctionParameterSchemaCollector] {

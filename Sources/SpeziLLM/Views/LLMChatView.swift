@@ -10,7 +10,6 @@ import SpeziChat
 import SpeziViews
 import SwiftUI
 
-
 /// Chat view that enables users to interact with an LLM based on an ``LLMSession``.
 ///
 /// The ``LLMChatView`` takes an ``LLMSession`` instance and an optional `ChatView/ChatExportFormat` as parameters within the ``LLMChatView/init(session:exportFormat:)``. The ``LLMSession`` is the executable version of the LLM containing context and state as defined by the ``LLMSchema``.
@@ -62,7 +61,7 @@ public struct LLMChatView<Session: LLMSession>: View {
     
     public var body: some View {
         ChatView(
-            $llm.context,
+            $llm.context.chat,
             disableInput: inputDisabled,
             exportFormat: exportFormat,
             messagePendingAnimation: .automatic
@@ -80,6 +79,8 @@ public struct LLMChatView<Session: LLMSession>: View {
                             for try await token in stream {
                                 llm.context.append(assistantOutput: token)
                             }
+                            
+                            llm.context.completeAssistantStreaming()
                         } catch let error as LLMError {
                             llm.state = .error(error: error)
                         } catch {
@@ -113,7 +114,7 @@ public struct LLMChatView<Session: LLMSession>: View {
     
     return NavigationStack {
         LLMChatView(session: $llm)
-            .speak(llm.context, muted: true)
+            .speak(llm.context.chat, muted: true)
             .speechToolbarButton(muted: .constant(true))
             .previewWith {
                 LLMRunner {

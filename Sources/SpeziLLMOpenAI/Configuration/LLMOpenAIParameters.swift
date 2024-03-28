@@ -43,10 +43,12 @@ public struct LLMOpenAIParameters: Sendable {
         modelAccessTest: Bool = false,
         overwritingToken: String? = nil
     ) {
-        self.modelType = modelType
-        self.systemPrompts = systemPrompt.map { [$0] } ?? []
-        self.modelAccessTest = modelAccessTest
-        self.overwritingToken = overwritingToken
+        self.init(
+            modelType: modelType,
+            systemPrompts: systemPrompt.map { [$0] } ?? [],
+            modelAccessTest: modelAccessTest,
+            overwritingToken: overwritingToken
+        )
     }
     
     /// Creates the ``LLMOpenAIParameters``.

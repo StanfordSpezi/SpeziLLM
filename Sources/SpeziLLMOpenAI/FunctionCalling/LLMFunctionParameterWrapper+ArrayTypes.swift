@@ -122,7 +122,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    ///    - enumValues: Defines all cases of a single `String` `array` element.
+    ///    - enum: Defines all cases of a single `String` `array` element.
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
@@ -130,7 +130,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
         description: D,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
-        enumValues: [any StringProtocol]? = nil,
+        enum: [any StringProtocol]? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
@@ -142,7 +142,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 type: .string,
                 pattern: pattern.map { String($0) },
                 const: const.map { String($0) },
-                enumValues: enumValues.map { $0.map { String($0) } }
+                enum: `enum`.map { $0.map { String($0) } }
             ),
             minItems: minItems,
             maxItems: maxItems,
