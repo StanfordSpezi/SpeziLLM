@@ -56,7 +56,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "By default, the application downloads the Llama 2 7B model in its chat variation. The size of the model is around 3.5GB."
+            "value" : "By default, the application downloads the Llama 3 8B model in its instruct variation. The size of the model is around 5GB."
           }
         }
       }
