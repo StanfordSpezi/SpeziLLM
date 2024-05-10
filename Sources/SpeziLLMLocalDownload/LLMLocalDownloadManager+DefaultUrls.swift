@@ -14,7 +14,7 @@ extension LLMLocalDownloadManager {
     public enum LLMUrlDefaults {
         /// LLama 3 8B model with `Q4_K_M` quantization in its instruct variation (~5 GB)
         public static var llama3InstructModelUrl: URL {
-            guard let url = URL(string: "https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q3_K_M.gguf") else {
+            guard let url = URL(string: "https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf") else {
                 preconditionFailure("""
                     SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
                 """)
