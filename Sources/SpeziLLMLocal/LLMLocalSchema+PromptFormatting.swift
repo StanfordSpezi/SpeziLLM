@@ -14,12 +14,19 @@ extension LLMLocalSchema {
     public enum PromptFormattingDefaults {
         /// Prompt formatting closure for the [Llama3](https://ai.meta.com/llama/) model
         public static let llama3: (@Sendable (LLMContext) throws -> String) = { chat in // swiftlint:disable:this closure_body_length
+            /// BOS token of the LLM, used at the start of each prompt passage.
             let BEGINOFTEXT = "<|begin_of_text|>"
+            /// The system identifier
             let SYSTEM = "system"
+            /// The user identifier
             let USER = "user"
+            /// The assistant identifier
             let ASSISTANT = "assistant"
+            /// The start token for enclosing the role of a particular message, e.g. <|start_header_id|>{role}<|end_header_id|>
             let STARTHEADERID = "<|start_header_id|>"
+            /// The end token for enclosing the role of a particular message, e.g. <|start_header_id|>{role}<|end_header_id|>
             let ENDHEADERID = "<|end_header_id|>"
+            /// This signifies the end of the message in a turn.
             let EOTID = "<|eot_id|>"
             
             guard chat.first?.role == .system else {
@@ -43,50 +50,42 @@ extension LLMLocalSchema {
             }
             
             /// Build the initial Llama3 prompt structure
-            ///
-            /// A template of the prompt structure looks like:
-            /// """
-            /// <s>[INST] <<SYS>>
-            /// {your_system_prompt}
-            /// <</SYS>>
-            ///
-            /// {user_message_1} [/INST]
-            /// """
+            /// 
+            /// Template of the prompt structure:
+            /// <|begin_of_text|><|start_header_id|>user<|end_header_id|>
+            /// {{ user_message }}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
             var prompt = """
             \(BEGINOFTEXT)
             \(STARTHEADERID)\(SYSTEM)\(ENDHEADERID)
-            \(systemPrompts.joined(separator: " "))
-            \(EOTID)
+            \(systemPrompts.joined(separator: " "))\(EOTID)
             
             \(STARTHEADERID)\(USER)\(ENDHEADERID)
-            \(initialUserPrompt)
-            \(EOTID)
+            \(initialUserPrompt)\(EOTID)
             
             """ + " "   // Add a spacer to the generated output from the model
             
             for contextEntity in chat.dropFirst(2) {
                 if contextEntity.role == .assistant() {
                     /// Append response from assistant to the Llama3 prompt structure
-                    ///
-                    /// A template for appending an assistant response to the overall prompt looks like:
-                    /// {user_message_1} [/INST]){model_reply_1}</s>
                     prompt += """
                     \(STARTHEADERID)\(ASSISTANT)\(ENDHEADERID)
-                    \(contextEntity.content) 
+                    \(contextEntity.content)
                     \(EOTID)
                     """
                 } else if contextEntity.role == .user {
                     /// Append response from user to the Llama3 prompt structure
-                    ///
-                    /// A template for appending an assistant response to the overall prompt looks like:
-                    /// <s>[INST] {user_message_2} [/INST]
                     prompt += """
                     \(STARTHEADERID)\(USER)\(ENDHEADERID)
-                    \(contextEntity.content) 
+                    \(contextEntity.content)
                     \(EOTID)
                     """ + " "   // Add a spacer to the generated output from the model
                 }
             }
+            
+            prompt +=
+            """
+            \(STARTHEADERID)\(ASSISTANT)\(ENDHEADERID)
+            """
             
             return prompt
         }
