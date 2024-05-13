@@ -12,6 +12,17 @@ import Foundation
 extension LLMLocalDownloadManager {
     /// Defaults of possible LLMs to download via the ``LLMLocalDownloadManager``.
     public enum LLMUrlDefaults {
+        /// LLama 3 8B model with `Q4_K_M` quantization in its instruct variation (~5 GB)
+        public static var llama3InstructModelUrl: URL {
+            guard let url = URL(string: "https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf") else {
+                preconditionFailure("""
+                    SpeziLLM: Invalid LLMUrlDefaults LLM download URL.
+                """)
+            }
+            
+            return url
+        }
+        
         /// LLama 2 7B model with `Q4_K_M` quantization in its chat variation (~3.5GB)
         public static var llama2ChatModelUrl: URL {
             guard let url = URL(string: "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf") else {

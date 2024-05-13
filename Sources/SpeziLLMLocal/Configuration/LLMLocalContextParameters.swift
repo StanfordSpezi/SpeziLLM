@@ -119,16 +119,6 @@ public struct LLMLocalContextParameters: Sendable {
             wrapped.rope_freq_scale = newValue
         }
     }
-
-    /// Set the usage of experimental `mul_mat_q` kernels
-    var useMulMatQKernels: Bool {
-        get {
-            wrapped.mul_mat_q
-        }
-        set {
-            wrapped.mul_mat_q = newValue
-        }
-    }
     
     /// If `true`, offload the KQV ops (including the KV cache) to GPU
     var offloadKQV: Bool {
@@ -173,10 +163,10 @@ public struct LLMLocalContextParameters: Sendable {
     /// If `true`, the mode is set to embeddings only
     var embeddingsOnly: Bool {
         get {
-            wrapped.embedding
+            wrapped.embeddings
         }
         set {
-            wrapped.embedding = newValue
+            wrapped.embeddings = newValue
         }
     }
     
@@ -191,7 +181,6 @@ public struct LLMLocalContextParameters: Sendable {
     ///   - threadCountBatch: Number of threads used by LLM for batch processing, defaults to the processor count of the device.
     ///   - ropeFreqBase: RoPE base frequency, defaults to `0` indicating the default from model.
     ///   - ropeFreqScale: RoPE frequency scaling factor, defaults to `0` indicating the default from model.
-    ///   - useMulMatQKernels: Usage of experimental `mul_mat_q` kernels, defaults to `true`.
     ///   - offloadKQV: Offloads the KQV ops (including the KV cache) to GPU, defaults to `true`.
     ///   - kvKeyType: ``GGMLType`` of the key of the KV cache, defaults to ``GGMLType/f16``.
     ///   - kvValueType: ``GGMLType`` of the value of the KV cache, defaults to ``GGMLType/f16``.
@@ -205,7 +194,6 @@ public struct LLMLocalContextParameters: Sendable {
         threadCountBatch: UInt32 = .init(ProcessInfo.processInfo.processorCount),
         ropeFreqBase: Float = 0.0,
         ropeFreqScale: Float = 0.0,
-        useMulMatQKernels: Bool = true,
         offloadKQV: Bool = true,
         kvKeyType: GGMLType = .f16,
         kvValueType: GGMLType = .f16,
@@ -221,7 +209,6 @@ public struct LLMLocalContextParameters: Sendable {
         self.threadCountBatch = threadCountBatch
         self.ropeFreqBase = ropeFreqBase
         self.ropeFreqScale = ropeFreqScale
-        self.useMulMatQKernels = useMulMatQKernels
         self.offloadKQV = offloadKQV
         self.kvKeyType = kvKeyType
         self.kvValueType = kvValueType

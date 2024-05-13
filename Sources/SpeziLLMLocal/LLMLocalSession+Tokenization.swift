@@ -75,7 +75,7 @@ extension LLMLocalSession {
     /// - Note: Used only for debug purposes
     func detokenize(tokens: [LLMLocalToken]) -> [(LLMLocalToken, String)] {
         tokens.reduce(into: [(LLMLocalToken, String)]()) { partialResult, token in
-            partialResult.append((token, String(llama_token_to_piece(self.modelContext, token))))
+            partialResult.append((token, String(llama_token_to_piece(self.modelContext, token, true))))
         }
     }
 }

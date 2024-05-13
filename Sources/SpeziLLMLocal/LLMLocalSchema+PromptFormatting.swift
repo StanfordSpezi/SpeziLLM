@@ -12,6 +12,86 @@ import SpeziLLM
 extension LLMLocalSchema {
     /// Holds default prompt formatting strategies for [Llama2](https://ai.meta.com/llama/) as well as [Phi-2](https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/) models.
     public enum PromptFormattingDefaults {
+        /// Prompt formatting closure for the [Llama3](https://ai.meta.com/llama/) model
+        public static let llama3: (@Sendable (LLMContext) throws -> String) = { chat in // swiftlint:disable:this closure_body_length
+            /// BOS token of the LLM, used at the start of each prompt passage.
+            let BEGINOFTEXT = "<|begin_of_text|>"
+            /// The system identifier.
+            let SYSTEM = "system"
+            /// The user identifier.
+            let USER = "user"
+            /// The assistant identifier.
+            let ASSISTANT = "assistant"
+            /// The start token for enclosing the role of a particular message, e.g. <|start_header_id|>{role}<|end_header_id|>
+            let STARTHEADERID = "<|start_header_id|>"
+            /// The end token for enclosing the role of a particular message, e.g. <|start_header_id|>{role}<|end_header_id|>
+            let ENDHEADERID = "<|end_header_id|>"
+            /// The token that signifies the end of the message in a turn.
+            let EOTID = "<|eot_id|>"
+            
+            guard chat.first?.role == .system else {
+                throw LLMLocalError.illegalContext
+            }
+            
+            var systemPrompts: [String] = []
+            var initialUserPrompt: String = ""
+            
+            for contextEntity in chat {
+                if contextEntity.role != .system {
+                    if contextEntity.role == .user {
+                        initialUserPrompt = contextEntity.content
+                        break
+                    } else {
+                        throw LLMLocalError.illegalContext
+                    }
+                }
+                
+                systemPrompts.append(contextEntity.content)
+            }
+            
+            /// Build the initial Llama3 prompt structure
+            /// 
+            /// Template of the prompt structure:
+            /// <|begin_of_text|>
+            /// <|start_header_id|>user<|end_header_id|>
+            /// {{ user_message }}<|eot_id|>
+            /// <|start_header_id|>assistant<|end_header_id|>
+            var prompt = """
+            \(BEGINOFTEXT)
+            \(STARTHEADERID)\(SYSTEM)\(ENDHEADERID)
+            \(systemPrompts.joined(separator: " "))\(EOTID)
+            
+            \(STARTHEADERID)\(USER)\(ENDHEADERID)
+            \(initialUserPrompt)\(EOTID)
+            
+            """ + " "   // Add a spacer to the generated output from the model
+            
+            for contextEntity in chat.dropFirst(2) {
+                if contextEntity.role == .assistant() {
+                    /// Append response from assistant to the Llama3 prompt structure
+                    prompt += """
+                    \(STARTHEADERID)\(ASSISTANT)\(ENDHEADERID)
+                    \(contextEntity.content)
+                    \(EOTID)
+                    """
+                } else if contextEntity.role == .user {
+                    /// Append response from user to the Llama3 prompt structure
+                    prompt += """
+                    \(STARTHEADERID)\(USER)\(ENDHEADERID)
+                    \(contextEntity.content)
+                    \(EOTID)
+                    """ + " "   // Add a spacer to the generated output from the model
+                }
+            }
+            
+            prompt +=
+            """
+            \(STARTHEADERID)\(ASSISTANT)\(ENDHEADERID)
+            """
+            
+            return prompt
+        }
+        
         /// Prompt formatting closure for the [Llama2](https://ai.meta.com/llama/) model
         public static let llama2: (@Sendable (LLMContext) throws -> String) = { chat in     // swiftlint:disable:this closure_body_length
             /// BOS token of the LLM, used at the start of each prompt passage.

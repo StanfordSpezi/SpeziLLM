@@ -131,7 +131,7 @@ extension LLMLocalSession {
                 return
             }
             
-            var nextStringPiece = String(llama_token_to_piece(self.modelContext, nextTokenId))
+            var nextStringPiece = String(llama_token_to_piece(self.modelContext, nextTokenId, true))
             // As first character is sometimes randomly prefixed by a single space (even though prompt has an additional character)
             if decodedTokens == 0 && nextStringPiece.starts(with: " ") {
                 nextStringPiece = String(nextStringPiece.dropFirst())
