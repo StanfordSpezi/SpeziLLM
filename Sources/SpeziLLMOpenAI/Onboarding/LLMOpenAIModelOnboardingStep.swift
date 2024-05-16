@@ -14,7 +14,7 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
-        public static let models: [LLMOpenAIModelType] = [.gpt3_5Turbo, .gpt4_turbo_preview]
+        public static let models: [LLMOpenAIModelType] = [.gpt3_5Turbo, .gpt4_turbo, .gpt4_o]
     }
     
     

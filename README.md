@@ -53,7 +53,7 @@ Spezi LLM provides a number of targets to help developers integrate LLMs in thei
 The section below highlights the setup and basic use of the [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal), [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai), and [SpeziLLMFog](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmfog) targets in order to integrate Language Models in a Spezi-based application. 
 
 > [!NOTE]  
-> To learn more about the usage of the individual targets, please refer to the [DocC documentation of the package] (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation).
+> To learn more about the usage of the individual targets, please refer to the [DocC documentation of the package](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation).
 
 ### Spezi LLM Local
 
@@ -136,7 +136,7 @@ struct LLMLocalDemoView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation]: (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
 ### Spezi LLM Open AI
 
@@ -198,7 +198,7 @@ struct LLMOpenAIDemoView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMOpenAI, please refer to the [DocC documentation] (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai).
+> To learn more about the usage of SpeziLLMOpenAI, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai).
 
 ### Spezi LLM Fog
 
@@ -272,7 +272,7 @@ struct LLMFogDemoView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMFog, please refer to the [DocC documentation] (https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmfog).
+> To learn more about the usage of SpeziLLMFog, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmfog).
 
 ## Contributing
 

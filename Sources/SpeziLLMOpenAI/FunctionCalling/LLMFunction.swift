@@ -51,7 +51,7 @@
 /// struct LLMOpenAIChatTestView: View {
 ///     private let schema = LLMOpenAISchema(
 ///         parameters: .init(
-///             modelType: .gpt4_1106_preview,
+///             modelType: .gpt4_turbo,
 ///             systemPrompt: "You're a helpful assistant that answers questions from users."
 ///         )
 ///     ) {
