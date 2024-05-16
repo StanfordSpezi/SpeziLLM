@@ -51,8 +51,8 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
         XCTAssert(app.pickerWheels["GPT 4O"].waitForExistence(timeout: 2))
         #else
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4 Turbo")
-        XCTAssert(app.pickerWheels["GPT 4 Turbo"].waitForExistence(timeout: 2))
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4O")
+        XCTAssert(app.pickerWheels["GPT 4O"].waitForExistence(timeout: 2))
         #endif
         
         sleep(1)
@@ -64,7 +64,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         let alert = app.alerts["Model Selected"]
         
         XCTAssertTrue(alert.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(alert.staticTexts["gpt-4-turbo"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
         
         let okButton = alert.buttons["OK"]
         XCTAssertTrue(okButton.exists, "The OK button on the alert was not found.")
