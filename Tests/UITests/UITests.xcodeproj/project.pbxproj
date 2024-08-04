@@ -730,7 +730,7 @@
 			repositoryURL = "https://github.com/StanfordBDHG/XCTestExtensions.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.4.10;
+				minimumVersion = 0.4.13;
 			};
 		};
 		9770F28F2BB3C40C00478571 /* XCRemoteSwiftPackageReference "SpeziFirebase" */ = {

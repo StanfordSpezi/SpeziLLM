@@ -107,7 +107,7 @@ jobs:
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
-      destination: 'platform=iOS Simulator,name=iPad Air (5th generation)'
+      destination: 'platform=iOS Simulator,name=iPad Air 11-inch (M2)'
       buildConfig: ${{ matrix.buildConfig }}
       resultBundle: ${{ matrix.resultBundle }}
       artifactname: ${{ matrix.artifactname }}
