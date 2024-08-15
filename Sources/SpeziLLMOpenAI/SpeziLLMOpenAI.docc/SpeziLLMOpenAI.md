@@ -128,7 +128,7 @@ First, create a new view to show the onboarding step:
 import SpeziOnboarding
 
 struct OpenAIAPIKey: View {
-    @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
+    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath: OnboardingNavigationPath
     
     var body: some View {
         LLMOpenAIAPITokenOnboardingStep {
