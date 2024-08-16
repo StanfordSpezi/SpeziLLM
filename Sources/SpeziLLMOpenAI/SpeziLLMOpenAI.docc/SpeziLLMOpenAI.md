@@ -142,7 +142,7 @@ import SpeziOnboarding
 import SwiftUI
 
 struct OpenAIAPIKey: View {
-    @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
+    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath: OnboardingNavigationPath
     
     var body: some View {
         LLMOpenAIAPITokenOnboardingStep {
