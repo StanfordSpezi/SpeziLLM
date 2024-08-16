@@ -152,6 +152,7 @@ This view can then be added to the `OnboardingFlow` within the Spezi Template Ap
 
 ```swift
 import SpeziOnboarding
+import SwiftUI
 
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
