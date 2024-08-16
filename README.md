@@ -127,8 +127,12 @@ struct LLMLocalDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors ...
                 }
             }
     }
@@ -189,8 +193,12 @@ struct LLMOpenAIDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors ...
                 }
             }
     }
@@ -263,8 +271,12 @@ struct LLMFogDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors ...
                 }
             }
     }
