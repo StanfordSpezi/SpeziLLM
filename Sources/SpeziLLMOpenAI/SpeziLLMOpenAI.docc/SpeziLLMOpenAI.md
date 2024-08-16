@@ -65,6 +65,10 @@ In order to use OpenAI LLMs, the [SpeziLLM](https://swiftpackageindex.com/stanfo
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
+import Spezi
+import SpeziLLM
+import SpeziLLMOpenAI
+
 class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
          Configuration {

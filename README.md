@@ -150,6 +150,10 @@ In order to use OpenAI LLMs within the Spezi ecosystem, the [SpeziLLM](https://s
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
+import Spezi
+import SpeziLLM
+import SpeziLLMOpenAI
+
 class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
