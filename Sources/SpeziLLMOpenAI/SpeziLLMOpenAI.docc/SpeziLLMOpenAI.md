@@ -90,6 +90,10 @@ The ``LLMOpenAISession`` contains the ``LLMOpenAISession/context`` property whic
 Ensure the property always contains all necessary information, as the ``LLMOpenAISession/generate()`` function executes the inference based on the ``LLMOpenAISession/context``
 
 ```swift
+import SpeziLLM
+import SpeziLLMOpenAI
+import SwiftUI
+
 struct LLMOpenAIDemoView: View {
     @Environment(LLMRunner.self) var runner
     @State var responseText = ""
