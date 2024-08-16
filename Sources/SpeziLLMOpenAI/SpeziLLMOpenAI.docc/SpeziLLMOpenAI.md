@@ -65,6 +65,10 @@ In order to use OpenAI LLMs, the [SpeziLLM](https://swiftpackageindex.com/stanfo
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
+import Spezi
+import SpeziLLM
+import SpeziLLMOpenAI
+
 class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
          Configuration {
@@ -86,6 +90,10 @@ The ``LLMOpenAISession`` contains the ``LLMOpenAISession/context`` property whic
 Ensure the property always contains all necessary information, as the ``LLMOpenAISession/generate()`` function executes the inference based on the ``LLMOpenAISession/context``
 
 ```swift
+import SpeziLLM
+import SpeziLLMOpenAI
+import SwiftUI
+
 struct LLMOpenAIDemoView: View {
     @Environment(LLMRunner.self) var runner
     @State var responseText = ""
@@ -129,7 +137,9 @@ The ``LLMOpenAIAPITokenOnboardingStep`` provides a view that can be used for the
 First, create a new view to show the onboarding step:
 
 ```swift
+import SpeziLLMOpenAI
 import SpeziOnboarding
+import SwiftUI
 
 struct OpenAIAPIKey: View {
     @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
@@ -146,6 +156,7 @@ This view can then be added to the `OnboardingFlow` within the Spezi Template Ap
 
 ```swift
 import SpeziOnboarding
+import SwiftUI
 
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false

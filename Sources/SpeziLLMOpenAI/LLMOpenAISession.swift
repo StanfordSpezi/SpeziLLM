@@ -33,6 +33,10 @@ import SpeziSecureStorage
 /// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
 ///
 /// ```swift
+/// import SpeziLLM
+/// import SpeziLLMOpenAI
+/// import SwiftUI
+///
 /// struct LLMOpenAIDemoView: View {
 ///     @Environment(LLMRunner.self) var runner
 ///     @State var responseText = ""
