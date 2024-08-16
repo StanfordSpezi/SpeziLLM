@@ -133,7 +133,9 @@ The ``LLMOpenAIAPITokenOnboardingStep`` provides a view that can be used for the
 First, create a new view to show the onboarding step:
 
 ```swift
+import SpeziLLMOpenAI
 import SpeziOnboarding
+import SwiftUI
 
 struct OpenAIAPIKey: View {
     @EnvironmentObject private var onboardingNavigationPath: OnboardingNavigationPath
