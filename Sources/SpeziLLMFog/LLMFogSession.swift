@@ -55,7 +55,7 @@ import SpeziLLM
 ///                         responseText.append(token)
 ///                     }
 ///                 } catch {
-///                     // Handle errors ...
+///                     // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
 ///                 }
 ///             }
 ///     }
