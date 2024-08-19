@@ -33,6 +33,10 @@ import SpeziSecureStorage
 /// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
 ///
 /// ```swift
+/// import SpeziLLM
+/// import SpeziLLMOpenAI
+/// import SwiftUI
+///
 /// struct LLMOpenAIDemoView: View {
 ///     @Environment(LLMRunner.self) var runner
 ///     @State var responseText = ""
@@ -51,8 +55,12 @@ import SpeziSecureStorage
 ///                     )
 ///                 )
 ///
-///                 for try await token in try await llmSession.generate() {
-///                     responseText.append(token)
+///                 do {
+///                     for try await token in try await llmSession.generate() {
+///                         responseText.append(token)
+///                     }
+///                 } catch {
+///                     // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
 ///                 }
 ///             }
 ///     }

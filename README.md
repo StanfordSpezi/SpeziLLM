@@ -127,8 +127,12 @@ struct LLMLocalDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
                 }
             }
     }
@@ -150,6 +154,10 @@ In order to use OpenAI LLMs within the Spezi ecosystem, the [SpeziLLM](https://s
 See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
 
 ```swift
+import Spezi
+import SpeziLLM
+import SpeziLLMOpenAI
+
 class LLMOpenAIAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
@@ -171,6 +179,10 @@ The code example below showcases the interaction with an OpenAI LLM through the 
 The `LLMOpenAISchema` defines the type and configurations of the to-be-executed `LLMOpenAISession`. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the `LLMOpenAIPlatform`. The inference via `LLMOpenAISession/generate()` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
 ```swift
+import SpeziLLM
+import SpeziLLMOpenAI
+import SwiftUI
+
 struct LLMOpenAIDemoView: View {
     @Environment(LLMRunner.self) var runner
     @State var responseText = ""
@@ -189,8 +201,12 @@ struct LLMOpenAIDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
                 }
             }
     }
@@ -263,8 +279,12 @@ struct LLMFogDemoView: View {
                     )
                 )
 
-                for try await token in try await llmSession.generate() {
-                    responseText.append(token)
+                do {
+                    for try await token in try await llmSession.generate() {
+                        responseText.append(token)
+                    }
+                } catch {
+                    // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
                 }
             }
     }
