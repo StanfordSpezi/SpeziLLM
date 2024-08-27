@@ -2,14 +2,13 @@
 
 //
 // This source file is part of the Stanford Spezi open source project
-// 
+//
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
-// 
+//
 // SPDX-License-Identifier: MIT
 //
 
 import PackageDescription
-
 
 let package = Package(
     name: "SpeziLLM",
@@ -34,7 +33,10 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.0")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1"),
+        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0")
     ],
     targets: [
         .target(
@@ -73,7 +75,12 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
+            ],
+            plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]
         ),
         .target(
