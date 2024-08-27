@@ -64,14 +64,14 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         let alert = app.alerts["Model Selected"]
         
         XCTAssertTrue(alert.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(alert.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert.staticTexts["GPT 4O"].exists, "The correct model was not registered.")
         
         let okButton = alert.buttons["OK"]
         XCTAssertTrue(okButton.exists, "The OK button on the alert was not found.")
         okButton.tap()
         #else
         XCTAssertTrue(app.staticTexts["Model Selected"].waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(app.staticTexts["gpt-4-turbo"].exists, "The correct model was not registered.")
+        XCTAssertTrue(app.staticTexts["GPT 4O"].exists, "The correct model was not registered.")
         XCTAssert(app.buttons["OK"].firstMatch.waitForExistence(timeout: 2))
         app.buttons["OK"].firstMatch.tap()
         #endif
@@ -102,14 +102,14 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         let alert2 = app.alerts["Model Selected"]
 
         XCTAssertTrue(alert2.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(alert2.staticTexts["gpt-3.5-turbo"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert2.staticTexts["GPT 3.5 Turbo"].exists, "The correct model was not registered.")
 
         let okButton2 = alert.buttons["OK"]
         XCTAssertTrue(okButton2.exists, "The OK button on the alert was not found.")
         okButton.tap()
         #else
         XCTAssertTrue(app.staticTexts["Model Selected"].waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(app.staticTexts["gpt-3.5-turbo"].exists, "The correct model was not registered.")
+        XCTAssertTrue(app.staticTexts["GPT 3.5 Turbo"].exists, "The correct model was not registered.")
         XCTAssert(app.buttons["OK"].firstMatch.waitForExistence(timeout: 2))
         app.buttons["OK"].firstMatch.tap()
         #endif
