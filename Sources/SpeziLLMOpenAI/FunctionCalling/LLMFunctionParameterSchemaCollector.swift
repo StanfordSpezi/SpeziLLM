@@ -7,8 +7,7 @@
 //
 
 import Foundation
-import OpenAI
-
+import OpenAPIRuntime
 
 /// Defines the `LLMFunctionParameterSchemaCollector/schema` requirement to collect the function calling parameter schema's from the ``LLMFunction/Parameter``s.
 ///
@@ -19,9 +18,9 @@ protocol LLMFunctionParameterSchemaCollector {
 
 
 extension LLMFunction {
-    typealias LLMFunctionParameterSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters
     
     
+    typealias LLMFunctionParameterSchema = Components.Schemas.FunctionParameters
     var schemaValueCollectors: [String: LLMFunctionParameterSchemaCollector] {
         retrieveProperties(ofType: LLMFunctionParameterSchemaCollector.self)
     }
@@ -38,10 +37,17 @@ extension LLMFunction {
         
         let properties = schemaValueCollectors.compactMapValues { $0.schema }
         
-        return .init(
-            type: .object,
-            properties: properties,
-            required: requiredPropertyNames
-        )
+        var ret: LLMFunctionParameterSchema = .init()
+        do {
+            ret.additionalProperties = try .init(unvalidatedValue: [
+                "type": "object",
+                "properties": properties.mapValues { $0.additionalProperties.value },
+                "required": requiredPropertyNames
+            ])
+        } catch {
+            // FIXME: handle this error correctly
+            fatalError("Error creating OpenAPIObjectContainer.")
+        }
+        return ret
     }
 }

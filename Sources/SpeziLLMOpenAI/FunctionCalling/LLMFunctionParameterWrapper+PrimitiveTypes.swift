@@ -17,21 +17,36 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
     ///    - multipleOf: Defines that the LLM parameter needs to be a multiple of the init argument.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T? = nil,
         maximum: T? = nil
     ) {
-        self.init(schema: .init(
-            type: .integer,
-            description: String(description),
-            const: const.map { String($0) },
-            multipleOf: multipleOf,
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "integer",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = const.map { String($0) }
+            }
+            if let multipleOf {
+                addProp["multipleOf"] = multipleOf
+            }
+            if let minimum {
+                addProp["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                addProp["maximum"] = Double(maximum)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameter+PrimitveTypes")
+        }
     }
 }
 
@@ -44,19 +59,32 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T? = nil,
         maximum: T? = nil
     ) {
-        self.init(schema: .init(
-            type: .number,
-            description: String(description),
-            const: const.map { String($0) },
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "number",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            if let minimum {
+                addProp["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                addProp["maximum"] = Double(maximum)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+PrimitveTypes")
+        }
     }
 }
 
@@ -66,15 +94,24 @@ extension _LLMFunctionParameterWrapper where T == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil
     ) {
-        self.init(schema: .init(
-            type: .boolean,
-            description: String(description),
-            const: const.map { String($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "boolean",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+PrimiteveTypes")
+        }
     }
 }
 
@@ -87,21 +124,36 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enum: Defines all cases of the `String` parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil
     ) {
-        self.init(schema: .init(
-            type: .string,
-            description: String(description),
-            format: format?.rawValue,
-            pattern: pattern.map { String($0) },
-            const: const.map { String($0) },
-            enum: `enum`.map { $0.map { String($0) } }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "string",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            if let format {
+                addProp["format"] = format.rawValue
+            }
+            if let pattern {
+                addProp["pattern"] = String(pattern)
+            }
+            if let `enum` {
+                addProp["enum"] = `enum`.map { $0.map { String($0) } }
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+PrimitiveTypes")
+        }
     }
 }
 

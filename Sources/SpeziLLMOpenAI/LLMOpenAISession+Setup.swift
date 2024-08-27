@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import OpenAI
-
+import OpenAPIRuntime
+import OpenAPIURLSession
 
 extension LLMOpenAISession {
     /// Set up the OpenAI LLM execution client.
@@ -16,6 +16,8 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
+    // FIXME: Reduce function length
+    // swiftlint:disable function_body_length
     func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
@@ -24,12 +26,18 @@ extension LLMOpenAISession {
         
         // Overwrite API token if passed
         if let overwritingToken = schema.parameters.overwritingToken {
-            self.wrappedModel = OpenAI(
-                configuration: .init(
-                    token: overwritingToken,
-                    timeoutInterval: platform.configuration.timeout
+            do {
+                wrappedClient = try Client(
+                    serverURL: Servers.server1(),
+                    transport: URLSessionTransport(),
+                    middlewares: [AuthMiddleware(APIKey: overwritingToken)]
                 )
-            )
+            } catch {
+                Self.logger.error("""
+                SpeziLLMOpenAI: Couldn't create OpenAI OpenAPI client with the passed API token.
+                \(error.localizedDescription)
+                """)
+            }
         } else {
             // If token is present within the Spezi `SecureStorage`
             guard let credentials = try? secureStorage.retrieveCredentials(
@@ -46,12 +54,19 @@ extension LLMOpenAISession {
             }
             
             // Initialize the OpenAI model
-            self.wrappedModel = OpenAI(
-                configuration: .init(
-                    token: credentials.password,
-                    timeoutInterval: platform.configuration.timeout
+            do {
+                // TODO: We're missing `timeoutInterval: platform.configuration.timeout` in the initialisation here.
+                wrappedClient = try Client(
+                    serverURL: Servers.server1(),
+                    transport: URLSessionTransport(),
+                    middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
-            )
+            } catch {
+                Self.logger.error("""
+                LLMOpenAI: Couldn't create OpenAI OpenAPI client with the token present in the Spezi secure storage.
+                \(error.localizedDescription)
+                """)
+            }
         }
         
         // Check access to the specified OpenAI model
@@ -74,20 +89,27 @@ extension LLMOpenAISession {
     /// - Returns: `true` if the model access test was successful, `false` otherwise.
     private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         do {
-            _ = try await self.model.model(query: .init(model: schema.parameters.modelType))
+            guard let modelVal = schema.parameters.modelType.value2?.rawValue else {
+                Self.logger.error("No modelType present.")
+                return false
+            }
+            _ = try await chatGPTClient.retrieveModel(.init(path: .init(model: modelVal)))
             Self.logger.error("SpeziLLMOpenAI: Model access check completed")
             return true
         } catch let error as URLError {
             Self.logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")
             await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
         } catch {
-            if let apiError = error as? APIErrorResponse, apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
-                Self.logger.error("SpeziLLMOpenAI: Model access check - Invalid OpenAI API token: \(apiError)")
-                await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
-            } else {
-                Self.logger.error("SpeziLLMOpenAI: Model access check - Couldn't access the specified OpenAI model: \(error)")
-                await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
-            }
+            // FIXME: what is the counterpart for the generated API calls?
+            //     if let apiError = error as? APIErrorResponse,
+            //        apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
+            //         Self.logger.error("SpeziLLMOpenAI: Model access check - Invalid OpenAI API token: \(apiError)")
+            //         await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+            //     } else {
+            Self.logger
+                .error("SpeziLLMOpenAI: Model access check - Couldn't access the specified OpenAI model: \(error)")
+            await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
+            // }
         }
         
         return false
