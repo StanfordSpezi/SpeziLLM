@@ -36,7 +36,7 @@ extension LLMOpenAISession {
                     .asDecodedServerSentEventsWithJSONData(of: Components.Schemas.CreateChatCompletionStreamResponse
                         .self)
 
-                chatStreamIteration: for try await chatStreamResult in chatStream {
+                for try await chatStreamResult in chatStream {
                     guard let choices = chatStreamResult.data?.choices else {
                         Self.logger.error("SpeziLLMOpenAI: Couldn't obtain choices from stream response.")
                         return
