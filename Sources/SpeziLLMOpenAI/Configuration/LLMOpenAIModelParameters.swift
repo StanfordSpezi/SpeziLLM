@@ -20,7 +20,7 @@ public struct LLMOpenAIModelParameters: Sendable {
     /// The number of generated chat completions per input.
     let completionsPerOutput: Int?
     /// Sequences (up to 4) where generation stops. Output doesn't include these sequences.
-    let stopSequence: [String]
+    let stopSequence: String?
     /// Maximum token count for each completion.
     let maxOutputLength: Int?
     /// OpenAI will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result. Determinism is not guaranteed.
@@ -54,7 +54,7 @@ public struct LLMOpenAIModelParameters: Sendable {
         temperature: Double? = nil,
         topP: Double? = nil,
         completionsPerOutput: Int? = nil,
-        stopSequence: [String] = [],
+        stopSequence: String? = "",
         maxOutputLength: Int? = nil,
         seed: Int? = nil,
         presencePenalty: Double? = nil,
