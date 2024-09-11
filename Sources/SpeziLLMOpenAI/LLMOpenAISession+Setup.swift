@@ -22,6 +22,12 @@ extension LLMOpenAISession {
             do {
                 wrappedClient = try Client(
                     serverURL: Servers.server1(),
+                    configuration: .init(
+                        dateTranscoder: .iso8601,
+                        jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
+                        multipartBoundaryGenerator: .random,
+                        xmlCoder: nil
+                    ),
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: overwritingToken)]
                 )
@@ -51,6 +57,12 @@ extension LLMOpenAISession {
             do {
                 wrappedClient = try Client(
                     serverURL: Servers.server1(),
+                    configuration: .init(
+                        dateTranscoder: .iso8601,
+                        jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
+                        multipartBoundaryGenerator: .random,
+                        xmlCoder: nil
+                    ),
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
