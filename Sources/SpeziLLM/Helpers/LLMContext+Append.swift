@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 extension LLMContext {
@@ -43,9 +44,9 @@ extension LLMContext {
     ///    - input: The ``LLMContextEntity/Role-swift.enum/user`` input that should be appended. Can contain Markdown-formatted text.
     @MainActor
     public mutating func append(userInput input: String, id: UUID = .init(), date: Date = .now) {
-        self.append(.init(role: .user, content: input, id: id, date: date))
+        self.append(.init(role: .user, content: input, id: id, date: date, img: UIImage(systemName: "star.fill")))
     }
-    
+
     /// Append a ``LLMContextEntity/Role-swift.enum/system`` prompt to the ``LLMContext``.
     ///
     /// - Parameters:

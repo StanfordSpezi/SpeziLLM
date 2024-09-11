@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import OpenAPIRuntime
 import SpeziLLM
 
@@ -48,7 +49,7 @@ extension LLMOpenAISession {
                     response_format: schema.modelParameters.responseFormat,
                     seed: schema.modelParameters.seed,
                     stop: Components.Schemas.CreateChatCompletionRequest.stopPayload
-                        .case2(schema.modelParameters.stopSequence),
+                        .case1(schema.modelParameters.stopSequence),
                     stream: true,
                     temperature: schema.modelParameters.temperature,
                     top_p: schema.modelParameters.topP,
@@ -101,8 +102,30 @@ extension LLMOpenAISession {
                 )
             )
         case .user:
-            return Components.Schemas.ChatCompletionRequestMessage
-                .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+            if let base64Img = contextEntity.base64Img {
+                let textType = Components.Schemas.ChatCompletionRequestMessageContentPartText._typePayload.text
+                let textContent = Components.Schemas.ChatCompletionRequestMessageContentPartText(
+                    _type: textType,
+                    text: contextEntity.content
+                )
+                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
+                    .image_urlPayload(url: .init(base64Img))
+                let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
+                    _type: .image_url,
+                    image_url: imgPayload
+                )
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case2([
+                        .ChatCompletionRequestMessageContentPartText(.init(
+                            _type: .text,
+                            text: contextEntity.content
+                        )),
+                        .ChatCompletionRequestMessageContentPartImage(imgContent)
+                    ]), role: .user))
+            } else {
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+            }
         }
     }
 }

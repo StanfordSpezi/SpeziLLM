@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import UIKit
 
 /// Represents the basic building block of a Spezi ``LLMContext``.
 ///
@@ -68,8 +68,9 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
     public let id: UUID
     /// The creation date of the ``LLMContextEntity``.
     public let date: Date
-    
-    
+
+    public var base64Img: String? 
+
     /// Creates a ``LLMContextEntity`` which is the building block of a Spezi ``LLMContext``.
     ///
     /// - Parameters:
@@ -83,12 +84,28 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
         content: Content,
         complete: Bool = true,
         id: UUID = .init(),
-        date: Date = .now
+        date: Date = .now,
+        img: UIImage? = nil
     ) {
         self.role = role
         self.content = String(content)
         self.complete = complete
         self.id = id
         self.date = date
+        self.base64Img = imgToBase64Str(img: img)
+    }
+
+    func imgToBase64Str(img: UIImage?) -> String? {
+        if let img {
+            guard let data = img.jpegData(compressionQuality: 1.0) else {
+                return nil
+            }
+            return "data:image/jpeg;base64," + data.base64EncodedString()
+            // return "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+            // return Data(base64Encoded: "data:image/jpeg;base64," + data.base64EncodedString(), options:
+            // .ignoreUnknownCharacters)
+        } else {
+            return nil
+        }
     }
 }
