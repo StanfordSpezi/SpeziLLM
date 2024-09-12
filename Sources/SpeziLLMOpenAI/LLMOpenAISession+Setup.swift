@@ -11,19 +11,12 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 
 extension LLMOpenAISession {
-    /// Set up the OpenAI LLM execution client.
+    /// Initialize the OpenAI OpenAPI client
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    /// - Returns: `true` if the setup was successful, `false` otherwise.
-    // FIXME: Reduce function length
-    // swiftlint:disable function_body_length
-    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
-        await MainActor.run {
-            self.state = .loading
-        }
-        
+    /// - Returns: `true` if the client could be initialized, `false` otherwise.
+    private func initaliseClient(_ continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         // Overwrite API token if passed
         if let overwritingToken = schema.parameters.overwritingToken {
             do {
@@ -37,6 +30,7 @@ extension LLMOpenAISession {
                 SpeziLLMOpenAI: Couldn't create OpenAI OpenAPI client with the passed API token.
                 \(error.localizedDescription)
                 """)
+                return false
             }
         } else {
             // If token is present within the Spezi `SecureStorage`
@@ -52,10 +46,9 @@ extension LLMOpenAISession {
                 await finishGenerationWithError(LLMOpenAIError.missingAPIToken, on: continuation)
                 return false
             }
-            
+
             // Initialize the OpenAI model
             do {
-                // TODO: We're missing `timeoutInterval: platform.configuration.timeout` in the initialisation here.
                 wrappedClient = try Client(
                     serverURL: Servers.server1(),
                     transport: URLSessionTransport(),
@@ -66,9 +59,27 @@ extension LLMOpenAISession {
                 LLMOpenAI: Couldn't create OpenAI OpenAPI client with the token present in the Spezi secure storage.
                 \(error.localizedDescription)
                 """)
+                return false
             }
         }
+        return true
+    }
+
+    /// Set up the OpenAI LLM execution client.
+    ///
+    /// - Parameters:
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    /// - Returns: `true` if the setup was successful, `false` otherwise.
+    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
+        await MainActor.run {
+            self.state = .loading
+        }
         
+        if await !initaliseClient(continuation) {
+            return false
+        }
+
         // Check access to the specified OpenAI model
         if schema.parameters.modelAccessTest,
            await !modelAccessTest(continuation: continuation) {
