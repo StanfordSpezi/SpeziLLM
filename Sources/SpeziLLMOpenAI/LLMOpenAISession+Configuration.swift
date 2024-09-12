@@ -45,15 +45,13 @@ extension LLMOpenAISession {
                 // Function calls present
                 let msg = Components.Schemas.ChatCompletionRequestAssistantMessage(
                     role: role,
-                    tool_calls: toolCalls.map { toolCall in
-                        let type = Components.Schemas.ChatCompletionMessageToolCall
-                            ._typePayload(rawValue: toolCall.type)!
-                        // FIXME: handle error correctly
-                        // guard let type = Components.Schemas.ChatCompletionMessageToolCall
-                        //     ._typePayload(rawValue: toolCall.type)
-                        // else {
-                        //     Self.logger.error("Could not create ChatCompletionRequestAssistantMessage type")
-                        // }
+                    tool_calls: toolCalls.compactMap { toolCall in
+                        guard let type = Components.Schemas.ChatCompletionMessageToolCall
+                            ._typePayload(rawValue: toolCall.type)
+                        else {
+                            Self.logger.error("Could not create ChatCompletionRequestAssistantMessage type")
+                            return nil
+                        }
                         return .init(
                             id: toolCall.id,
                             _type: type,
@@ -65,14 +63,12 @@ extension LLMOpenAISession {
             }
         case .system:
             // No function calls present -> regular assistant message
-            let role = Components.Schemas.ChatCompletionRequestSystemMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)!
-            // FIXME: handle error correctly
-            // guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
-            //     .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            // else {
-            //     Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
-            // }
+            guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
+                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
+            else {
+                Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
+                return nil
+            }
             let msg = Components.Schemas.ChatCompletionRequestSystemMessage(
                 content: contextEntity.content,
                 role: role
@@ -108,14 +104,8 @@ extension LLMOpenAISession {
     var openAIChatQuery: Operations.createChatCompletion.Input {
         get async {
             let functions: [Components.Schemas.ChatCompletionTool] = schema.functions.values.compactMap { function in
-                let type = Components.Schemas.ChatCompletionTool._typePayload(rawValue: "function")!
-                // FIXME: handle error correctly
-                // guard let
-                //     type = Components.Schemas.ChatCompletionTool._typePayload(rawValue: "function") else {
-                //     Self.logger.error("Could not create type for ChatCompletionTool._typePayload")
-                // }
-                return Components.Schemas.ChatCompletionTool(
-                    _type: type,
+                Components.Schemas.ChatCompletionTool(
+                    _type: .function,
                     function: Components.Schemas.FunctionObject(
                         description: Swift.type(of: function).description,
                         name: Swift.type(of: function).name,
