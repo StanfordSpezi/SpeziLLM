@@ -32,7 +32,12 @@ extension LLMOpenAISession {
                 let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
 
                 // FIXME: does not handle the "[DONE]" message
-                let chatStream = try response.ok.body.text_event_hyphen_stream
+                // let chatStream = try response.ok.body.text_event_hyphen_stream
+                //     .asDecodedServerSentEventsWithJSONData(of: Components.Schemas.CreateChatCompletionStreamResponse
+                //         .self)
+                let chatStream = try await response.ok.body.text_event_hyphen_stream.asDecodedServerSentEvents()
+                    .filter { $0.data != "[DONE]" }
+                    .asEncodedServerSentEvents()
                     .asDecodedServerSentEventsWithJSONData(of: Components.Schemas.CreateChatCompletionStreamResponse
                         .self)
 
@@ -99,8 +104,6 @@ extension LLMOpenAISession {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return
-            } catch let Swift.DecodingError.dataCorrupted(context) {
-                // FIXME: The API sends a "[DONE]" message to conclude the stream. As it does not conform to the Components.Schemas.CreateChatCompletionStreamResponse schema, it will cause a crash. This is a hacky workaround to avoid the crash.
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
