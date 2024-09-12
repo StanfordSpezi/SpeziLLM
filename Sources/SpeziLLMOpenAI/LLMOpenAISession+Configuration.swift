@@ -11,55 +11,33 @@ import SpeziLLM
 
 extension LLMOpenAISession {
     // FIXME: Reduce function length by adding type aliases
-    // swiftlint:disable function_body_length
     private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage? {
         switch contextEntity.role {
         case let .tool(id: functionID, name: _):
-            guard let role = Components.Schemas.ChatCompletionRequestToolMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            else {
-                Self.logger.error("Could not create ChatCompletionRequestToolMessage payload")
-                return nil
-            }
-            let msg = Components.Schemas.ChatCompletionRequestToolMessage(
-                role: role,
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
+                role: .tool,
                 content: contextEntity.content,
                 tool_call_id: functionID
-            )
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(msg)
+            ))
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
-            guard let role = Components.Schemas.ChatCompletionRequestAssistantMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            else {
-                Self.logger.error("Could not create ChatCompletionRequestAssistantMessage role")
-                return nil
-            }
             if toolCalls.isEmpty {
-                let msg = Components.Schemas.ChatCompletionRequestAssistantMessage(
+                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
                     content: contextEntity.content,
-                    role: role
-                )
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(msg)
+                    role: .assistant
+                ))
             } else {
                 // Function calls present
-                let msg = Components.Schemas.ChatCompletionRequestAssistantMessage(
-                    role: role,
-                    tool_calls: toolCalls.compactMap { toolCall in
-                        guard let type = Components.Schemas.ChatCompletionMessageToolCall
-                            ._typePayload(rawValue: toolCall.type)
-                        else {
-                            Self.logger.error("Could not create ChatCompletionRequestAssistantMessage type")
-                            return nil
-                        }
-                        return .init(
+                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                    role: .assistant,
+                    tool_calls: toolCalls.map { toolCall in
+                        .init(
                             id: toolCall.id,
-                            _type: type,
+                            _type: .function,
                             function: .init(name: toolCall.name, arguments: toolCall.arguments)
                         )
                     }
-                )
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(msg)
+                ))
             }
         case .system:
             // No function calls present -> regular assistant message
@@ -69,24 +47,15 @@ extension LLMOpenAISession {
                 Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
                 return nil
             }
-            let msg = Components.Schemas.ChatCompletionRequestSystemMessage(
-                content: contextEntity.content,
-                role: role
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
+                .init(
+                    content: contextEntity.content,
+                    role: role
+                )
             )
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(msg)
         case .user:
-            guard let role = Components.Schemas.ChatCompletionRequestUserMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            else {
-                Self.logger.error("Could not create ChatCompletionRequestUserMessage payload")
-                return nil
-            }
-            let msg = Components.Schemas.ChatCompletionRequestUserMessage(
-                content: Components.Schemas.ChatCompletionRequestUserMessage.contentPayload
-                    .case1(contextEntity.content),
-                role: role
-            )
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestUserMessage(msg)
+            return Components.Schemas.ChatCompletionRequestMessage
+                .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
         }
     }
 
