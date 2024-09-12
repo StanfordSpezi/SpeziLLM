@@ -31,11 +31,18 @@ extension LLMOpenAISession {
             do {
                 let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
 
-                let chatStream = try await response.ok.body.text_event_hyphen_stream.asDecodedServerSentEvents()
+                if case let .undocumented(statusCode: statusCode, _) = response {
+                    handleErrorCode(statusCode, prefix: "Generation")
+                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+                    return
+                }
+
+                let chatStream = try response.ok.body.text_event_hyphen_stream
+                    .asDecodedServerSentEvents()
                     .filter { $0.data != "[DONE]" }
                     .asEncodedServerSentEvents()
-                    .asDecodedServerSentEventsWithJSONData(of: Components.Schemas.CreateChatCompletionStreamResponse
-                        .self)
+                    .asDecodedServerSentEventsWithJSONData(of:
+                        Components.Schemas.CreateChatCompletionStreamResponse.self)
 
                 for try await chatStreamResult in chatStream {
                     guard let choices = chatStreamResult.data?.choices else {
@@ -81,27 +88,12 @@ extension LLMOpenAISession {
                         context.completeAssistantStreaming()
                     }
                 }
-
-                // FIXME: what is the counterpart for the generated API calls?
-                // } catch let error as APIErrorResponse {
-                // switch error.error.code {
-                // case LLMOpenAIError.invalidAPIToken.openAIErrorMessage:
-                //     Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(error)")
-                //     await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
-                // case LLMOpenAIError.insufficientQuota.openAIErrorMessage:
-                //     Self.logger.error("SpeziLLMOpenAI: Insufficient OpenAI API quota - \(error)")
-                //     await finishGenerationWithError(LLMOpenAIError.insufficientQuota, on: continuation)
-                // default:
-                //     Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
-                //     await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
-                // }
-                // return
             } catch let error as URLError {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return
             } catch {
-                Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
+                Self.logger.error("SpeziLLMOpenAI: Unknwon Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
                 return
             }
