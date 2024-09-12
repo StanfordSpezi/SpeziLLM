@@ -104,25 +104,19 @@ extension LLMOpenAISession {
                 Self.logger.error("No modelType present.")
                 return false
             }
-            _ = try await chatGPTClient.retrieveModel(.init(path: .init(model: modelVal)))
+            if case let .undocumented(statusCode, _) = try await chatGPTClient
+                .retrieveModel(.init(path: .init(model: modelVal))) {
+                handleErrorCode(statusCode, prefix: "Model access check")
+                return false
+            }
             Self.logger.error("SpeziLLMOpenAI: Model access check completed")
             return true
         } catch let error as URLError {
             Self.logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")
             await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
         } catch {
-            // FIXME: what is the counterpart for the generated API calls?
-            //     if let apiError = error as? APIErrorResponse,
-            //        apiError.error.code == LLMOpenAIError.invalidAPIToken.openAIErrorMessage {
-            //         Self.logger.error("SpeziLLMOpenAI: Model access check - Invalid OpenAI API token: \(apiError)")
-            //         await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
-            //     } else {
-            Self.logger
-                .error("SpeziLLMOpenAI: Model access check - Couldn't access the specified OpenAI model: \(error)")
-            await finishGenerationWithError(LLMOpenAIError.modelAccessError(error), on: continuation)
-            // }
+            Self.logger.error("SpeziLLMOpenAI: Model access check - unknown error occurred")
         }
-        
         return false
     }
 }
