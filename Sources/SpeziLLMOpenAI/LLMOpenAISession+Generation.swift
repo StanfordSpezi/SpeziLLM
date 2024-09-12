@@ -31,10 +31,6 @@ extension LLMOpenAISession {
             do {
                 let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
 
-                // FIXME: does not handle the "[DONE]" message
-                // let chatStream = try response.ok.body.text_event_hyphen_stream
-                //     .asDecodedServerSentEventsWithJSONData(of: Components.Schemas.CreateChatCompletionStreamResponse
-                //         .self)
                 let chatStream = try await response.ok.body.text_event_hyphen_stream.asDecodedServerSentEvents()
                     .filter { $0.data != "[DONE]" }
                     .asEncodedServerSentEvents()
