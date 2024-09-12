@@ -110,10 +110,7 @@ extension LLMOpenAISession {
                 return
             }
 
-            // FIXME: Swiftformat bug?
-            // swiftformat:disable all
             let functionCalls = llmStreamResults.values.compactMap{ return $0.functionCall }.flatMap { $0 }
-            // swiftformat:enable all
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
