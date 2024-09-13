@@ -46,8 +46,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionparaemter+OptionalType")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
+            self.init(description: "")
         }
     }
 }
@@ -83,8 +83,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+OptionalType")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
+            self.init(description: "")
         }
     }
 }
@@ -110,8 +110,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionalParameterWrapper+OptionalTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
+            self.init(description: "")
         }
     }
 }
@@ -153,8 +153,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
 
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+OptionalTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
+            self.init(description: "")
         }
     }
 }
@@ -214,8 +214,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionPropertyWrapper+OptionalType")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
+            self.init(description: "")
         }
     }
 }
@@ -273,8 +273,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+OptionalTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
+            self.init(description: "")
         }
     }
 }
@@ -321,8 +321,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+OptionalTypes.swift")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
+            self.init(description: "")
         }
     }
 }
@@ -380,8 +380,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+OptionalType")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
+            self.init(description: "")
         }
     }
 }

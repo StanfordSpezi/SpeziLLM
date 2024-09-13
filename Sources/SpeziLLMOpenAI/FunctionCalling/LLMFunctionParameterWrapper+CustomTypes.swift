@@ -67,8 +67,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("Couldn't create FunctionParameterWrapper+CustomType \(error)")
+            logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
+            self.init(description: "")
         }
     }
 }
@@ -186,6 +186,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             var itemNonOpt: [String: any Sendable] = [
                 "type": T.Wrapped.Element.itemSchema.type.rawValue
             ]
+
             if let properties = T.Wrapped.Element.itemSchema.properties?.mapValues({ $0.toDict() }) {
                 itemNonOpt["properties"] = properties
             }
@@ -219,8 +220,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
+            logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
+            self.init(description: "")
         }
     }
 }

@@ -45,8 +45,7 @@ extension LLMFunction {
                 "required": requiredPropertyNames
             ])
         } catch {
-            // FIXME: handle this error correctly
-            fatalError("Error creating OpenAPIObjectContainer.")
+            logger.error("Error creating OpenAPIObjectContainer.")
         }
         return ret
     }
