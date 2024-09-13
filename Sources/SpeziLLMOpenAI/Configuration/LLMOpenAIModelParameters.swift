@@ -76,4 +76,3 @@ public struct LLMOpenAIModelParameters: Sendable {
         self.user = user
     }
 }
-

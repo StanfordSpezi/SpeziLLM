@@ -15,14 +15,18 @@ import SwiftUI
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
         public static let models: [LLMOpenAIModelType] = [
-            .init(value1: "GPT 3.5 Turbo",
-                  value2: .gpt_hyphen_3_period_5_hyphen_turbo),
+            .init(
+                value1: "GPT 3.5 Turbo",
+                value2: .gpt_hyphen_3_period_5_hyphen_turbo
+            ),
             .init(
                 value1: "GPT 4 Turbo",
                 value2: .gpt_hyphen_4_hyphen_turbo
             ),
-            .init(value1: "GPT 4O",
-                  value2: .gpt_hyphen_4o)
+            .init(
+                value1: "GPT 4O",
+                value2: .gpt_hyphen_4o
+            )
         ]
     }
     
@@ -103,4 +107,3 @@ public struct LLMOpenAIModelOnboardingStep: View {
         _modelSelection = State(initialValue: models.first ?? .init(value2: .gpt_hyphen_3_period_5_hyphen_turbo))
     }
 }
-

@@ -151,7 +151,6 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
                 addProp["enum"] = `enum`.map { $0.map { String($0) } }
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
-
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
