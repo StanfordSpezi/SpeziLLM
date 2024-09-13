@@ -16,7 +16,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initaliseClient(_ continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    private func initalizeClient(_ continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         let config: Configuration = .init(
             dateTranscoder: .iso8601,
             jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
@@ -84,7 +84,7 @@ extension LLMOpenAISession {
             self.state = .loading
         }
         
-        if await !initaliseClient(continuation) {
+        if await !initalizeClient(continuation) {
             return false
         }
 
