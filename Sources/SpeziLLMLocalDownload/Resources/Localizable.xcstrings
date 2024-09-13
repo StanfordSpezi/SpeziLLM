@@ -32,6 +32,7 @@
       }
     },
     "LLM_DOWNLOAD_DESCRIPTION" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
