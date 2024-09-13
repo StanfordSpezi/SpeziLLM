@@ -20,18 +20,17 @@ extension LLMOpenAISession {
 
         switch statusCode {
         case 401:
-            Self.logger.error("SpeziLLMOpenAI:\(prefix) Invalid OpenAI API token")
+            logger.error("SpeziLLMOpenAI:\(prefix) Invalid OpenAI API token")
         case 403:
-            Self.logger
-                .error("SpeziLLMOpenAI:\(prefix) Model access check - Country, region, or territory not supported")
+            logger.error("SpeziLLMOpenAI:\(prefix) Model access check - Country, region, or territory not supported")
         case 429:
-            Self.logger.error("SpeziLLMOpenAI:\(prefix) Rate limit reached for requests")
+            logger.error("SpeziLLMOpenAI:\(prefix) Rate limit reached for requests")
         case 500:
-            Self.logger.error("SpeziLLMOpenAI:\(prefix) The server had an error while processing your request")
+            logger.error("SpeziLLMOpenAI:\(prefix) The server had an error while processing your request")
         case 503:
-            Self.logger.error("SpeziLLMOpenAI:\(prefix) The engine is currently overloaded, please try again later")
+            logger.error("SpeziLLMOpenAI:\(prefix) The engine is currently overloaded, please try again later")
         default:
-            Self.logger.error("SpeziLLMOpenAI:\(prefix) Received unknown return code from OpenAI")
+            logger.error("SpeziLLMOpenAI:\(prefix) Received unknown return code from OpenAI")
         }
     }
 }
