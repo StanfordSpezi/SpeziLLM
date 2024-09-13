@@ -26,7 +26,7 @@ extension LLMOpenAISession {
                     middlewares: [AuthMiddleware(APIKey: overwritingToken)]
                 )
             } catch {
-                Self.logger.error("""
+                logger.error("""
                 SpeziLLMOpenAI: Couldn't create OpenAI OpenAPI client with the passed API token.
                 \(error.localizedDescription)
                 """)
@@ -38,7 +38,7 @@ extension LLMOpenAISession {
                 LLMOpenAIConstants.credentialsUsername,
                 server: LLMOpenAIConstants.credentialsServer
             ) else {
-                Self.logger.error("""
+                logger.error("""
                 SpeziLLMOpenAI: Missing OpenAI API token.
                 Please ensure that the token is either passed directly via the Spezi `Configuration`
                 or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
@@ -55,7 +55,7 @@ extension LLMOpenAISession {
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
             } catch {
-                Self.logger.error("""
+                logger.error("""
                 LLMOpenAI: Couldn't create OpenAI OpenAPI client with the token present in the Spezi secure storage.
                 \(error.localizedDescription)
                 """)
@@ -71,7 +71,7 @@ extension LLMOpenAISession {
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
     func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
+        logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
         }
@@ -89,7 +89,7 @@ extension LLMOpenAISession {
         await MainActor.run {
             self.state = .ready
         }
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
+        logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
         return true
     }
     
@@ -101,7 +101,7 @@ extension LLMOpenAISession {
     private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         do {
             guard let modelVal = schema.parameters.modelType.value2?.rawValue else {
-                Self.logger.error("No modelType present.")
+                logger.error("No modelType present.")
                 return false
             }
             if case let .undocumented(statusCode, _) = try await chatGPTClient
@@ -109,13 +109,13 @@ extension LLMOpenAISession {
                 handleErrorCode(statusCode, prefix: "Model access check")
                 return false
             }
-            Self.logger.error("SpeziLLMOpenAI: Model access check completed")
+            logger.error("SpeziLLMOpenAI: Model access check completed")
             return true
         } catch let error as URLError {
-            Self.logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")
+            logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")
             await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
         } catch {
-            Self.logger.error("SpeziLLMOpenAI: Model access check - unknown error occurred")
+            logger.error("SpeziLLMOpenAI: Model access check - unknown error occurred")
         }
         return false
     }
