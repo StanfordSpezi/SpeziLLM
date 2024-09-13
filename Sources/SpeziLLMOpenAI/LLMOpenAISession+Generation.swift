@@ -98,7 +98,7 @@ extension LLMOpenAISession {
                 return
             }
 
-            let functionCalls = llmStreamResults.values.compactMap(\.functionCall).flatMap { $0 }
+            let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }.flatMap { $0 }
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
