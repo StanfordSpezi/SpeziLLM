@@ -17,17 +17,18 @@ extension LLMOpenAISession {
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initaliseClient(_ continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+        let config: Configuration = .init(
+            dateTranscoder: .iso8601,
+            jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
+            multipartBoundaryGenerator: .random,
+            xmlCoder: nil
+        )
         // Overwrite API token if passed
         if let overwritingToken = schema.parameters.overwritingToken {
             do {
                 wrappedClient = try Client(
                     serverURL: Servers.server1(),
-                    configuration: .init(
-                        dateTranscoder: .iso8601,
-                        jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
-                        multipartBoundaryGenerator: .random,
-                        xmlCoder: nil
-                    ),
+                    configuration: config,
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: overwritingToken)]
                 )
@@ -57,12 +58,7 @@ extension LLMOpenAISession {
             do {
                 wrappedClient = try Client(
                     serverURL: Servers.server1(),
-                    configuration: .init(
-                        dateTranscoder: .iso8601,
-                        jsonEncodingOptions: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes],
-                        multipartBoundaryGenerator: .random,
-                        xmlCoder: nil
-                    ),
+                    configuration: config,
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
