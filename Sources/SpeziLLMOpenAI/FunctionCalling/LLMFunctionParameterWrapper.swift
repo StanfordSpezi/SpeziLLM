@@ -11,14 +11,14 @@ import OpenAPIRuntime
 
 /// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
 public typealias LLMFunctionParameterPropertySchema = Components.Schemas.FunctionParameters
-/// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
-
 // FIXME: LLMFunctionParameterItemSchema does not use a generated type yet
+
+/// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
 public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition
     .FunctionParameters.Property.Items
 
-/// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 // swiftlint:disable type_name
+/// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
 public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector {
     // swiftlint:enable type_name
@@ -55,13 +55,9 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
     public convenience init(description _: some StringProtocol) where T: LLMFunctionParameter {
-        do {
-            try self.init(schema: T.schema)
-        } catch {
-            fatalError("LLMFunctionPropertyWrapper")
-        }
+        self.init(schema: T.schema)
     }
-    
+
     init(schema: LLMFunctionParameterPropertySchema) {
         self.schema = schema
     }
