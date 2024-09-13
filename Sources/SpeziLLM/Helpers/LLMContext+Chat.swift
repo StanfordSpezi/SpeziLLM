@@ -67,7 +67,8 @@ extension LLMContext {
                 return
             }
             
-            self.append(userInput: newEntity.content, id: newEntity.id, date: newEntity.date)
+            // FIXME: Account for user image input here
+            self.append(userInput: newEntity.content, userImgInput: nil, id: newEntity.id, date: newEntity.date)
         }
     }
 }

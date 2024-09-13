@@ -42,9 +42,15 @@ extension LLMContext {
     ///
     /// - Parameters:
     ///    - input: The ``LLMContextEntity/Role-swift.enum/user`` input that should be appended. Can contain Markdown-formatted text.
+    ///    - imgInput: The ``LLMContextEntity/Role-swift.enum/user`` image input.
     @MainActor
-    public mutating func append(userInput input: String, id: UUID = .init(), date: Date = .now) {
-        self.append(.init(role: .user, content: input, id: id, date: date, img: UIImage(systemName: "star.fill")))
+    public mutating func append(
+        userInput input: String,
+        userImgInput imgInput: UIImage?,
+        id: UUID = .init(),
+        date: Date = .now
+    ) {
+        self.append(.init(role: .user, content: input, id: id, date: date, img: imgInput))
     }
 
     /// Append a ``LLMContextEntity/Role-swift.enum/system`` prompt to the ``LLMContext``.
