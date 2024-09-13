@@ -103,29 +103,29 @@ extension LLMOpenAISession {
             )
         case .user:
             if let base64Img = contextEntity.base64Img {
-                let textType = Components.Schemas.ChatCompletionRequestMessageContentPartText._typePayload.text
-                let textContent = Components.Schemas.ChatCompletionRequestMessageContentPartText(
-                    _type: textType,
-                    text: contextEntity.content
-                )
-                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
-                    .image_urlPayload(url: .init(base64Img))
-                let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
-                    _type: .image_url,
-                    image_url: imgPayload
-                )
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case2([
-                        .ChatCompletionRequestMessageContentPartText(.init(
-                            _type: .text,
-                            text: contextEntity.content
-                        )),
-                        .ChatCompletionRequestMessageContentPartImage(imgContent)
-                    ]), role: .user))
+                return getChatMessageImgHelper(contextEntity, base64Img)
             } else {
                 return Components.Schemas.ChatCompletionRequestMessage
                     .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
             }
         }
+    }
+
+    private func getChatMessageImgHelper(_ contextEntity: LLMContextEntity, _ base64Img: String) -> Components.Schemas
+        .ChatCompletionRequestMessage {
+        let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
+            .image_urlPayload(url: .init(base64Img))
+        let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
+            _type: .image_url,
+            image_url: imgPayload
+        )
+        return Components.Schemas.ChatCompletionRequestMessage
+            .ChatCompletionRequestUserMessage(.init(content: .case2([
+                .ChatCompletionRequestMessageContentPartText(.init(
+                    _type: .text,
+                    text: contextEntity.content
+                )),
+                .ChatCompletionRequestMessageContentPartImage(imgContent)
+            ]), role: .user))
     }
 }
