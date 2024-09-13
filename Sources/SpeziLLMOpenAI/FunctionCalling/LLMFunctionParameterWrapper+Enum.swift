@@ -32,8 +32,8 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
             addProp["enum"] = T.allCases.map { String($0.rawValue) }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+Enum")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            self.init(description: "")
         }
     }
 }
@@ -61,8 +61,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
             addProp["enum"] = T.Wrapped.allCases.map { String($0.rawValue) }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+Enum")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            self.init(description: "")
         }
     }
 }
@@ -109,8 +109,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+Enum")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            self.init(description: "")
         }
     }
 }
@@ -159,8 +159,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+Enum")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            self.init(description: "")
         }
     }
 }

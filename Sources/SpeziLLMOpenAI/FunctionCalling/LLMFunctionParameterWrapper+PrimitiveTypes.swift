@@ -44,8 +44,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameter+PrimitveTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameter+PrimitveTypes")
+            self.init(description: "")
         }
     }
 }
@@ -82,8 +82,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+PrimitveTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitveTypes")
+            self.init(description: "")
         }
     }
 }
@@ -109,8 +109,8 @@ extension _LLMFunctionParameterWrapper where T == Bool {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+PrimiteveTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimiteveTypes")
+            self.init(description: "")
         }
     }
 }
@@ -151,8 +151,8 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+PrimitiveTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitiveTypes")
+            self.init(description: "")
         }
     }
 }

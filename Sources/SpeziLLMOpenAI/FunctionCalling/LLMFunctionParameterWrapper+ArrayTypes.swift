@@ -67,8 +67,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+            logger.error("LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
         }
     }
 }
@@ -125,8 +125,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LMMFunctionParameter+ArrayTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
+            self.init(description: "")
         }
     }
 }
@@ -173,8 +173,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
         }
     }
 }
@@ -231,8 +231,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
             }
             try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
         } catch {
-            // FIXME: handle error correctly
-            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
         }
     }
 }
