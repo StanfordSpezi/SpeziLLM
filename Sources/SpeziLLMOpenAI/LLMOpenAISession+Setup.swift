@@ -106,7 +106,7 @@ extension LLMOpenAISession {
             }
             if case let .undocumented(statusCode, _) = try await chatGPTClient
                 .retrieveModel(.init(path: .init(model: modelVal))) {
-                handleErrorCode(statusCode, prefix: "Model access check")
+                logger.error("SpeziLLMOpenAI: Error in model access check. Status code: \(statusCode)")
                 return false
             }
             logger.error("SpeziLLMOpenAI: Model access check completed")
