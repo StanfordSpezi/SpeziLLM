@@ -9,13 +9,6 @@
 import OpenAI
 import OpenAPIRuntime
 
-/// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
-public typealias LLMFunctionParameterPropertySchema = Components.Schemas.FunctionParameters
-// FIXME: LLMFunctionParameterItemSchema does not use a generated type yet
-
-/// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
-public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition
-    .FunctionParameters.Property.Items
 
 // swiftlint:disable type_name
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
@@ -23,9 +16,9 @@ public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolPa
 public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector {
     // swiftlint:enable type_name
     private var injectedValue: T?
-    var schema: LLMFunctionParameterPropertySchema
     
     
+    var schema: Components.Schemas.FunctionParameters
     public var wrappedValue: T {
         // If the unwrapped injectedValue is not nil, return the non-nil value
         if let value = injectedValue {
@@ -58,7 +51,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
         self.init(schema: T.schema)
     }
 
-    init(schema: LLMFunctionParameterPropertySchema) {
+    init(schema: Components.Schemas.FunctionParameters ) {
         self.schema = schema
     }
     
@@ -97,7 +90,3 @@ extension LLMFunction {
     public typealias Parameter<WrappedValue> =
         _LLMFunctionParameterWrapper<WrappedValue> where WrappedValue: Decodable
 }
-
-
-/// Ensuring `Sendable` conformances of ``LLMFunctionParameterPropertySchema`` and ``LLMFunctionParameterItemSchema``
-extension LLMFunctionParameterItemSchema: @unchecked Sendable {}

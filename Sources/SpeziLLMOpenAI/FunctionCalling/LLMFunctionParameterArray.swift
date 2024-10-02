@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OpenAPIRuntime
 
 
 /// Represents an LLM function calling parameter in the form of an `array` element.
@@ -25,10 +26,16 @@ import Foundation
 ///     /// Manual conformance to `LLMFunctionParameterArrayElement` of a custom array item type.
 ///     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
 ///         static let itemSchema: LLMFunctionParameterItemSchema = .init(
-///             type: .object,
-///             properties: [
-///                 "firstName": .init(type: .string, description: "The first name of the person"),
-///                 "lastName": .init(type: .string, description: "The last name of the person")
+///             "type": "object",
+///             "properties": [
+///                 "firstName": [
+///                     "type": "string",
+///                     "description": "The first name of the person")
+///                 ],
+///                 "lastName": [
+///                     "type": "string",
+///                     "description": "The last name of the person"
+///                 ]
 ///             ]
 ///         )
 ///
@@ -47,5 +54,5 @@ import Foundation
 /// }
 /// ```
 public protocol LLMFunctionParameterArrayElement: Decodable {
-    static var itemSchema: LLMFunctionParameterItemSchema { get }
+    static var itemSchema: Components.Schemas.FunctionParameters { get }
 }
