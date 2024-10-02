@@ -27,24 +27,14 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
         maximum: T.Wrapped? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "integer",
-                "description": String(description)
-            ]
-            if let const {
-                addProp["const"] = String(const)
-            }
-            if let multipleOf {
-                addProp["multipleOf "] = multipleOf
-            }
-            if let minimum {
-                addProp["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                addProp["maximum"] = Double(maximum)
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "const": const.map { String($0) } as Any?,
+                "multipleOf": multipleOf as Any?,
+                "minimum": minimum.map { Double($0) } as Any?,
+                "maximum": maximum.map { Double($0) } as Any?
+            ].compactMapValues { $0 })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
             self.init(description: "")
@@ -67,21 +57,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
         maximum: T.Wrapped? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "number",
-                "description": String(description)
-            ]
-            if let const {
-                addProp["const"] = String(const)
-            }
-            if let minimum {
-                addProp["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                addProp["maximum"] = Double(maximum)
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "const": const.map { String($0) } as Any?,
+                "minimum": minimum.map { Double($0) } as Any?,
+                "maximum": maximum.map { Double($0) } as Any?
+            ].compactMapValues { $0 })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")
@@ -100,15 +82,11 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
         const: (any StringProtocol)? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "boolean",
-                "description": String(description)
-            ]
-            if let const {
-                addProp["const"] = String(const)
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "const": const.map { String($0) } as Any?
+            ].compactMapValues { $0 })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -133,24 +111,14 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
         enum: [any StringProtocol]? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "string",
-                "description": String(description)
-            ]
-            if let format {
-                addProp["format"] = format.rawValue
-            }
-            if let pattern {
-                addProp["pattern"] = String(pattern)
-            }
-            if let const {
-                addProp["const"] = String(const)
-            }
-            if let `enum` {
-                addProp["enum"] = `enum`.map { $0.map { String($0) } }
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "format": format?.rawValue as Any?,
+                "pattern": pattern.map { String($0) } as Any?,
+                "const": const.map { String($0) } as Any?,
+                "enum": `enum`.map { $0.map { String($0) as Any? } }
+            ].compactMapValues { $0 })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -179,39 +147,29 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maximum: T.Wrapped.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
-        uniqueItems _: Bool? = nil
+        uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "integer"
-            ]
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            if let multipleOf {
-                itemNonOpt["multipleOf"] = String(multipleOf)
-            }
-            if let minimum {
-                itemNonOpt["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                itemNonOpt["maximum"] = Double(maximum)
-            }
-            if itemNonOpt.count > 1 {
-                addProp["items"] = itemNonOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "integer",
+                    "const": const.map { String($0) } as Any?,
+                    "multipleOf": multipleOf.map { Int($0) } as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
             self.init(description: "")
@@ -241,36 +199,25 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "number"
-            ]
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            if let minimum {
-                itemNonOpt["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                itemNonOpt["maximum"] = Double(maximum)
-            }
-            if itemNonOpt.count > 1 {
-                addProp["items"] = itemNonOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "number",
+                    "const": const.map { String($0) } as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -295,30 +242,23 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "boolean"
-            ]
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            if itemNonOpt.count > 1 {
-                addProp["items"] = itemNonOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "boolean",
+                    "const": const.map { String($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
             self.init(description: "")
@@ -348,36 +288,25 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "string"
-            ]
-            if let pattern {
-                itemNonOpt["pattern"] = String(pattern)
-            }
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            if let `enum` {
-                itemNonOpt["enum"] = `enum`.map { $0.map { String($0) } }
-            }
-            if itemNonOpt.count > 1 {
-                addProp["items"] = itemNonOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "pattern": pattern.map { String($0) } as Any?,
+                    "const": const.map { String($0) } as Any?,
+                    "enum": `enum`.map { $0.map { String($0) } } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")

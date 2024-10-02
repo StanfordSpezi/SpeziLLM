@@ -26,46 +26,30 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            let itemSchema = T.Element.itemSchema.additionalProperties.value
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": T.Element.itemSchema.type.rawValue
-            ]
-            if let properties = T.Element.itemSchema.properties?.mapValues({ $0.toDict() }) {
-                itemNonOpt["properties"] = properties
-            }
-            if let pattern = T.Element.itemSchema.pattern {
-                itemNonOpt["pattern"] = pattern
-            }
-            if let const = T.Element.itemSchema.const {
-                itemNonOpt["const"] = const
-            }
-            if let `enum` = T.Element.itemSchema.enum {
-                itemNonOpt["enum"] = `enum`
-            }
-            if let multipleOf = T.Element.itemSchema.multipleOf {
-                itemNonOpt["multipleOf"] = multipleOf
-            }
-            if let minimum = T.Element.itemSchema.minimum {
-                itemNonOpt["minimum"] = minimum
-            }
-            if let maximum = T.Element.itemSchema.maximum {
-                itemNonOpt["maximum"] = maximum
-            }
-            addProp["items"] = itemNonOpt
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": itemSchema["type"],
+                    "properties": itemSchema["properties"],
+                    "pattern": itemSchema["pattern"],
+                    "const": itemSchema["const"],
+                    "enum": itemSchema["enum"],
+                    "multipleOf": itemSchema["multipleOf"],
+                    "minimum": itemSchema["minimum"],
+                    "maximum": itemSchema["maximum"]
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
             self.init(description: "")
@@ -73,97 +57,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     }
 }
 
-// FIXME: This should probably be made redundant as part of bigger simplification for initialising the wrappers
-extension ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property {
-    public func toDict() -> [String: any Sendable] {
-        var res: [String: any Sendable] = [
-            "type": Self.JSONType.string.rawValue
-        ]
-        if let description {
-            res["description"] = description
-        }
-        if let format {
-            res["format"] = format
-        }
-        if let items {
-            res["items"] = items.toDict()
-        }
-        if let required {
-            res["required"] = required
-        }
-        if let pattern {
-            res["pattern"] = pattern
-        }
-        if let const {
-            res["const"] = const
-        }
-        if let `enum` {
-            res["enum"] = `enum`
-        }
-        if let multipleOf {
-            res["multipleOf"] = multipleOf
-        }
-        if let minimum {
-            res["minimum"] = minimum
-        }
-        if let maximum {
-            res["maximum"] = maximum
-        }
-        if let minItems {
-            res["minItems"] = minItems
-        }
-        if let maxItems {
-            res["maxItems"] = maxItems
-        }
-        if let uniqueItems {
-            res["uniqueItems"] = uniqueItems
-        }
-        return res
-    }
-}
-
-// FIXME: This should probably be made redundant as part of bigger simplification for initialising the wrappers
-extension ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property.Items {
-    public func toDict() -> [String: any Sendable] {
-        var res: [String: any Sendable] = [
-            "type": Self.JSONType.string.rawValue
-        ]
-        if let properties = properties?.mapValues({ $0.toDict() }) {
-            res["properties"] = properties
-        }
-        if let pattern {
-            res["pattern"] = pattern
-        }
-        if let const {
-            res["const"] = const
-        }
-        if let `enum` {
-            res["enum"] = `enum`
-        }
-        if let multipleOf {
-            res["multipleOf"] = multipleOf
-        }
-        if let minimum {
-            res["minimum"] = minimum
-        }
-        if let maximum {
-            res["maximum"] = maximum
-        }
-        if let minItems {
-            res["minItems"] = minItems
-        }
-        if let maxItems {
-            res["maxItems"] = maxItems
-        }
-        if let uniqueItems {
-            res["uniqueItems"] = uniqueItems
-        }
-        return res
-    }
-}
-
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
-    T.Wrapped.Element: LLMFunctionParameterArrayElement {
+                                             T.Wrapped.Element: LLMFunctionParameterArrayElement {
     /// Declares an optional ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -178,47 +73,30 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            let itemSchema = T.Wrapped.Element.itemSchema.additionalProperties.value
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": T.Wrapped.Element.itemSchema.type.rawValue
-            ]
-
-            if let properties = T.Wrapped.Element.itemSchema.properties?.mapValues({ $0.toDict() }) {
-                itemNonOpt["properties"] = properties
-            }
-            if let pattern = T.Wrapped.Element.itemSchema.pattern {
-                itemNonOpt["pattern"] = pattern
-            }
-            if let const = T.Wrapped.Element.itemSchema.const {
-                itemNonOpt["const"] = const
-            }
-            if let `enum` = T.Wrapped.Element.itemSchema.enum {
-                itemNonOpt["enum"] = `enum`
-            }
-            if let multipleOf = T.Wrapped.Element.itemSchema.multipleOf {
-                itemNonOpt["multipleOf"] = multipleOf
-            }
-            if let minimum = T.Wrapped.Element.itemSchema.minimum {
-                itemNonOpt["minimum"] = minimum
-            }
-            if let maximum = T.Wrapped.Element.itemSchema.maximum {
-                itemNonOpt["maximum"] = maximum
-            }
-            addProp["items"] = itemNonOpt
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": itemSchema["type"],
+                    "properties": itemSchema["properties"],
+                    "pattern": itemSchema["pattern"],
+                    "const": itemSchema["const"],
+                    "enum": itemSchema["enum"],
+                    "multipleOf": itemSchema["multipleOf"],
+                    "minimum": itemSchema["minimum"],
+                    "maximum": itemSchema["maximum"]
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
             self.init(description: "")

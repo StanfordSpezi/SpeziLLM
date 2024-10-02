@@ -33,39 +33,26 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemsNoOpt: [String: any Sendable] = [
-                "type": "integer"
-            ]
-            if let const = const.map({ String($0) }) {
-                itemsNoOpt["const"] = const
-            }
-            if let multipleOf {
-                itemsNoOpt["multipleOf"] = multipleOf
-            }
-            if let minimum {
-                itemsNoOpt["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                itemsNoOpt["maximum"] = Double(maximum)
-            }
-            if itemsNoOpt.count > 1 {
-                addProp["items"] = itemsNoOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "integer",
+                    "const": const.map { String($0) } as Any?,
+                    "multipleOf": multipleOf as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -94,36 +81,25 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
-                "type": "array",
-                "description": String(description)
-            ]
-            var itemsNoOpt: [String: any Sendable] = [
-                "type": "number"
-            ]
-            if let const = const.map({ String($0) }) {
-                itemsNoOpt["const"] = const
-            }
-            if let minimum {
-                itemsNoOpt["minimum"] = Double(minimum)
-            }
-            if let maximum {
-                itemsNoOpt["maximum"] = Double(maximum)
-            }
-            if itemsNoOpt.count > 1 {
-                addProp["items"] = itemsNoOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+                "type": "number",
+                "description": String(description),
+                "items": [
+                    "type": "number",
+                    "const": const.map { String($0) } as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
             self.init(description: "")
@@ -148,30 +124,23 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemsNoOpt: [String: any Sendable] = [
-                "type": "boolean"
-            ]
-            if let const = const.map({ String($0) }) {
-                itemsNoOpt["const"] = const
-            }
-            if itemsNoOpt.count > 1 {
-                addProp["items"] = itemsNoOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "boolean",
+                    "const": const.map { String($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -200,36 +169,25 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemsNoOpt: [String: any Sendable] = [
-                "type": "string"
-            ]
-            if let pattern = pattern.map({ String($0) }) {
-                itemsNoOpt["pattern"] = pattern
-            }
-            if let const = const.map({ String($0) }) {
-                itemsNoOpt["const"] = const
-            }
-            if let `enum` = `enum`.map({ $0.map { String($0) } }) {
-                itemsNoOpt["const"] = `enum`
-            }
-            if itemsNoOpt.count > 1 {
-                addProp["items"] = itemsNoOpt
-            }
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "pattern": pattern.map { String($0) } as Any?,
+                    "const": const.map { String($0) } as Any?,
+                    "enum": `enum`.map { $0.map { String($0) } } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")

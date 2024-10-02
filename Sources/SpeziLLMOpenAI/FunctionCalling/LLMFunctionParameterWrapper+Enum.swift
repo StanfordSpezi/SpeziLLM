@@ -11,7 +11,8 @@ import SpeziFoundation
 // swiftlint:disable discouraged_optional_boolean
 
 extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawValue: StringProtocol {
-    /// Declares an `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of the ``LLMFunction``.
+    /// Declares an `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of the
+    /// ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -21,18 +22,17 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
         const: (any StringProtocol)? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "string",
-                "description": String(description)
-            ]
-            if let const {
-                addProp["const"] = String(const)
-            }
-            addProp["enum"] = T.allCases.map { String($0.rawValue) }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "const": const.map { String($0) } as Any?,
+                "enum": T.allCases.map { String($0.rawValue) }
+            ].compactMapValues { $0 })))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            logger
+                .error(
+                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
+                )
             self.init(description: "")
         }
     }
@@ -40,7 +40,8 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunctionParameterEnum,
     T.Wrapped.RawValue: StringProtocol {
-    /// Declares an optional `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of the ``LLMFunction``.
+    /// Declares an optional `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of
+    /// the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -50,18 +51,17 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
         const: (any StringProtocol)? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "string",
-                "description": String(description)
-            ]
-            if let const {
-                addProp["const"] = String(const)
-            }
-            addProp["enum"] = T.Wrapped.allCases.map { String($0.rawValue) }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "const": const.map { String($0) } as Any?,
+                "enum": T.Wrapped.allCases.map { String($0.rawValue) }
+            ].compactMapValues { $0 })))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            logger
+                .error(
+                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
+                )
             self.init(description: "")
         }
     }
@@ -69,7 +69,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
 
 extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterEnum,
     T.Element.RawValue: StringProtocol {
-    /// Declares an `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all options of a text-based parameter of the ``LLMFunction``.
+    /// Declares an `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all options of
+    /// a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -85,41 +86,40 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "string"
-            ]
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            itemNonOpt["enum"] = T.Element.allCases.map { String($0.rawValue) }
-            addProp["items"] = itemNonOpt
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "const": const.map { String($0) } as Any?,
+                    "enum": T.Element.allCases.map { String($0.rawValue) }
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            logger
+                .error(
+                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
+                )
             self.init(description: "")
         }
     }
 }
 
 extension _LLMFunctionParameterWrapper where T: AnyOptional,
-                                             T.Wrapped: AnyArray,
-                                             T.Wrapped.Element: LLMFunctionParameterEnum,
-                                             T.Wrapped.Element.RawValue: StringProtocol {
-    /// Declares an optional `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all options of a text-based parameter of the ``LLMFunction``.
+    T.Wrapped: AnyArray,
+    T.Wrapped.Element: LLMFunctionParameterEnum,
+    T.Wrapped.Element.RawValue: StringProtocol {
+    /// Declares an optional `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all
+    /// options of a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
@@ -135,31 +135,29 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
         uniqueItems: Bool? = nil
     ) {
         do {
-            // FIXME: How can this be simplified?
-            var addProp: [String: any Sendable] = [
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
                 "type": "array",
-                "description": String(description)
-            ]
-            var itemNonOpt: [String: any Sendable] = [
-                "type": "string"
-            ]
-            if let const {
-                itemNonOpt["const"] = String(const)
-            }
-            itemNonOpt["enum"] = T.Wrapped.Element.allCases.map { String($0.rawValue) }
-            addProp["items"] = itemNonOpt
-            if let minItems {
-                addProp["minItems"] = minItems
-            }
-            if let maxItems {
-                addProp["maxItems"] = maxItems
-            }
-            if let uniqueItems {
-                addProp["uniqueItems"] = uniqueItems
-            }
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "const": const.map { String($0) } as Any?,
+                    "enum": T.Wrapped.Element.allCases.map { String($0.rawValue) }
+                ],
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }
+                .filter { _, value in if let dict = value as? [String: Any] {
+                    dict.count > 1
+                } else {
+                    true
+                }
+                })))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum")
+            logger
+                .error(
+                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
+                )
             self.init(description: "")
         }
     }
