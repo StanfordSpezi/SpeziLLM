@@ -15,7 +15,7 @@ import SpeziLLM
 import SpeziSecureStorage
 
 /// A Swift Logger that logs important information and errors.
-let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+public let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
 
 /// Represents an ``LLMOpenAISchema`` in execution.
 ///

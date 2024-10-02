@@ -32,8 +32,9 @@ extension LLMOpenAISession {
                 let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
 
                 if case let .undocumented(statusCode: statusCode, _) = response {
-                    handleErrorCode(statusCode, prefix: "Generation")
-                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
+                    logger.error("LLMOpenAI: Error during generation. Status code: \(statusCode)")
+                    let llmError = handleErrorCode(statusCode)
+                    await finishGenerationWithError(llmError, on: continuation)
                     return
                 }
 
