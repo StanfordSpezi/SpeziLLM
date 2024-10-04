@@ -46,14 +46,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -94,14 +87,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
             self.init(description: "")
@@ -136,14 +122,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -184,14 +163,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")

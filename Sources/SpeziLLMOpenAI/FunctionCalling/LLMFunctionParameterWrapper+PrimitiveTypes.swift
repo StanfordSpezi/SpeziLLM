@@ -32,7 +32,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
                     "multipleOf": multipleOf as Any?,
                     "minimum": minimum.map { Double($0) } as Any?,
                     "maximum": maximum.map { Double($0) } as Any?
-                ].compactMapValues { $0 }))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameter+PrimitveTypes")
             self.init(description: "")

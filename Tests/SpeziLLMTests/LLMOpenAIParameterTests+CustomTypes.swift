@@ -14,7 +14,7 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
         static var itemSchema: LLMFunctionParameterItemSchema = {
             do {
-               return try .init(unvalidatedValue: [
+                return try .init(unvalidatedValue: [
                     "type": "object",
                     "properties": [
                         "propertyA": [
@@ -27,19 +27,19 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
                         ]
                     ]
                 ])
-            }
-            catch {
+            } catch {
                 print("unable to initialse schema in LLMOpenAIParameterCustomTypesTets")
                 return .init()
             }
         }()
+
         var propertyA: String
         var propertyB: Int
     }
-    
+
     struct Parameters: Encodable {
         static let shared = Self()
-        
+
         let customArrayParameter = [
             CustomType(propertyA: "testA", propertyB: 123),
             CustomType(propertyA: "testB", propertyB: 456)
