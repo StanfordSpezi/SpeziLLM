@@ -43,14 +43,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
             self.init(description: "")
@@ -91,14 +84,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
             self.init(description: "")

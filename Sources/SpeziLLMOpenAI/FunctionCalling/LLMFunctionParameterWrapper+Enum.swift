@@ -97,14 +97,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger
                 .error(
@@ -147,14 +140,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 "minItems": minItems as Any?,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
-            ].compactMapValues { $0 }
-                // .filter { _, value in if let dict = value as? [String: Any] {
-                //     dict.count > 1
-                // } else {
-                //     true
-                // }
-                // }))
-            ))
+            ].compactMapValues { $0 }))
         } catch {
             logger
                 .error(
