@@ -25,7 +25,7 @@ struct LLMOpenAIFunctionPerson: LLMFunction {
                             "description": "The last name of the person"
                         ]
                     ]
-                ]))
+                ])
             } catch {
                 fatalError("Couldn't create function parameters in for testing")
             }
