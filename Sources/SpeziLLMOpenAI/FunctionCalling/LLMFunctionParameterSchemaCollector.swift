@@ -9,9 +9,6 @@
 import Foundation
 import OpenAPIRuntime
 
-// NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
-public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObjectContainer
-public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
 
 /// Defines the `LLMFunctionParameterSchemaCollector/schema` requirement to collect the function calling parameter schema's from the ``LLMFunction/Parameter``s.
 ///
