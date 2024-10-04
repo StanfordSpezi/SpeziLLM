@@ -56,7 +56,7 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: .init(value1: .gpt4_turbo, value2: .gpt_hyphen_4_hyphen_turbo))
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -75,32 +75,40 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
         
         // Validate parameter schema
         let schemaArrayInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intArrayParameter"])
-        XCTAssertEqual(schemaArrayInt.schema.type, .array)
-        XCTAssertEqual(schemaArrayInt.schema.description, "Int Array Parameter")
-        XCTAssertEqual(schemaArrayInt.schema.minItems, 1)
-        XCTAssertEqual(schemaArrayInt.schema.maxItems, 9)
-        XCTAssertTrue(schemaArrayInt.schema.uniqueItems ?? false)
-        XCTAssertEqual(schemaArrayInt.schema.items?.type, .integer)
+        var schema = schemaArrayInt.schema.value
+        var items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Int Array Parameter")
+        XCTAssertEqual(schema["minItems"] as? Int, 1)
+        XCTAssertEqual(schema["maxItems"] as? Int, 9)
+        XCTAssertTrue(schema["uniqueItems"] as? Bool ?? false)
+        XCTAssertEqual(items?["type"] as? String, "integer")
         
         let schemaArrayDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleArrayParameter"])
-        XCTAssertEqual(schemaArrayDouble.schema.type, .array)
-        XCTAssertEqual(schemaArrayDouble.schema.description, "Double Array Parameter")
-        XCTAssertEqual(schemaArrayDouble.schema.items?.type, .number)
-        XCTAssertEqual(schemaArrayDouble.schema.items?.minimum, 12.3)
-        XCTAssertEqual(schemaArrayDouble.schema.items?.maximum, 45.6)
+        schema = schemaArrayDouble.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Double Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "number")
+        XCTAssertEqual(items?["minimum"] as? Double, 12.3)
+        XCTAssertEqual(items?["maximum"] as? Double, 45.6)
         
         let schemaArrayBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolArrayParameter"])
-        XCTAssertEqual(schemaArrayBool.schema.type, .array)
-        XCTAssertEqual(schemaArrayBool.schema.description, "Bool Array Parameter")
-        XCTAssertEqual(schemaArrayBool.schema.items?.type, .boolean)
-        XCTAssertEqual(schemaArrayBool.schema.items?.const, "true")
+        schema = schemaArrayBool.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Bool Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "boolean")
+        XCTAssertEqual(items?["const"] as? String, "true")
         
         let schemaArrayString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringArrayParameter"])
-        XCTAssertEqual(schemaArrayString.schema.type, .array)
-        XCTAssertEqual(schemaArrayString.schema.description, "String Array Parameter")
-        XCTAssertEqual(schemaArrayString.schema.items?.type, .string)
-        XCTAssertEqual(schemaArrayString.schema.items?.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaArrayString.schema.items?.enum, ["1234", "5678"])
+        schema = schemaArrayString.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "String Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["pattern"] as? String, "/d/d/d/d")
+        XCTAssertEqual(items?["enum"] as? [String], ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

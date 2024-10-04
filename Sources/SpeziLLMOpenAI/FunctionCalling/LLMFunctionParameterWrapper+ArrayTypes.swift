@@ -22,8 +22,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Element? = nil,
@@ -32,20 +32,25 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .integer,
-                const: const.map { String($0) },
-                multipleOf: multipleOf,
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "integer",
+                    "const": const.map { String($0) } as Any?,
+                    "multipleOf": multipleOf as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }))
+        } catch {
+            logger.error("LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
+        }
     }
 }
 
@@ -60,8 +65,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Element? = nil,
         maximum: T.Element? = nil,
@@ -69,19 +74,24 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .number,
-                const: const.map { String($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "number",
+                    "const": const.map { String($0) } as Any?,
+                    "minimum": minimum.map { Double($0) } as Any?,
+                    "maximum": maximum.map { Double($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }))
+        } catch {
+            logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
+            self.init(description: "")
+        }
     }
 }
 
@@ -94,24 +104,29 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .boolean,
-                const: const.map { String($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "boolean",
+                    "const": const.map { String($0) } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }))
+        } catch {
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
+        }
     }
 }
 
@@ -126,8 +141,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil,
@@ -135,19 +150,24 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .string,
-                pattern: pattern.map { String($0) },
-                const: const.map { String($0) },
-                enum: `enum`.map { $0.map { String($0) } }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "pattern": pattern.map { String($0) } as Any?,
+                    "const": const.map { String($0) } as Any?,
+                    "enum": `enum`.map { $0.map { String($0) } } as Any?
+                ].compactMapValues { $0 },
+                "minItems": minItems as Any?,
+                "maxItems": maxItems as Any?,
+                "uniqueItems": uniqueItems as Any?
+            ].compactMapValues { $0 }))
+        } catch {
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            self.init(description: "")
+        }
     }
 }
 

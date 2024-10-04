@@ -7,8 +7,7 @@
 //
 
 import Foundation
-import OpenAI
-
+import OpenAPIRuntime
 
 /// Represents the parameters of OpenAIs LLMs.
 public struct LLMOpenAIParameters: Sendable {
@@ -21,7 +20,7 @@ public struct LLMOpenAIParameters: Sendable {
     
     
     /// The to-be-used OpenAI model.
-    let modelType: Model
+    let modelType: LLMOpenAIModelType
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
     /// Indicates if a model access test should be made during LLM setup.
@@ -38,7 +37,7 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
-        modelType: Model,
+        modelType: LLMOpenAIModelType,
         systemPrompt: String? = Defaults.defaultOpenAISystemPrompt,
         modelAccessTest: Bool = false,
         overwritingToken: String? = nil
@@ -60,7 +59,7 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     @_disfavoredOverload
     public init(
-        modelType: Model,
+        modelType: LLMOpenAIModelType,
         systemPrompts: [String] = [Defaults.defaultOpenAISystemPrompt],
         modelAccessTest: Bool = false,
         overwritingToken: String? = nil
