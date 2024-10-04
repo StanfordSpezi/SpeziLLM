@@ -10,6 +10,14 @@ import OpenAI
 import OpenAPIRuntime
 
 
+// NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
+
+/// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
+public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObjectContainer
+/// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
+public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
+
+
 // swiftlint:disable type_name
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
