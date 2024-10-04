@@ -26,8 +26,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
         uniqueItems: Bool? = nil
     ) {
         do {
-            let itemSchema = T.Element.itemSchema.additionalProperties.value
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            let itemSchema = T.Element.itemSchema.value
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -44,12 +44,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
             self.init(description: "")
@@ -73,8 +74,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            let itemSchema = T.Wrapped.Element.itemSchema.additionalProperties.value
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            let itemSchema = T.Wrapped.Element.itemSchema.value
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -91,12 +92,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
             self.init(description: "")

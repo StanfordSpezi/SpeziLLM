@@ -54,5 +54,5 @@ import OpenAPIRuntime
 /// }
 /// ```
 public protocol LLMFunctionParameterArrayElement: Decodable {
-    static var itemSchema: Components.Schemas.FunctionParameters { get }
+    static var itemSchema: LLMFunctionParameterItemSchema { get }
 }

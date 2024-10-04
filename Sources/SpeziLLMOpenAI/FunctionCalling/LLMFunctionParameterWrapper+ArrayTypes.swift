@@ -33,7 +33,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -47,12 +47,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -81,8 +82,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
-                "type": "number",
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
                 "description": String(description),
                 "items": [
                     "type": "number",
@@ -94,12 +95,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
             self.init(description: "")
@@ -124,7 +126,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -135,12 +137,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
@@ -169,7 +172,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -182,12 +185,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")

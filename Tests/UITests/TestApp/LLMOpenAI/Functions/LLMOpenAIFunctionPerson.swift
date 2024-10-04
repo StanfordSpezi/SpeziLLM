@@ -6,15 +6,14 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAPIRuntime
 import SpeziLLMOpenAI
 
 
 struct LLMOpenAIFunctionPerson: LLMFunction {
     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
-        static let itemSchema: Components.Schemas.FunctionParameters = {
+        static let itemSchema: LLMFunctionParameterItemSchema = {
             do {
-                return try Components.Schemas.FunctionParameters(additionalProperties: .init(unvalidatedValue: [
+                return try LLMFunctionParameterItemSchema(unvalidatedValue: [
                     "type": "object",
                     "properties": [
                         "firstName": [
