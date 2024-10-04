@@ -75,7 +75,7 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: .init(value1: .gpt4_turbo, value2: .gpt_hyphen_4_hyphen_turbo))
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -99,55 +99,67 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         
         // Validate parameter schema
         let schemaOptionalInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intParameter"])
-        XCTAssertEqual(schemaOptionalInt.schema.type, .integer)
-        XCTAssertEqual(schemaOptionalInt.schema.description, "Optional Int Parameter")
-        XCTAssertEqual(schemaOptionalInt.schema.multipleOf, 3)
+        var schema = schemaOptionalInt.schema.value
+        XCTAssertEqual(schema["type"] as? String, "integer")
+        XCTAssertEqual(schema["description"] as? String, "Optional Int Parameter")
+        XCTAssertEqual(schema["multipleOf"] as? Int, 3)
         
         let schemaOptionalDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleParameter"])
-        XCTAssertEqual(schemaOptionalDouble.schema.type, .number)
-        XCTAssertEqual(schemaOptionalDouble.schema.description, "Optional Double Parameter")
-        XCTAssertEqual(schemaOptionalDouble.schema.minimum, 12)
-        XCTAssertEqual(schemaOptionalDouble.schema.maximum, 34)
+        schema = schemaOptionalDouble.schema.value
+        XCTAssertEqual(schema["type"] as? String, "number")
+        XCTAssertEqual(schema["description"] as? String, "Optional Double Parameter")
+        XCTAssertEqual(schema["minimum"] as? Double, 12)
+        XCTAssertEqual(schema["maximum"] as? Double, 34)
         
         let schemaOptionalBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolParameter"])
-        XCTAssertEqual(schemaOptionalBool.schema.type, .boolean)
-        XCTAssertEqual(schemaOptionalBool.schema.description, "Optional Bool Parameter")
-        XCTAssertEqual(schemaOptionalBool.schema.const, "false")
+        schema = schemaOptionalBool.schema.value
+        XCTAssertEqual(schema["type"] as? String, "boolean")
+        XCTAssertEqual(schema["description"] as? String, "Optional Bool Parameter")
+        XCTAssertEqual(schema["const"] as? String, "false")
         
         let schemaOptionalString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringParameter"])
-        XCTAssertEqual(schemaOptionalString.schema.type, .string)
-        XCTAssertEqual(schemaOptionalString.schema.description, "Optional String Parameter")
-        XCTAssertEqual(schemaOptionalString.schema.format, "date-time")
-        XCTAssertEqual(schemaOptionalString.schema.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaOptionalString.schema.enum, ["1234", "5678"])
+        schema = schemaOptionalString.schema.value
+        XCTAssertEqual(schema["type"] as? String, "string")
+        XCTAssertEqual(schema["description"] as? String, "Optional String Parameter")
+        XCTAssertEqual(schema["format"] as? String, "date-time")
+        XCTAssertEqual(schema["pattern"] as? String, "/d/d/d/d")
+        XCTAssertEqual(schema["enum"] as? [String], ["1234", "5678"])
         
         let schemaArrayInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intArrayParameter"])
-        XCTAssertEqual(schemaArrayInt.schema.type, .array)
-        XCTAssertEqual(schemaArrayInt.schema.description, "Optional Int Array Parameter")
-        XCTAssertEqual(schemaArrayInt.schema.minItems, 1)
-        XCTAssertEqual(schemaArrayInt.schema.maxItems, 9)
-        XCTAssertTrue(schemaArrayInt.schema.uniqueItems ?? false)
-        XCTAssertEqual(schemaArrayInt.schema.items?.type, .integer)
+        schema = schemaArrayInt.schema.value
+        var items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Optional Int Array Parameter")
+        XCTAssertEqual(schema["minItems"] as? Int, 1)
+        XCTAssertEqual(schema["maxItems"] as? Int, 9)
+        XCTAssertTrue(schema["uniqueItems"] as? Bool ?? false)
+        XCTAssertEqual(items?["type"] as? String, "integer")
         
         let schemaArrayDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleArrayParameter"])
-        XCTAssertEqual(schemaArrayDouble.schema.type, .array)
-        XCTAssertEqual(schemaArrayDouble.schema.description, "Optional Double Array Parameter")
-        XCTAssertEqual(schemaArrayDouble.schema.items?.type, .number)
-        XCTAssertEqual(schemaArrayDouble.schema.items?.minimum, 12.3)
-        XCTAssertEqual(schemaArrayDouble.schema.items?.maximum, 45.6)
+        schema = schemaArrayDouble.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Optional Double Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "number")
+        XCTAssertEqual(items?["minimum"] as? Double, 12.3)
+        XCTAssertEqual(items?["maximum"] as? Double, 45.6)
         
         let schemaArrayBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolArrayParameter"])
-        XCTAssertEqual(schemaArrayBool.schema.type, .array)
-        XCTAssertEqual(schemaArrayBool.schema.description, "Optional Bool Array Parameter")
-        XCTAssertEqual(schemaArrayBool.schema.items?.type, .boolean)
-        XCTAssertEqual(schemaArrayBool.schema.items?.const, "true")
+        schema = schemaArrayBool.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Optional Bool Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "boolean")
+        XCTAssertEqual(items?["const"] as? String, "true")
         
         let schemaArrayString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringArrayParameter"])
-        XCTAssertEqual(schemaArrayString.schema.type, .array)
-        XCTAssertEqual(schemaArrayString.schema.description, "Optional String Array Parameter")
-        XCTAssertEqual(schemaArrayString.schema.items?.type, .string)
-        XCTAssertEqual(schemaArrayString.schema.items?.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaArrayString.schema.items?.enum, ["1234", "5678"])
+        schema = schemaArrayString.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Optional String Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["pattern"] as? String, "/d/d/d/d")
+        XCTAssertEqual(items?["enum"] as? [String], ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

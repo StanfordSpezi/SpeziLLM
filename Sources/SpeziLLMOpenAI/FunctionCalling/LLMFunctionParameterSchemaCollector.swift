@@ -9,13 +9,17 @@
 import Foundation
 import OpenAPIRuntime
 
+// NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
+public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObjectContainer
+public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
+
 /// Defines the `LLMFunctionParameterSchemaCollector/schema` requirement to collect the function calling parameter schema's from the ``LLMFunction/Parameter``s.
 ///
-/// Conformance of ``LLMFunction/Parameter`` to `LLMFunctionParameterSchemaCollector` can be found in the declaration of the ``LLMFunction/Parameter``.
+/// Conformance of ``LLMFunction/Parameter`` to `LLMFunctionParameterSchemaCollector` can be found in the declaration of
+/// the ``LLMFunction/Parameter``.
 protocol LLMFunctionParameterSchemaCollector {
-    var schema: Components.Schemas.FunctionParameters { get }
+    var schema: LLMFunctionParameterItemSchema { get }
 }
-
 
 extension LLMFunction {
     typealias LLMFunctionParameterSchema = Components.Schemas.FunctionParameters
@@ -24,7 +28,7 @@ extension LLMFunction {
     }
     
     /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines them into the complete parameter schema of the ``LLMFunction``.
-    var schema: Components.Schemas.FunctionParameters {
+    var schema: LLMFunctionParameterSchema {
         let requiredPropertyNames = Array(
             parameterValueCollectors
                 .filter {
@@ -35,11 +39,11 @@ extension LLMFunction {
         
         let properties = schemaValueCollectors.compactMapValues { $0.schema }
         
-        var ret: Components.Schemas.FunctionParameters = .init()
+        var ret: LLMFunctionParameterSchema = .init()
         do {
             ret.additionalProperties = try .init(unvalidatedValue: [
                 "type": "object",
-                "properties": properties.mapValues { $0.additionalProperties.value },
+                "properties": properties.mapValues { $0.value },
                 "required": requiredPropertyNames
             ])
         } catch {

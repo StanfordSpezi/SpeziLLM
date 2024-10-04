@@ -25,15 +25,14 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
         maximum: T? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties:
-                .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                     "type": "integer",
                     "description": String(description),
                     "const": const.map { String($0) } as Any?,
                     "multipleOf": multipleOf as Any?,
                     "minimum": minimum.map { Double($0) } as Any?,
                     "maximum": maximum.map { Double($0) } as Any?
-                ].compactMapValues { $0 })))
+                ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameter+PrimitveTypes")
             self.init(description: "")
@@ -57,13 +56,13 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
         maximum: T? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "number",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?,
                 "minimum": minimum.map { Double($0) } as Any?,
                 "maximum": maximum.map { Double($0) } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitveTypes")
             self.init(description: "")
@@ -82,12 +81,12 @@ extension _LLMFunctionParameterWrapper where T == Bool {
         const: (any StringProtocol)? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue:
+            try self.init(schema: .init(unvalidatedValue:
             [
                 "type": "boolean",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimiteveTypes")
             self.init(description: "")
@@ -114,14 +113,14 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
         enum: [any StringProtocol]? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
                 "format": format?.rawValue as Any?,
                 "pattern": pattern.map { String($0) } as Any?,
                 "const": const.map { String($0) } as Any?,
                 "enum": `enum`.map { $0.map { String($0) } } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitiveTypes")
             self.init(description: "")

@@ -18,7 +18,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     private var injectedValue: T?
     
     
-    var schema: Components.Schemas.FunctionParameters
+    var schema: LLMFunctionParameterItemSchema
     public var wrappedValue: T {
         // If the unwrapped injectedValue is not nil, return the non-nil value
         if let value = injectedValue {
@@ -51,7 +51,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
         self.init(schema: T.schema)
     }
 
-    init(schema: Components.Schemas.FunctionParameters ) {
+    init(schema: LLMFunctionParameterItemSchema ) {
         self.schema = schema
     }
     

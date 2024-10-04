@@ -27,14 +27,14 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
         maximum: T.Wrapped? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "integer",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?,
                 "multipleOf": multipleOf as Any?,
                 "minimum": minimum.map { Double($0) } as Any?,
                 "maximum": maximum.map { Double($0) } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
             self.init(description: "")
@@ -57,13 +57,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
         maximum: T.Wrapped? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "number",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?,
                 "minimum": minimum.map { Double($0) } as Any?,
                 "maximum": maximum.map { Double($0) } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")
@@ -82,11 +82,11 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
         const: (any StringProtocol)? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "boolean",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -111,14 +111,14 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
         enum: [any StringProtocol]? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
                 "format": format?.rawValue as Any?,
                 "pattern": pattern.map { String($0) } as Any?,
                 "const": const.map { String($0) } as Any?,
                 "enum": `enum`.map { $0.map { String($0) as Any? } }
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -150,7 +150,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -164,12 +164,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
             self.init(description: "")
@@ -199,7 +200,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -212,12 +213,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
@@ -242,7 +244,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -253,12 +255,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
             self.init(description: "")
@@ -288,7 +291,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -301,12 +304,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")

@@ -44,7 +44,7 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: .init(value1: .gpt4_turbo, value2: .gpt_hyphen_4_hyphen_turbo))
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -60,9 +60,10 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
         
         // Validate parameter schema
         let schemaRandomParameter = try XCTUnwrap(llmFunction.schemaValueCollectors["randomParameter"])
-        XCTAssertEqual(schemaRandomParameter.schema.type, .string)
-        XCTAssertEqual(schemaRandomParameter.schema.description, "Random Parameter")
-        XCTAssertEqual(schemaRandomParameter.schema.pattern, "/d/d/d/d")
+        let schema = schemaRandomParameter.schema.value
+        XCTAssertEqual(schema["type"] as? String, "string")
+        XCTAssertEqual(schema["description"] as? String, "Random Parameter")
+        XCTAssertEqual(schema["pattern"] as? String, "/d/d/d/d")
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

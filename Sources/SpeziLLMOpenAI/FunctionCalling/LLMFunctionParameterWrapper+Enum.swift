@@ -22,12 +22,12 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
         const: (any StringProtocol)? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?,
                 "enum": T.allCases.map { String($0.rawValue) }
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger
                 .error(
@@ -51,12 +51,12 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
         const: (any StringProtocol)? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
                 "const": const.map { String($0) } as Any?,
                 "enum": T.Wrapped.allCases.map { String($0.rawValue) }
-            ].compactMapValues { $0 })))
+            ].compactMapValues { $0 }))
         } catch {
             logger
                 .error(
@@ -86,7 +86,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -98,12 +98,13 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger
                 .error(
@@ -135,7 +136,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
         uniqueItems: Bool? = nil
     ) {
         do {
-            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: [
+            try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
                 "items": [
@@ -147,12 +148,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 "maxItems": maxItems as Any?,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }
-                .filter { _, value in if let dict = value as? [String: Any] {
-                    dict.count > 1
-                } else {
-                    true
-                }
-                })))
+                // .filter { _, value in if let dict = value as? [String: Any] {
+                //     dict.count > 1
+                // } else {
+                //     true
+                // }
+                // }))
+            ))
         } catch {
             logger
                 .error(

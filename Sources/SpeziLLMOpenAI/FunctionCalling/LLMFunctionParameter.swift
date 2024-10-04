@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import OpenAPIRuntime
 
 /// Represents an LLM function calling parameter.
 ///
@@ -43,5 +42,5 @@ import OpenAPIRuntime
 /// }
 /// ```
 public protocol LLMFunctionParameter: Decodable {
-    static var schema: Components.Schemas.FunctionParameters { get }
+    static var schema: LLMFunctionParameterPropertySchema { get }
 }
