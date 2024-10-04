@@ -99,17 +99,17 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
         XCTAssertEqual(schema["description"] as? String, "Array Enum Parameter")
         XCTAssertEqual(schema["minItems"] as? Int, 1)
         XCTAssertEqual(schema["maxItems"] as? Int, 5)
-        XCTAssertFalse(schema["uniqueItems"] as? Bool)
-        XCTAssertEqual(items["type"] as? String, "string")
-        XCTAssertEqual(items["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
+        XCTAssertFalse(schema["uniqueItems"] as? Bool ?? true)
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         let schemaOptionalArrayEnum = try XCTUnwrap(llmFunction.schemaValueCollectors["optionalArrayEnumParameter"])
         schema = schemaOptionalArrayEnum.schema.value
         items = schema["items"] as? [String: Any]
         XCTAssertEqual(schema["type"] as? String, "array")
         XCTAssertEqual(schema["description"] as? String, "Optional Array Enum Parameter")
-        XCTAssertEqual(items["type"] as? String, "string")
-        XCTAssertEqual(items["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(
