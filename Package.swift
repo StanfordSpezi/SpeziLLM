@@ -30,10 +30,10 @@ let package = Package(
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.3.3")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "1.0.4"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.0.0-beta.3"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.0")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", branch: "feature/foundation"),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
     ],
     targets: [

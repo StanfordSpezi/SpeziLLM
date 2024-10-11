@@ -729,24 +729,24 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTestExtensions.git";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.4.13;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		9770F28F2BB3C40C00478571 /* XCRemoteSwiftPackageReference "SpeziFirebase" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/SpeziFirebase";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.0.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = "2.0.0-beta.4";
 			};
 		};
 		979D418E2BB3EBD8001953BD /* XCRemoteSwiftPackageReference "SpeziAccount" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/SpeziAccount";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.2.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = "2.0.0-beta.8";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
