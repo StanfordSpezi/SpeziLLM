@@ -44,9 +44,9 @@ class TestAppLLMLocalUITests: XCTestCase {
         
         // Chat
         #if !os(macOS)
-        try app.textViews["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        try app.textViews["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
         #else
-        try app.textFields["Message Input Textfield"].enter(value: "New Message!", dismissKeyboard: false)
+        try app.textFields["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
         #endif
         
         XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))

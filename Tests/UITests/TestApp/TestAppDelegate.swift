@@ -9,8 +9,10 @@
 import Foundation
 import Spezi
 #if os(iOS)
+import FirebaseFirestore
 import SpeziAccount
 import SpeziFirebaseAccount
+import SpeziFirebaseAccountStorage
 #endif
 import SpeziLLM
 import SpeziLLMFog
@@ -33,14 +35,12 @@ class TestAppDelegate: SpeziAppDelegate {
         Configuration {
             // As SpeziAccount, SpeziFirebase and the firebase-ios-sdk currently don't support visionOS and macOS, perform fog node token authentication only on iOS
             #if os(iOS)
-            AccountConfiguration(configuration: [
-                .requires(\.userId),
-                .requires(\.password)
-            ])
-            
-            FirebaseAccountConfiguration(
-                authenticationMethods: .emailAndPassword,
-                emulatorSettings: (host: "localhost", port: 9099)   // Use Firebase emulator for development purposes
+            AccountConfiguration(
+                service: FirebaseAccountService(providers: [.emailAndPassword], emulatorSettings: (host: "localhost", port: 9099)),
+                storageProvider: FirestoreAccountStorage(storeIn: Firestore.firestore().collection("users")),
+                configuration: [
+                    .requires(\.userId)
+                ]
             )
             #endif
             
