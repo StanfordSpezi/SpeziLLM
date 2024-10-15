@@ -41,17 +41,6 @@
         }
       }
     },
-    "CLOSE" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
-          }
-        }
-      }
-    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
