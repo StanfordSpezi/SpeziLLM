@@ -18,45 +18,20 @@ struct AccountSheet: View {
     @Environment(\.accountRequired) var accountRequired
     
     @State var isInSetup = false
-    @State var overviewIsEditing = false
     
     
     var body: some View {
         NavigationStack {
             ZStack {
                 if account.signedIn && !isInSetup {
-                    AccountOverview(isEditing: $overviewIsEditing)
-                        .onDisappear {
-                            overviewIsEditing = false
-                        }
-                        .toolbar {
-                            if !overviewIsEditing {
-                                closeButton
-                            }
-                        }
+                    AccountOverview(close: .showCloseButton)
                 } else {
                     AccountSetup { _ in
                         dismiss() // we just signed in, dismiss the account setup sheet
                     } header: {
                         AccountSetupHeader()
                     }
-                        .onAppear {
-                            isInSetup = true
-                        }
-                        .toolbar {
-                            if !accountRequired {
-                                closeButton
-                            }
-                        }
                 }
-            }
-        }
-    }
-
-    var closeButton: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
-            Button("CLOSE") {
-                dismiss()
             }
         }
     }
