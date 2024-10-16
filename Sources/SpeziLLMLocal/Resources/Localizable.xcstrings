@@ -152,6 +152,7 @@
       }
     },
     "SPEZI_LLM_LOCAL_SYSTEM_PROMPT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

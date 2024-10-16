@@ -27,8 +27,10 @@ let package = Package(
         .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"])
     ],
     dependencies: [
+        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.0"),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", from: "1.16.0"),
+        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.12")),
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
-        .package(url: "https://github.com/StanfordBDHG/llama.cpp", .upToNextMinor(from: "0.3.3")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.0.0-beta.3"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
@@ -49,19 +51,23 @@ let package = Package(
             name: "SpeziLLMLocal",
             dependencies: [
                 .target(name: "SpeziLLM"),
-                .product(name: "llama", package: "llama.cpp"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "Spezi", package: "Spezi")
-            ],
-            swiftSettings: [
-                .interoperabilityMode(.Cxx)
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "MLX", package: "mlx-swift"),
+                .product(name: "MLXFast", package: "mlx-swift"),
+                .product(name: "MLXNN", package: "mlx-swift"),
+                .product(name: "MLXOptimizers", package: "mlx-swift"),
+                .product(name: "MLXRandom", package: "mlx-swift"),
+                .product(name: "Transformers", package: "swift-transformers"),
+                .product(name: "LLM", package: "mlx-swift-examples")
             ]
         ),
         .target(
             name: "SpeziLLMLocalDownload",
             dependencies: [
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
-                .product(name: "SpeziViews", package: "SpeziViews")
+                .product(name: "SpeziViews", package: "SpeziViews"),
+                .product(name: "LLM", package: "mlx-swift-examples")
             ]
         ),
         .target(

@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import llama
 import Spezi
 import SpeziFoundation
 import SpeziLLM
+import MLX
 
 
 /// LLM execution platform of an ``LLMLocalSchema``.
@@ -39,12 +39,10 @@ import SpeziLLM
 /// }
 /// ```
 public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
-    /// Enforce only one concurrent execution of a local LLM.
-    private let semaphore = AsyncSemaphore(value: 1)
+    
     let configuration: LLMLocalPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
-    
     
     /// Creates an instance of the ``LLMLocalPlatform``.
     ///
@@ -59,34 +57,18 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
         self.init(configuration: .init())
     }
     
-    
     public nonisolated func configure() {
-        // Initialize the llama.cpp backend
-        llama_backend_init()
-        llama_numa_init(configuration.nonUniformMemoryAccess.wrappedValue)
+        MLX.GPU.set(cacheLimit: configuration.cacheLimit * 1024 * 1024)
+        if let memoryLimit = configuration.memoryLimit {
+            MLX.GPU.set(memoryLimit: memoryLimit.limit, relaxed: memoryLimit.relaxed)
+        }
     }
     
     public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
     
-    nonisolated func exclusiveAccess() async throws {
-        try await semaphore.waitCheckingCancellation()
-        await MainActor.run {
-            state = .processing
-        }
-    }
-    
-    nonisolated func signal() async {
-        semaphore.signal()
-        await MainActor.run {
-            state = .idle
-        }
-    }
-    
-    
     deinit {
-        // Frees the llama.cpp backend
-        llama_backend_free()
+        MLX.GPU.clearCache()
     }
 }

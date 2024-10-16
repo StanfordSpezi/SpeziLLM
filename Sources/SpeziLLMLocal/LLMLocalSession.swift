@@ -10,6 +10,9 @@ import Foundation
 import os
 import SpeziChat
 import SpeziLLM
+import MLXLLM
+import MLX
+import MLXRandom
 
 
 /// Represents an ``LLMLocalSchema`` in execution.
@@ -65,16 +68,19 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema
     
+    @ObservationIgnored private var modelExist: Bool {
+        false
+    }
+    
     /// A task managing the ``LLMLocalSession`` output generation.
     @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     
-    /// A pointer to the allocated model via llama.cpp.
-    @ObservationIgnored var model: OpaquePointer?
-    /// A pointer to the allocated model context from llama.cpp.
-    @ObservationIgnored var modelContext: OpaquePointer?
+    @MainActor public var numParameters: Int?
+    @MainActor public var modelConfiguration: ModelConfiguration?
+    @MainActor public var modelContainer: ModelContainer?
     
     
     /// Creates an instance of a ``LLMLocalSession`` responsible for LLM inference.
@@ -86,34 +92,19 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     init(_ platform: LLMLocalPlatform, schema: LLMLocalSchema) {
         self.platform = platform
         self.schema = schema
-        
-        // Inject system prompt into context
-        if let systemPrompt = schema.parameters.systemPrompt {
-            Task { @MainActor in
-                context.append(systemMessage: systemPrompt)
-            }
-        }
     }
-    
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
-        try await platform.exclusiveAccess()
-        
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
-        // Execute the output generation of the LLM
         task = Task(priority: platform.configuration.taskPriority) {
-            // Unregister as soon as `Task` finishes
-            defer {
-                Task {
-                    await platform.signal()
-                }
-            }
-            
-            // Setup the model, if not already done
-            if model == nil {
+            if await state == .uninitialized {
                 guard await setup(continuation: continuation) else {
+                    await MainActor.run {
+                        state = .error(error: LLMLocalError.modelNotReadyYet)
+                    }
+                    await finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
                     return
                 }
             }
@@ -122,17 +113,21 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
                 return
             }
             
-            // Execute the inference
+            await MainActor.run {
+                self.state = .generating
+            }
+            
+            // Execute the output generation of the LLM
             await _generate(continuation: continuation)
         }
         
         return stream
     }
     
+    
     public func cancel() {
         task?.cancel()
     }
-    
     
     deinit {
         cancel()

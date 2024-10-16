@@ -9,6 +9,7 @@
 import Foundation
 import SpeziChat
 import SpeziLLM
+@preconcurrency import MLXLLM
 
 
 /// Defines the type and configuration of the ``LLMLocalSession``.
@@ -20,17 +21,17 @@ import SpeziLLM
 public struct LLMLocalSchema: LLMSchema {
     public typealias Platform = LLMLocalPlatform
     
+    let generateParameters: GenerateParameters
     
-    /// The on-device `URL` where the model is located.
-    let modelPath: URL
-    /// Parameters of the llama.cpp LLM.
-    let parameters: LLMLocalParameters
-    /// Context parameters of the llama.cpp LLM.
-    let contextParameters: LLMLocalContextParameters
-    /// Sampling parameters of the llama.cpp LLM.
-    let samplingParameters: LLMLocalSamplingParameters
+    let maxTokens: Int
+    
+    let displayEveryNTokens: Int
+    
+    let configuration: ModelConfiguration
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let formatChat: (@Sendable (LLMContext) throws -> String)
+    
+    
     public let injectIntoContext: Bool
     
     
@@ -44,17 +45,17 @@ public struct LLMLocalSchema: LLMSchema {
     ///   - injectIntoContext: Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``, defaults to false.
     ///   - formatChat: Closure to properly format the ``LLMLocalSession/context`` to a `String` which is tokenized and passed to the LLM, defaults to Llama2 prompt format.
     public init(
-        modelPath: URL,
-        parameters: LLMLocalParameters = .init(),
-        contextParameters: LLMLocalContextParameters = .init(),
-        samplingParameters: LLMLocalSamplingParameters = .init(),
+        configuration: ModelConfiguration,
+        generateParameters: GenerateParameters = GenerateParameters(temperature: 0.6),
+        maxTokens: Int = 2048,
+        displayEveryNTokens: Int = 4,
         injectIntoContext: Bool = false,
-        formatChat: @escaping (@Sendable (LLMContext) throws -> String) = PromptFormattingDefaults.llama2
+        formatChat: @escaping (@Sendable (LLMContext) throws -> String)
     ) {
-        self.modelPath = modelPath
-        self.parameters = parameters
-        self.contextParameters = contextParameters
-        self.samplingParameters = samplingParameters
+        self.generateParameters = generateParameters
+        self.maxTokens = maxTokens
+        self.displayEveryNTokens = displayEveryNTokens
+        self.configuration = configuration
         self.injectIntoContext = injectIntoContext
         self.formatChat = formatChat
     }
