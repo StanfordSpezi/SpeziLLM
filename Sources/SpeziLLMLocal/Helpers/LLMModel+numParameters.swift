@@ -1,11 +1,13 @@
 //
-//  LLMModel+numParameters.swift
-//  SpeziLLM
+// This source file is part of the Stanford Spezi open source project
 //
-//  Created by Leon Nissen on 10/14/24.
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
 //
 
 import MLXNN
+
 
 extension Module {
     /// Compute the number of parameters in a possibly quantized model
