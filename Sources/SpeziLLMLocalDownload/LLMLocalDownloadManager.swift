@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import Hub
+import MLXLLM
 import Observation
 import SpeziViews
-import MLXLLM
-import Hub
 
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
@@ -55,24 +55,24 @@ public final class LLMLocalDownloadManager: NSObject {
         
         do {
             let contents = try FileManager.default.contentsOfDirectory(atPath: url.path())
-            return contents.first(where: { $0.hasSuffix(modelFileExtension) }) != nil
+            return contents.contains { $0.hasSuffix(modelFileExtension) }
         } catch {
             return false
         }
     }
     
-    /// Creates a ``LLMLocalDownloadManager`` that helps with downloading LLM files from remote servers.
+    /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of LLM files from the remote server.
     ///
     /// - Parameters:
-    ///   - modelConfiguration: TODO
+    ///   - modelConfiguration: The configuration specifying the parameters and settings for the LLM that needs to be downloaded.
     public init(modelConfiguration: ModelConfiguration) {
         self.modelConfiguration = modelConfiguration
     }
     
-    /// Creates a ``LLMLocalDownloadManager`` that helps with downloading LLM files from remote servers.
+    /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
     ///
     /// - Parameters:
-    ///   - modelID: TODO
+    ///   - modelID: The Huggingface model ID of the LLM that needs to be downloaded.
     public init(modelID: String) {
         self.modelConfiguration = .init(id: modelID)
     }
@@ -89,7 +89,7 @@ public final class LLMLocalDownloadManager: NSObject {
         downloadTask?.cancel()
         downloadTask = Task(priority: .userInitiated) {
             do {
-                let _ = try await loadModelContainer(configuration: modelConfiguration) { progress in
+                _ = try await loadModelContainer(configuration: modelConfiguration) { progress in
                     Task { @MainActor in
                         self.state = .downloading(progress: progress)
                     }

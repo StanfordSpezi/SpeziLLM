@@ -1,16 +1,16 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
 import Foundation
+import MLX
 import Spezi
 import SpeziFoundation
 import SpeziLLM
-import MLX
 
 
 /// LLM execution platform of an ``LLMLocalSchema``.
@@ -39,7 +39,6 @@ import MLX
 /// }
 /// ```
 public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
-    
     let configuration: LLMLocalPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle

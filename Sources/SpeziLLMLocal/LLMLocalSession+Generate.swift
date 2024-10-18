@@ -1,18 +1,22 @@
 //
-//  LLMLocalSession+Generate.swift
-//  SpeziLLM
+// This source file is part of the Stanford Spezi open source project
 //
-//  Created by Leon Nissen on 10/15/24.
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
+// SPDX-License-Identifier: MIT
+//
+
 import Foundation
+import MLX
+import MLXLLM
+import MLXRandom
 import os
 import SpeziChat
 import SpeziLLM
-import MLXLLM
-import MLX
-import MLXRandom
+
 
 extension LLMLocalSession {
+    // swiftlint:disable:next identifier_name function_body_length
     func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
         guard let modelContainer = await self.modelContainer else {
             Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
@@ -63,7 +67,7 @@ extension LLMLocalSession {
                     return .stop
                 }
                 
-                if schema.injectIntoContext && tokens.count % schema.displayEveryNTokens == 0 {
+                if schema.injectIntoContext && tokens.count.isMultiple(of: schema.displayEveryNTokens) {
                     let lastTokens = Array(tokens.suffix(schema.displayEveryNTokens))
                     let text = " " + tokenizer.decode(tokens: lastTokens)
                     continuation.yield(text)

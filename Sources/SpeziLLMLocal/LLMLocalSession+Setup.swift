@@ -1,13 +1,14 @@
 //
-//  LLMLocalSession+Setup.swift
-//  SpeziLLM
+// This source file is part of the Stanford Spezi open source project
 //
-//  Created by Leon Nissen on 10/4/24.
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
 //
 
 import Foundation
-@preconcurrency import MLXLLM
-@preconcurrency import Hub
+import Hub
+import MLXLLM
 
 
 extension LLMLocalSession {
@@ -18,7 +19,7 @@ extension LLMLocalSession {
         
         do {
             let contents = try FileManager.default.contentsOfDirectory(atPath: url.path())
-            return contents.first(where: { $0.hasSuffix(modelFileExtension) }) != nil
+            return contents.contains { $0.hasSuffix(modelFileExtension) }
         } catch {
             return false
         }
@@ -42,7 +43,7 @@ extension LLMLocalSession {
             let modelContainer = try await loadModelContainer(configuration: self.schema.configuration)
             
             let numParams = await modelContainer.perform { [] model, _ in
-                return model.numParameters()
+                model.numParameters()
             }
             
             await MainActor.run {
