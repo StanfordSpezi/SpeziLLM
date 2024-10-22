@@ -54,7 +54,6 @@ public struct LLMLocalDownloadView: View {
     private let action: () async throws -> Void
     /// Description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
     private let downloadDescription: Text
-    
     /// Indicates the state of the view, get's derived from the ``LLMLocalDownloadManager/state``.
     @State private var viewState: ViewState = .idle
 

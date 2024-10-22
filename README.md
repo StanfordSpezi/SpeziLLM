@@ -59,6 +59,9 @@ The section below highlights the setup and basic use of the [SpeziLLMLocal](http
 
 The target enables developers to easily execute medium-size Language Models (LLMs) locally on-device. The module allows you to interact with the locally run LLM via purely Swift-based APIs, no interaction with low-level code is necessary, building on top of the infrastructure of the [SpeziLLM target](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm).
 
+> [!IMPORTANT]  
+> Spezi LLM Local is not compatible with simulators. The underlying [`mlx-swift`](https://github.com/ml-explore/mlx-swift) package encounters a crash when initializing the GPU as of version 0.18.1.
+
 #### Setup
 
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
