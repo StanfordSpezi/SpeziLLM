@@ -1,11 +1,12 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
+import MLXLLM
 import SpeziOnboarding
 import SpeziViews
 import SwiftUI
@@ -53,7 +54,6 @@ public struct LLMLocalDownloadView: View {
     private let action: () async throws -> Void
     /// Description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
     private let downloadDescription: Text
-    
     /// Indicates the state of the view, get's derived from the ``LLMLocalDownloadManager/state``.
     @State private var viewState: ViewState = .idle
 
@@ -155,7 +155,7 @@ public struct LLMLocalDownloadView: View {
     /// Represents the download progress of the model in percent (from 0 to 100)
     @MainActor private var downloadProgress: Double {
         if case .downloading(let progress) = self.downloadManager.state {
-            return progress
+            return progress.fractionCompleted * 100
         } else if case .downloaded = self.downloadManager.state {
             return 100.0
         }
@@ -165,9 +165,7 @@ public struct LLMLocalDownloadView: View {
     
     /// A `Bool` flag indicating if the model already exists on the device
     private var modelExists: Bool {
-        FileManager.default.fileExists(
-            atPath: self.downloadManager.llmStorageUrl.path()
-        )
+        self.downloadManager.modelExists
     }
     
     
@@ -179,16 +177,12 @@ public struct LLMLocalDownloadView: View {
     ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     public init(
+        model modelConfiguration: ModelConfiguration,
         downloadDescription: LocalizedStringResource,
-        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl,
-        llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
         action: @escaping () async throws -> Void
     ) {
         self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(
-                llmDownloadUrl: llmDownloadUrl,
-                llmStorageUrl: llmStorageUrl
-            )
+            wrappedValue: LLMLocalDownloadManager(modelConfiguration: modelConfiguration)
         )
         self.downloadDescription = Text(downloadDescription)
         self.action = action
@@ -203,16 +197,38 @@ public struct LLMLocalDownloadView: View {
     ///   - action: The action that should be performed when pressing the primary button of the view.
     @_disfavoredOverload
     public init<S: StringProtocol>(
+        model modelConfiguration: ModelConfiguration,
         downloadDescription: S,
-        llmDownloadUrl: URL = LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl,
-        llmStorageUrl: URL = .cachesDirectory.appending(path: "llm.gguf"),
         action: @escaping () async throws -> Void
     ) {
         self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(
-                llmDownloadUrl: llmDownloadUrl,
-                llmStorageUrl: llmStorageUrl
-            )
+            wrappedValue: LLMLocalDownloadManager(modelConfiguration: modelConfiguration)
+        )
+        self.downloadDescription = Text(verbatim: String(downloadDescription))
+        self.action = action
+    }
+    
+    @_disfavoredOverload
+    public init(
+        model modelID: String,
+        downloadDescription: LocalizedStringResource,
+        action: @escaping () async throws -> Void
+    ) {
+        self._downloadManager = State(
+            wrappedValue: LLMLocalDownloadManager(modelID: modelID)
+        )
+        self.downloadDescription = Text(downloadDescription)
+        self.action = action
+    }
+    
+    @_disfavoredOverload
+    public init<S: StringProtocol>(
+        model modelID: String,
+        downloadDescription: S,
+        action: @escaping () async throws -> Void
+    ) {
+        self._downloadManager = State(
+            wrappedValue: LLMLocalDownloadManager(modelID: modelID)
         )
         self.downloadDescription = Text(verbatim: String(downloadDescription))
         self.action = action
@@ -223,6 +239,7 @@ public struct LLMLocalDownloadView: View {
 #if DEBUG
 #Preview {
     LLMLocalDownloadView(
+        model: .phi3_4bit,
         downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
         action: {}
     )

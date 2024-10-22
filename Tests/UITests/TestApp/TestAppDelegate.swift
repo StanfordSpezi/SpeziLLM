@@ -46,7 +46,6 @@ class TestAppDelegate: SpeziAppDelegate {
             
             LLMRunner {
                 LLMMockPlatform()
-                LLMLocalPlatform()
                 // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
                 LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
                 LLMOpenAIPlatform()
