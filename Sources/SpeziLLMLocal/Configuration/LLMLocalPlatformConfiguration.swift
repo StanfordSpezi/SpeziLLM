@@ -10,8 +10,9 @@ import Foundation
 
 /// Represents the configuration of the Spezi ``LLMLocalPlatform``.
 public struct LLMLocalPlatformConfiguration: Sendable {
+    /// Represents the memory limit for the MLX GPU.
     public struct MemoryLimit: Sendable {
-        /// The memory limit in MB
+        /// The memory limit in MB.
         let limit: Int
         
         /// Calls to malloc will wait on scheduled tasks if the limit is exceeded.  If
@@ -22,11 +23,21 @@ public struct LLMLocalPlatformConfiguration: Sendable {
         /// The memory limit defaults to 1.5 times the maximum recommended working set
         /// size reported by the device ([recommendedMaxWorkingSetSize](https://developer.apple.com/documentation/metal/mtldevice/2369280-recommendedmaxworkingsetsize))
         let relaxed: Bool
+        
+        /// Creates the `MemoryLimit` which configures the GPU used by MLX.
+        ///
+        /// - Parameters:
+        ///   - limit: The memory limit in MB.
+        ///   - relaxed: See  `relaxed` in ``LLMLocalPlatformConfiguration/MemoryLimit``.
+        public init(limit: Int, relaxed: Bool = false) {
+            self.limit = limit
+            self.relaxed = relaxed
+        }
     }
     
-    /// The cache limit in MB, to disable set limit to 0
-    let cacheLimit: Int
-    
+    /// The cache limit in MB, to disable set limit to `0`.
+    let cacheLimit: Int?
+    /// The memory limit for the GPU used by MLX.
     let memoryLimit: MemoryLimit?
     /// The task priority of the initiated LLM inference tasks.
     let taskPriority: TaskPriority
@@ -35,9 +46,11 @@ public struct LLMLocalPlatformConfiguration: Sendable {
     /// Creates the ``LLMLocalPlatformConfiguration`` which configures the Spezi ``LLMLocalPlatform``.
     ///
     /// - Parameters:
+    ///   - cacheLimit: The cache limit for the GPU used by MLX, defaults to `nil`.
+    ///   - memoryLimit: The memory limit for the GPU used by MLX, defaults to `nil`.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     public init(
-        cacheLimit: Int = 20,
+        cacheLimit: Int? = nil,
         memoryLimit: MemoryLimit? = nil,
         taskPriority: TaskPriority = .userInitiated
     ) {

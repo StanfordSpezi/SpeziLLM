@@ -60,8 +60,9 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
 #if targetEnvironment(simulator)
         assertionFailure("SpeziLLMLocal: Code cannot be run on simulator.")
 #endif
-        
-        MLX.GPU.set(cacheLimit: configuration.cacheLimit * 1024 * 1024)
+        if let cacheLimit = configuration.cacheLimit {
+            MLX.GPU.set(cacheLimit: cacheLimit * 1024 * 1024)
+        }
         if let memoryLimit = configuration.memoryLimit {
             MLX.GPU.set(memoryLimit: memoryLimit.limit, relaxed: memoryLimit.relaxed)
         }
