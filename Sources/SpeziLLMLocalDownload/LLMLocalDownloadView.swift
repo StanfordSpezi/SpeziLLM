@@ -7,10 +7,10 @@
 //
 
 import MLXLLM
+import SpeziLLMLocal
 import SpeziOnboarding
 import SpeziViews
 import SwiftUI
-import SpeziLLMLocal
 
 
 /// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.

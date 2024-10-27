@@ -10,7 +10,7 @@ import Foundation
 
 
 /// Represents the sampling parameters of the LLM.
-public struct LLMLocalSamplingParameters: Sendable {    // swiftlint:disable:this type_body_length
+public struct LLMLocalSamplingParameters: Sendable {
     /// Top-p Sampling: Smallest possible set of words whose cumulative probability exceeds the probability p (1.0 = disabled).
     let topP: Float
     /// Temperature Sampling: A higher value indicates more creativity of the model but also more hallucinations.

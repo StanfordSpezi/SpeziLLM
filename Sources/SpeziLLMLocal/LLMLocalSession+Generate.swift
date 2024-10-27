@@ -89,8 +89,8 @@ extension LLMLocalSession {
         
         Self.logger.debug(
             """
-            SpeziLLMLocal: 
-            Prompt Tokens per second: \(result.promptTokensPerSecond, privacy: .public) 
+            SpeziLLMLocal:
+            Prompt Tokens per second: \(result.promptTokensPerSecond, privacy: .public)
             Generation tokens per second: \(result.tokensPerSecond, privacy: .public)
             """
         )
