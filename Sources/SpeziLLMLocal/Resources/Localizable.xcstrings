@@ -150,6 +150,9 @@
           }
         }
       }
+    },
+    "SPEZI_LLM_LOCAL_SYSTEM_PROMPT" : {
+
     }
   },
   "version" : "1.0"

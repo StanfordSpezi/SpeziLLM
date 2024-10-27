@@ -20,19 +20,20 @@ import SpeziLLM
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
 public struct LLMLocalSchema: LLMSchema {
     public typealias Platform = LLMLocalPlatform
-    /// Parameters controlling the LLM generation process.
-    let generateParameters: GenerateParameters
-    /// Maximum number of tokens to generate in a single output.
-    let maxTokens: Int
-    /// Interval for displaying output after every N tokens generated.
-    let displayEveryNTokens: Int
-    /// Configuration settings for the model being used.
-    let configuration: ModelConfiguration
+    
+    /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
+    let parameters: LLMLocalParameters
+    /// Context parameters of the llama.cpp LLM.
+    let contextParameters: LLMLocalContextParameters
+    /// Sampling parameters of the llama.cpp LLM.
+    let samplingParameters: LLMLocalSamplingParameters
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let formatChat: (@Sendable (LLMContext) throws -> String)
     /// Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``.
     public let injectIntoContext: Bool
     
+    
+    package let configuration: ModelConfiguration
     
     /// Creates an instance of the ``LLMLocalSchema`` containing all necessary configuration for local LLM inference.
     ///
@@ -44,18 +45,18 @@ public struct LLMLocalSchema: LLMSchema {
     ///   - injectIntoContext: Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``, defaults to false.
     ///   - formatChat: Closure to properly format the ``LLMLocalSession/context`` to a `String` which is tokenized and passed to the LLM, defaults to Llama2 prompt format.
     public init(
-        configuration: ModelConfiguration,
-        generateParameters: GenerateParameters = GenerateParameters(),
-        maxTokens: Int = 2048,
-        displayEveryNTokens: Int = 4,
+        model: LLMLocalModel,
+        parameters: LLMLocalParameters = .init(),
+        contextParameters: LLMLocalContextParameters = .init(),
+        samplingParameters: LLMLocalSamplingParameters = .init(),
         injectIntoContext: Bool = false,
         formatChat: @escaping (@Sendable (LLMContext) throws -> String)
     ) {
-        self.generateParameters = generateParameters
-        self.maxTokens = maxTokens
-        self.displayEveryNTokens = displayEveryNTokens
-        self.configuration = configuration
-        self.injectIntoContext = injectIntoContext
+        self.parameters = parameters
+        self.contextParameters = contextParameters
+        self.samplingParameters = samplingParameters
         self.formatChat = formatChat
+        self.injectIntoContext = injectIntoContext
+        self.configuration = .init(id: model.hubID)
     }
 }

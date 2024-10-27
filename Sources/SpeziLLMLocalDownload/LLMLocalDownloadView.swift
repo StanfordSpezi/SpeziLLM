@@ -10,6 +10,7 @@ import MLXLLM
 import SpeziOnboarding
 import SpeziViews
 import SwiftUI
+import SpeziLLMLocal
 
 
 /// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
@@ -138,7 +139,7 @@ public struct LLMLocalDownloadView: View {
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
             
-            Text("Downloaded \(String(format: "%.2f", downloadProgress))% of 100%.", bundle: .module)
+            Text("Downloaded \(String(format: "%.0f", downloadProgress))% of 100%.", bundle: .module)
                 .padding(.top, 5)
         }
     }
@@ -177,12 +178,12 @@ public struct LLMLocalDownloadView: View {
     ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     public init(
-        model modelConfiguration: ModelConfiguration,
+        model: LLMLocalModel,
         downloadDescription: LocalizedStringResource,
         action: @escaping () async throws -> Void
     ) {
         self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(modelConfiguration: modelConfiguration)
+            wrappedValue: LLMLocalDownloadManager(model: model)
         )
         self.downloadDescription = Text(downloadDescription)
         self.action = action
@@ -197,38 +198,12 @@ public struct LLMLocalDownloadView: View {
     ///   - action: The action that should be performed when pressing the primary button of the view.
     @_disfavoredOverload
     public init<S: StringProtocol>(
-        model modelConfiguration: ModelConfiguration,
+        model: LLMLocalModel,
         downloadDescription: S,
         action: @escaping () async throws -> Void
     ) {
         self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(modelConfiguration: modelConfiguration)
-        )
-        self.downloadDescription = Text(verbatim: String(downloadDescription))
-        self.action = action
-    }
-    
-    @_disfavoredOverload
-    public init(
-        model modelID: String,
-        downloadDescription: LocalizedStringResource,
-        action: @escaping () async throws -> Void
-    ) {
-        self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(modelID: modelID)
-        )
-        self.downloadDescription = Text(downloadDescription)
-        self.action = action
-    }
-    
-    @_disfavoredOverload
-    public init<S: StringProtocol>(
-        model modelID: String,
-        downloadDescription: S,
-        action: @escaping () async throws -> Void
-    ) {
-        self._downloadManager = State(
-            wrappedValue: LLMLocalDownloadManager(modelID: modelID)
+            wrappedValue: LLMLocalDownloadManager(model: model)
         )
         self.downloadDescription = Text(verbatim: String(downloadDescription))
         self.action = action

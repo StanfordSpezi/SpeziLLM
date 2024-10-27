@@ -37,8 +37,7 @@ extension LLMLocalSession {
             tokenizer.encode(text: prompt)
         }
         
-        // each time you generate you will get something new
-        MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+        MLXRandom.seed(self.schema.contextParameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
         let extraEOSTokens = modelConfiguration.extraEOSTokens
         
@@ -46,11 +45,18 @@ extension LLMLocalSession {
             return
         }
         
+        let parameters: GenerateParameters = .init(
+            temperature: schema.samplingParameters.temperature,
+            topP: schema.samplingParameters.topP,
+            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
+            repetitionContextSize: schema.samplingParameters.repetitionContextSize
+        )
+        
         let (result, tokenizer) = await modelContainer.perform { model, tokenizer in
             // Execute the inference
             let result = MLXLLM.generate(
                 promptTokens: promptTokens,
-                parameters: self.schema.generateParameters,
+                parameters: parameters,
                 model: model,
                 tokenizer: tokenizer,
                 extraEOSTokens: extraEOSTokens
@@ -59,7 +65,7 @@ extension LLMLocalSession {
                     return .stop
                 }
                 
-                if tokens.count >= self.schema.maxTokens {
+                if tokens.count >= self.schema.parameters.maxOutputLength {
                     continuation.finish()
                     Task { @MainActor in
                         self.state = .ready
@@ -67,9 +73,11 @@ extension LLMLocalSession {
                     return .stop
                 }
                 
-                if schema.injectIntoContext && tokens.count.isMultiple(of: schema.displayEveryNTokens) {
-                    let lastTokens = Array(tokens.suffix(schema.displayEveryNTokens))
-                    let text = " " + tokenizer.decode(tokens: lastTokens)
+                if schema.injectIntoContext && tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+                    let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
+                    let text = tokenizer.decode(tokens: lastTokens)
+                    
+                    Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
                     continuation.yield(text)
                 }
                 
@@ -79,17 +87,27 @@ extension LLMLocalSession {
             return (result, tokenizer)
         }
         
+        Self.logger.debug(
+            """
+            SpeziLLMLocal: 
+            Prompt Tokens per second: \(result.promptTokensPerSecond, privacy: .public) 
+            Generation tokens per second: \(result.tokensPerSecond, privacy: .public)
+            """
+        )
+        
         await MainActor.run {
             if schema.injectIntoContext {
                 // Yielding every Nth token may result in missing the final tokens.
-                let reaminingTokens = result.tokens.count % schema.displayEveryNTokens
+                let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
                 let lastTokens = Array(result.tokens.suffix(reaminingTokens))
-                let text = " " + tokenizer.decode(tokens: lastTokens)
+                let text = tokenizer.decode(tokens: lastTokens)
                 continuation.yield(text)
                 context.completeAssistantStreaming()
             } else {
                 context.append(assistantOutput: result.output, complete: true)
             }
+            
+            continuation.finish()
             state = .ready
         }
     }

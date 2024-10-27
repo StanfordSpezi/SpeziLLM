@@ -11,6 +11,7 @@ import Hub
 import MLXLLM
 import Observation
 import SpeziViews
+import SpeziLLMLocal
 
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
@@ -49,7 +50,11 @@ public final class LLMLocalDownloadManager: NSObject {
     private let modelConfiguration: ModelConfiguration
     
     @ObservationIgnored public var modelExists: Bool {
-        let repo = Hub.Repo(id: modelConfiguration.name)
+        LLMLocalDownloadManager.modelExsist(model: .custom(id: modelConfiguration.name))
+    }
+    
+    public static func modelExsist(model: LLMLocalModel) -> Bool {
+        let repo = Hub.Repo(id: model.hubID)
         let url = HubApi.shared.localRepoLocation(repo)
         let modelFileExtension = ".safetensors"
         
@@ -61,20 +66,12 @@ public final class LLMLocalDownloadManager: NSObject {
         }
     }
     
-    /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of LLM files from the remote server.
-    ///
-    /// - Parameters:
-    ///   - modelConfiguration: The configuration specifying the parameters and settings for the LLM that needs to be downloaded.
-    public init(modelConfiguration: ModelConfiguration) {
-        self.modelConfiguration = modelConfiguration
-    }
-    
     /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
     ///
     /// - Parameters:
     ///   - modelID: The Huggingface model ID of the LLM that needs to be downloaded.
-    public init(modelID: String) {
-        self.modelConfiguration = .init(id: modelID)
+    public init(model: LLMLocalModel) {
+        self.modelConfiguration = .init(id: model.hubID)
     }
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.

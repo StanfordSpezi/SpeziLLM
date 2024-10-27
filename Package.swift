@@ -67,6 +67,7 @@ let package = Package(
             dependencies: [
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
                 .product(name: "SpeziViews", package: "SpeziViews"),
+                .target(name: "SpeziLLMLocal"),
                 .product(name: "LLM", package: "mlx-swift-examples")
             ]
         ),

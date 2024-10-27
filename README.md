@@ -62,6 +62,9 @@ The target enables developers to easily execute medium-size Language Models (LLM
 > [!IMPORTANT]  
 > Spezi LLM Local is not compatible with simulators. The underlying [`mlx-swift`](https://github.com/ml-explore/mlx-swift) requires a modern Metal MTLGPUFamily and the simulator does not provide that.
 
+> [!IMPORTANT]
+> Important: To use the LLM local target, some LLMs require adding the [Increase Memory Limit](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_kernel_increased-memory-limit) entitlement to the project.
+
 #### Setup
 
 You can configure the Spezi Local LLM execution within the typical `SpeziAppDelegate`.
