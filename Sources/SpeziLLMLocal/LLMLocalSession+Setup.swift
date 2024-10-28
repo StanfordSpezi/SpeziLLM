@@ -25,7 +25,7 @@ extension LLMLocalSession {
         }
     }
     
-    // swiftlint:disable:next identifier_name function_body_length
+    // swiftlint:disable:next identifier_name
     internal func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
         Self.logger.debug("SpeziLLMLocal: Local LLM is being initialized")
         
