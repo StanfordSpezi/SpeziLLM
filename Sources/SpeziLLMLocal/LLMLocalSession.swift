@@ -102,13 +102,24 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         }
     }
     
+    /// Initializes the model in advance.
+    /// Calling this method before user interaction prepares the model, which leads to reduced response time for the first prompt.
+    public func setup() async throws {
+        guard await _setup(continuation: nil) else {
+            throw LLMLocalError.modelNotReadyYet
+        }
+    }
+    
+    
+    /// Based on the input prompt, generate the output.
+    /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         task = Task(priority: platform.configuration.taskPriority) {
             if await state == .uninitialized {
-                guard await setup(continuation: continuation) else {
+                guard await _setup(continuation: continuation) else {
                     await MainActor.run {
                         state = .error(error: LLMLocalError.modelNotReadyYet)
                     }

@@ -17,7 +17,7 @@ import SpeziLLM
 
 extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
-    func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
         guard let modelContainer = await self.modelContainer else {
             Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
             await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
@@ -53,7 +53,6 @@ extension LLMLocalSession {
         )
         
         let (result, tokenizer) = await modelContainer.perform { model, tokenizer in
-            // Execute the inference
             let result = MLXLLM.generate(
                 promptTokens: promptTokens,
                 parameters: parameters,
@@ -66,6 +65,7 @@ extension LLMLocalSession {
                 }
                 
                 if tokens.count >= self.schema.parameters.maxOutputLength {
+                    Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
                     continuation.finish()
                     Task { @MainActor in
                         self.state = .ready
@@ -102,11 +102,10 @@ extension LLMLocalSession {
                 let lastTokens = Array(result.tokens.suffix(reaminingTokens))
                 let text = tokenizer.decode(tokens: lastTokens)
                 continuation.yield(text)
-                context.completeAssistantStreaming()
-            } else {
-                context.append(assistantOutput: result.output, complete: true)
             }
             
+            context.append(assistantOutput: result.output, complete: true)
+            context.completeAssistantStreaming()
             continuation.finish()
             state = .ready
         }

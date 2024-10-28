@@ -25,8 +25,8 @@ extension LLMLocalSession {
         }
     }
     
-    
-    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    // swiftlint:disable:next identifier_name function_body_length
+    internal func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
         Self.logger.debug("SpeziLLMLocal: Local LLM is being initialized")
         
         await MainActor.run {
@@ -34,7 +34,9 @@ extension LLMLocalSession {
         }
         
         guard verifyModelDownload() else {
-            await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+            if let continuation {
+                await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+            }
             Self.logger.error("SpeziLLMLocal: Local LLM file could not be opened, indicating that the model file doesn't exist")
             return false
         }
@@ -52,7 +54,7 @@ extension LLMLocalSession {
                 self.state = .ready
             }
         } catch {
-            continuation.yield(with: .failure(error))
+            continuation?.yield(with: .failure(error))
             Self.logger.error("SpeziLLMLocal: Failed to load local `modelContainer`")
             return false
         }

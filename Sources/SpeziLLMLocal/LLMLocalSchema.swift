@@ -31,9 +31,8 @@ public struct LLMLocalSchema: LLMSchema {
     let formatChat: (@Sendable (LLMContext) throws -> String)
     /// Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``.
     public let injectIntoContext: Bool
-    
-    
-    package let configuration: ModelConfiguration
+    /// The models configuration which is based on `mlx-libraries`
+    internal let configuration: ModelConfiguration
     
     /// Creates an instance of the ``LLMLocalSchema`` containing all necessary configuration for local LLM inference.
     ///
