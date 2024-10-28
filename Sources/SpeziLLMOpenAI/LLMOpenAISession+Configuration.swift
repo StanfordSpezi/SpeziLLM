@@ -35,7 +35,7 @@ extension LLMOpenAISession {
             }
 
             return await Operations.createChatCompletion
-                .Input(body: .json(Components.Schemas.CreateChatCompletionRequest(
+                .Input(body: .json(LLMOpenAIRequestType(
                     messages: openAIContext,
                     model: schema.parameters.modelType,
                     frequency_penalty: schema.modelParameters.frequencyPenalty,
@@ -47,8 +47,7 @@ extension LLMOpenAISession {
                     presence_penalty: schema.modelParameters.presencePenalty,
                     response_format: schema.modelParameters.responseFormat,
                     seed: schema.modelParameters.seed,
-                    stop: Components.Schemas.CreateChatCompletionRequest.stopPayload
-                        .case2(schema.modelParameters.stopSequence),
+                    stop: LLMOpenAIRequestType.stopPayload.case2(schema.modelParameters.stopSequence),
                     stream: true,
                     temperature: schema.modelParameters.temperature,
                     top_p: schema.modelParameters.topP,

@@ -14,7 +14,7 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
-        public static let models: [LLMOpenAIModelType] = [
+        public static let models: [LLMOpenAIRequestType.modelPayload] = [
             .init(
                 value1: "GPT 3.5 Turbo",
                 value2: .gpt_hyphen_3_period_5_hyphen_turbo
@@ -31,10 +31,10 @@ public struct LLMOpenAIModelOnboardingStep: View {
     }
     
     
-    @State private var modelSelection: LLMOpenAIModelType
+    @State private var modelSelection: LLMOpenAIRequestType.modelPayload 
     private let actionText: String
-    private let action: (LLMOpenAIModelType) -> Void
-    private let models: [LLMOpenAIModelType]
+    private let action: (LLMOpenAIRequestType.modelPayload) -> Void
+    private let models: [LLMOpenAIRequestType.modelPayload]
     
     
     public var body: some View {
@@ -81,8 +81,8 @@ public struct LLMOpenAIModelOnboardingStep: View {
     ///   - action: Action that should be performed after the openAI model selection has been done, selection is passed as closure argument.
     public init(
         actionText: LocalizedStringResource? = nil,
-        models: [LLMOpenAIModelType] = Default.models,
-        _ action: @escaping (LLMOpenAIModelType) -> Void
+        models: [LLMOpenAIRequestType.modelPayload] = Default.models,
+        _ action: @escaping (LLMOpenAIRequestType.modelPayload) -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
@@ -98,8 +98,8 @@ public struct LLMOpenAIModelOnboardingStep: View {
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
-        models: [LLMOpenAIModelType] = Default.models,
-        _ action: @escaping (LLMOpenAIModelType) -> Void
+        models: [LLMOpenAIRequestType.modelPayload] = Default.models,
+        _ action: @escaping (LLMOpenAIRequestType.modelPayload) -> Void
     ) {
         self.actionText = String(actionText)
         self.models = models
