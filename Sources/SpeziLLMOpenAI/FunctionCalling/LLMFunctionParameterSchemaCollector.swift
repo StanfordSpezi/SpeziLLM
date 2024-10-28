@@ -36,9 +36,9 @@ extension LLMFunction {
         
         let properties = schemaValueCollectors.compactMapValues { $0.schema }
         
-        var ret: LLMFunctionParameterSchema = .init()
+        var functionParameterSchema: LLMFunctionParameterSchema = .init()
         do {
-            ret.additionalProperties = try .init(unvalidatedValue: [
+            functionParameterSchema.additionalProperties = try .init(unvalidatedValue: [
                 "type": "object",
                 "properties": properties.mapValues { $0.value },
                 "required": requiredPropertyNames
@@ -46,6 +46,6 @@ extension LLMFunction {
         } catch {
             logger.error("Error creating OpenAPIObjectContainer.")
         }
-        return ret
+        return functionParameterSchema
     }
 }
