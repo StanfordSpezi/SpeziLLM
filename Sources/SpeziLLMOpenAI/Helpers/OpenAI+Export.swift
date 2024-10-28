@@ -8,8 +8,8 @@
 
 import OpenAPIRuntime
 
-/// Convenience export of the `OpenAI/Model` type.
+/// Convenience export of the generated chat completion request type.
 ///
-/// The ``LLMOpenAIModelType`` exports the `OpenAI/Model` describing the type of the to-be-used OpenAI Model.
-/// This enables convenience access to the `OpenAI/Model` without naming conflicts resulting from the `OpenAI/Model` name.
-public typealias LLMOpenAIModelType = Components.Schemas.CreateChatCompletionRequest.modelPayload
+/// The ``LLMOpenAIRequestType`` exports the generated chat completion request type.
+/// This enables shorthand access to further request-related generated types. 
+public typealias LLMOpenAIRequestType = Components.Schemas.CreateChatCompletionRequest
