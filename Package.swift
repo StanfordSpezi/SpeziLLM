@@ -77,7 +77,6 @@ let package = Package(
             name: "SpeziLLMOpenAI",
             dependencies: [
                 .target(name: "SpeziLLM"),
-                .product(name: "OpenAI", package: "OpenAI"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
