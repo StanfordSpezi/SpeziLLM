@@ -43,8 +43,17 @@ class TestAppLLMLocalUITests: XCTestCase {
         sleep(1)
         
         // Chat
+        let inputTextfield = app.textViews["Message Input Textfield"]
+        XCTAssertTrue(inputTextfield.exists)
+        
         #if !os(macOS)
-        try app.textViews["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            inputTextfield.tap()
+            sleep(1)
+            inputTextfield.typeText("New Message!")
+        } else {
+            try inputTextfield.enter(value: "New Message!", options: [.disableKeyboardDismiss])
+        }
         #else
         try app.textFields["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
         #endif

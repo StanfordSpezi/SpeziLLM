@@ -99,7 +99,8 @@ struct LLMLocalDemoView: View {
                 // Instantiate the `LLMLocalSchema` to an `LLMLocalSession` via the `LLMRunner`.
                 let llmSession: LLMLocalSession = runner(
                     with: LLMLocalSchema(
-                        modelPath: URL(string: "URL to the local model file")!
+                        model: .llama3_8B_4bit,
+                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
                     )
                 )
 

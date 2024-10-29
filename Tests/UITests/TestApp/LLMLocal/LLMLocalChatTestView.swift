@@ -25,13 +25,8 @@ struct LLMLocalChatTestView: View {
             } else {
                 LLMChatViewSchema(
                     with: LLMLocalSchema(
-                        configuration: .phi3_4bit,
-                        formatChat: { context in
-                            context
-                                .filter { $0.role == .user }
-                                .map { $0.content }
-                                .joined(separator: " ")
-                        }
+                        model: .llama3_8B_4bit,
+                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
                     )
                 )
             }
