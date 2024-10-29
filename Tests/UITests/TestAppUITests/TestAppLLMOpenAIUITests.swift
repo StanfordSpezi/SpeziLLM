@@ -29,6 +29,10 @@ class TestAppLLMOpenAIUITests: XCTestCase {
     func testSpeziLLMOpenAIOnboarding() throws {    // swiftlint:disable:this function_body_length
         let app = XCUIApplication()
         
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
+        }
+        
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
         
@@ -140,6 +144,10 @@ class TestAppLLMOpenAIUITests: XCTestCase {
     
     func testSpeziLLMOpenAIChat() throws {
         let app = XCUIApplication()
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
+        }
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
