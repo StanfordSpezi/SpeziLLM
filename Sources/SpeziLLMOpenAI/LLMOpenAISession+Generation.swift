@@ -39,11 +39,11 @@ extension LLMOpenAISession {
                 }
 
                 let chatStream = try response.ok.body.text_event_hyphen_stream
-                    .asDecodedServerSentEvents()
-                    .filter { $0.data != "[DONE]" }
-                    .asEncodedServerSentEvents()
-                    .asDecodedServerSentEventsWithJSONData(of:
-                        Components.Schemas.CreateChatCompletionStreamResponse.self)
+                    .asDecodedServerSentEventsWithJSONData(
+                        of: Components.Schemas.CreateChatCompletionStreamResponse.self,
+                        decoder: .init(),
+                        while: { incomingData in incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8)) }
+                    )
 
                 for try await chatStreamResult in chatStream {
                     guard let choices = chatStreamResult.data?.choices else {
