@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
 import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean
