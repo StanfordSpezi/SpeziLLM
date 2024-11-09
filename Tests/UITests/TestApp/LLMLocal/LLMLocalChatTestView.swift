@@ -25,18 +25,16 @@ struct LLMLocalChatTestView: View {
             } else {
                 LLMChatViewSchema(
                     with: LLMLocalSchema(
-                        modelPath: .cachesDirectory.appending(path: "llm.gguf"),
-                        parameters: .init(maxOutputLength: 512),
-                        contextParameters: .init(contextWindowSize: 1024),
+                        model: .llama3_8B_4bit,
                         formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
                     )
                 )
             }
         }
-            .navigationTitle("LLM_LOCAL_CHAT_VIEW_TITLE")
+        .navigationTitle("LLM_LOCAL_CHAT_VIEW_TITLE")
     }
-                                         
-                                         
+    
+    
     init(mockMode: Bool = false) {
         self.mockMode = mockMode
     }
@@ -48,10 +46,10 @@ struct LLMLocalChatTestView: View {
     NavigationStack {
         LLMLocalChatTestView(mockMode: true)
     }
-        .previewWith {
-            LLMRunner {
-                LLMMockPlatform()
-            }
+    .previewWith {
+        LLMRunner {
+            LLMMockPlatform()
         }
+    }
 }
 #endif
