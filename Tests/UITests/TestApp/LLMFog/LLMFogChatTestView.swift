@@ -55,7 +55,6 @@ struct LLMFogChatTestView: View {
             .accountRequired {
                 AccountSheet()
             }
-            .verifyRequiredAccountDetails()
             #endif
             .accentColor(.orange)  // Fog Orange
     }

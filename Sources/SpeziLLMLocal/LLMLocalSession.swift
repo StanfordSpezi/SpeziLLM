@@ -1,12 +1,16 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
+
 import Foundation
+import MLX
+import MLXLLM
+import MLXRandom
 import os
 import SpeziChat
 import SpeziLLM
@@ -65,16 +69,19 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema
     
+    @ObservationIgnored private var modelExist: Bool {
+        false
+    }
+    
     /// A task managing the ``LLMLocalSession`` output generation.
     @ObservationIgnored private var task: Task<(), Never>?
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     
-    /// A pointer to the allocated model via llama.cpp.
-    @ObservationIgnored var model: OpaquePointer?
-    /// A pointer to the allocated model context from llama.cpp.
-    @ObservationIgnored var modelContext: OpaquePointer?
+    @MainActor public var numParameters: Int?
+    @MainActor public var modelConfiguration: ModelConfiguration?
+    @MainActor public var modelContainer: ModelContainer?
     
     
     /// Creates an instance of a ``LLMLocalSession`` responsible for LLM inference.
@@ -95,25 +102,28 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         }
     }
     
+    /// Initializes the model in advance.
+    /// Calling this method before user interaction prepares the model, which leads to reduced response time for the first prompt.
+    public func setup() async throws {
+        guard await _setup(continuation: nil) else {
+            throw LLMLocalError.modelNotReadyYet
+        }
+    }
     
+    
+    /// Based on the input prompt, generate the output.
+    /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
-        try await platform.exclusiveAccess()
-        
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
-        // Execute the output generation of the LLM
         task = Task(priority: platform.configuration.taskPriority) {
-            // Unregister as soon as `Task` finishes
-            defer {
-                Task {
-                    await platform.signal()
-                }
-            }
-            
-            // Setup the model, if not already done
-            if model == nil {
-                guard await setup(continuation: continuation) else {
+            if await state == .uninitialized {
+                guard await _setup(continuation: continuation) else {
+                    await MainActor.run {
+                        state = .error(error: LLMLocalError.modelNotReadyYet)
+                    }
+                    await finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
                     return
                 }
             }
@@ -122,17 +132,21 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
                 return
             }
             
-            // Execute the inference
+            await MainActor.run {
+                self.state = .generating
+            }
+            
+            // Execute the output generation of the LLM
             await _generate(continuation: continuation)
         }
         
         return stream
     }
     
+    
     public func cancel() {
         task?.cancel()
     }
-    
     
     deinit {
         cancel()

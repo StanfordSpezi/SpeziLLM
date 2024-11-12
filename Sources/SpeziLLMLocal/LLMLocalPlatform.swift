@@ -1,13 +1,13 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
 import Foundation
-import llama
+import MLX
 import Spezi
 import SpeziFoundation
 import SpeziLLM
@@ -39,12 +39,9 @@ import SpeziLLM
 /// }
 /// ```
 public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
-    /// Enforce only one concurrent execution of a local LLM.
-    private let semaphore = AsyncSemaphore(value: 1)
     let configuration: LLMLocalPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
-    
     
     /// Creates an instance of the ``LLMLocalPlatform``.
     ///
@@ -59,34 +56,23 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
         self.init(configuration: .init())
     }
     
-    
     public nonisolated func configure() {
-        // Initialize the llama.cpp backend
-        llama_backend_init()
-        llama_numa_init(configuration.nonUniformMemoryAccess.wrappedValue)
+#if targetEnvironment(simulator)
+        assertionFailure("SpeziLLMLocal: Code cannot be run on simulator.")
+#endif
+        if let cacheLimit = configuration.cacheLimit {
+            MLX.GPU.set(cacheLimit: cacheLimit * 1024 * 1024)
+        }
+        if let memoryLimit = configuration.memoryLimit {
+            MLX.GPU.set(memoryLimit: memoryLimit.limit, relaxed: memoryLimit.relaxed)
+        }
     }
     
     public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
     
-    nonisolated func exclusiveAccess() async throws {
-        try await semaphore.waitCheckingCancellation()
-        await MainActor.run {
-            state = .processing
-        }
-    }
-    
-    nonisolated func signal() async {
-        semaphore.signal()
-        await MainActor.run {
-            state = .idle
-        }
-    }
-    
-    
     deinit {
-        // Frees the llama.cpp backend
-        llama_backend_free()
+        MLX.GPU.clearCache()
     }
 }
