@@ -149,6 +149,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Build and Start Docker Services
         run: |
+          cd FogNode
           docker compose up --build -d
       - name: Wait for Services to Start
         run: |
