@@ -1,48 +1,63 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
-import llama
+import Foundation
+import Hub
+import MLXLLM
 
 
 extension LLMLocalSession {
-    /// Set up the local LLM execution environment via llama.cpp
-    ///
-    /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    private func verifyModelDownload() -> Bool {
+        let repo = Hub.Repo(id: self.schema.configuration.name)
+        let url = HubApi.shared.localRepoLocation(repo)
+        let modelFileExtension = ".safetensors"
+        
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(atPath: url.path())
+            return contents.contains { $0.hasSuffix(modelFileExtension) }
+        } catch {
+            return false
+        }
+    }
+    
+    // swiftlint:disable:next identifier_name
+    internal func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
         Self.logger.debug("SpeziLLMLocal: Local LLM is being initialized")
+        
         await MainActor.run {
-            state = .loading
+            self.state = .loading
         }
         
-        guard let model = llama_load_model_from_file(schema.modelPath.path().cString(using: .utf8), schema.parameters.llamaCppRepresentation) else {
-            await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+        guard verifyModelDownload() else {
+            if let continuation {
+                await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+            }
             Self.logger.error("SpeziLLMLocal: Local LLM file could not be opened, indicating that the model file doesn't exist")
             return false
         }
         
-        /// Check if model was trained for the configured context window size
-        guard schema.contextParameters.contextWindowSize <= llama_n_ctx_train(model) else {
-            await finishGenerationWithError(LLMLocalError.contextSizeMismatch, on: continuation)
-            Self.logger.error("""
-            SpeziLLMLocal: Model was trained on only \(llama_n_ctx_train(model), privacy: .public) context tokens,
-            not the configured \(self.schema.contextParameters.contextWindowSize, privacy: .public) context tokens
-            """)
+        do {
+            let modelContainer = try await loadModelContainer(configuration: self.schema.configuration)
+            
+            let numParams = await modelContainer.perform { [] model, _ in
+                model.numParameters()
+            }
+            
+            await MainActor.run {
+                self.modelContainer = modelContainer
+                self.numParameters = numParams
+                self.state = .ready
+            }
+        } catch {
+            continuation?.yield(with: .failure(error))
+            Self.logger.error("SpeziLLMLocal: Failed to load local `modelContainer`")
             return false
         }
-        
-        self.model = model
-        
-        await MainActor.run {
-            state = .ready
-        }
-        Self.logger.debug("SpeziLLMLocal: Local LLM finished initializing, now ready to use")
         return true
     }
 }
