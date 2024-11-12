@@ -19,11 +19,10 @@ struct LLMLocalOnboardingDownloadView: View {
     
     var body: some View {
         LLMLocalDownloadView(
+            model: .phi3_4bit,
             downloadDescription: "LLM_DOWNLOAD_DESCRIPTION",
-            llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama3InstructModelUrl /// By default, download the Llama3 model
-        ) {
-            onboardingNavigationPath.nextStep()
-        }
+            action: onboardingNavigationPath.nextStep
+        )
     }
 }
 
