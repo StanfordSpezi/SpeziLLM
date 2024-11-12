@@ -7,43 +7,55 @@
 //
 
 import Foundation
-import llama
-
 
 /// Represents the configuration of the Spezi ``LLMLocalPlatform``.
 public struct LLMLocalPlatformConfiguration: Sendable {
-    /// Wrapper around the `ggml_numa_strategy` type of llama.cpp, indicating the non-unified memory access configuration of the device.
-    public enum NonUniformMemoryAccess: UInt32, Sendable {
-        case disabled
-        case distributed
-        case isolated
-        case numaCtl
-        case mirror
-        case count
+    /// Represents the memory limit for the MLX GPU.
+    public struct MemoryLimit: Sendable {
+        /// The memory limit in MB.
+        let limit: Int
         
+        /// Calls to malloc will wait on scheduled tasks if the limit is exceeded.  If
+        /// there are no more scheduled tasks an error will be raised if `relaxed`
+        /// is false or memory will be allocated (including the potential for
+        /// swap) if `relaxed` is true.
+        ///
+        /// The memory limit defaults to 1.5 times the maximum recommended working set
+        /// size reported by the device ([recommendedMaxWorkingSetSize](https://developer.apple.com/documentation/metal/mtldevice/2369280-recommendedmaxworkingsetsize))
+        let relaxed: Bool
         
-        var wrappedValue: ggml_numa_strategy {
-            .init(rawValue: self.rawValue)
+        /// Creates the `MemoryLimit` which configures the GPU used by MLX.
+        ///
+        /// - Parameters:
+        ///   - limit: The memory limit in MB.
+        ///   - relaxed: See  `relaxed` in ``LLMLocalPlatformConfiguration/MemoryLimit``.
+        public init(limit: Int, relaxed: Bool = false) {
+            self.limit = limit
+            self.relaxed = relaxed
         }
     }
     
-    
+    /// The cache limit in MB, to disable set limit to `0`.
+    let cacheLimit: Int?
+    /// The memory limit for the GPU used by MLX.
+    let memoryLimit: MemoryLimit?
     /// The task priority of the initiated LLM inference tasks.
     let taskPriority: TaskPriority
-    /// Indicates the non-unified memory access configuration of the device.
-    let nonUniformMemoryAccess: NonUniformMemoryAccess
     
     
     /// Creates the ``LLMLocalPlatformConfiguration`` which configures the Spezi ``LLMLocalPlatform``.
     ///
     /// - Parameters:
+    ///   - cacheLimit: The cache limit for the GPU used by MLX, defaults to `nil`.
+    ///   - memoryLimit: The memory limit for the GPU used by MLX, defaults to `nil`.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
-    ///   - nonUniformMemoryAccess: Indicates if this is a device with non-unified memory access.
     public init(
-        taskPriority: TaskPriority = .userInitiated,
-        nonUniformMemoryAccess: NonUniformMemoryAccess = .disabled
+        cacheLimit: Int? = nil,
+        memoryLimit: MemoryLimit? = nil,
+        taskPriority: TaskPriority = .userInitiated
     ) {
+        self.cacheLimit = cacheLimit
+        self.memoryLimit = memoryLimit
         self.taskPriority = taskPriority
-        self.nonUniformMemoryAccess = nonUniformMemoryAccess
     }
 }
