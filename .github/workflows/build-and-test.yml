@@ -154,7 +154,7 @@ jobs:
       - name: Wait for Services to Start
         run: |
           cd FogNode
-          timeout 30 bash -c 'until docker compose --profile linux ps --filter "status=running" | grep -q "Up"; do sleep 1; done'
+          timeout 30 bash -c 'until [ "$(docker compose --profile linux ps --filter "status=running" | grep -c "Up")" -ge 4 ]; do sleep 1; done'
       - name: Verify Container Status
         run: |
           cd FogNode
