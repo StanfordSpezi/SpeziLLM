@@ -150,7 +150,7 @@ jobs:
       - name: Build and Start Docker Services
         run: |
           cd FogNode
-          docker compose up --build -d
+          docker compose -f docker-compose.yml --profile linux up --build -d
       - name: Wait for Services to Start
         run: |
           timeout 30 bash -c 'until docker compose ps --filter "status=running" | grep -q "Up"; do sleep 1; done'
