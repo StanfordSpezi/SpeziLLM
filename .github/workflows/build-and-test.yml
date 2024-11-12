@@ -154,7 +154,21 @@ jobs:
       - name: Wait for Services to Start
         run: |
           cd FogNode
-          timeout 30 bash -c 'until [ "$(docker compose --profile linux ps --filter "status=running" | grep -c "Up")" -ge 4 ]; do sleep 1; done'
+          MAX_WAIT=30
+          WAIT_TIME=0
+
+          while [ "$(docker compose --profile linux ps --filter "status=running" | grep -c "Up")" -lt 4 ]; do
+            if [ $WAIT_TIME -ge $MAX_WAIT ]; then
+              echo "Timeout: Not all services are up after $MAX_WAIT seconds."
+              docker compose --profile linux ps
+              exit 1
+            fi
+            echo "Waiting for services to start... ($WAIT_TIME seconds elapsed)"
+            sleep 1
+            WAIT_TIME=$((WAIT_TIME + 1))
+          done
+
+          echo "All services are up and running!"
       - name: Verify Container Status
         run: |
           cd FogNode
