@@ -23,7 +23,7 @@ struct LLMLocalOnboardingFlow: View {
                 LLMLocalOnboardingDownloadView()
             }
         }
-            .interactiveDismissDisabled(!completedOnboardingFlow)
+        .interactiveDismissDisabled(!completedOnboardingFlow)
     }
 }
 
