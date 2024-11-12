@@ -153,9 +153,11 @@ jobs:
           docker compose -f docker-compose.yml --profile linux up --build -d
       - name: Wait for Services to Start
         run: |
+          cd FogNode
           timeout 30 bash -c 'until docker compose ps --filter "status=running" | grep -q "Up"; do sleep 1; done'
       - name: Verify Container Status
         run: |
+          cd FogNode
           if [ "$(docker compose ps --filter "status=exited" -q | wc -l)" -gt 0 ]; then
             echo "One or more containers exited unexpectedly."
             docker compose logs
@@ -164,4 +166,5 @@ jobs:
       - name: Stop and Remove Containers
         if: always()
         run: |
+          cd FogNode
           docker compose down --remove-orphans
