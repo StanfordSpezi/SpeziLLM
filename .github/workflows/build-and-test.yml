@@ -150,17 +150,17 @@ jobs:
       - name: Build and Start Docker Services
         run: |
           cd FogNode
-          docker compose -f docker-compose.yml --profile linux up --build -d
+          docker compose -f docker-compose.dev.yml up --build -d
       - name: Wait for Services to Start
         run: |
           cd FogNode
           MAX_WAIT=30
           WAIT_TIME=0
 
-          while [ "$(docker compose --profile linux ps --filter "status=running" | grep -c "Up")" -lt 4 ]; do
+          while [ "$(docker compose -f docker-compose.dev.yml ps --filter "status=running" | grep -c "Up")" -lt 4 ]; do
             if [ $WAIT_TIME -ge $MAX_WAIT ]; then
               echo "Timeout: Not all services are up after $MAX_WAIT seconds."
-              docker compose --profile linux ps
+              docker compose -f docker-compose.dev.yml ps
               exit 1
             fi
             echo "Waiting for services to start... ($WAIT_TIME seconds elapsed)"
@@ -173,13 +173,27 @@ jobs:
       - name: Verify Container Status
         run: |
           cd FogNode
-          if [ "$(docker compose --profile linux ps --filter "status=exited" -q | wc -l)" -gt 0 ]; then
-            echo "One or more containers exited unexpectedly."
-            docker compose logs
+      
+          # Check for problematic containers
+          EXITED_COUNT=$(docker compose -f docker-compose.dev.yml ps --filter "status=exited" -q | wc -l)
+          RESTARTING_COUNT=$(docker compose -f docker-compose.dev.yml ps --filter "status=restarting" -q | wc -l)
+          DEAD_COUNT=$(docker compose -f docker-compose.dev.yml ps --filter "status=dead" -q | wc -l)
+      
+          # Log current counts for visibility
+          echo "Exited Containers: $EXITED_COUNT"
+          echo "Restarting Containers: $RESTARTING_COUNT"
+          echo "Dead Containers: $DEAD_COUNT"
+      
+          # Fail if any problematic containers are detected
+          if [ "$EXITED_COUNT" -gt 0 ] || [ "$RESTARTING_COUNT" -gt 0 ] || [ "$DEAD_COUNT" -gt 0 ]; then
+            echo "Error: One or more containers are in a problematic state (exited, restarting, or dead)."
+            docker compose -f docker-compose.dev.yml logs
             exit 1
           fi
+      
+          echo "All containers are running as expected."
       - name: Stop and Remove Containers
         if: always()
         run: |
           cd FogNode
-          docker compose --profile linux down --remove-orphans
+          docker compose -f docker-compose.dev.yml down --remove-orphans
