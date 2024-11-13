@@ -164,6 +164,7 @@ jobs:
               exit 1
             fi
             echo "Waiting for services to start... ($WAIT_TIME seconds elapsed)"
+            docker logs fognode-auth-service-1
             sleep 1
             WAIT_TIME=$((WAIT_TIME + 1))
           done
