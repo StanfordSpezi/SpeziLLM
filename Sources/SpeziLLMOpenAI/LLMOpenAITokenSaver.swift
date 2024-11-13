@@ -63,7 +63,7 @@ public class LLMOpenAITokenSaver: Module, EnvironmentAccessible, DefaultInitiali
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
     
-    @Dependency @ObservationIgnored private var secureStorage: SecureStorage
+    @Dependency(SecureStorage.self) @ObservationIgnored private var secureStorage
     /// The API token used to interact with the OpenAI API.
     /// Automatically read from the `SecureStorage` (secure enclave) upon `Module` initialization and persisted into `SecureStorage` via ``LLMOpenAITokenSaver/store()``
     public var token: String = ""

@@ -111,5 +111,5 @@ extension LLMFunction {
 
 
 /// Ensuring `Sendable` conformances of ``LLMFunctionParameterPropertySchema`` and ``LLMFunctionParameterItemSchema``
-extension LLMFunctionParameterPropertySchema: @unchecked Sendable {}
-extension LLMFunctionParameterItemSchema: @unchecked Sendable {}
+extension LLMFunctionParameterPropertySchema: @unchecked @retroactive Sendable {}
+extension LLMFunctionParameterItemSchema: @unchecked @retroactive Sendable {}

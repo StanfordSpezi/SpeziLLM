@@ -109,7 +109,7 @@ public struct LLMChatView<Session: LLMSession>: View {
 
 #if DEBUG
 #Preview {
-    @State var llm = LLMMockSession(.init(), schema: .init())
+    @Previewable @State var llm = LLMMockSession(.init(), schema: .init())
     
     
     return NavigationStack {
