@@ -16,6 +16,6 @@ import SwiftUI
 public enum LLMPlatformBuilder: DependencyCollectionBuilder {
     /// An auto-closure expression, providing the default dependency value, building the `DependencyCollection`.
     public static func buildExpression<L: LLMPlatform>(_ expression: @escaping @autoclosure () -> L) -> DependencyCollection {
-        DependencyCollection(singleEntry: expression)
+        DependencyCollection(expression())
     }
 }

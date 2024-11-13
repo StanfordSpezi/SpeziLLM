@@ -62,6 +62,8 @@ public protocol LLMError: LocalizedError, Equatable {}
 
 
 /// Ensure the conformance of the Swift `CancellationError` to ``LLMError``.
+extension CancellationError: @retroactive Equatable {}
+extension CancellationError: @retroactive LocalizedError {}
 extension CancellationError: LLMError {
     public static func == (lhs: CancellationError, rhs: CancellationError) -> Bool {
         true
