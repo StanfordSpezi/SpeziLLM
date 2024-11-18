@@ -46,6 +46,20 @@ extension LLMContext {
         self.append(.init(role: .user, content: input, id: id, date: date))
     }
     
+    /// Append context to the input ``LLMContext`` as ``LLMContextEntity/Role-swift.enum/user``.
+    ///
+    /// - Parameters:
+    ///    - input: The context for the prompt that should be appended.
+    @MainActor
+    public mutating func append(queryContext context: String, id: UUID = .init(), date: Date = .now) {
+        let input = """
+                    Context: 
+                    \(context)
+                    """
+        
+        self.append(.init(role: .user, content: input, id: id, date: date))
+    }
+    
     /// Append a ``LLMContextEntity/Role-swift.enum/system`` prompt to the ``LLMContext``.
     ///
     /// - Parameters:

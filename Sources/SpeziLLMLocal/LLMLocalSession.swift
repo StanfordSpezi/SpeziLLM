@@ -69,6 +69,8 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema
     
+    let retrivalAugmentedGenerator: RetrievalAugmentedGenerator?
+    
     @ObservationIgnored private var modelExist: Bool {
         false
     }
@@ -90,9 +92,11 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// - Parameters:
     ///     - platform: Reference to the ``LLMLocalPlatform`` where the ``LLMLocalSession`` is running on.
     ///     - schema: The configuration of the local LLM expressed by the ``LLMLocalSchema``.
-    init(_ platform: LLMLocalPlatform, schema: LLMLocalSchema) {
+    ///     - retrivalAugmentedGenerator: The Retrival Augmented Generator (RAG) that inserts additional context to the context window given a prompt.
+    init(_ platform: LLMLocalPlatform, schema: LLMLocalSchema, retrivalAugmentedGenerator: RetrievalAugmentedGenerator? = nil) {
         self.platform = platform
         self.schema = schema
+        self.retrivalAugmentedGenerator = retrivalAugmentedGenerator
         
         // Inject system prompt into context
         if let systemPrompt = schema.parameters.systemPrompt {
@@ -152,3 +156,4 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         cancel()
     }
 }
+

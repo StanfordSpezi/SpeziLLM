@@ -24,7 +24,8 @@ let package = Package(
         .library(name: "SpeziLLMLocal", targets: ["SpeziLLMLocal"]),
         .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"]),
-        .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"])
+        .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"]),
+        .library(name: "SpeziVectorDatabase", targets: ["SpeziVectorDatabase"])
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.1"),
@@ -59,7 +60,8 @@ let package = Package(
                 .product(name: "MLXOptimizers", package: "mlx-swift"),
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
-                .product(name: "LLM", package: "mlx-swift-examples")
+                .product(name: "LLM", package: "mlx-swift-examples"),
+                .target(name: "SpeziVectorDatabase")
             ]
         ),
         .target(
@@ -89,6 +91,17 @@ let package = Package(
                 .target(name: "SpeziLLM"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "OpenAI", package: "OpenAI")
+            ]
+        ),
+        .target(
+            name: "SpeziVectorDatabase",
+            dependencies: [
+                .product(name: "MLX", package: "mlx-swift"),
+                .product(name: "MLXFast", package: "mlx-swift"),
+                .product(name: "MLXNN", package: "mlx-swift"),
+                .product(name: "MLXOptimizers", package: "mlx-swift"),
+                .product(name: "MLXRandom", package: "mlx-swift"),
+                .product(name: "MLXLinalg", package: "mlx-swift")
             ]
         ),
         .testTarget(
