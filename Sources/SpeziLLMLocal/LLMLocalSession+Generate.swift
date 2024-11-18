@@ -26,6 +26,15 @@ extension LLMLocalSession {
         
         let modelConfiguration = self.schema.configuration
         
+        if let rag = self.retrivalAugmentedGenerator,
+           let prompt = await self.context.filter({ $0.role == .user }).last,
+           let context = await rag.retrieve(query: prompt.content) {
+            
+            await MainActor.run {
+                self.context.append(queryContext: context)
+            }
+        }
+        
         guard let formattedChat = try? await schema.formatChat(self.context) else {
             Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
             await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
