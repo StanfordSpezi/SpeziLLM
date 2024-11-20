@@ -28,7 +28,11 @@ extension LLMLocalSession {
         
         let messages = await self.context.formatForTransformersChat()
         guard let promptTokens = try? await modelContainer.perform({ _, tokenizer in
-            try tokenizer.applyChatTemplate(messages: messages)
+            if let chatTempalte = self.schema.parameters.chatTempalte {
+                return try tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
+            } else {
+                return try tokenizer.applyChatTemplate(messages: messages)
+            }
         }) else {
             Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
             await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
