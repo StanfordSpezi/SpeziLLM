@@ -32,9 +32,8 @@ extension LLMLocalSession {
             return
         }
         
-        let prompt = modelConfiguration.prepare(prompt: formattedChat)
         let promptTokens = await modelContainer.perform { _, tokenizer in
-            tokenizer.encode(text: prompt)
+            tokenizer.encode(text: formattedChat)
         }
         
         MLXRandom.seed(self.schema.contextParameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
