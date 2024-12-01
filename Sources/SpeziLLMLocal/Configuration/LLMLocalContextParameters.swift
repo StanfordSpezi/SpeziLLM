@@ -12,7 +12,7 @@ import Foundation
 /// Represents the context parameters of the LLM.
 public struct LLMLocalContextParameters: Sendable {
     /// RNG seed of the LLM
-    var seed: UInt64?
+    let seed: UInt64?
     
     /// Creates the ``LLMLocalContextParameters`` which wrap the underlying llama.cpp `llama_context_params` C struct.
     /// Is passed to the underlying llama.cpp model in order to configure the context of the LLM.

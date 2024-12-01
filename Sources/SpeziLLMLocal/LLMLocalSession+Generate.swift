@@ -24,12 +24,15 @@ extension LLMLocalSession {
             return
         }
         
-        let modelConfiguration = self.schema.configuration
+        let messages = if await !self.customContext.isEmpty {
+            await self.customContext
+        } else {
+            await self.context.formatForTransformersChat()
+        }
         
-        let messages = await self.context.formatForTransformersChat()
         guard let promptTokens = try? await modelContainer.perform({ _, tokenizer in
-            if let chatTempalte = self.schema.parameters.chatTempalte {
-                return try tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
+            if let chatTempalte = self.schema.parameters.chatTemplate {
+               return try tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
             } else {
                 return try tokenizer.applyChatTemplate(messages: messages)
             }
@@ -45,7 +48,6 @@ extension LLMLocalSession {
             return
         }
         
-        let extraEOSTokens = modelConfiguration.extraEOSTokens
         let parameters: GenerateParameters = .init(
             temperature: schema.samplingParameters.temperature,
             topP: schema.samplingParameters.topP,
@@ -59,7 +61,7 @@ extension LLMLocalSession {
                 parameters: parameters,
                 model: model,
                 tokenizer: tokenizer,
-                extraEOSTokens: extraEOSTokens
+                extraEOSTokens: schema.parameters.extraEOSTokens
             ) { tokens in
                 if Task.isCancelled {
                     return .stop
