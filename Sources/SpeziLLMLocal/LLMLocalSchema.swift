@@ -23,9 +23,9 @@ public struct LLMLocalSchema: LLMSchema {
     
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let parameters: LLMLocalParameters
-    /// Context parameters of the llama.cpp LLM.
+    /// Context parameters of the LLM.
     let contextParameters: LLMLocalContextParameters
-    /// Sampling parameters of the llama.cpp LLM.
+    /// Sampling parameters of the LLM.
     let samplingParameters: LLMLocalSamplingParameters
     /// Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``.
     public let injectIntoContext: Bool
@@ -52,5 +52,20 @@ public struct LLMLocalSchema: LLMSchema {
         self.samplingParameters = samplingParameters
         self.injectIntoContext = injectIntoContext
         self.configuration = .init(id: model.hubID)
+    }
+    
+    @_disfavoredOverload
+    internal init(
+        configuration: ModelConfiguration,
+        parameters: LLMLocalParameters = .init(),
+        contextParameters: LLMLocalContextParameters = .init(),
+        samplingParameters: LLMLocalSamplingParameters = .init(),
+        injectIntoContext: Bool = false
+    ) {
+        self.configuration = configuration
+        self.parameters = parameters
+        self.contextParameters = contextParameters
+        self.samplingParameters = samplingParameters
+        self.injectIntoContext = injectIntoContext
     }
 }

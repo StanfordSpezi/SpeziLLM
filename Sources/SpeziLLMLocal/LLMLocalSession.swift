@@ -67,7 +67,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
     
     let platform: LLMLocalPlatform
-    let schema: LLMLocalSchema
+    var schema: LLMLocalSchema
     
     @ObservationIgnored private var modelExist: Bool {
         false
