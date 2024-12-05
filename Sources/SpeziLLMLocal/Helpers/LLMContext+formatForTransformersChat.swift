@@ -8,15 +8,15 @@
 
 import SpeziLLM
 
-public extension LLMContext {
+extension LLMContext {
     /// Formats the current ``LLMContext`` for compatibility with Transformers-based chat models.
     ///
     /// - Returns: An array of dictionaries where each dictionary represents a message in the format:
     ///   - `role`: The role of the message (e.g., "user", "assistant"), derived from the `rawValue` of the entry's `role`.
     ///   - `content`: The textual content of the message.
-    func formatForTransformersChat() -> [[String: String]] {
+     public func formatForTransformersChat() -> [[String: String]] {
         self.map { entry in
-            return [
+            [
                 "role": entry.role.rawValue,
                 "content": entry.content
             ]

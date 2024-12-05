@@ -10,7 +10,6 @@ import Foundation
 import SpeziLLM
 
 extension LLMLocalSession {
-    
     /// Updates the existing instance of the ``LLMLocalSchema`` with new parameters.
     ///
     /// - Parameters:
@@ -25,7 +24,7 @@ extension LLMLocalSession {
     public func update(
         parameters: LLMLocalParameters? = nil,
         samplingParameters: LLMLocalSamplingParameters? = nil,
-        injectIntoContext: Bool? = nil
+        injectIntoContext: Bool? = nil // swiftlint:disable:this discouraged_optional_boolean
     ) {
         cancel()
         
