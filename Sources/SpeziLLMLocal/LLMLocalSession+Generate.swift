@@ -42,7 +42,7 @@ extension LLMLocalSession {
             return
         }
         
-        MLXRandom.seed(self.schema.contextParameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+        MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
         guard await !checkCancellation(on: continuation) else {
             return
