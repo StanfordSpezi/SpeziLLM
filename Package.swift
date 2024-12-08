@@ -28,7 +28,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.1"),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", from: "1.16.0"),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", from: "1.18.1"),
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.12")),
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),

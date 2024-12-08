@@ -67,7 +67,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
     
     let platform: LLMLocalPlatform
-    let schema: LLMLocalSchema
+    var schema: LLMLocalSchema
     
     @ObservationIgnored private var modelExist: Bool {
         false
@@ -78,6 +78,8 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
+    /// Overrides the `context` with a custom highly customizable context in the `swift-transformers` format.
+    @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
     @MainActor public var modelConfiguration: ModelConfiguration?
