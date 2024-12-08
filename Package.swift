@@ -27,8 +27,8 @@ let package = Package(
         .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.1"),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", from: "1.16.0"),
+        .package(url: "https://github.com/ml-explore/mlx-swift", branch: "0.21.2"),   // Pin MLX library as it doesn't follow semantic versioning
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", branch: "1.16.0"),  // Pin MLX library as it doesn't follow semantic versioning
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.12")),
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
