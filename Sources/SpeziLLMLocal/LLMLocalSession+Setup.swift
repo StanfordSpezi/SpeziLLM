@@ -58,6 +58,8 @@ extension LLMLocalSession {
             Self.logger.error("SpeziLLMLocal: Failed to load local `modelContainer`")
             return false
         }
+        
+        Self.logger.debug("SpeziLLMLocal: Local LLM has finished initializing")
         return true
     }
 }

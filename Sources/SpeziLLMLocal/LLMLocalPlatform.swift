@@ -11,7 +11,9 @@ import MLX
 import Spezi
 import SpeziFoundation
 import SpeziLLM
-
+#if targetEnvironment(simulator)
+import OSLog
+#endif
 
 /// LLM execution platform of an ``LLMLocalSchema``.
 ///
@@ -58,18 +60,26 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
     
     public nonisolated func configure() {
 #if targetEnvironment(simulator)
-        assertionFailure("SpeziLLMLocal: Code cannot be run on simulator.")
-#endif
+        Logger(
+            subsystem: "Spezi",
+            category: "LLMLocalPlatform"
+        ).warning("SpeziLLMLocal is only supported on physical devices. Use `LLMMockPlatform` instead.")
+#else
         if let cacheLimit = configuration.cacheLimit {
             MLX.GPU.set(cacheLimit: cacheLimit * 1024 * 1024)
         }
         if let memoryLimit = configuration.memoryLimit {
             MLX.GPU.set(memoryLimit: memoryLimit.limit, relaxed: memoryLimit.relaxed)
         }
+#endif
     }
     
-    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
+    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> some LLMSession {
+        #if targetEnvironment(simulator)
+        LLMLocalMockSession(self, schema: llmSchema)
+        #else
         LLMLocalSession(self, schema: llmSchema)
+        #endif
     }
     
     deinit {

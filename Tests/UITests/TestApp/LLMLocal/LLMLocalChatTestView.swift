@@ -25,8 +25,7 @@ struct LLMLocalChatTestView: View {
             } else {
                 LLMChatViewSchema(
                     with: LLMLocalSchema(
-                        model: .llama3_8B_4bit,
-                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
+                        model: .llama3_8B_4bit
                     )
                 )
             }
