@@ -27,7 +27,7 @@ extension LLMLocalSession {
         let messages = if await !self.customContext.isEmpty {
             await self.customContext
         } else {
-            await self.context.formatForTransformersChat()
+            await self.context.formattedChat
         }
         
         guard let promptTokens = try? await modelContainer.perform({ _, tokenizer in

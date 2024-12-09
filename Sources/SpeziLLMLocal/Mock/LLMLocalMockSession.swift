@@ -72,7 +72,7 @@ public final class LLMLocalMockSession: LLMSession, @unchecked Sendable {
             guard await !checkCancellation(on: continuation) else {
                 return
             }
-            await injectAndYield("SpeziLLM!", on: continuation)
+            await injectAndYield("SpeziLLM! ", on: continuation)
             
             try? await Task.sleep(for: .milliseconds(500))
             guard await !checkCancellation(on: continuation) else {

@@ -46,7 +46,7 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
         case tool(id: String, name: String)
         
         
-        public var rawValue: String {
+        package var rawValue: String {
             switch self {
             case .user: "user"
             case .assistant: "assistant"

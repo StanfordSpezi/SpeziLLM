@@ -14,7 +14,7 @@ extension LLMContext {
     /// - Returns: An array of dictionaries where each dictionary represents a message in the format:
     ///   - `role`: The role of the message (e.g., "user", "assistant"), derived from the `rawValue` of the entry's `role`.
     ///   - `content`: The textual content of the message.
-     public func formatForTransformersChat() -> [[String: String]] {
+    package var formattedChat: [[String: String]] {
         self.map { entry in
             [
                 "role": entry.role.rawValue,
