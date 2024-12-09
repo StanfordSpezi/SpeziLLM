@@ -28,7 +28,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "1.18.1"),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "1.18.1"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
