@@ -72,23 +72,34 @@ extension LLMLocalSession {
                     return .stop
                 }
                 
-                if schema.injectIntoContext && tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+                if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
                     let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
                     let text = tokenizer.decode(tokens: lastTokens)
                     
                     Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
                     continuation.yield(text)
+                    
+                    if schema.injectIntoContext {
+                        Task { @MainActor in
+                            context.append(assistantOutput: text)
+                        }
+                    }
                 }
                 
                 return .more
             }
             
+            // Yielding every Nth token may result in missing the final tokens.
+            let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
+            let lastTokens = Array(result.tokens.suffix(reaminingTokens))
+            let text = tokenizer.decode(tokens: lastTokens)
+            continuation.yield(text)
+            
             if schema.injectIntoContext {
-                // Yielding every Nth token may result in missing the final tokens.
-                let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
-                let lastTokens = Array(result.tokens.suffix(reaminingTokens))
-                let text = tokenizer.decode(tokens: lastTokens)
-                continuation.yield(text)
+                Task { @MainActor in
+                    context.append(assistantOutput: text)
+                    context.completeAssistantStreaming()
+                }
             }
             
             return result
@@ -103,12 +114,6 @@ extension LLMLocalSession {
         )
         
         await MainActor.run {
-            context.append(assistantOutput: result.output, complete: true)
-            context.completeAssistantStreaming()
-            
-            if !schema.injectIntoContext {
-                continuation.yield(result.output)
-            }
             continuation.finish()
             state = .ready
         }

@@ -74,7 +74,7 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
 #endif
     }
     
-    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> some LLMSession {
+    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         #if targetEnvironment(simulator)
         LLMLocalMockSession(self, schema: llmSchema)
         #else

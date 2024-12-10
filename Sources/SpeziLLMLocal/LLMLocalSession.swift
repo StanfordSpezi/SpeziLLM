@@ -79,6 +79,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     /// Overrides the `context` with a custom highly customizable context in the `swift-transformers` format.
+    /// - Important: When using the `customContext`, `injectToContext` will have no effect, and the assistant output will **not** be added to the `customContext`
     @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
