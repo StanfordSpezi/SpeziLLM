@@ -74,13 +74,15 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
 #endif
     }
     
-    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
+    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalMockSession {
         LLMLocalMockSession(self, schema: llmSchema)
-        #else
-        LLMLocalSession(self, schema: llmSchema)
-        #endif
     }
+#else
+    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
+        LLMLocalSession(self, schema: llmSchema)
+    }
+#endif
     
     deinit {
         MLX.GPU.clearCache()
