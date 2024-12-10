@@ -55,6 +55,7 @@ extension LLMLocalSession {
             repetitionContextSize: schema.samplingParameters.repetitionContextSize
         )
         
+        // swiftlint:disable:next closure_body_length
         let result = await modelContainer.perform { model, tokenizer in
             let result = MLXLLM.generate(
                 promptTokens: promptTokens,
