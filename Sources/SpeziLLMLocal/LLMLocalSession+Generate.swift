@@ -24,22 +24,25 @@ extension LLMLocalSession {
             return
         }
         
-        let modelConfiguration = self.schema.configuration
+        let messages = if await !self.customContext.isEmpty {
+            await self.customContext
+        } else {
+            await self.context.formattedChat
+        }
         
-        guard let formattedChat = try? await schema.formatChat(self.context) else {
+        guard let promptTokens = try? await modelContainer.perform({ _, tokenizer in
+            if let chatTempalte = self.schema.parameters.chatTemplate {
+               return try tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
+            } else {
+                return try tokenizer.applyChatTemplate(messages: messages)
+            }
+        }) else {
             Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
             await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
             return
         }
         
-        let prompt = modelConfiguration.prepare(prompt: formattedChat)
-        let promptTokens = await modelContainer.perform { _, tokenizer in
-            tokenizer.encode(text: prompt)
-        }
-        
-        MLXRandom.seed(self.schema.contextParameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
-        
-        let extraEOSTokens = modelConfiguration.extraEOSTokens
+        MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
         guard await !checkCancellation(on: continuation) else {
             return
@@ -52,13 +55,14 @@ extension LLMLocalSession {
             repetitionContextSize: schema.samplingParameters.repetitionContextSize
         )
         
-        let (result, tokenizer) = await modelContainer.perform { model, tokenizer in
+        // swiftlint:disable:next closure_body_length
+        let result = await modelContainer.perform { model, tokenizer in
             let result = MLXLLM.generate(
                 promptTokens: promptTokens,
                 parameters: parameters,
                 model: model,
                 tokenizer: tokenizer,
-                extraEOSTokens: extraEOSTokens
+                extraEOSTokens: schema.parameters.extraEOSTokens
             ) { tokens in
                 if Task.isCancelled {
                     return .stop
@@ -66,25 +70,40 @@ extension LLMLocalSession {
                 
                 if tokens.count >= self.schema.parameters.maxOutputLength {
                     Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
-                    continuation.finish()
-                    Task { @MainActor in
-                        self.state = .ready
-                    }
                     return .stop
                 }
                 
-                if schema.injectIntoContext && tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+                if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
                     let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
                     let text = tokenizer.decode(tokens: lastTokens)
                     
                     Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
                     continuation.yield(text)
+                    
+                    if schema.injectIntoContext {
+                        Task { @MainActor in
+                            context.append(assistantOutput: text)
+                        }
+                    }
                 }
                 
                 return .more
             }
             
-            return (result, tokenizer)
+            // Yielding every Nth token may result in missing the final tokens.
+            let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
+            let lastTokens = Array(result.tokens.suffix(reaminingTokens))
+            let text = tokenizer.decode(tokens: lastTokens)
+            continuation.yield(text)
+            
+            if schema.injectIntoContext {
+                Task { @MainActor in
+                    context.append(assistantOutput: text)
+                    context.completeAssistantStreaming()
+                }
+            }
+            
+            return result
         }
         
         Self.logger.debug(
@@ -96,16 +115,6 @@ extension LLMLocalSession {
         )
         
         await MainActor.run {
-            if schema.injectIntoContext {
-                // Yielding every Nth token may result in missing the final tokens.
-                let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
-                let lastTokens = Array(result.tokens.suffix(reaminingTokens))
-                let text = tokenizer.decode(tokens: lastTokens)
-                continuation.yield(text)
-            }
-            
-            context.append(assistantOutput: result.output, complete: true)
-            context.completeAssistantStreaming()
             continuation.finish()
             state = .ready
         }
