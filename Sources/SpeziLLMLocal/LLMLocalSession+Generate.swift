@@ -126,36 +126,15 @@ extension LLMLocalSession {
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
-        try? await Task.sleep(for: .seconds(1))
-        guard await !checkCancellation(on: continuation) else {
-            return
-        }
+        let tokens = ["Mock ", "Message ", "from ", "SpeziLLM! ", "Using SpeziLLMLocal only works on physical devices."]
         
-        continuation.yield("Mock ")
-        
-        try? await Task.sleep(for: .milliseconds(500))
-        guard await !checkCancellation(on: continuation) else {
-            return
+        for token in tokens {
+            try? await Task.sleep(for: .seconds(1))
+            guard await !checkCancellation(on: continuation) else {
+                return
+            }
+            continuation.yield(token)
         }
-        continuation.yield("Message ")
-        
-        try? await Task.sleep(for: .milliseconds(500))
-        guard await !checkCancellation(on: continuation) else {
-            return
-        }
-        continuation.yield("from ")
-        
-        try? await Task.sleep(for: .milliseconds(500))
-        guard await !checkCancellation(on: continuation) else {
-            return
-        }
-        continuation.yield("SpeziLLM! ")
-        
-        try? await Task.sleep(for: .milliseconds(500))
-        guard await !checkCancellation(on: continuation) else {
-            return
-        }
-        continuation.yield("Using SpeziLLMLocal only works on physical devices.")
         
         continuation.finish()
         await MainActor.run {

@@ -52,29 +52,19 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
                 return
             }
             
-            /// Generate mock messages
             await MainActor.run {
                 self.state = .generating
             }
-            await injectAndYield("Mock ", on: continuation)
             
-            try? await Task.sleep(for: .milliseconds(500))
-            guard await !checkCancellation(on: continuation) else {
-                return
+            /// Generate mock messages
+            let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
+            for token in tokens {
+                try? await Task.sleep(for: .milliseconds(500))
+                guard await !checkCancellation(on: continuation) else {
+                    return
+                }
+                await injectAndYield(token, on: continuation)
             }
-            await injectAndYield("Message ", on: continuation)
-            
-            try? await Task.sleep(for: .milliseconds(500))
-            guard await !checkCancellation(on: continuation) else {
-                return
-            }
-            await injectAndYield("from ", on: continuation)
-            
-            try? await Task.sleep(for: .milliseconds(500))
-            guard await !checkCancellation(on: continuation) else {
-                return
-            }
-            await injectAndYield("SpeziLLM!", on: continuation)
             
             continuation.finish()
             await MainActor.run {
