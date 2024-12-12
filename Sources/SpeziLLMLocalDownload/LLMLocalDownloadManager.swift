@@ -8,10 +8,10 @@
 
 import Foundation
 import Hub
-import MLXLLM
 import Observation
 import SpeziLLMLocal
 import SpeziViews
+
 
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
@@ -28,7 +28,7 @@ public final class LLMLocalDownloadManager: NSObject {
     public enum DownloadState: Equatable {
         case idle
         case downloading(progress: Progress)
-        case downloaded(storageUrl: URL)
+        case downloaded
         case error(LocalizedError)
         
         
@@ -47,10 +47,10 @@ public final class LLMLocalDownloadManager: NSObject {
     @ObservationIgnored private var downloadTask: Task<(), Never>?
     /// Indicates the current state of the ``LLMLocalDownloadManager``.
     @MainActor public var state: DownloadState = .idle
-    private let modelConfiguration: ModelConfiguration
+    private let model: LLMLocalModel
     
     @ObservationIgnored public var modelExists: Bool {
-        LLMLocalDownloadManager.modelExsist(model: .custom(id: modelConfiguration.name))
+        LLMLocalDownloadManager.modelExsist(model: model)
     }
     
     /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
@@ -58,7 +58,7 @@ public final class LLMLocalDownloadManager: NSObject {
     /// - Parameters:
     ///   - modelID: The Huggingface model ID of the LLM that needs to be downloaded.
     public init(model: LLMLocalModel) {
-        self.modelConfiguration = .init(id: model.hubID)
+        self.model = model
     }
     
     /// Checks if a model is already downloaded to the local device.
@@ -80,9 +80,9 @@ public final class LLMLocalDownloadManager: NSObject {
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.
     public func startDownload() {
-        if case let .directory(url) = modelConfiguration.id {
+        if modelExists {
             Task { @MainActor in
-                self.state = .downloaded(storageUrl: url)
+                self.state = .downloaded
             }
             return
         }
@@ -90,14 +90,16 @@ public final class LLMLocalDownloadManager: NSObject {
         downloadTask?.cancel()
         downloadTask = Task(priority: .userInitiated) {
             do {
-                _ = try await loadModelContainer(configuration: modelConfiguration) { progress in
+                let repo = Hub.Repo(id: model.hubID)
+                let modelFiles = ["*.safetensors", "config.json"]
+                try await HubApi.shared.snapshot(from: repo, matching: modelFiles) { progress in
                     Task { @MainActor in
                         self.state = .downloading(progress: progress)
                     }
                 }
                 
                 Task { @MainActor in
-                    self.state = .downloaded(storageUrl: modelConfiguration.modelDirectory())
+                    self.state = .downloaded
                 }
             } catch {
                 Task { @MainActor in

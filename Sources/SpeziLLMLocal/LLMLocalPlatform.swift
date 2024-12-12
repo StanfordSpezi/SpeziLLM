@@ -63,7 +63,7 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
         Logger(
             subsystem: "Spezi",
             category: "LLMLocalPlatform"
-        ).warning("SpeziLLMLocal is only supported on physical devices. Use `LLMMockPlatform` instead.")
+        ).warning("SpeziLLMLocal is only supported on physical devices. A mock session will be used instead.")
 #else
         if let cacheLimit = configuration.cacheLimit {
             MLX.GPU.set(cacheLimit: cacheLimit * 1024 * 1024)
@@ -74,15 +74,9 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
 #endif
     }
     
-#if targetEnvironment(simulator)
-    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalMockSession {
-        LLMLocalMockSession(self, schema: llmSchema)
-    }
-#else
     public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
-#endif
     
     deinit {
         MLX.GPU.clearCache()
