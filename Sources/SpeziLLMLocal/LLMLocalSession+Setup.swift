@@ -74,7 +74,7 @@ extension LLMLocalSession {
             self.state = .loading
         }
         
-        try? await Task.sleep(for: .milliseconds(1000))
+        try? await Task.sleep(for: .seconds(1))
         
         await MainActor.run {
             self.state = .ready
