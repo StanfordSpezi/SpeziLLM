@@ -31,7 +31,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
     }
     
     
-    @State private var modelSelection: LLMOpenAIRequestType.modelPayload 
+    @State private var modelSelection: LLMOpenAIRequestType.modelPayload
     private let actionText: String
     private let action: (LLMOpenAIRequestType.modelPayload) -> Void
     private let models: [LLMOpenAIRequestType.modelPayload]
