@@ -40,7 +40,7 @@ struct LLMOpenAIFunctionPerson: LLMFunction {
     
     
     // swiftlint:disable attributes
-    @_LLMFunctionParameterWrapper(description: "Persons which age is to be determined.")
+    @Paramter(description: "Persons which age is to be determined.")
     var persons: [CustomArrayItemType]
     // swiftlint:enable attributes
     
