@@ -78,7 +78,7 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .init(value1: .gpt4_turbo, value2: .gpt_hyphen_4_hyphen_turbo))
+        parameters: .init(modelType: .init(value2: .gpt_hyphen_4_hyphen_turbo))
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
