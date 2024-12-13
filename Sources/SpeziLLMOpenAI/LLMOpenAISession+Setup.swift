@@ -21,7 +21,7 @@ extension LLMOpenAISession {
         if let overwritingToken = schema.parameters.overwritingToken {
             do {
                 wrappedClient = try Client(
-                    serverURL: Servers.server1(),
+                    serverURL: Servers.Server1.url(),
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: overwritingToken)]
                 )
@@ -50,7 +50,7 @@ extension LLMOpenAISession {
             // Initialize the OpenAI model
             do {
                 wrappedClient = try Client(
-                    serverURL: Servers.server1(),
+                    serverURL: Servers.Server1.url(),
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
