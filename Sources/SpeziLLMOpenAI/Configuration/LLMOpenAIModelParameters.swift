@@ -7,13 +7,12 @@
 //
 
 import Foundation
-import OpenAI
-
+import OpenAPIRuntime
 
 /// Represents the model-specific parameters of OpenAIs LLMs.
 public struct LLMOpenAIModelParameters: Sendable {
     /// The format for model responses.
-    let responseFormat: ChatQuery.ResponseFormat?
+    let responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
     let temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.
@@ -31,7 +30,7 @@ public struct LLMOpenAIModelParameters: Sendable {
     /// Controls repetition (-2.0 to 2.0). Higher values reduce the likelihood of repeating content.
     let frequencyPenalty: Double?
     /// Alters specific token's likelihood in completion.
-    let logitBias: [String: Int]
+    let logitBias: Components.Schemas.CreateChatCompletionRequest.logit_biasPayload
     /// Unique identifier for the end-user, aiding in abuse monitoring.
     let user: String?
     
@@ -51,7 +50,7 @@ public struct LLMOpenAIModelParameters: Sendable {
     ///   - logitBias: Alters specific token's likelihood in completion.
     ///   - user: Unique identifier for the end-user, aiding in abuse monitoring.
     public init(
-        responseFormat: ChatQuery.ResponseFormat? = nil,
+        responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload? = nil,
         temperature: Double? = nil,
         topP: Double? = nil,
         completionsPerOutput: Int? = nil,
@@ -72,10 +71,9 @@ public struct LLMOpenAIModelParameters: Sendable {
         self.seed = seed
         self.presencePenalty = presencePenalty
         self.frequencyPenalty = frequencyPenalty
-        self.logitBias = logitBias
+        self.logitBias = Components.Schemas.CreateChatCompletionRequest
+            .logit_biasPayload(additionalProperties: logitBias)
         self.user = user
     }
 }
 
-
-extension ChatQuery.ResponseFormat: @unchecked @retroactive Sendable {}

@@ -19,21 +19,36 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
     ///    - multipleOf: Defines that the LLM parameter needs to be a multiple of the init argument.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Wrapped? = nil,
         maximum: T.Wrapped? = nil
     ) {
-        self.init(schema: .init(
-            type: .integer,
-            description: String(description),
-            const: const.map { String($0) },
-            multipleOf: multipleOf,
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "integer",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            if let multipleOf {
+                addProp["multipleOf "] = multipleOf
+            }
+            if let minimum {
+                addProp["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                addProp["maximum"] = Double(maximum)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionparaemter+OptionalType")
+        }
     }
 }
 
@@ -45,19 +60,32 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped? = nil,
         maximum: T.Wrapped? = nil
     ) {
-        self.init(schema: .init(
-            type: .number,
-            description: String(description),
-            const: const.map { String($0) },
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "number",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            if let minimum {
+                addProp["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                addProp["maximum"] = Double(maximum)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+OptionalType")
+        }
     }
 }
 
@@ -67,15 +95,24 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil
     ) {
-        self.init(schema: .init(
-            type: .boolean,
-            description: String(description),
-            const: const.map { String($0) }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "boolean",
+                "description": String(description)
+            ]
+            if let const {
+                addProp["const"] = String(const)
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionalParameterWrapper+OptionalTypes")
+        }
     }
 }
 
@@ -88,25 +125,42 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enum: Defines all cases of the `String` parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil
     ) {
-        self.init(schema: .init(
-            type: .string,
-            description: String(description),
-            format: format?.rawValue,
-            pattern: pattern.map { String($0) },
-            const: const.map { String($0) },
-            enum: `enum`.map { $0.map { String($0) } }
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "string",
+                "description": String(description)
+            ]
+            if let format {
+                addProp["format"] = format.rawValue
+            }
+            if let pattern {
+                addProp["pattern"] = String(pattern)
+            }
+            if let const {
+                addProp["const"] = String(const)
+            }
+            if let `enum` {
+                addProp["enum"] = `enum`.map { $0.map { String($0) } }
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+OptionalTypes")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryInteger {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: BinaryInteger {
     /// Declares an optional `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -118,34 +172,56 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Wrapped.Element? = nil,
         maximum: T.Wrapped.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
-        uniqueItems: Bool? = nil
+        uniqueItems _: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .integer,
-                const: const.map { String($0) },
-                multipleOf: multipleOf.map { Int($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemNonOpt: [String: any Sendable] = [
+                "type": "integer"
+            ]
+            if let const {
+                itemNonOpt["const"] = String(const)
+            }
+            if let multipleOf {
+                itemNonOpt["multipleOf"] = String(multipleOf)
+            }
+            if let minimum {
+                itemNonOpt["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                itemNonOpt["maximum"] = Double(maximum)
+            }
+            if itemNonOpt.count > 1 {
+                addProp["items"] = itemNonOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionPropertyWrapper+OptionalType")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: BinaryFloatingPoint {
     /// Declares an optional `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -156,8 +232,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped.Element? = nil,
         maximum: T.Wrapped.Element? = nil,
@@ -165,19 +241,41 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .number,
-                const: const.map { String($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemNonOpt: [String: any Sendable] = [
+                "type": "number"
+            ]
+            if let const {
+                itemNonOpt["const"] = String(const)
+            }
+            if let minimum {
+                itemNonOpt["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                itemNonOpt["maximum"] = Double(maximum)
+            }
+            if itemNonOpt.count > 1 {
+                addProp["items"] = itemNonOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+OptionalTypes")
+        }
     }
 }
 
@@ -190,28 +288,47 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .boolean,
-                const: const.map { String($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemNonOpt: [String: any Sendable] = [
+                "type": "boolean"
+            ]
+            if let const {
+                itemNonOpt["const"] = String(const)
+            }
+            if itemNonOpt.count > 1 {
+                addProp["items"] = itemNonOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+OptionalTypes.swift")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: StringProtocol {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: StringProtocol {
     /// Declares an optional `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -222,8 +339,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil,
@@ -231,19 +348,41 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .string,
-                pattern: pattern.map { String($0) },
-                const: const.map { String($0) },
-                enum: `enum`.map { $0.map { String($0) } }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemNonOpt: [String: any Sendable] = [
+                "type": "string"
+            ]
+            if let pattern {
+                itemNonOpt["pattern"] = String(pattern)
+            }
+            if let const {
+                itemNonOpt["const"] = String(const)
+            }
+            if let `enum` {
+                itemNonOpt["enum"] = `enum`.map { $0.map { String($0) } }
+            }
+            if itemNonOpt.count > 1 {
+                addProp["items"] = itemNonOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+OptionalType")
+        }
     }
 }
 

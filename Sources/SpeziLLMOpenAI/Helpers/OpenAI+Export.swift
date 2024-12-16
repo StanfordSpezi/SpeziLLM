@@ -6,11 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-import struct OpenAI.Model
-
+import OpenAPIRuntime
 
 /// Convenience export of the `OpenAI/Model` type.
 ///
 /// The ``LLMOpenAIModelType`` exports the `OpenAI/Model` describing the type of the to-be-used OpenAI Model.
 /// This enables convenience access to the `OpenAI/Model` without naming conflicts resulting from the `OpenAI/Model` name.
-public typealias LLMOpenAIModelType = Model
+public typealias LLMOpenAIModelType = Components.Schemas.CreateChatCompletionRequest.modelPayload

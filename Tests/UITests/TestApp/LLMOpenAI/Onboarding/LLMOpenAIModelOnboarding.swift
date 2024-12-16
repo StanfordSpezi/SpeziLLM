@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+import OpenAPIRuntime
+import OpenAPIURLSession
 import SpeziLLMOpenAI
 import SpeziOnboarding
 import SwiftUI
@@ -19,8 +21,8 @@ struct LLMOpenAIModelOnboarding: View {
     var body: some View {
         Group {
             LLMOpenAIModelOnboardingStep { model in
-                modelSelection = model
-                self.showingAlert.toggle()
+                modelSelection = model.value1 ?? "No model available"
+                showingAlert.toggle()
             }
         }
         .alert(isPresented: $showingAlert) {

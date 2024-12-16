@@ -22,8 +22,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Element? = nil,
@@ -32,20 +32,44 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .integer,
-                const: const.map { String($0) },
-                multipleOf: multipleOf,
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemsNoOpt: [String: any Sendable] = [
+                "type": "integer"
+            ]
+            if let const = const.map({ String($0) }) {
+                itemsNoOpt["const"] = const
+            }
+            if let multipleOf {
+                itemsNoOpt["multipleOf"] = multipleOf
+            }
+            if let minimum {
+                itemsNoOpt["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                itemsNoOpt["maximum"] = Double(maximum)
+            }
+            if itemsNoOpt.count > 1 {
+                addProp["items"] = itemsNoOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+        }
     }
 }
 
@@ -60,8 +84,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Element? = nil,
         maximum: T.Element? = nil,
@@ -69,19 +93,41 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .number,
-                const: const.map { String($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemsNoOpt: [String: any Sendable] = [
+                "type": "number"
+            ]
+            if let const = const.map({ String($0) }) {
+                itemsNoOpt["const"] = const
+            }
+            if let minimum {
+                itemsNoOpt["minimum"] = Double(minimum)
+            }
+            if let maximum {
+                itemsNoOpt["maximum"] = Double(maximum)
+            }
+            if itemsNoOpt.count > 1 {
+                addProp["items"] = itemsNoOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LMMFunctionParameter+ArrayTypes")
+        }
     }
 }
 
@@ -94,24 +140,42 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .boolean,
-                const: const.map { String($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemsNoOpt: [String: any Sendable] = [
+                "type": "boolean"
+            ]
+            if let const = const.map({ String($0) }) {
+                itemsNoOpt["const"] = const
+            }
+            if itemsNoOpt.count > 1 {
+                addProp["items"] = itemsNoOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+        }
     }
 }
 
@@ -126,8 +190,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil,
@@ -135,19 +199,41 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .string,
-                pattern: pattern.map { String($0) },
-                const: const.map { String($0) },
-                enum: `enum`.map { $0.map { String($0) } }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            // FIXME: How can this be simplified?
+            var addProp: [String: any Sendable] = [
+                "type": "array",
+                "description": String(description)
+            ]
+            var itemsNoOpt: [String: any Sendable] = [
+                "type": "string"
+            ]
+            if let pattern = pattern.map({ String($0) }) {
+                itemsNoOpt["pattern"] = pattern
+            }
+            if let const = const.map({ String($0) }) {
+                itemsNoOpt["const"] = const
+            }
+            if let `enum` = `enum`.map({ $0.map { String($0) } }) {
+                itemsNoOpt["const"] = `enum`
+            }
+            if itemsNoOpt.count > 1 {
+                addProp["items"] = itemsNoOpt
+            }
+            if let minItems {
+                addProp["minItems"] = minItems
+            }
+            if let maxItems {
+                addProp["maxItems"] = maxItems
+            }
+            if let uniqueItems {
+                addProp["uniqueItems"] = uniqueItems
+            }
+            try self.init(schema: .init(additionalProperties: .init(unvalidatedValue: addProp)))
+        } catch {
+            // FIXME: handle error correctly
+            fatalError("LLMFunctionParameterWrapper+ArrayTypes")
+        }
     }
 }
 

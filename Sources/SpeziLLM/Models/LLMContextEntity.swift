@@ -19,6 +19,8 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
     public struct ToolCall: Codable, Equatable, Hashable {
         /// The ID of the function call, uniquely identifying the specific function call and matching the response to it.
         public let id: String
+        /// The type of the function call. Currently only "function" is supported by OpenAI.
+        public let type: String = "function"
         /// The name of the function call.
         public let name: String
         /// The arguments as JSON of the function call.

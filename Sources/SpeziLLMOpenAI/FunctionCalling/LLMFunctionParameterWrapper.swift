@@ -7,17 +7,21 @@
 //
 
 import OpenAI
-
+import OpenAPIRuntime
 
 /// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
-public typealias LLMFunctionParameterPropertySchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property
+public typealias LLMFunctionParameterPropertySchema = Components.Schemas.FunctionParameters
 /// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
-public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property.Items
 
+// FIXME: LLMFunctionParameterItemSchema does not use a generated type yet
+public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition
+    .FunctionParameters.Property.Items
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
+// swiftlint:disable type_name
 @propertyWrapper
-public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector {
+    // swiftlint:enable type_name
     private var injectedValue: T?
     var schema: LLMFunctionParameterPropertySchema
     
@@ -50,23 +54,12 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
-    public convenience init<D: StringProtocol>(description: D) where T: LLMFunctionParameter {
-        self.init(schema: .init(
-            type: T.schema.type,
-            description: String(description),   // Take description from the property wrapper, all other things from self defined schema
-            format: T.schema.format,
-            items: T.schema.items,
-            required: T.schema.required,
-            pattern: T.schema.pattern,
-            const: T.schema.const,
-            enum: T.schema.enum,
-            multipleOf: T.schema.multipleOf,
-            minimum: T.schema.minimum,
-            maximum: T.schema.maximum,
-            minItems: T.schema.minItems,
-            maxItems: T.schema.maxItems,
-            uniqueItems: T.schema.uniqueItems
-        ))
+    public convenience init(description _: some StringProtocol) where T: LLMFunctionParameter {
+        do {
+            try self.init(schema: T.schema)
+        } catch {
+            fatalError("LLMFunctionPropertyWrapper")
+        }
     }
     
     init(schema: LLMFunctionParameterPropertySchema) {
@@ -111,5 +104,4 @@ extension LLMFunction {
 
 
 /// Ensuring `Sendable` conformances of ``LLMFunctionParameterPropertySchema`` and ``LLMFunctionParameterItemSchema``
-extension LLMFunctionParameterPropertySchema: @unchecked @retroactive Sendable {}
-extension LLMFunctionParameterItemSchema: @unchecked @retroactive Sendable {}
+extension LLMFunctionParameterItemSchema: @unchecked Sendable {}

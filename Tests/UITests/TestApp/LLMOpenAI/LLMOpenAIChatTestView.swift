@@ -15,7 +15,7 @@ import SwiftUI
 struct LLMOpenAIChatTestView: View {
     static let schema = LLMOpenAISchema(
         parameters: .init(
-            modelType: .gpt4_turbo,
+            modelType: .init(value1: "gpt-4-turbo", value2: .gpt_hyphen_4_hyphen_turbo),
             systemPrompt: "You're a helpful assistant that answers questions from users."
         )
     ) {

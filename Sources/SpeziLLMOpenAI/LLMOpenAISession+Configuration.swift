@@ -6,85 +6,145 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
-
+import OpenAPIRuntime
+import SpeziLLM
 
 extension LLMOpenAISession {
-    typealias Chat = ChatQuery.ChatCompletionMessageParam
-    typealias FunctionDeclaration = ChatQuery.ChatCompletionToolParam
-    
-    
-    /// Map the ``LLMOpenAISession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
-    private var openAIContext: [Chat] {
-        get async {
-            await self.context.compactMap { contextEntity in
-                if case let .tool(id: functionId, name: functionName) = contextEntity.role {
-                    Chat(
-                        role: contextEntity.role.openAIRepresentation,
-                        content: contextEntity.content,
-                        name: functionName,
-                        toolCallId: functionId
-                    )
-                } else if case let .assistant(toolCalls: toolCalls) = contextEntity.role {
-                    // No function calls present -> regular assistant message
-                    if toolCalls.isEmpty {
-                        Chat(
-                            role: contextEntity.role.openAIRepresentation,
-                            content: contextEntity.content
-                        )
-                    // Function calls present
-                    } else {
-                        Chat(
-                            role: contextEntity.role.openAIRepresentation,
-                            toolCalls: toolCalls.map { toolCall in
-                                .init(
-                                    id: toolCall.id,
-                                    function: .init(arguments: toolCall.arguments, name: toolCall.name)
-                                )
-                            }
+    // FIXME: Reduce function length by adding type aliases
+    // swiftlint:disable function_body_length
+    private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage? {
+        switch contextEntity.role {
+        case let .tool(id: functionID, name: _):
+            guard let role = Components.Schemas.ChatCompletionRequestToolMessage
+                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
+            else {
+                Self.logger.error("Could not create ChatCompletionRequestToolMessage payload")
+                return nil
+            }
+            let msg = Components.Schemas.ChatCompletionRequestToolMessage(
+                role: role,
+                content: contextEntity.content,
+                tool_call_id: functionID
+            )
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(msg)
+        case let .assistant(toolCalls: toolCalls):
+            // No function calls present -> regular assistant message
+            guard let role = Components.Schemas.ChatCompletionRequestAssistantMessage
+                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
+            else {
+                Self.logger.error("Could not create ChatCompletionRequestAssistantMessage role")
+                return nil
+            }
+            if toolCalls.isEmpty {
+                let msg = Components.Schemas.ChatCompletionRequestAssistantMessage(
+                    content: contextEntity.content,
+                    role: role
+                )
+                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(msg)
+            } else {
+                // Function calls present
+                let msg = Components.Schemas.ChatCompletionRequestAssistantMessage(
+                    role: role,
+                    tool_calls: toolCalls.map { toolCall in
+                        let type = Components.Schemas.ChatCompletionMessageToolCall
+                            ._typePayload(rawValue: toolCall.type)!
+                        // FIXME: handle error correctly
+                        // guard let type = Components.Schemas.ChatCompletionMessageToolCall
+                        //     ._typePayload(rawValue: toolCall.type)
+                        // else {
+                        //     Self.logger.error("Could not create ChatCompletionRequestAssistantMessage type")
+                        // }
+                        return .init(
+                            id: toolCall.id,
+                            _type: type,
+                            function: .init(name: toolCall.name, arguments: toolCall.arguments)
                         )
                     }
-                } else {
-                    Chat(
-                        role: contextEntity.role.openAIRepresentation,
-                        content: contextEntity.content
-                    )
-                }
+                )
+                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(msg)
+            }
+        case .system:
+            // No function calls present -> regular assistant message
+            let role = Components.Schemas.ChatCompletionRequestSystemMessage
+                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)!
+            // FIXME: handle error correctly
+            // guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
+            //     .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
+            // else {
+            //     Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
+            // }
+            let msg = Components.Schemas.ChatCompletionRequestSystemMessage(
+                content: contextEntity.content,
+                role: role
+            )
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(msg)
+        case .user:
+            guard let role = Components.Schemas.ChatCompletionRequestUserMessage
+                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
+            else {
+                Self.logger.error("Could not create ChatCompletionRequestUserMessage payload")
+                return nil
+            }
+            let msg = Components.Schemas.ChatCompletionRequestUserMessage(
+                content: Components.Schemas.ChatCompletionRequestUserMessage.contentPayload
+                    .case1(contextEntity.content),
+                role: role
+            )
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestUserMessage(msg)
+        }
+    }
+
+    /// Map the ``LLMOpenAISession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
+    private var openAIContext: [Components.Schemas.ChatCompletionRequestMessage] {
+        get async {
+            await context.compactMap { contextEntity in
+                getChatMessage(contextEntity)
             }
         }
     }
-    
+
     /// Provides the ``LLMOpenAISession/context``, the `` LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``, as well as the declared ``LLMFunction``s
     /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
-    var openAIChatQuery: ChatQuery {
+    var openAIChatQuery: Operations.createChatCompletion.Input {
         get async {
-            let functions: [FunctionDeclaration] = schema.functions.values.compactMap { function in
-                let functionType = Swift.type(of: function)
-                
-                return .init(function: .init(
-                    name: functionType.name,
-                    description: functionType.description,
-                    parameters: function.schema
-                ))
+            let functions: [Components.Schemas.ChatCompletionTool] = schema.functions.values.compactMap { function in
+                let type = Components.Schemas.ChatCompletionTool._typePayload(rawValue: "function")!
+                // FIXME: handle error correctly
+                // guard let
+                //     type = Components.Schemas.ChatCompletionTool._typePayload(rawValue: "function") else {
+                //     Self.logger.error("Could not create type for ChatCompletionTool._typePayload")
+                // }
+                return Components.Schemas.ChatCompletionTool(
+                    _type: type,
+                    function: Components.Schemas.FunctionObject(
+                        description: Swift.type(of: function).description,
+                        name: Swift.type(of: function).name,
+                        parameters: function.schema
+                    )
+                )
             }
-            
-            return await ChatQuery(
-                messages: self.openAIContext,
-                model: schema.parameters.modelType,
-                frequencyPenalty: schema.modelParameters.frequencyPenalty,
-                logitBias: schema.modelParameters.logitBias.isEmpty ? nil : schema.modelParameters.logitBias,
-                maxTokens: schema.modelParameters.maxOutputLength,
-                n: schema.modelParameters.completionsPerOutput,
-                presencePenalty: schema.modelParameters.presencePenalty,
-                responseFormat: schema.modelParameters.responseFormat,
-                seed: schema.modelParameters.seed,
-                stop: .stringList(schema.modelParameters.stopSequence),
-                temperature: schema.modelParameters.temperature,
-                tools: functions.isEmpty ? nil : functions,
-                topP: schema.modelParameters.topP,
-                user: schema.modelParameters.user,
-                stream: true
-            )
+
+            return await Operations.createChatCompletion
+                .Input(body: .json(Components.Schemas.CreateChatCompletionRequest(
+                    messages: openAIContext,
+                    model: schema.parameters.modelType,
+                    frequency_penalty: schema.modelParameters.frequencyPenalty,
+                    logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
+                        .modelParameters
+                        .logitBias,
+                    max_tokens: schema.modelParameters.maxOutputLength,
+                    n: schema.modelParameters.completionsPerOutput,
+                    presence_penalty: schema.modelParameters.presencePenalty,
+                    response_format: schema.modelParameters.responseFormat,
+                    seed: schema.modelParameters.seed,
+                    stop: Components.Schemas.CreateChatCompletionRequest.stopPayload
+                        .case2(schema.modelParameters.stopSequence),
+                    stream: true,
+                    temperature: schema.modelParameters.temperature,
+                    top_p: schema.modelParameters.topP,
+                    tools: functions.isEmpty ? nil : functions,
+                    user: schema.modelParameters.user
+                )))
         }
     }
 }
