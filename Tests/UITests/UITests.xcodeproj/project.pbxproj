@@ -89,8 +89,6 @@
 		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
 		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
 		97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogChatTestView.swift; sourceTree = "<group>"; };
-		DA7ED2842C60D0E400BA8C47 /* openapi.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = openapi.yaml; sourceTree = "<group>"; };
-		DA7ED2852C60D0E400BA8C47 /* openapi-generator-config.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "openapi-generator-config.yaml"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,8 +142,6 @@
 		2F6D139428F5F384007C25D6 /* TestApp */ = {
 			isa = PBXGroup;
 			children = (
-				DA7ED2842C60D0E400BA8C47 /* openapi.yaml */,
-				DA7ED2852C60D0E400BA8C47 /* openapi-generator-config.yaml */,
 				977447212B992D3A00D1F85E /* TestApp.entitlements */,
 				9756D25A2B0316790006B6BD /* Resources */,
 				97DD56B32B02F72D00389331 /* LLMLocal */,
