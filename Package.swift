@@ -28,12 +28,12 @@ let package = Package(
         .library(name: "SpeziVectorDatabase", targets: ["SpeziVectorDatabase"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.18.1"),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", from: "1.16.0"),
-        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.12")),
+        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "1.18.1"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
+        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
         .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.0.0-beta.3"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.0.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.1")),
@@ -60,8 +60,12 @@ let package = Package(
                 .product(name: "MLXOptimizers", package: "mlx-swift"),
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
+<<<<<<< HEAD
                 .product(name: "LLM", package: "mlx-swift-examples"),
                 .target(name: "SpeziVectorDatabase")
+=======
+                .product(name: "LLM", package: "mlx-swift-examples")
+>>>>>>> fix/download-and-mock
             ]
         ),
         .target(

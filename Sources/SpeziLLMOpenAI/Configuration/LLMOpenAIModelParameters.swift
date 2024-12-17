@@ -78,4 +78,4 @@ public struct LLMOpenAIModelParameters: Sendable {
 }
 
 
-extension ChatQuery.ResponseFormat: @unchecked Sendable {}
+extension ChatQuery.ResponseFormat: @unchecked @retroactive Sendable {}

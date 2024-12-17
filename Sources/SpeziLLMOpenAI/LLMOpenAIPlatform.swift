@@ -47,8 +47,8 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     let configuration: LLMOpenAIPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
-    @Dependency private var tokenSaver: LLMOpenAITokenSaver
-    @Dependency private var secureStorage: SecureStorage
+    @Dependency(LLMOpenAITokenSaver.self) private var tokenSaver
+    @Dependency(SecureStorage.self) private var secureStorage
     
     /// Creates an instance of the ``LLMOpenAIPlatform``.
     ///

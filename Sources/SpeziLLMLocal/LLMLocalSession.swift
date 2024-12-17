@@ -67,7 +67,11 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
     
     let platform: LLMLocalPlatform
-    let schema: LLMLocalSchema
+    var schema: LLMLocalSchema
+    
+    @ObservationIgnored private var modelExist: Bool {
+        false
+    }
     
     let retrivalAugmentedGenerator: RetrievalAugmentedGenerator?
     
@@ -80,6 +84,9 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
+    /// Overrides the `context` with a custom highly customizable context in the `swift-transformers` format.
+    /// - Important: When using the `customContext`, `injectToContext` will have no effect, and the assistant output will **not** be added to the `customContext`
+    @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
     @MainActor public var modelConfiguration: ModelConfiguration?

@@ -29,9 +29,11 @@ class TestAppLLMOpenAIUITests: XCTestCase {
     func testSpeziLLMOpenAIOnboarding() throws {    // swiftlint:disable:this function_body_length
         let app = XCUIApplication()
         
+        #if canImport(UIKit)
         if UIDevice.current.userInterfaceIdiom == .pad {
             throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
         }
+        #endif
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
@@ -145,9 +147,11 @@ class TestAppLLMOpenAIUITests: XCTestCase {
     func testSpeziLLMOpenAIChat() throws {
         let app = XCUIApplication()
         
+        #if canImport(UIKit)
         if UIDevice.current.userInterfaceIdiom == .pad {
             throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
         }
+        #endif
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
@@ -158,11 +162,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.buttons["Record Message"].isEnabled)
         
-        #if !os(macOS)
-        try app.textViews["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
-        #else
         try app.textFields["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
-        #endif
         
         XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
         app.buttons["Send Message"].tap()

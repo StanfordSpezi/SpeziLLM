@@ -43,7 +43,7 @@ class TestAppLLMLocalUITests: XCTestCase {
         sleep(1)
         
         // Chat
-        let inputTextfield = app.textViews["Message Input Textfield"]
+        let inputTextfield = app.textFields["Message Input Textfield"]
         XCTAssertTrue(inputTextfield.exists)
         
         

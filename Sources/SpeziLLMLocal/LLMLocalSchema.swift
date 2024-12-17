@@ -23,12 +23,8 @@ public struct LLMLocalSchema: LLMSchema {
     
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let parameters: LLMLocalParameters
-    /// Context parameters of the llama.cpp LLM.
-    let contextParameters: LLMLocalContextParameters
-    /// Sampling parameters of the llama.cpp LLM.
+    /// Sampling parameters of the LLM.
     let samplingParameters: LLMLocalSamplingParameters
-    /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
-    let formatChat: (@Sendable (LLMContext) throws -> String)
     /// Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``.
     public let injectIntoContext: Bool
     /// The models configuration which is based on `mlx-libraries`
@@ -37,25 +33,32 @@ public struct LLMLocalSchema: LLMSchema {
     /// Creates an instance of the ``LLMLocalSchema`` containing all necessary configuration for local LLM inference.
     ///
     /// - Parameters:
-    ///   - configuration: A local `URL` where the LLM file is stored. The format of the LLM must be in the llama.cpp `.gguf` format.
-    ///   - generateParameters: Parameters controlling the LLM generation process.
-    ///   - maxTokens: Maximum number of tokens to generate in a single output, defaults to 2048.
-    ///   - displayEveryNTokens: Interval for displaying output after every N tokens generated, defaults to 4 (improve by ~15% compared to update at every token).
+    ///   - model: The `LLMLocalModel` to be used by the schema.
+    ///   - parameters: Parameters controlling the LLM generation process.
+    ///   - samplingParameters: Represents the sampling parameters of the LLM.
     ///   - injectIntoContext: Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``, defaults to false.
-    ///   - formatChat: Closure to properly format the ``LLMLocalSession/context`` to a `String` which is tokenized and passed to the LLM, defaults to Llama2 prompt format.
     public init(
         model: LLMLocalModel,
         parameters: LLMLocalParameters = .init(),
-        contextParameters: LLMLocalContextParameters = .init(),
         samplingParameters: LLMLocalSamplingParameters = .init(),
-        injectIntoContext: Bool = false,
-        formatChat: @escaping (@Sendable (LLMContext) throws -> String)
+        injectIntoContext: Bool = false
     ) {
         self.parameters = parameters
-        self.contextParameters = contextParameters
         self.samplingParameters = samplingParameters
-        self.formatChat = formatChat
         self.injectIntoContext = injectIntoContext
         self.configuration = .init(id: model.hubID)
+    }
+    
+    @_disfavoredOverload
+    internal init(
+        configuration: ModelConfiguration,
+        parameters: LLMLocalParameters = .init(),
+        samplingParameters: LLMLocalSamplingParameters = .init(),
+        injectIntoContext: Bool = false
+    ) {
+        self.configuration = configuration
+        self.parameters = parameters
+        self.samplingParameters = samplingParameters
+        self.injectIntoContext = injectIntoContext
     }
 }

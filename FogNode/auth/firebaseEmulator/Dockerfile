@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-FROM alpine:3.19
+FROM node:22-alpine
 
 LABEL org.opencontainers.image.authors="Philipp Zagar <zagar@stanford.edu>" \
       org.opencontainers.image.version="0.1" \
