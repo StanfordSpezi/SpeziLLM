@@ -49,8 +49,8 @@ public final class LLMLocalDownloadManager: NSObject {
     @MainActor public var state: DownloadState = .idle
     private let model: LLMLocalModel
     
-    @ObservationIgnored public var modelExists: Bool {
-        LLMLocalDownloadManager.modelExsist(model: model)
+    @ObservationIgnored public var modelExist: Bool {
+        LLMLocalDownloadManager.modelExist(model: model)
     }
     
     /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
@@ -65,7 +65,7 @@ public final class LLMLocalDownloadManager: NSObject {
     ///
     /// - Parameter model: The model to check for local existence.
     /// - Returns: A Boolean value indicating whether the model exists on the device.
-    public static func modelExsist(model: LLMLocalModel) -> Bool {
+    public static func modelExist(model: LLMLocalModel) -> Bool {
         let repo = Hub.Repo(id: model.hubID)
         let url = HubApi.shared.localRepoLocation(repo)
         let modelFileExtension = ".safetensors"
@@ -79,30 +79,23 @@ public final class LLMLocalDownloadManager: NSObject {
     }
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.
-    public func startDownload() {
-        if modelExists {
+    public func startDownload() async {
+        if modelExist {
             Task { @MainActor in
                 self.state = .downloaded
             }
             return
         }
         
-        downloadTask?.cancel()
+        await cancelDownload()
         downloadTask = Task(priority: .userInitiated) {
             do {
-                let repo = Hub.Repo(id: model.hubID)
-                let modelFiles = ["*.safetensors", "config.json"]
-                try await HubApi.shared.snapshot(from: repo, matching: modelFiles) { progress in
-                    Task { @MainActor in
-                        self.state = .downloading(progress: progress)
-                    }
-                }
-                
-                Task { @MainActor in
+                try await downloadWithHub()
+                await MainActor.run {
                     self.state = .downloaded
                 }
             } catch {
-                Task { @MainActor in
+                await MainActor.run {
                     self.state = .error(
                         AnyLocalizedError(
                             error: error,
@@ -115,7 +108,20 @@ public final class LLMLocalDownloadManager: NSObject {
     }
     
     /// Cancels the download of a specified model via a `URLSessionDownloadTask`.
-    public func cancelDownload() {
+    public func cancelDownload() async {
         downloadTask?.cancel()
+        await MainActor.run {
+            self.state = .idle
+        }
+    }
+    
+    @MainActor
+    private func downloadWithHub() async throws {
+        let repo = Hub.Repo(id: model.hubID)
+        let modelFiles = ["*.safetensors", "config.json"]
+        
+        try await HubApi.shared.snapshot(from: repo, matching: modelFiles) { progress in
+            self.state = .downloading(progress: progress)
+        }
     }
 }

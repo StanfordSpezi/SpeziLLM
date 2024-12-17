@@ -65,7 +65,7 @@ public struct LLMLocalDownloadView: View {
                 VStack {
                     informationView
                     
-                    if !modelExists {
+                    if !modelExist {
                         downloadButton
                         
                         if isDownloading {
@@ -89,12 +89,12 @@ public struct LLMLocalDownloadView: View {
                     Spacer()
                 }
                     .transition(.opacity)
-                    .animation(.easeInOut, value: isDownloading || modelExists)
+                    .animation(.easeInOut, value: isDownloading || modelExist)
             }, actionView: {
                 OnboardingActionsView(.init("LLM_DOWNLOAD_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }
-                    .disabled(!modelExists)
+                .disabled(!modelExist)
             }
         )
             .map(state: downloadManager.state, to: $viewState)
@@ -120,14 +120,18 @@ public struct LLMLocalDownloadView: View {
     
     /// Button which starts the download of the model.
     @MainActor private var downloadButton: some View {
-        Button(action: downloadManager.startDownload) {
+        Button {
+            Task {
+                await downloadManager.startDownload()
+            }
+        } label: {
             Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
                 .padding(.horizontal)
                 .padding(.vertical, 6)
         }
-            .buttonStyle(.borderedProminent)
-            .disabled(isDownloading)
-            .padding()
+        .buttonStyle(.borderedProminent)
+        .disabled(isDownloading)
+        .padding()
     }
     
     /// A progress view indicating the state of the download
@@ -165,8 +169,8 @@ public struct LLMLocalDownloadView: View {
     }
     
     /// A `Bool` flag indicating if the model already exists on the device
-    private var modelExists: Bool {
-        self.downloadManager.modelExists
+    private var modelExist: Bool {
+        self.downloadManager.modelExist
     }
     
     
