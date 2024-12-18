@@ -11,15 +11,26 @@ import SpeziLLMOpenAI
 
 struct LLMOpenAIFunctionPerson: LLMFunction {
     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
-        static let itemSchema: LLMFunctionParameterItemSchema = .init(
-            type: .object,
-            properties: [
-                "firstName": .init(type: .string, description: "The first name of the person"),
-                "lastName": .init(type: .string, description: "The last name of the person")
-            ]
-        )
-        
-        
+        static let itemSchema: LLMFunctionParameterItemSchema = {
+            do {
+                return try LLMFunctionParameterItemSchema(unvalidatedValue: [
+                    "type": "object",
+                    "properties": [
+                        "firstName": [
+                            "type": "string",
+                            "description": "The first name of the person"
+                        ],
+                        "lastName": [
+                            "type": "string",
+                            "description": "The last name of the person"
+                        ]
+                    ]
+                ])
+            } catch {
+                fatalError("Couldn't create function parameters in for testing")
+            }
+        }()
+                
         let firstName: String
         let lastName: String
     }

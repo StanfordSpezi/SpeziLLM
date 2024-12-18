@@ -21,7 +21,9 @@ struct LLMOpenAIFunctionWeather: LLMFunction {
     
     
     // swiftlint:disable attributes
-    @Parameter(description: "The city and state of the to be determined weather, e.g. San Francisco, CA")
+    @Parameter(
+        description: "The city and state of the to be determined weather, e.g. San Francisco, CA"
+    )
     var location: String
     @Parameter(description: "The unit of the temperature")
     var unit: TemperatureUnit

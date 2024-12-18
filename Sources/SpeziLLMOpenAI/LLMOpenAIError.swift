@@ -135,3 +135,29 @@ public enum LLMOpenAIError: LLMError {
         }
     }
 }
+
+// Reference: https://platform.openai.com/docs/guides/error-codes/api-errors
+extension LLMOpenAISession {
+    func handleErrorCode(_ statusCode: Int) -> LLMOpenAIError {
+        switch statusCode {
+        case 401:
+            logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
+            return LLMOpenAIError.invalidAPIToken
+        case 403:
+            logger.error("SpeziLLMOpenAI: Model access check - Country, region, or territory not supported")
+            return LLMOpenAIError.invalidAPIToken
+        case 429:
+            logger.error("SpeziLLMOpenAI: Rate limit reached for requests")
+            return LLMOpenAIError.insufficientQuota
+        case 500:
+            logger.error("SpeziLLMOpenAI: The server had an error while processing your request")
+            return LLMOpenAIError.generationError
+        case 503:
+            logger.error("SpeziLLMOpenAI: The engine is currently overloaded, please try again later")
+            return LLMOpenAIError.generationError
+        default:
+            logger.error("SpeziLLMOpenAI: Received unknown return code from OpenAI")
+            return LLMOpenAIError.generationError
+        }
+    }
+}

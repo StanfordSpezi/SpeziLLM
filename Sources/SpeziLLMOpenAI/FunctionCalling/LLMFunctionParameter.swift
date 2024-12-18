@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// Represents an LLM function calling parameter.
 ///
 /// The ``LLMFunctionParameter``enables developers to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). <!-- markdown-link-check-disable-line -->
