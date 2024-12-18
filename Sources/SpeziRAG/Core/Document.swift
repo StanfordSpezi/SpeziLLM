@@ -7,40 +7,15 @@ class Document {
     var id: Id = 0
     var content: String = ""
     var metadata: [String: String] = [:]
-    
+    // objectbox:hnswIndex: dimensions=512
+    var embedding: [Float] = []
     
     init() { }
     
-    init(metadata: [String: String]) {
+    init(id: Id = 0, content: String = "", metadata: [String: String] = [:], embedding: [Float] = []) {
+        self.id = id
+        self.content = content
         self.metadata = metadata
+        self.embedding = embedding
     }
 }
-
-
-
-
-//class Person {
-//    var id: Id = 0
-//    var firstName: String = ""
-//    var lastName: String = ""
-//    // objectbox:hnswIndex: dimensions=2
-//    var location: [Float]?
-//    
-//    init() { }
-//    
-//    init(id: Id = 0, firstName: String, lastName: String, location: [Float]?) {
-//        self.id = id
-//        self.firstName = firstName
-//        self.lastName = lastName
-//        self.location = location
-//    }
-//    
-//    // objectbox: transient
-//    var fullName: String {
-//        firstName + " " + lastName
-//    }
-//    
-//    // objectbox: transient
-//    var distance: Double? = nil
-//
-//}
