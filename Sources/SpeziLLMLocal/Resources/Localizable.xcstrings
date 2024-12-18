@@ -91,6 +91,17 @@
         }
       }
     },
+    "LLM_MLX_NOT_SUPPORTED_WORKAROUND" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here are two recommended workarounds:\n1. Add the Mac (Designed for iPad) destination to your target in Xcode.\n- SpeziLLMLocal requires MLX which requires Apple silicon, with `Mac (Designed for iPad)` you build an iPad application that will run on macOS.\n- The UI may present with differences to iOS, but this will allow you to build an iOS binary that runs with a fully featured Metal GPU.\n\n2. Make a multiplatform application that can run on macOS, iOS and iPadOS.\n- With SwiftUI it is possible to do most of your development in a macOS application and fine tune it for iOS by running it on an actual device.\n\nYou can also use the simulator for developing UI features but local LLM execution is not possible."
+          }
+        }
+      }
+    },
     "LLM_MODEL_NOT_FOUND_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
