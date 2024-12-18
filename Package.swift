@@ -25,7 +25,7 @@ let package = Package(
         .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"]),
         .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"]),
-        .library(name: "SpeziVectorDatabase", targets: ["SpeziVectorDatabase"])
+        .library(name: "SpeziRAG", targets: ["SpeziRAG"])
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
@@ -37,7 +37,8 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1")
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1"),
+        .package(url: "https://github.com/objectbox/objectbox-swift-spm.git", from: "4.1.0-beta.1")
     ],
     targets: [
         .target(
@@ -60,12 +61,7 @@ let package = Package(
                 .product(name: "MLXOptimizers", package: "mlx-swift"),
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
-<<<<<<< HEAD
-                .product(name: "LLM", package: "mlx-swift-examples"),
-                .target(name: "SpeziVectorDatabase")
-=======
                 .product(name: "LLM", package: "mlx-swift-examples")
->>>>>>> fix/download-and-mock
             ]
         ),
         .target(
@@ -98,14 +94,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "SpeziVectorDatabase",
+            name: "SpeziRAG",
             dependencies: [
-                .product(name: "MLX", package: "mlx-swift"),
-                .product(name: "MLXFast", package: "mlx-swift"),
-                .product(name: "MLXNN", package: "mlx-swift"),
-                .product(name: "MLXOptimizers", package: "mlx-swift"),
-                .product(name: "MLXRandom", package: "mlx-swift"),
-                .product(name: "MLXLinalg", package: "mlx-swift")
+                .product(name: "ObjectBox.xcframework", package: "objectbox-swift-spm")
             ]
         ),
         .testTarget(

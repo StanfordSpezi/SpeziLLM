@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import MLX
 
 // Maybe change name of segment to document
 // and change segment.document to content
@@ -20,7 +19,7 @@ public struct Segment {
     public let id: String
     public var document: String?
     public var metadata: [String: String]?
-    public var embedding: MLXArray
+//    public var embedding: MLXArray
     
     func toRaw() -> RawSegment {
         .init(id: id, document: document, metadata: metadata)

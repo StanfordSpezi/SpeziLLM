@@ -11,7 +11,6 @@ import MLXLLM
 import SpeziChat
 import SpeziLLM
 
-
 /// Defines the type and configuration of the ``LLMLocalSession``.
 ///
 /// The ``LLMLocalSchema`` is used as a configuration for the to-be-used local LLM. It contains all information necessary for the creation of an executable ``LLMLocalSession``.

@@ -42,7 +42,8 @@ public class TextSplitter {
     
     public func tokenize(_ text: String, chunkSize: Int, overlap: Int) throws -> [String] {
         guard chunkSize > 0, overlap >= 0, overlap < chunkSize else {
-            throw VectorDatabaseError.invalidArgument
+//            throw VectorDatabaseError.invalidArgument
+            fatalError()
         }
         
         var chunks: [String] = []

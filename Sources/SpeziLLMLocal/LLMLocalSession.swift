@@ -68,16 +68,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     let platform: LLMLocalPlatform
     var schema: LLMLocalSchema
-    
-    @ObservationIgnored private var modelExist: Bool {
-        false
-    }
-    
     let retrivalAugmentedGenerator: RetrievalAugmentedGenerator?
-    
-    @ObservationIgnored private var modelExist: Bool {
-        false
-    }
     
     /// A task managing the ``LLMLocalSession`` output generation.
     @ObservationIgnored private var task: Task<(), Never>?

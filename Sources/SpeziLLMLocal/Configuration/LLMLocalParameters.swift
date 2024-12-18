@@ -32,10 +32,6 @@ public struct LLMLocalParameters: Sendable {
     /// The chat template to use for the model in the Jinja format
     let chatTemplate: String?
     
-    let extraEOSTokens: Set<String>
-    /// Interval for displaying output after every N tokens generated.
-    let displayEveryNTokens: Int
-    
     /// Creates the ``LLMLocalParameters`` which wrap the underlying llama.cpp `llama_model_params` C struct.
     /// Is passed to the underlying llama.cpp model in order to configure the LLM.
     ///
