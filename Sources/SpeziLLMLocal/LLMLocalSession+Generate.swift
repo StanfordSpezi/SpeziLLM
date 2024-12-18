@@ -126,7 +126,12 @@ extension LLMLocalSession {
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
-        let tokens = ["Mock ", "Message ", "from ", "SpeziLLM! ", "Using SpeziLLMLocal only works on physical devices."]
+        let tokens = [
+            "Mock ", "Message ", "from ", "SpeziLLM! ",
+            "**Using SpeziLLMLocal only works on physical devices.**",
+            "\n\n",
+            String(localized: "LLM_MLX_NOT_SUPPORTED_WORKAROUND", bundle: .module)
+        ]
         
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))

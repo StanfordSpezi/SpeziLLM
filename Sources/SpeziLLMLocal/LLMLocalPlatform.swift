@@ -64,6 +64,11 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
             subsystem: "Spezi",
             category: "LLMLocalPlatform"
         ).warning("SpeziLLMLocal is only supported on physical devices. A mock session will be used instead.")
+        
+        Logger(
+            subsystem: "Spezi",
+            category: "LLMLocalPlatform"
+        ).warning("\(String(localized: "LLM_MLX_NOT_SUPPORTED_WORKAROUND", bundle: .module))")
 #else
         if let cacheLimit = configuration.cacheLimit {
             MLX.GPU.set(cacheLimit: cacheLimit * 1024 * 1024)
