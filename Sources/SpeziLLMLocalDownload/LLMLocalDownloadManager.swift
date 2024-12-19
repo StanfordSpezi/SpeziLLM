@@ -12,6 +12,7 @@ import Observation
 import SpeziLLMLocal
 import SpeziViews
 
+
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
 /// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
