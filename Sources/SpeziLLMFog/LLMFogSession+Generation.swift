@@ -12,14 +12,7 @@ import SpeziChat
 
 
 extension LLMFogSession {
-    private static let modelNotFoundRegex: Regex = {
-        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
-            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
-        }
-        
-        return regex
-    }()
-
+    private static let modelNotFoundRegex = "model '([\\w:]+)' not found, try pulling it first"
     
     /// Based on the input prompt, generate the output via some OpenAI API, e.g., Ollama.
     ///
@@ -61,7 +54,7 @@ extension LLMFogSession {
             }
         } catch let error as APIErrorResponse {
             // Sadly, there's no better way to check the error messages as there aren't any Ollama error codes as with the OpenAI API
-            if error.error.message.contains(Self.modelNotFoundRegex) {
+            if error.error.message.range(of: Self.modelNotFoundRegex, options: .regularExpression) != nil {
                 Self.logger.error("SpeziLLMFog: LLM model type could not be accessed on fog node - \(error.error.message)")
                 await finishGenerationWithError(LLMFogError.modelAccessError(error), on: continuation)
             } else if error.error.code == "401" || error.error.code == "403" {
