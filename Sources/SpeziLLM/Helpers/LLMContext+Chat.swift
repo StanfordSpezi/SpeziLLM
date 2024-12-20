@@ -6,8 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-@preconcurrency
-import SpeziChat
+@preconcurrency import SpeziChat
 
 
 extension LLMContext {
