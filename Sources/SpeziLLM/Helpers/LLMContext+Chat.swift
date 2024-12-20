@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+@preconcurrency
 import SpeziChat
 
 

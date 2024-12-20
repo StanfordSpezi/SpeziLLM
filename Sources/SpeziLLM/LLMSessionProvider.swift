@@ -45,6 +45,7 @@ public struct _LLMSessionProvider<Schema: LLMSchema>: DynamicProperty {     // s
     }
     
     /// Creates a `Binding` to the ``LLMSession``that one can pass around. Useful for passing the ``LLMSession`` as a `Binding` to the ``LLMChatView``.
+    @MainActor
     public var projectedValue: Binding<Schema.Platform.Session> {
         Binding {
             wrappedValue
