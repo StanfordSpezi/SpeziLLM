@@ -35,8 +35,8 @@ extension LLMOpenAISession {
             }
 
             return await Operations.createChatCompletion
-                .Input(body: 
-                    .json(
+                .Input(
+                    body: .json(
                         LLMOpenAIRequestType(
                             messages: openAIContext,
                             model: schema.parameters.modelType,
