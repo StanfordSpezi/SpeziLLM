@@ -12,6 +12,7 @@ import Foundation
 import HTTPTypes
 import OpenAPIRuntime
 
+/// A `ClientMiddleware` for injecting the OpenAI API key into outgoing requests.
 struct AuthMiddleware: ClientMiddleware {
     private let APIKey: String
 
