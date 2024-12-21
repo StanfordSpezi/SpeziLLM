@@ -17,11 +17,9 @@ public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObje
 public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
 
 
-// swiftlint:disable type_name
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector {
-    // swiftlint:enable type_name
+public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
     private var injectedValue: T?
     
     
