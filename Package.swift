@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 
 //
 // This source file is part of the Stanford Spezi open source project
@@ -9,13 +9,6 @@
 //
 
 import PackageDescription
-
-#if swift(<6)
-let swiftConcurrency: SwiftSetting = .enableExperimentalFeature("StrictConcurrency")
-#else
-let swiftConcurrency: SwiftSetting = .enableUpcomingFeature("StrictConcurrency")
-#endif
-
 
 let package = Package(
     name: "SpeziLLM",
@@ -51,9 +44,6 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziViews", package: "SpeziViews")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         ),
         .target(
@@ -69,9 +59,6 @@ let package = Package(
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
                 .product(name: "LLM", package: "mlx-swift-examples")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         ),
         .target(
@@ -81,9 +68,6 @@ let package = Package(
                 .product(name: "SpeziViews", package: "SpeziViews"),
                 .target(name: "SpeziLLMLocal"),
                 .product(name: "LLM", package: "mlx-swift-examples")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         ),
         .target(
@@ -96,9 +80,6 @@ let package = Package(
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         ),
         .target(
@@ -107,18 +88,12 @@ let package = Package(
                 .target(name: "SpeziLLM"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "OpenAI", package: "OpenAI")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         ),
         .testTarget(
             name: "SpeziLLMTests",
             dependencies: [
                 .target(name: "SpeziLLMOpenAI")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ]
         )
     ]
