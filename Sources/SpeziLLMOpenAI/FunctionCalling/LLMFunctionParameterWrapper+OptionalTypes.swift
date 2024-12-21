@@ -36,8 +36,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
         }
     }
 }
@@ -65,8 +65,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
         }
     }
 }
@@ -88,8 +88,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
                 "const": const.map { String($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
         }
     }
 }
@@ -120,8 +120,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
                 "enum": `enum`.map { $0.map { String($0) as Any? } }
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
         }
     }
 }
@@ -165,8 +165,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
         }
     }
 }
@@ -207,8 +207,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
         }
     }
 }
@@ -242,8 +242,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
         }
     }
 }
@@ -284,8 +284,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
         }
     }
 }

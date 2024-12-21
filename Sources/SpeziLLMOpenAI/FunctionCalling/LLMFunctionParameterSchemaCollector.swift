@@ -8,6 +8,7 @@
 
 import Foundation
 import OpenAPIRuntime
+import OSLog
 
 
 /// Defines the `LLMFunctionParameterSchemaCollector/schema` requirement to collect the function calling parameter schema's from the ``LLMFunction/Parameter``s.
@@ -44,7 +45,7 @@ extension LLMFunction {
                 "required": requiredPropertyNames
             ])
         } catch {
-            logger.error("Error creating OpenAPIObjectContainer.")
+            Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI").error("Error creating OpenAPIObjectContainer.")
         }
         return functionParameterSchema
     }

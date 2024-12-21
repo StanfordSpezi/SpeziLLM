@@ -34,8 +34,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
                     "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameter+PrimitveTypes")
             self.init(description: "")
+            self.logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameter+PrimitveTypes")
         }
     }
 }
@@ -64,8 +64,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitveTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitveTypes")
         }
     }
 }
@@ -88,8 +88,8 @@ extension _LLMFunctionParameterWrapper where T == Bool {
                 "const": const.map { String($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimiteveTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimiteveTypes")
         }
     }
 }
@@ -122,8 +122,8 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
                 "enum": `enum`.map { $0.map { String($0) } } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitiveTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+PrimitiveTypes")
         }
     }
 }

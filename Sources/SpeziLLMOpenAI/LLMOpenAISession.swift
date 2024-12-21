@@ -14,8 +14,6 @@ import SpeziChat
 import SpeziLLM
 import SpeziSecureStorage
 
-/// A Swift Logger that logs important information and errors.
-public let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
 
 /// Represents an ``LLMOpenAISchema`` in execution.
 ///
@@ -71,6 +69,10 @@ public let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMO
 /// ```
 @Observable
 public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
+    /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    
+    
     let platform: LLMOpenAIPlatform
     let schema: LLMOpenAISchema
     let secureStorage: SecureStorage

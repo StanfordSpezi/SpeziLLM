@@ -48,8 +48,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
+            logger.error("LLMFunctionParameterWrapper+ArrayTypes")
         }
     }
 }
@@ -89,8 +89,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
         }
     }
 }
@@ -124,8 +124,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
         }
     }
 }
@@ -165,8 +165,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
         }
     }
 }

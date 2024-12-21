@@ -44,8 +44,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
             self.init(description: "")
+            logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
         }
     }
 }
@@ -85,8 +85,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
             self.init(description: "")
+            logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
         }
     }
 }

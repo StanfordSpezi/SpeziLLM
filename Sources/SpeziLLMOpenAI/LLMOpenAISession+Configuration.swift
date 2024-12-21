@@ -90,7 +90,7 @@ extension LLMOpenAISession {
             guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
                 .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
             else {
-                logger.error("Could not create ChatCompletionRequestSystemMessage payload")
+                Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
                 return nil
             }
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(

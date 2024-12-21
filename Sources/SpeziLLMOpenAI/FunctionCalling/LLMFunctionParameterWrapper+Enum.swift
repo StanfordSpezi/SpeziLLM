@@ -29,11 +29,8 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
                 "enum": T.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
-            logger
-                .error(
-                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
-                )
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)")
         }
     }
 }
@@ -58,11 +55,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
                 "enum": T.Wrapped.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
-            logger
-                .error(
-                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
-                )
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)")
         }
     }
 }
@@ -99,11 +93,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "uniqueItems": uniqueItems
             ].compactMapValues { $0 }))
         } catch {
-            logger
-                .error(
-                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
-                )
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)")
         }
     }
 }
@@ -142,11 +133,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            logger
-                .error(
-                    "SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)"
-                )
             self.init(description: "")
+            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+Enum \(error.localizedDescription)")
         }
     }
 }

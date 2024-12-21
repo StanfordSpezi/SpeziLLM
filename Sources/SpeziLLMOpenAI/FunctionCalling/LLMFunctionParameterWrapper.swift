@@ -7,6 +7,7 @@
 //
 
 import OpenAPIRuntime
+import OSLog
 
 
 // NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
@@ -20,6 +21,9 @@ public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectCo
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
 public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+    /// A Swift Logger that logs important information and errors.
+    var logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    
     private var injectedValue: T?
     
     
