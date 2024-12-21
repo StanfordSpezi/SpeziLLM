@@ -35,25 +35,29 @@ extension LLMOpenAISession {
             }
 
             return await Operations.createChatCompletion
-                .Input(body: .json(LLMOpenAIRequestType(
-                    messages: openAIContext,
-                    model: schema.parameters.modelType,
-                    frequency_penalty: schema.modelParameters.frequencyPenalty,
-                    logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
-                        .modelParameters
-                        .logitBias,
-                    max_tokens: schema.modelParameters.maxOutputLength,
-                    n: schema.modelParameters.completionsPerOutput,
-                    presence_penalty: schema.modelParameters.presencePenalty,
-                    response_format: schema.modelParameters.responseFormat,
-                    seed: schema.modelParameters.seed,
-                    stop: LLMOpenAIRequestType.stopPayload.case2(schema.modelParameters.stopSequence),
-                    stream: true,
-                    temperature: schema.modelParameters.temperature,
-                    top_p: schema.modelParameters.topP,
-                    tools: functions.isEmpty ? nil : functions,
-                    user: schema.modelParameters.user
-                )))
+                .Input(body: 
+                    .json(
+                        LLMOpenAIRequestType(
+                            messages: openAIContext,
+                            model: schema.parameters.modelType,
+                            frequency_penalty: schema.modelParameters.frequencyPenalty,
+                            logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
+                                .modelParameters
+                                .logitBias,
+                            max_tokens: schema.modelParameters.maxOutputLength,
+                            n: schema.modelParameters.completionsPerOutput,
+                            presence_penalty: schema.modelParameters.presencePenalty,
+                            response_format: schema.modelParameters.responseFormat,
+                            seed: schema.modelParameters.seed,
+                            stop: LLMOpenAIRequestType.stopPayload.case2(schema.modelParameters.stopSequence),
+                            stream: true,
+                            temperature: schema.modelParameters.temperature,
+                            top_p: schema.modelParameters.topP,
+                            tools: functions.isEmpty ? nil : functions,
+                            user: schema.modelParameters.user
+                        )
+                    )
+                )
         }
     }
 
