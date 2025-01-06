@@ -1,8 +1,9 @@
 //
-//  VectorDatabase+Tokenizer.swift
-//  SpeziLLM
+// This source file is part of the Stanford Spezi open source project
 //
-//  Created by Leon Nissen on 11/7/24.
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
 //
 
 import Foundation
@@ -24,41 +25,6 @@ public class TextSplitter {
         self.chunkOverlap = chunkOverlap
         self.keepSeparator = keepSeparator
         self.stripWhitespace = stripWhitespace
-    }
-    
-    public func tokenize(_ input: String, by unit: NLTokenUnit) -> [String] {
-        let tokenizer = NLTokenizer(unit: unit)
-        tokenizer.string = input
-        
-        var resultSet: [String] = []
-        
-        tokenizer.enumerateTokens(in: input.startIndex ..< input.endIndex) { tokenRange, attributes in
-            resultSet.append(String(input[tokenRange]))
-            return true
-        }
-        return resultSet
-    }
-    
-    
-    public func tokenize(_ text: String, chunkSize: Int, overlap: Int) throws -> [String] {
-        guard chunkSize > 0, overlap >= 0, overlap < chunkSize else {
-//            throw VectorDatabaseError.invalidArgument
-            fatalError()
-        }
-        
-        var chunks: [String] = []
-        var start = text.startIndex
-        
-        while start < text.endIndex {
-            let end = text.index(start, offsetBy: chunkSize, limitedBy: text.endIndex) ?? text.endIndex
-            let chunk = String(text[start..<end])
-            chunks.append(chunk)
-            
-            let overlapOffset = max(0, chunkSize - overlap)
-            start = text.index(start, offsetBy: overlapOffset, limitedBy: text.endIndex) ?? text.endIndex
-        }
-        
-        return chunks
     }
     
     public func splitText(

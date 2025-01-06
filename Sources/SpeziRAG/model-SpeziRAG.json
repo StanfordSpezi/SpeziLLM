@@ -1,0 +1,64 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "2:3474877191370808576",
+      "lastPropertyId": "6:7537841640795151360",
+      "name": "_RAGDocument",
+      "properties": [
+        {
+          "flags": 1,
+          "id": "1:7202944735452368896",
+          "name": "id",
+          "type": 6
+        },
+        {
+          "id": "2:5436555836465158656",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "flags": 8,
+          "id": "4:6620637236891269632",
+          "indexId": "2:5439018480120820736",
+          "name": "embedding",
+          "type": 28
+        },
+        {
+          "id": "5:1787643993702767616",
+          "name": "alternativeContent",
+          "type": 9
+        },
+        {
+          "id": "6:7537841640795151360",
+          "name": "_metadata",
+          "type": 23
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "2:3474877191370808576",
+  "lastIndexId": "2:5439018480120820736",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 4,
+  "retiredEntityUids": [
+    4008099550156082944
+  ],
+  "retiredIndexUids": [
+    5792578098643602944
+  ],
+  "retiredPropertyUids": [
+    5014796385770482944,
+    1479587553530831360,
+    6612248933541136896,
+    7064406915184364800,
+    7329359445234658560
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

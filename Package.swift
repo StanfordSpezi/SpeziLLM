@@ -96,6 +96,8 @@ let package = Package(
         .target(
             name: "SpeziRAG",
             dependencies: [
+                .target(name: "SpeziLLM"),
+                .target(name: "SpeziLLMLocal"),
                 .product(name: "ObjectBox.xcframework", package: "objectbox-swift-spm")
             ]
         ),
