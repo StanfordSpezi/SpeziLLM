@@ -18,6 +18,11 @@ import SpeziLLM
 extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+#if targetEnvironment(simulator)
+        // swiftlint:disable:next return_value_from_void_function
+        return await _mockGenerate(continuation: continuation)
+#endif
+        
         guard let modelContainer = await self.modelContainer else {
             Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
             await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
@@ -117,6 +122,29 @@ extension LLMLocalSession {
         await MainActor.run {
             continuation.finish()
             state = .ready
+        }
+    }
+    
+    private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+        let tokens = [
+            "Mock ", "Message ", "from ", "SpeziLLM! ",
+            "**Using SpeziLLMLocal only works on physical devices.**",
+            "\n\n",
+            String(localized: "LLM_MLX_NOT_SUPPORTED_WORKAROUND", bundle: .module)
+        ]
+        
+        for token in tokens {
+            try? await Task.sleep(for: .seconds(1))
+            guard await !checkCancellation(on: continuation) else {
+                return
+            }
+            continuation.yield(token)
+        }
+        
+        continuation.finish()
+        await MainActor.run {
+            context.completeAssistantStreaming()
+            self.state = .ready
         }
     }
 }
