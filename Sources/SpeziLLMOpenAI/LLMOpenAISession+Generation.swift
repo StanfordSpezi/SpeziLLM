@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OpenAI
+import OpenAPIRuntime
 import SpeziChat
 import SpeziLLM
 
@@ -26,14 +26,33 @@ extension LLMOpenAISession {
         }
         
         while true {
-            let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
-            
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             do {
+                let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
+
+                if case let .undocumented(statusCode: statusCode, _) = response {
+                    Self.logger.error("LLMOpenAI: Error during generation. Status code: \(statusCode)")
+                    let llmError = handleErrorCode(statusCode)
+                    await finishGenerationWithError(llmError, on: continuation)
+                    return
+                }
+
+                let chatStream = try response.ok.body.text_event_hyphen_stream
+                    .asDecodedServerSentEventsWithJSONData(
+                        of: Components.Schemas.CreateChatCompletionStreamResponse.self,
+                        decoder: .init(),
+                        while: { incomingData in incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8)) }
+                    )
+
                 for try await chatStreamResult in chatStream {
+                    guard let choices = chatStreamResult.data?.choices else {
+                        Self.logger.error("SpeziLLMOpenAI: Couldn't obtain choices from stream response.")
+                        return
+                    }
+
                     // Important to iterate over all choices as LLM could choose to call multiple functions / generate multiple choices
-                    for choice in chatStreamResult.choices {
+                    for choice in choices {
                         llmStreamResults[choice.index] = llmStreamResults[
                             choice.index,
                             default: .init()
@@ -70,31 +89,18 @@ extension LLMOpenAISession {
                         context.completeAssistantStreaming()
                     }
                 }
-            } catch let error as APIErrorResponse {
-                switch error.error.code {
-                case LLMOpenAIError.invalidAPIToken.openAIErrorMessage:
-                    Self.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token - \(error)")
-                    await finishGenerationWithError(LLMOpenAIError.invalidAPIToken, on: continuation)
-                case LLMOpenAIError.insufficientQuota.openAIErrorMessage:
-                    Self.logger.error("SpeziLLMOpenAI: Insufficient OpenAI API quota - \(error)")
-                    await finishGenerationWithError(LLMOpenAIError.insufficientQuota, on: continuation)
-                default:
-                    Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
-                    await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
-                }
-                return
             } catch let error as URLError {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return
             } catch {
-                Self.logger.error("SpeziLLMOpenAI: Generation error occurred - \(error)")
+                Self.logger.error("SpeziLLMOpenAI: Unknwon Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
                 return
             }
 
             let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }.flatMap { $0 }
-            
+
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
                 break
@@ -102,12 +108,12 @@ extension LLMOpenAISession {
             
             // Inject the requested function calls into the LLM context
             let functionCallContext: [LLMContextEntity.ToolCall] = functionCalls.compactMap { functionCall in
-                guard let functionCallId = functionCall.id,
+                guard let functionCallID = functionCall.id,
                       let functionCallName = functionCall.name else {
                     return nil
                 }
-                
-                return .init(id: functionCallId, name: functionCallName, arguments: functionCall.arguments ?? "")
+
+                return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
                 context.append(functionCalls: functionCallContext)

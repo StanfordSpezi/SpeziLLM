@@ -15,7 +15,10 @@ struct LLMOpenAIFunctionHealthData: LLMFunction {
     
     
     // swiftlint:disable attributes
-    @Parameter(description: "The types of health data that are requested", enum: ["allergies", "medications", "preconditions"])
+    @Parameter(
+        description: "The types of health data that are requested",
+        enum: ["allergies", "medications", "preconditions"]
+    )
     var healthDataTypes: [String]
     // swiftlint:enable attributes
     
