@@ -113,6 +113,16 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         }
     }
     
+    /// Releases the memory associated with the current model.
+    ///
+    /// This function frees up memory resources by clearing the model container and reset the GPU cache, allowing to e.g. load a different model.
+    public func offload() async {
+        await MainActor.run {
+            modelContainer = nil
+        }
+        MLX.GPU.clearCache()
+    }
+    
     
     /// Based on the input prompt, generate the output.
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
