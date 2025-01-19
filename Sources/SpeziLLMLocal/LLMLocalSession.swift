@@ -117,6 +117,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     ///
     /// This function frees up memory resources by clearing the model container and reset the GPU cache, allowing to e.g. load a different model.
     public func offload() async {
+        cancel()
         await MainActor.run {
             modelContainer = nil
         }
