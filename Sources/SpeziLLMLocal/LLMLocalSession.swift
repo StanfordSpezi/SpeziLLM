@@ -120,6 +120,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         cancel()
         await MainActor.run {
             modelContainer = nil
+            state = .uninitialized
         }
         MLX.GPU.clearCache()
     }
