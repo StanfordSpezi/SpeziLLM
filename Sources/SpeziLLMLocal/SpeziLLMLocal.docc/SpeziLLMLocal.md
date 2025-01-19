@@ -98,6 +98,8 @@ struct LLMLocalDemoView: View {
 }
 ```
 
+> Tip: To enhance performance and reduce resource usage, you can call `LLMlocalSchema/offload()`, which offloads the model and frees up system resources. Subsequently, invoking `LLMlocalSchema/setup()` or `LLMlocalSchema/generate()` will reload the model into memory as needed.
+
 ## Topics
 
 ### LLM Local abstraction
@@ -113,7 +115,6 @@ struct LLMLocalDemoView: View {
 ### LLM Configuration
 
 - ``LLMLocalParameters``
-- ``LLMLocalContextParameters``
 - ``LLMLocalSamplingParameters``
 
 ### Misc

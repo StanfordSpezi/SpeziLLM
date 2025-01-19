@@ -19,10 +19,12 @@ import SpeziLLM
 /// Represents an ``LLMLocalSchema`` in execution.
 ///
 /// The ``LLMLocalSession`` is the executable version of the local LLM containing context and state as defined by the ``LLMLocalSchema``.
-/// It utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to locally execute a large language model on-device.
+/// It utilizes [MLX Swift](https://github.com/ml-explore/mlx-swift) to locally execute a large language model on-device.
 ///
 /// The inference is started by ``LLMLocalSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMLocalSession/cancel()``.
 /// The ``LLMLocalSession`` exposes its current state via the ``LLMLocalSession/context`` property, containing all the conversational history with the LLM.
+///
+/// To offload the model and to free occupied resources by the LLM when not in use, ``LLMLocalSession/offload()`` can be called.
 ///
 /// - Warning: The ``LLMLocalSession`` shouldn't be created manually but always through the ``LLMLocalPlatform`` via the `LLMRunner`.
 ///
