@@ -67,7 +67,7 @@ extension LLMLocalSession {
         return true
     }
     
-    private func _mockSetup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
+    private func _mockSetup(continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation?) async -> Bool {
         Self.logger.debug("SpeziLLMLocal: Local Mock LLM is being initialized")
         
         await MainActor.run {
