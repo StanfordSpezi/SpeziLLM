@@ -17,7 +17,7 @@ import SpeziLLM
 
 extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
-    internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    internal func _generate(continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
         // swiftlint:disable:next return_value_from_void_function
         return await _mockGenerate(continuation: continuation)
@@ -83,7 +83,7 @@ extension LLMLocalSession {
                     let text = tokenizer.decode(tokens: lastTokens)
                     
                     Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-                    continuation.yield(text)
+                    continuation.yield(.intermediate(text))
                     
                     if schema.injectIntoContext {
                         Task { @MainActor in
@@ -99,7 +99,7 @@ extension LLMLocalSession {
             let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
             let lastTokens = Array(result.tokens.suffix(reaminingTokens))
             let text = tokenizer.decode(tokens: lastTokens)
-            continuation.yield(text)
+            continuation.yield(.intermediate(text))
             
             if schema.injectIntoContext {
                 Task { @MainActor in
@@ -117,6 +117,18 @@ extension LLMLocalSession {
             Prompt Tokens per second: \(result.promptTokensPerSecond, privacy: .public)
             Generation tokens per second: \(result.tokensPerSecond, privacy: .public)
             """
+        )
+        
+        continuation.yield(
+            .final(
+                LLMLocalGenerationResult(
+                    inputTokens: result.promptTokens,
+                    outputTokens: result.tokens,
+                    output: result.output,
+                    promptTime: result.promptTime,
+                    generateTime: result.generateTime
+                )
+            )
         )
         
         await MainActor.run {

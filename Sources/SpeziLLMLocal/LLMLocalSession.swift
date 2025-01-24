@@ -129,10 +129,30 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     
     /// Based on the input prompt, generate the output.
-    /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
+    /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output as `String`.
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
+        
+        async let generate: AsyncThrowingStream<LLMLocalGenerateState, Error> = generate()
+        
+        for try await state in try await generate {
+            guard case .intermediate(let stringPiece) = state else {
+                continue
+            }
+            continuation.yield(stringPiece)
+        }
+        continuation.finish()
+        return stream
+    }
+    
+    
+    /// Based on the input prompt, generate the output.
+    /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output as `LLMLocalGenerateState`.
+    @discardableResult
+    @_disfavoredOverload
+    public func generate() async throws -> AsyncThrowingStream<LLMLocalGenerateState, Error> {
+        let (stream, continuation) = AsyncThrowingStream.makeStream(of: LLMLocalGenerateState.self)
         
         task = Task(priority: platform.configuration.taskPriority) {
             if await state == .uninitialized {
@@ -167,5 +187,34 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     deinit {
         cancel()
+    }
+}
+
+extension LLMLocalSession {
+    /// Finishes the continuation with an error and sets the ``LLMSession/state`` to the respective error.
+    ///
+    /// - Parameters:
+    ///   - error: The error that occurred.
+    ///   - continuation: The `AsyncThrowingStream` that streams the generated output.
+    public func finishGenerationWithError<E: LLMError>(_ error: E, on continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation) async {
+        continuation.finish(throwing: error)
+        await MainActor.run {
+            self.state = .error(error: error)
+        }
+    }
+    
+    /// Checks for cancellation of the current `Task` and sets the `CancellationError` error on the continuation as well as the ``LLMSession/state``.
+    ///
+    /// - Parameters:
+    ///   - continuation: The `AsyncThrowingStream` that streams the generated output.
+    ///
+    /// - Returns: Boolean flag indicating if the `Task` has been cancelled, `true` if has been cancelled, `false` otherwise.
+    public func checkCancellation(on continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation) async -> Bool {
+        if Task.isCancelled {
+            await finishGenerationWithError(CancellationError(), on: continuation)
+            return true
+        }
+        
+        return false
     }
 }

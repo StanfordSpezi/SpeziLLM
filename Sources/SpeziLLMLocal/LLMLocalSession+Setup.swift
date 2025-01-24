@@ -26,7 +26,7 @@ extension LLMLocalSession {
     }
     
     // swiftlint:disable:next identifier_name
-    internal func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
+    internal func _setup(continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation?) async -> Bool {
 #if targetEnvironment(simulator)
         return await _mockSetup(continuation: continuation)
 #endif
