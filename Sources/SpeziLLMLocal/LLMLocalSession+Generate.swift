@@ -18,7 +18,7 @@ import SpeziLLM
 
 extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
-    internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    internal func _generate(continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
         // swiftlint:disable:next return_value_from_void_function
         return await _mockGenerate(continuation: continuation)
@@ -83,7 +83,7 @@ extension LLMLocalSession {
                             let text = modelContext.tokenizer.decode(tokens: lastTokens)
                             
                             Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-                            continuation.yield(text)
+                            continuation.yield(.intermediate(text))
                             
                             if schema.injectIntoContext {
                                 Task { @MainActor in
@@ -99,7 +99,7 @@ extension LLMLocalSession {
                 let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
                 let lastTokens = Array(result.tokens.suffix(reaminingTokens))
                 let text = modelContext.tokenizer.decode(tokens: lastTokens)
-                continuation.yield(text)
+                continuation.yield(.intermediate(text))
                 
                 if schema.injectIntoContext {
                     Task { @MainActor in
@@ -119,6 +119,18 @@ extension LLMLocalSession {
                 """
             )
             
+            continuation.yield(
+                .final(
+                    LLMLocalGenerationResult(
+                        inputTokens: result.inputText.tokens.asArray(Int.self),
+                        outputTokens: result.tokens,
+                        output: result.output,
+                        promptTime: result.promptTime,
+                        generateTime: result.generateTime
+                    )
+                )
+            )
+            
             await MainActor.run {
                 continuation.finish()
                 state = .ready
@@ -130,7 +142,7 @@ extension LLMLocalSession {
         }
     }
     
-    private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    private func _mockGenerate(continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
         let tokens = [
             "Mock ", "Message ", "from ", "SpeziLLM! ",
             "**Using SpeziLLMLocal only works on physical devices.**",
@@ -143,8 +155,20 @@ extension LLMLocalSession {
             guard await !checkCancellation(on: continuation) else {
                 return
             }
-            continuation.yield(token)
+            continuation.yield(.intermediate(token))
         }
+        
+        continuation.yield(
+            .final(
+                LLMLocalGenerationResult(
+                    inputTokens: [83, 112, 101, 122, 105],
+                    outputTokens: tokens.compactMap { Int($0.first?.asciiValue ?? 69) },
+                    output: String(tokens.joined()),
+                    promptTime: 1.337,
+                    generateTime: Double(tokens.count)
+                )
+            )
+        )
         
         continuation.finish()
         await MainActor.run {
