@@ -9,6 +9,7 @@
 import Foundation
 import Hub
 import MLXLLM
+import MLXLMCommon
 
 
 extension LLMLocalSession {
@@ -46,10 +47,10 @@ extension LLMLocalSession {
         }
         
         do {
-            let modelContainer = try await loadModelContainer(configuration: self.schema.configuration)
+            let modelContainer = try await LLMModelFactory.shared.loadContainer(configuration: self.schema.configuration)
             
-            let numParams = await modelContainer.perform { [] model, _ in
-                model.numParameters()
+            let numParams = await modelContainer.perform { modelContext in
+                modelContext.model.numParameters()
             }
             
             await MainActor.run {
