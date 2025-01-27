@@ -8,6 +8,7 @@
 
 import Foundation
 import MLXLLM
+import MLXLMCommon
 import SpeziChat
 import SpeziLLM
 
