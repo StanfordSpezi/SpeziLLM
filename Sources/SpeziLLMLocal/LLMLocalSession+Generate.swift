@@ -20,8 +20,7 @@ extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
-        // swiftlint:disable:next return_value_from_void_function
-        return await _mockGenerate(continuation: continuation)
+        return await _mockGenerate(continuation: continuation) // swiftlint:disable:this return_value_from_void_function
 #endif
         
         guard let modelContainer = await self.modelContainer else {
@@ -68,7 +67,8 @@ extension LLMLocalSession {
                 let result = try MLXLMCommon.generate(
                     input: modelInput,
                     parameters: parameters,
-                    context: modelContext) { tokens in
+                    context: modelContext
+                ) { tokens in
                         if Task.isCancelled {
                             return .stop
                         }
@@ -93,7 +93,7 @@ extension LLMLocalSession {
                         }
                         
                         return .more
-                    }
+                }
                 
                 // Yielding every Nth token may result in missing the final tokens.
                 let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
