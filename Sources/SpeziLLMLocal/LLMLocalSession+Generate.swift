@@ -20,10 +20,8 @@ extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
-        // swiftlint:disable:next return_value_from_void_function
-        return await _mockGenerate(continuation: continuation)
+        return await _mockGenerate(continuation: continuation) // swiftlint:disable:this return_value_from_void_function
 #endif
-        
         guard let modelContainer = await self.modelContainer else {
             Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
             await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
@@ -63,12 +61,12 @@ extension LLMLocalSession {
         )
         
         do {
-            // swiftlint:disable:next closure_body_length
             let result = try await modelContainer.perform { modelContext in
                 let result = try MLXLMCommon.generate(
                     input: modelInput,
                     parameters: parameters,
-                    context: modelContext) { tokens in
+                    context: modelContext
+                ) { tokens in
                         if Task.isCancelled {
                             return .stop
                         }
@@ -91,9 +89,9 @@ extension LLMLocalSession {
                                 }
                             }
                         }
-                        
+
                         return .more
-                    }
+                }
                 
                 // Yielding every Nth token may result in missing the final tokens.
                 let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
@@ -128,6 +126,100 @@ extension LLMLocalSession {
             await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
+    }
+    
+    private func prepareModelInput(modelContainer: ModelContainer) async -> LMInput? {
+        let messages = if await !self.customContext.isEmpty {
+            await self.customContext
+        } else {
+            await self.context.formattedChat
+        }
+        
+        return try? await modelContainer.perform { modelContext in
+            if let chatTemplate = self.schema.parameters.chatTemplate {
+                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTemplate)
+                return LMInput(text: .init(tokens: MLXArray(tokens)))
+            } else {
+                return try await modelContext.processor.prepare(input: .init(messages: messages))
+            }
+        }
+    }
+    
+    private func generateResponse(
+        modelContainer: ModelContainer,
+        modelInput: LMInput,
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) async {
+        let parameters = GenerateParameters(
+            temperature: schema.samplingParameters.temperature,
+            topP: schema.samplingParameters.topP,
+            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
+            repetitionContextSize: schema.samplingParameters.repetitionContextSize
+        )
+        
+        do {
+            let result = try await modelContainer.perform { modelContext in
+                try MLXLMCommon.generate(
+                    input: modelInput,
+                    parameters: parameters,
+                    context: modelContext,
+                    callback: { [weak self] tokens in
+                        self?.handleGeneratedTokens(
+                            tokens: tokens,
+                            modelContext: modelContext,
+                            continuation: continuation
+                        )
+                    }
+                )
+            }
+            
+            Self.logger.debug(
+                """
+                SpeziLLMLocal:
+                Prompt Tokens per second: \(result.promptTokensPerSecond, privacy: .public)
+                Generation tokens per second: \(result.tokensPerSecond, privacy: .public)
+                """
+            )
+            
+            await MainActor.run {
+                continuation.finish()
+                state = .ready
+            }
+        } catch {
+            Self.logger.error("SpeziLLMLocal: Generation ended with error: \(error)")
+            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
+        }
+    }
+    
+    private func handleGeneratedTokens(
+        tokens: [Int],
+        modelContext: ModelContext,
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) -> MLXLMCommon.GenerateCallback.Action {
+        if Task.isCancelled {
+            return .stop
+        }
+        
+        if tokens.count >= self.schema.parameters.maxOutputLength {
+            Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
+            return .stop
+        }
+        
+        if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+            let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
+            let text = modelContext.tokenizer.decode(tokens: lastTokens)
+            
+            Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
+            continuation.yield(text)
+            
+            if schema.injectIntoContext {
+                Task { @MainActor in
+                    context.append(assistantOutput: text)
+                }
+            }
+        }
+        
+        return .more
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
