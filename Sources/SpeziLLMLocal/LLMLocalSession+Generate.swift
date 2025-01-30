@@ -20,7 +20,7 @@ extension LLMLocalSession {
     // swiftlint:disable:next identifier_name function_body_length cyclomatic_complexity
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
-        return await _mockGenerate(continuation: continuation) // swiftlint:disable:this return_value_from_void_function
+       await _mockGenerate(continuation: continuation)
 #endif
         
         guard let modelContainer = await self.modelContainer else {
