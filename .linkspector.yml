@@ -5,6 +5,10 @@
 #
 # SPDX-License-Identifier: MIT
 # 
-
+dirs:
+  - .
+useGitIgnore: true
 ignorePatterns:
   - pattern: '^https://platform.openai.com/docs/guides/.*$' # Causes false positives
+  - pattern: '^doc:.*$'
+  - pattern: '^http://localhost.*$'
