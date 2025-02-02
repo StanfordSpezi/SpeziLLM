@@ -17,7 +17,7 @@ import SpeziLLM
 
 
 extension LLMLocalSession {
-    // swiftlint:disable:next identifier_name function_body_length cyclomatic_complexity
+    // swiftlint:disable:next identifier_name function_body_length
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
         await _mockGenerate(continuation: continuation)
@@ -36,14 +36,7 @@ extension LLMLocalSession {
             await self.context.formattedChat
         }
         
-        guard let modelInput: LMInput = try? await modelContainer.perform({ modelContext in
-            if let chatTempalte = self.schema.parameters.chatTemplate {
-                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
-                return LMInput(text: .init(tokens: MLXArray(tokens)))
-            } else {
-                return try await modelContext.processor.prepare(input: .init(messages: messages))
-            }
-        }) else {
+        guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
             Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
             await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
             return
@@ -63,37 +56,13 @@ extension LLMLocalSession {
         )
         
         do {
-            // swiftlint:disable:next closure_body_length
             let result = try await modelContainer.perform { modelContext in
                 let result = try MLXLMCommon.generate(
                     input: modelInput,
                     parameters: parameters,
                     context: modelContext
                 ) { tokens in
-                        if Task.isCancelled {
-                            return .stop
-                        }
-                        
-                        if tokens.count >= self.schema.parameters.maxOutputLength {
-                            Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
-                            return .stop
-                        }
-                        
-                        if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
-                            let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
-                            let text = modelContext.tokenizer.decode(tokens: lastTokens)
-                            
-                            Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-                            continuation.yield(text)
-                            
-                            if schema.injectIntoContext {
-                                Task { @MainActor in
-                                    context.append(assistantOutput: text)
-                                }
-                            }
-                        }
-                        
-                        return .more
+                    processTokens(tokens, modelContext: modelContext, continuation: continuation)
                 }
                 
                 // Yielding every Nth token may result in missing the final tokens.
@@ -125,10 +94,52 @@ extension LLMLocalSession {
                 state = .ready
             }
         } catch {
-            Self.logger.error("SpeziLLMLocal: Generation endet with error: \(error)")
+            Self.logger.error("SpeziLLMLocal: Generation ended with error: \(error)")
             await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
             return
         }
+    }
+    
+    private func prepareModelInput(messages: [[String: String]], modelContainer: ModelContainer) async throws -> LMInput {
+        try await modelContainer.perform { modelContext in
+            if let chatTemplate = self.schema.parameters.chatTemplate {
+                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTemplate)
+                return LMInput(text: .init(tokens: MLXArray(tokens)))
+            } else {
+                return try await modelContext.processor.prepare(input: .init(messages: messages))
+            }
+        }
+    }
+    
+    private func processTokens(
+        _ tokens: [Int],
+        modelContext: ModelContext,
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) -> GenerateDisposition {
+        if Task.isCancelled {
+            return .stop
+        }
+        
+        if tokens.count >= self.schema.parameters.maxOutputLength {
+            Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
+            return .stop
+        }
+        
+        if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+            let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
+            let text = modelContext.tokenizer.decode(tokens: lastTokens)
+            
+            Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
+            continuation.yield(text)
+            
+            if schema.injectIntoContext {
+                Task { @MainActor in
+                    context.append(assistantOutput: text)
+                }
+            }
+        }
+        
+        return .more
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
