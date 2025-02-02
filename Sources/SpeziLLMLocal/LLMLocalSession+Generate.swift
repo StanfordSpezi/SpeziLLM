@@ -17,6 +17,15 @@ import SpeziLLM
 
 
 extension LLMLocalSession {
+    private var generationParameters: GenerateParameters {
+        .init(
+            temperature: schema.samplingParameters.temperature,
+            topP: schema.samplingParameters.topP,
+            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
+            repetitionContextSize: schema.samplingParameters.repetitionContextSize
+        )
+    }
+    
     // swiftlint:disable:next identifier_name
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
@@ -25,8 +34,7 @@ extension LLMLocalSession {
 #endif
         
         guard let modelContainer = await self.modelContainer else {
-            Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
-            await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+            await handleError("Failed to load `modelContainer`", error: .modelNotFound, continuation: continuation)
             return
         }
         
@@ -37,8 +45,7 @@ extension LLMLocalSession {
         }
         
         guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
-            Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
-            await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
+            await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuation)
             return
         }
         
@@ -48,24 +55,16 @@ extension LLMLocalSession {
             return
         }
         
-        let parameters: GenerateParameters = .init(
-            temperature: schema.samplingParameters.temperature,
-            topP: schema.samplingParameters.topP,
-            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
-            repetitionContextSize: schema.samplingParameters.repetitionContextSize
-        )
-        
         do {
             let result = try await modelContainer.perform { modelContext in
                 let result = try MLXLMCommon.generate(
                     input: modelInput,
-                    parameters: parameters,
+                    parameters: generationParameters,
                     context: modelContext
                 ) { tokens in
                     processTokens(tokens, modelContext: modelContext, continuation: continuation)
                 }
                 
-                // Yielding every Nth token may result in missing the final tokens.
                 processRemainingTokens(result: result, modelContext: modelContext, continuation: continuation)
                 return result
             }
@@ -83,8 +82,7 @@ extension LLMLocalSession {
                 state = .ready
             }
         } catch {
-            Self.logger.error("SpeziLLMLocal: Generation ended with error: \(error)")
-            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
+            await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuation)
             return
         }
     }
@@ -148,6 +146,11 @@ extension LLMLocalSession {
                 context.completeAssistantStreaming()
             }
         }
+    }
+    
+    private func handleError(_ message: String, error: LLMLocalError, continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+        Self.logger.error("SpeziLLMLocal: \(message)")
+        await finishGenerationWithError(error, on: continuation)
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
