@@ -42,6 +42,8 @@ public enum LLMLocalModel {
     case qwen205b4bit
     /// OpenELM, 270 Million Parameters, Instruction-Tuned
     case openelm270m4bit
+    /// DeepSeek R1 Distill Qwen 1.5 Billion Parameters
+    case deepseek_r1_distill_qwen_1_5b_8bit
     /// Set the Huggingface ID of the model. e.g. "\<USER\>/\<MODEL\>"
     case custom(id: String)
     
@@ -80,6 +82,8 @@ public enum LLMLocalModel {
             return "mlx-community/Qwen1.5-0.5B-Chat-4bit"
         case .openelm270m4bit:
             return "mlx-community/OpenELM-270M-Instruct"
+        case .deepseek_r1_distill_qwen_1_5b_8bit:
+            return "mlx-community/DeepSeek-R1-Distill-Qwen-1.5B-8bit"
         case .custom(let id):
             return id
         }
