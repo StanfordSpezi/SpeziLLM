@@ -17,7 +17,7 @@ import SpeziLLM
 
 
 extension LLMLocalSession {
-    // swiftlint:disable:next identifier_name function_body_length
+    // swiftlint:disable:next identifier_name
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
         await _mockGenerate(continuation: continuation)
@@ -66,18 +66,7 @@ extension LLMLocalSession {
                 }
                 
                 // Yielding every Nth token may result in missing the final tokens.
-                let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
-                let lastTokens = Array(result.tokens.suffix(reaminingTokens))
-                let text = modelContext.tokenizer.decode(tokens: lastTokens)
-                continuation.yield(text)
-                
-                if schema.injectIntoContext {
-                    Task { @MainActor in
-                        context.append(assistantOutput: text)
-                        context.completeAssistantStreaming()
-                    }
-                }
-                
+                processRemainingTokens(result: result, modelContext: modelContext, continuation: continuation)
                 return result
             }
             
@@ -140,6 +129,25 @@ extension LLMLocalSession {
         }
         
         return .more
+    }
+    
+    private func processRemainingTokens(
+        result: GenerateResult,
+        modelContext: ModelContext,
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) {
+        // Yielding every Nth token may result in missing the final tokens.
+        let remainingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
+        let lastTokens = Array(result.tokens.suffix(remainingTokens))
+        let text = modelContext.tokenizer.decode(tokens: lastTokens)
+        continuation.yield(text)
+        
+        if schema.injectIntoContext {
+            Task { @MainActor in
+                context.append(assistantOutput: text)
+                context.completeAssistantStreaming()
+            }
+        }
     }
     
     private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
