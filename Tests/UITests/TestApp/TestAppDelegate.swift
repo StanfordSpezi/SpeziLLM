@@ -49,6 +49,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
                 LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
                 LLMOpenAIPlatform()
+                LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
             }
         }
     }
