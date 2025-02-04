@@ -116,6 +116,8 @@ struct LLMLocalDemoView: View {
 }
 ```
 
+To enhance performance and reduce resource usage, you can call `LLMlocalSchema/offload()`, which offloads the model and frees up system resources. Subsequently, invoking `LLMlocalSchema/setup()` or `LLMlocalSchema/generate()` will reload the model into memory as needed.
+
 > [!NOTE]  
 > To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 

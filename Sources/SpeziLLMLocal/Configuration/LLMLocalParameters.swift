@@ -33,8 +33,7 @@ public struct LLMLocalParameters: Sendable {
     let chatTemplate: String?
     
     
-    /// Creates the ``LLMLocalParameters`` which wrap the underlying llama.cpp `llama_model_params` C struct.
-    /// Is passed to the underlying llama.cpp model in order to configure the LLM.
+    /// Creates the ``LLMLocalParameters`` which are passed to MLX in order to configure the LLM.
     ///
     /// - Parameters:
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular default chat-based LLM system prompt.
