@@ -55,15 +55,16 @@ struct LLMLocalDownloadApp: View {
         }
     }
 }
+```
 
+```swift
 struct LLMLocalOnboardingDownloadView: View {
     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
 
     var body: some View {
         LLMLocalDownloadView(
-            downloadDescription: "The Llama2 7B model will be downloaded",
-            llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, // Download the Llama2 7B model
-            llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") // Store the downloaded LLM in the caches directory
+            model: .llama3_8B_4bit,
+            downloadDescription: "The Llama3 8B model will be downloaded"
         ) {
             onboardingNavigationPath.nextStep()
         }
