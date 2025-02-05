@@ -82,6 +82,37 @@ class TestAppDelegate: SpeziAppDelegate {
 }
 ```
 
+[SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) can be used to download an LLM from [HuggingFace](https://huggingface.co/) and save it on the device for execution. The `LLMLocalDownloadView` provides an out-of-the-box onboarding view for downloading models locally.
+
+```
+struct LLMLocalOnboardingDownloadView: View {
+    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+
+    var body: some View {
+        LLMLocalDownloadView(
+            model: .llama3_8B_4bit,
+            downloadDescription: "The Llama3 8B model will be downloaded",
+        ) {
+            onboardingNavigationPath.nextStep()
+        }
+    }
+}
+```
+
+This view can then be included in your onboarding process using [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation).
+
+```
+struct LLMLocalDownloadApp: View {
+    @State private var path = NavigationPath()
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            LLMLocalOnboardingDownloadView()
+        }
+    }
+}
+```
+
 #### Usage
 
 The code example below showcases the interaction with local LLMs through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
@@ -130,7 +161,7 @@ struct LLMLocalChatView: View {
 ```
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+> To learn more about the usage of SpeziLLMLocal, please refer to the comprehensive [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
 ### Spezi LLM Open AI
 
