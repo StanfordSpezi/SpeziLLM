@@ -84,7 +84,7 @@ class TestAppDelegate: SpeziAppDelegate {
 
 [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) can be used to download an LLM from [HuggingFace](https://huggingface.co/) and save it on the device for execution. The `LLMLocalDownloadView` provides an out-of-the-box onboarding view for downloading models locally.
 
-```
+```swift
 struct LLMLocalOnboardingDownloadView: View {
     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
 
@@ -101,7 +101,7 @@ struct LLMLocalOnboardingDownloadView: View {
 
 This view can then be included in your onboarding process using [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation).
 
-```
+```swift
 struct LLMLocalDownloadApp: View {
     @State private var path = NavigationPath()
 
