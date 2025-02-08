@@ -86,32 +86,20 @@ class TestAppDelegate: SpeziAppDelegate {
 
 ```swift
 struct LLMLocalOnboardingDownloadView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
-
     var body: some View {
         LLMLocalDownloadView(
             model: .llama3_8B_4bit,
             downloadDescription: "The Llama3 8B model will be downloaded",
         ) {
-            // Performed your action after the model is downloaded and the user pressed the next button.
+            // Action to perform after the model is downloaded and the user presses the next button.
         }
     }
 }
 ```
 
-This view can then be included in your onboarding process using [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation).
+> [!TIP]
+> The `LLMLocalDownloadView` view can be included in your onboarding process using SpeziOnboarding as [demonstrated in this example](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillmlocaldownload/llmlocaldownloadview#overview).
 
-```swift
-struct LLMLocalDownloadApp: View {
-    @State private var path = NavigationPath()
-
-    var body: some View {
-        NavigationStack(path: $path) {
-            LLMLocalOnboardingDownloadView()
-        }
-    }
-}
-```
 
 #### Usage
 
