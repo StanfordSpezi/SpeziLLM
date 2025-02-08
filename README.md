@@ -93,7 +93,7 @@ struct LLMLocalOnboardingDownloadView: View {
             model: .llama3_8B_4bit,
             downloadDescription: "The Llama3 8B model will be downloaded",
         ) {
-            onboardingNavigationPath.nextStep()
+            // Performed your action after the model is downloaded and the user pressed the next button.
         }
     }
 }
