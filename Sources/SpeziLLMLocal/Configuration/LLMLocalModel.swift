@@ -44,6 +44,8 @@ public enum LLMLocalModel {
     case gemma_2_2b_it_4bit
     /// Qwen 1.5, 0.5 Billion Parameters, Chat-Tuned, 4-bit Version
     case qwen205b4bit
+    /// Qwen 2, 7 Billion Parameters, 4-bit version
+    case qwen2_7b_4bit
     /// OpenELM, 270 Million Parameters, Instruction-Tuned
     case openelm270m4bit
     /// DeepSeek R1 Distill Qwen 1.5 Billion Parameters, 8-bit Version
@@ -92,6 +94,8 @@ public enum LLMLocalModel {
             return "mlx-community/gemma-2-2b-it-4bit"
         case .qwen205b4bit:
             return "mlx-community/Qwen1.5-0.5B-Chat-4bit"
+        case .qwen2_7b_4bit:
+            return "mlx-community/Qwen2-7B-4bit"
         case .openelm270m4bit:
             return "mlx-community/OpenELM-270M-Instruct"
         case .deepseek_r1_distill_qwen_1_5b_8bit:
