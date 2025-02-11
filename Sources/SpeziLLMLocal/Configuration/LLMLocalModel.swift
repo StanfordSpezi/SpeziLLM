@@ -18,6 +18,10 @@ public enum LLMLocalModel {
     case llama3_2_1B_4bit
     /// Llama 3.2, 3 Billion Parameters, Instruction-Tuned, 4-bit Version
     case llama3_2_3B_4bit
+    /// Llama 3.1 Aloe, Beta 8 Billion Parameters, 4-bit Version
+    case llama3_1_aloe_8B_4bit
+    /// Llama 3.0 Med42, 8 Billion Parameters, 4-bit Version
+    case llama3_med42_8B_4bit
     /// Mistral Nemo, Instruction-Tuned, Model 2407, 4-bit Version
     case mistralNeMo4bit
     /// SmolLM, 135 Million Parameters, Instruction-Tuned, 4-bit Version
@@ -62,6 +66,10 @@ public enum LLMLocalModel {
             return "mlx-community/Llama-3.2-1B-Instruct-4bit"
         case .llama3_2_3B_4bit:
             return "mlx-community/Llama-3.2-3B-Instruct-4bit"
+        case .llama3_1_aloe_8B_4bit:
+            return "mlx-community/Llama3.1-Aloe-Beta-8B"
+        case .llama3_med42_8B_4bit:
+            return "mlx-community/Llama3-Med42-8B"
         case .mistralNeMo4bit:
             return "mlx-community/Mistral-Nemo-Instruct-2407-4bit"
         case .smolLM_135M_4bit:
