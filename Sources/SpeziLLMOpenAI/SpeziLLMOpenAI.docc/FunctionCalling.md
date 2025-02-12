@@ -57,7 +57,7 @@ struct WeatherFunction: LLMFunction {
 struct LLMOpenAIChatTestView: View {
     private let schema = LLMOpenAISchema(
         parameters: .init(
-            modelType: .gpt4_turbo,
+            modelType: .gpt4_o,
             systemPrompt: "You're a helpful assistant that answers questions from users."
         )
     ) {

@@ -45,7 +45,7 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 
 Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
 - [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base infrastructure of LLM execution in the Spezi ecosystem.
-- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs like [Meta's Llama2 models](https://ai.meta.com/llama/).
+- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs from Hugging Face like [Meta's Llama2](https://ai.meta.com/llama/), [Microsoft's Phi](https://azure.microsoft.com/en-us/products/phi), [Google's Gemma](https://ai.google.dev/gemma), or [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1), among others. See [LLMLocalModel](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillmlocal/llmlocalmodel) for a list of models tested with SpeziLLM.
 - [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
 - [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with OpenAI's GPT models via using OpenAI's API service.
 - [SpeziLLMFog](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmfog): Discover and dispatch LLM inference jobs to Fog node resources within the local network.
@@ -82,6 +82,25 @@ class TestAppDelegate: SpeziAppDelegate {
 }
 ```
 
+[SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) can be used to download an LLM from [HuggingFace](https://huggingface.co/) and save it on the device for execution. The `LLMLocalDownloadView` provides an out-of-the-box onboarding view for downloading models locally.
+
+```swift
+struct LLMLocalOnboardingDownloadView: View {
+    var body: some View {
+        LLMLocalDownloadView(
+            model: .llama3_8B_4bit,
+            downloadDescription: "The Llama3 8B model will be downloaded",
+        ) {
+            // Action to perform after the model is downloaded and the user presses the next button.
+        }
+    }
+}
+```
+
+> [!TIP]
+> The `LLMLocalDownloadView` view can be included in your onboarding process using SpeziOnboarding as [demonstrated in this example](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillmlocaldownload/llmlocaldownloadview#overview).
+
+
 #### Usage
 
 The code example below showcases the interaction with local LLMs through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
@@ -100,7 +119,6 @@ struct LLMLocalDemoView: View {
                 let llmSession: LLMLocalSession = runner(
                     with: LLMLocalSchema(
                         model: .llama3_8B_4bit,
-                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
                     )
                 )
 
@@ -116,8 +134,22 @@ struct LLMLocalDemoView: View {
 }
 ```
 
+The [`LLMChatViewSchema`](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillm/llmchatviewschema) can be used to easily create a conversational chat interface for your chatbot application with a local LLM.
+
+```swift
+struct LLMLocalChatView: View {
+    var body: some View {
+        LLMChatViewSchema(
+            with: LLMLocalSchema(
+                model: .llama3_8B_4bit
+            )
+        )
+    }
+}
+```
+
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+> To learn more about the usage of SpeziLLMLocal, please refer to the comprehensive [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
 ### Spezi LLM Open AI
 
@@ -171,7 +203,7 @@ struct LLMOpenAIDemoView: View {
                 let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
-                            modelType: .gpt3_5Turbo,
+                            modelType: .gpt4_o,
                             systemPrompt: "You're a helpful assistant that answers questions from users.",
                             overwritingToken: "abc123"
                         )

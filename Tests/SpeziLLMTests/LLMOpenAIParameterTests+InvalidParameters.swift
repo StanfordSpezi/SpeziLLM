@@ -44,7 +44,7 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: .gpt4_o)
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
