@@ -203,7 +203,7 @@ struct LLMOpenAIDemoView: View {
                 let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
-                            modelType: .gpt4_Turbo,
+                            modelType: .gpt4_o,
                             systemPrompt: "You're a helpful assistant that answers questions from users.",
                             overwritingToken: "abc123"
                         )
