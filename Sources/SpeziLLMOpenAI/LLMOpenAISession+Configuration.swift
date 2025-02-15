@@ -9,6 +9,7 @@
 import OpenAPIRuntime
 import SpeziLLM
 
+
 extension LLMOpenAISession {
     /// Map the ``LLMOpenAISession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
     private var openAIContext: [Components.Schemas.ChatCompletionRequestMessage] {
@@ -20,7 +21,7 @@ extension LLMOpenAISession {
     }
 
     /// Provides the ``LLMOpenAISession/context``, the `` LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``, as well as the declared ``LLMFunction``s
-    /// in an OpenAI `ChatQuery` representation used for querying the OpenAI API.
+    /// in an OpenAI `Operations.createChatCompletion.Input` representation used for querying the OpenAI API.
     var openAIChatQuery: Operations.createChatCompletion.Input {
         get async {
             let functions: [Components.Schemas.ChatCompletionTool] = schema.functions.values.compactMap { function in

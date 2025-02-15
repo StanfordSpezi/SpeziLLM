@@ -29,16 +29,16 @@ let package = Package(
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
         .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "1.18.1"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
-        .package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.0.2"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.1.1"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.1")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.3.1"),
-        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.6.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0")
+        //.package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.1.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.2.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.2.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.2")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.7.0"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.2")
     ],
     targets: [
         .target(
@@ -77,13 +77,13 @@ let package = Package(
             name: "SpeziLLMOpenAI",
             dependencies: [
                 .target(name: "SpeziLLM"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
-                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
@@ -93,8 +93,13 @@ let package = Package(
             name: "SpeziLLMFog",
             dependencies: [
                 .target(name: "SpeziLLM"),
-                .product(name: "Spezi", package: "Spezi"),
-                .product(name: "OpenAI", package: "OpenAI")
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
+                .product(name: "Spezi", package: "Spezi")
+                //.product(name: "OpenAI", package: "OpenAI")
+            ],
+            plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]
         ),
         .testTarget(

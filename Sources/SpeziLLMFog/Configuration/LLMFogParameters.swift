@@ -12,6 +12,7 @@ import SpeziLLM
 
 /// Represents the parameters of Fog LLMs.
 public struct LLMFogParameters: Sendable {
+    // todo: what to do with that? has been the type of the modelType parameter in the init
     public enum FogModel: String, Sendable {
         /// The Gemma model from Google DeepMind in its 7B variation.
         case gemma7B = "gemma"
@@ -35,7 +36,7 @@ public struct LLMFogParameters: Sendable {
     
     
     /// The to-be-used Fog LLM model.
-    let modelType: FogModel
+    let modelType: LLMFogRequestType.modelPayload
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
     /// Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
@@ -49,7 +50,7 @@ public struct LLMFogParameters: Sendable {
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
     ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     public init(
-        modelType: FogModel,
+        modelType: LLMFogRequestType.modelPayload,
         systemPrompt: String? = nil,
         authToken: @Sendable @escaping () async -> String?
     ) {
@@ -64,7 +65,7 @@ public struct LLMFogParameters: Sendable {
     ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     @_disfavoredOverload
     public init(
-        modelType: FogModel,
+        modelType: LLMFogRequestType.modelPayload,
         systemPrompts: [String] = [],
         authToken: @Sendable @escaping () async -> String?
     ) {

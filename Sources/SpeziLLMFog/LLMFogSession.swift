@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import class OpenAI.OpenAI
+import OpenAPIRuntime
+import OpenAPIURLSession
 import os
 import SpeziChat
 import SpeziLLM
@@ -75,24 +76,25 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     /// Ensuring thread-safe access to the `LLMFogSession/task`.
     @ObservationIgnored private var lock = NSLock()
     /// The wrapped client instance communicating with the Fog LLM
-    @ObservationIgnored var wrappedModel: OpenAI?
+    @ObservationIgnored var wrappedClient: Client?
     /// Discovered fog node advertising the LLM inference service
     @ObservationIgnored var discoveredServiceAddress: String?
-    
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
-    
-    
-    var model: OpenAI {
-        guard let model = wrappedModel else {
+
+
+    // TODO: Rename
+    var chatGPTClient: Client {
+        guard let chatGPTClient = wrappedClient else {
             preconditionFailure("""
-            SpeziLLMFog: Illegal Access - Tried to access the wrapped Fog LLM model of `LLMFogSession` before being initialized.
+            SpeziLLMFog: Illegal Access - Tried to access the wrapped Fog LLM client of `LLMFogSession` before being initialized.
             Ensure that the `LLMFogPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
-        return model
+        return chatGPTClient
     }
-    
+
     
     /// Creates an instance of a ``LLMFogSession`` responsible for LLM inference.
     /// Only the ``LLMFogPlatform`` should create an instance of ``LLMFogSession``.
@@ -133,10 +135,16 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
                   await !checkCancellation(on: continuation) else {
                 return
             }
-            
+
+            // TODO: Fix for openapi integration
             // Get fresh auth token
-            wrappedModel?.configuration.token = await schema.parameters.authToken()
-            
+            guard let authToken = await schema.parameters.authToken() else {
+                // todo: proper error handelling
+                preconditionFailure("Couldn't get new auth token")
+            }
+            // todo: probably need to recreate the wrapped client here as we dont have access to the middleware!
+            //wrappedClient.middlewares = [AuthMiddleware(APIKey: authToken)]
+
             // Execute the inference
             await _generate(continuation: continuation)
         }
@@ -152,7 +160,7 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
         continuation: AsyncThrowingStream<String, Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
         // Setup the model, if not already done
-        if wrappedModel == nil {
+        if wrappedClient == nil {
             guard await _setup(continuation: continuation) else {
                 return false
             }

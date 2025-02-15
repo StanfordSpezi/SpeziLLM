@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import OpenAI
+import OpenAPIRuntime
 
 
 /// Represents the model-specific parameters of Fog LLMs.
 public struct LLMFogModelParameters: Sendable {
     /// The format for model responses.
-    let responseFormat: ChatQuery.ResponseFormat?
+    let responseFormat: LLMFogRequestType.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
     let temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.
@@ -42,7 +42,7 @@ public struct LLMFogModelParameters: Sendable {
     ///   - presencePenalty: Adjusts new topic exploration (-2.0 to 2.0); higher values encourage novelty.
     ///   - frequencyPenalty: Controls repetition (-2.0 to 2.0); higher values reduce likelihood of repeating content.
     public init(
-        responseFormat: ChatQuery.ResponseFormat? = nil,
+        responseFormat: LLMFogRequestType.response_formatPayload? = nil,
         temperature: Double? = nil,
         topP: Double? = nil,
         stopSequence: [String] = [],
@@ -61,6 +61,3 @@ public struct LLMFogModelParameters: Sendable {
         self.frequencyPenalty = frequencyPenalty
     }
 }
-
-
-extension ChatQuery.ResponseFormat: @unchecked @retroactive Sendable {}

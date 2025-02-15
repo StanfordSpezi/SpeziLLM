@@ -81,11 +81,13 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
     /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
     @ObservationIgnored private var lock = NSLock()
-    
-    @MainActor public var state: LLMState = .uninitialized
-    @MainActor public var context: LLMContext = []
+    /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored var wrappedClient: Client?
 
+    @MainActor public var state: LLMState = .uninitialized
+    @MainActor public var context: LLMContext = []
+
+    // TODO: Rename
     var chatGPTClient: Client {
         guard let chatGPTClient = wrappedClient else {
             preconditionFailure("""

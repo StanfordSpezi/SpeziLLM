@@ -8,7 +8,8 @@
 
 import Foundation
 import Network
-import OpenAI
+import OpenAPIRuntime
+import OpenAPIURLSession
 
 
 extension LLMFogSession {
@@ -63,18 +64,45 @@ extension LLMFogSession {
             return false
         }
         
-        self.wrappedModel = OpenAI(
-            configuration: .init(
-                token: await schema.parameters.authToken(),
-                host: fogServiceAddress,
-                port: (caCertificate != nil) ? 443 : 80,
-                scheme: (caCertificate != nil) ? "https" : "http",
-                timeoutInterval: platform.configuration.timeout,
-                caCertificate: caCertificate,
-                expectedHost: platform.configuration.host
+//        self.wrappedModel = OpenAI(
+//            configuration: .init(
+//                token: await schema.parameters.authToken(),
+//                host: fogServiceAddress,
+//                port: (caCertificate != nil) ? 443 : 80,
+//                scheme: (caCertificate != nil) ? "https" : "http",
+//                timeoutInterval: platform.configuration.timeout,
+//                caCertificate: caCertificate,
+//                expectedHost: platform.configuration.host
+//            )
+//        )
+
+        // Initialize the OpenAI model
+        do {
+            let urlString = """
+            \((caCertificate != nil) ? "https" : "http")://\(fogServiceAddress):\((caCertificate != nil) ? 443 : 80)
+            """
+            guard let url = URL(string: urlString) else {
+                preconditionFailure("couldn;t create URL")  // todo
+            }
+            guard let authToken = await schema.parameters.authToken() else {
+                preconditionFailure("couldn;t get auth token")  // todo
+            }
+
+
+            // TODO: Map this properly to OpenAPI client with the ca cert and expected host and timeout (also, must url include a /v1?)
+            wrappedClient = Client(
+                serverURL: url,
+                transport: URLSessionTransport(),
+                middlewares: [AuthMiddleware(APIKey: authToken)]
             )
-        )
-        
+        } catch {   // todo: we dont need this catch anymore?
+            Self.logger.error("""
+            SpeziLLMFog: Couldn't create Fog client with the token present in the Spezi secure storage.
+            \(error.localizedDescription)
+            """)
+            return false
+        }
+
         await MainActor.run {
             self.state = .ready
         }

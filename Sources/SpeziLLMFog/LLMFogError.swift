@@ -109,3 +109,27 @@ public enum LLMFogError: LLMError {
         }
     }
 }
+
+
+// Reference: https://platform.openai.com/docs/guides/error-codes/api-errors
+extension LLMFogSession {
+    func handleErrorCode(_ statusCode: Int) -> LLMFogError {
+        switch statusCode {
+        case 401:
+            LLMFogSession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
+            return .invalidAPIToken
+        case 403:
+            LLMFogSession.logger.error("SpeziLLMOpenAI: Model access check - Country, region, or territory not supported")
+            return .invalidAPIToken
+        case 500:
+            LLMFogSession.logger.error("SpeziLLMOpenAI: The server had an error while processing your request")
+            return .generationError
+        case 503:
+            LLMFogSession.logger.error("SpeziLLMOpenAI: The engine is currently overloaded, please try again later")
+            return .generationError
+        default:
+            LLMFogSession.logger.error("SpeziLLMOpenAI: Received unknown return code from OpenAI")
+            return .generationError
+        }
+    }
+}

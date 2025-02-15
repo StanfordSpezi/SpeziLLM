@@ -10,6 +10,7 @@ import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession
 
+
 extension LLMOpenAISession {
     /// Initialize the OpenAI OpenAPI client
     ///
