@@ -48,7 +48,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
                 self.state = .loading
             }
             try? await Task.sleep(for: .seconds(1))
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             
@@ -60,7 +60,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
             let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
             for token in tokens {
                 try? await Task.sleep(for: .milliseconds(500))
-                guard await !checkCancellation(on: continuation) else {
+                if await checkCancellation(on: continuation) {
                     return
                 }
                 await injectAndYield(token, on: continuation)

@@ -140,7 +140,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
                 }
             }
             
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             

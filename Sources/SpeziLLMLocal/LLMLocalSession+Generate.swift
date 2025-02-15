@@ -51,7 +51,7 @@ extension LLMLocalSession {
         
         MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
-        guard await !checkCancellation(on: continuation) else {
+        if await checkCancellation(on: continuation) {
             return
         }
         
@@ -163,7 +163,7 @@ extension LLMLocalSession {
         
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             continuation.yield(token)
