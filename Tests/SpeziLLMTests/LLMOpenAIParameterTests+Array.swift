@@ -56,7 +56,7 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .init(value1: "GPT 4 Turbo", value2: .gpt_hyphen_4_hyphen_turbo))
+        parameters: .init(modelType: .init(value1: "GPT 4 Turbo", value2: .gpt_hyphen_4_hyphen_turbo))  // todo: we should upgrade to gpt-4o here!
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }

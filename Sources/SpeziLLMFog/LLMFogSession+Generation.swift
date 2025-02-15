@@ -65,7 +65,7 @@ extension LLMFogSession {
                     continue
                 }
 
-                guard await !checkCancellation(on: continuation) else {
+                if await checkCancellation(on: continuation) {
                     Self.logger.debug("SpeziLLMFog: LLM inference cancelled because of Task cancellation.")
                     return
                 }

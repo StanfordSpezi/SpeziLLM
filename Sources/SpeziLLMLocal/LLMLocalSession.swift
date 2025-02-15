@@ -10,6 +10,7 @@
 import Foundation
 import MLX
 import MLXLLM
+import MLXLMCommon
 import MLXRandom
 import os
 import SpeziChat
@@ -83,7 +84,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
-    @MainActor public var modelConfiguration: ModelConfiguration?
+    @MainActor public var modelConfiguration: ModelRegistry?
     @MainActor public var modelContainer: ModelContainer?
     
     
@@ -131,7 +132,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
                 }
             }
             
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             

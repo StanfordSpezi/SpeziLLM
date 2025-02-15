@@ -69,7 +69,7 @@ extension LLMOpenAISession {
                         continue
                     }
                     
-                    guard await !checkCancellation(on: continuation) else {
+                    if await checkCancellation(on: continuation) {
                         Self.logger.debug("SpeziLLMOpenAI: LLM inference cancelled because of Task cancellation.")
                         return
                     }
@@ -154,7 +154,7 @@ extension LLMOpenAISession {
                                 // Errors thrown by the functions are surfaced to the user as an LLM generation error
                                 functionCallResponse = try await function.execute()
                             } catch is CancellationError {
-                                guard await !self.checkCancellation(on: continuation) else {
+                                if await self.checkCancellation(on: continuation) {
                                     Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
                                     throw CancellationError()
                                 }
