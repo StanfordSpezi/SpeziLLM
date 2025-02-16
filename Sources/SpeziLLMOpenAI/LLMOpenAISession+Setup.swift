@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 
@@ -52,7 +53,11 @@ extension LLMOpenAISession {
             do {
                 wrappedClient = try Client(
                     serverURL: Servers.Server1.url(),
-                    transport: URLSessionTransport(),
+                    transport: {
+                        let session = URLSession.shared
+                        session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
+                        return URLSessionTransport(configuration: .init(session: session))
+                    }(),
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
                 )
             } catch {
@@ -101,22 +106,20 @@ extension LLMOpenAISession {
     /// - Returns: `true` if the model access test was successful, `false` otherwise.
     private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
         do {
-            guard let modelVal = schema.parameters.modelType.value2?.rawValue else {
-                Self.logger.error("No modelType present.")
+            if case let .undocumented(statusCode, _) = try await openAiClient
+                .retrieveModel(.init(path: .init(model: schema.parameters.modelType))) {
+                let llmError = handleErrorCode(statusCode)
+                await finishGenerationWithError(llmError, on: continuation)
                 return false
             }
-            if case let .undocumented(statusCode, _) = try await chatGPTClient
-                .retrieveModel(.init(path: .init(model: modelVal))) {
-                Self.logger.error("SpeziLLMOpenAI: Error in model access check. Status code: \(statusCode)")
-                return false
-            }
-            Self.logger.error("SpeziLLMOpenAI: Model access check completed")
+            Self.logger.debug("SpeziLLMOpenAI: Model access check completed")
             return true
-        } catch let error as URLError {
+        } catch let error as ClientError {
             Self.logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")
             await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
         } catch {
             Self.logger.error("SpeziLLMOpenAI: Model access check - unknown error occurred")
+            await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
         return false
     }

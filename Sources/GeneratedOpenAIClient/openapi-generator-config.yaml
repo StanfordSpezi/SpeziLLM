@@ -9,4 +9,4 @@
 generate:
   - types
   - client
-accessModifier: public
+accessModifier: package

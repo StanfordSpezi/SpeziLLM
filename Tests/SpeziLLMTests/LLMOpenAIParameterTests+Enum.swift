@@ -61,7 +61,7 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .init(value1: "GPT 4 Turbo", value2: .gpt_hyphen_4_hyphen_turbo)) // todo: upgrade gpt-4o
+        parameters: .init(modelType: .init(value1: "gpt-4o", value2: .gpt_hyphen_4o))
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }

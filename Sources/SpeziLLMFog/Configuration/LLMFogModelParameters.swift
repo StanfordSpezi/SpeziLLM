@@ -7,13 +7,31 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
 /// Represents the model-specific parameters of Fog LLMs.
 public struct LLMFogModelParameters: Sendable {
+    /// The response format of the LLM.
+    public enum ResponseFormat {
+        case text
+        case jsonObject
+
+
+        var openAiRepresentation: Components.Schemas.CreateChatCompletionRequest.response_formatPayload {
+            switch self {
+            case .text:
+                .ResponseFormatText(.init(_type: .text))
+            case .jsonObject:
+                .ResponseFormatJsonObject(.init(_type: .json_object))
+            }
+        }
+    }
+
+
     /// The format for model responses.
-    let responseFormat: LLMFogRequestType.response_formatPayload?
+    let responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
     let temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.
@@ -42,7 +60,7 @@ public struct LLMFogModelParameters: Sendable {
     ///   - presencePenalty: Adjusts new topic exploration (-2.0 to 2.0); higher values encourage novelty.
     ///   - frequencyPenalty: Controls repetition (-2.0 to 2.0); higher values reduce likelihood of repeating content.
     public init(
-        responseFormat: LLMFogRequestType.response_formatPayload? = nil,
+        responseFormat: ResponseFormat? = nil,
         temperature: Double? = nil,
         topP: Double? = nil,
         stopSequence: [String] = [],
@@ -51,7 +69,7 @@ public struct LLMFogModelParameters: Sendable {
         presencePenalty: Double? = nil,
         frequencyPenalty: Double? = nil
     ) {
-        self.responseFormat = responseFormat
+        self.responseFormat = responseFormat?.openAiRepresentation
         self.temperature = temperature
         self.topP = topP
         self.stopSequence = stopSequence

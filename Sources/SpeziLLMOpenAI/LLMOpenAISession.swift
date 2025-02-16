@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 import os
@@ -87,15 +88,14 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-    // TODO: Rename
-    var chatGPTClient: Client {
-        guard let chatGPTClient = wrappedClient else {
+    var openAiClient: Client {
+        guard let client = wrappedClient else {
             preconditionFailure("""
             SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
             Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
-        return chatGPTClient
+        return client
     }
     
     

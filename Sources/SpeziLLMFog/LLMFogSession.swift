@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 import os
@@ -83,16 +84,14 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-
-    // TODO: Rename
-    var chatGPTClient: Client {
-        guard let chatGPTClient = wrappedClient else {
+    var fogNodeClient: Client {
+        guard let client = wrappedClient else {
             preconditionFailure("""
             SpeziLLMFog: Illegal Access - Tried to access the wrapped Fog LLM client of `LLMFogSession` before being initialized.
             Ensure that the `LLMFogPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
-        return chatGPTClient
+        return client
     }
 
     
@@ -135,15 +134,6 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
                   await !checkCancellation(on: continuation) else {
                 return
             }
-
-            // TODO: Fix for openapi integration
-            // Get fresh auth token
-            guard let authToken = await schema.parameters.authToken() else {
-                // todo: proper error handelling
-                preconditionFailure("Couldn't get new auth token")
-            }
-            // todo: probably need to recreate the wrapped client here as we dont have access to the middleware!
-            //wrappedClient.middlewares = [AuthMiddleware(APIKey: authToken)]
 
             // Execute the inference
             await _generate(continuation: continuation)

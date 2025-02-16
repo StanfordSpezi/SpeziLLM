@@ -16,11 +16,11 @@ public enum LLMFogError: LLMError {
     /// Fog LLM user token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(URLError)
+    case connectivityIssues(Error)
     /// Error during generation
     case generationError
     /// Error during accessing the Fog LLM Model
-    case modelAccessError(Error)
+    case modelAccessError(String)
     /// Fog CA certificate is missing / not readable.
     case missingCaCertificate
     /// No mDNS services were found
@@ -28,8 +28,8 @@ public enum LLMFogError: LLMError {
     /// Network error during mDNS service discovery.
     case mDnsServiceDiscoveryNetworkError
     /// Unknown error
-    case unknownError(Error)
-    
+    case unknownError(String)
+
     
     public var errorDescription: String? {
         switch self {
@@ -111,25 +111,31 @@ public enum LLMFogError: LLMError {
 }
 
 
-// Reference: https://platform.openai.com/docs/guides/error-codes/api-errors
 extension LLMFogSession {
-    func handleErrorCode(_ statusCode: Int) -> LLMFogError {
+    private static let modelNotFoundRegex: Regex = {
+        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
+            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
+        }
+
+        return regex
+    }()
+
+
+    func handleErrorCode(statusCode: Int, message: String?) -> LLMFogError {
         switch statusCode {
-        case 401:
-            LLMFogSession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
+        case 401, 403:
+            Self.logger.error("SpeziLLMFog: LLM model could not be accessed as the passed authentication token is invalid.")
             return .invalidAPIToken
-        case 403:
-            LLMFogSession.logger.error("SpeziLLMOpenAI: Model access check - Country, region, or territory not supported")
-            return .invalidAPIToken
-        case 500:
-            LLMFogSession.logger.error("SpeziLLMOpenAI: The server had an error while processing your request")
-            return .generationError
-        case 503:
-            LLMFogSession.logger.error("SpeziLLMOpenAI: The engine is currently overloaded, please try again later")
-            return .generationError
+        case 404:
+            if let message,
+               message.contains(Self.modelNotFoundRegex) {
+                LLMFogSession.logger.error("SpeziLLMFog: Model could not be accessed, ensure to pull it first on the Ollama fog node: \(message)")
+                return .modelAccessError(message)
+            }
+            fallthrough
         default:
-            LLMFogSession.logger.error("SpeziLLMOpenAI: Received unknown return code from OpenAI")
-            return .generationError
+            LLMFogSession.logger.error("SpeziLLMFog: Unknown error occurred: \(statusCode) \(message ?? "")")
+            return .unknownError("\(statusCode) \(message ?? "")")
         }
     }
 }

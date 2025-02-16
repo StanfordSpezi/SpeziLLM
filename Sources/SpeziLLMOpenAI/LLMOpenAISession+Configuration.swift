@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import SpeziLLM
 
@@ -38,9 +39,9 @@ extension LLMOpenAISession {
             return await Operations.createChatCompletion
                 .Input(
                     body: .json(
-                        LLMOpenAIRequestType(
+                        Components.Schemas.CreateChatCompletionRequest(
                             messages: openAIContext,
-                            model: schema.parameters.modelType,
+                            model: .init(value1: schema.parameters.modelType),
                             frequency_penalty: schema.modelParameters.frequencyPenalty,
                             logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
                                 .modelParameters
@@ -49,8 +50,8 @@ extension LLMOpenAISession {
                             n: schema.modelParameters.completionsPerOutput,
                             presence_penalty: schema.modelParameters.presencePenalty,
                             response_format: schema.modelParameters.responseFormat,
-                            seed: schema.modelParameters.seed,
-                            stop: LLMOpenAIRequestType.stopPayload.case2(schema.modelParameters.stopSequence),
+                            seed: schema.modelParameters.seed.map { Int64($0) },
+                            stop: Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence),
                             stream: true,
                             temperature: schema.modelParameters.temperature,
                             top_p: schema.modelParameters.topP,
@@ -67,14 +68,14 @@ extension LLMOpenAISession {
         case let .tool(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
                 role: .tool,
-                content: contextEntity.content,
+                content: .case1(contextEntity.content),
                 tool_call_id: functionID
             ))
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
             if toolCalls.isEmpty {
                 return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
-                    content: contextEntity.content,
+                    content: .case1(contextEntity.content),
                     role: .assistant
                 ))
             } else {
@@ -100,7 +101,7 @@ extension LLMOpenAISession {
             }
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
                 .init(
-                    content: contextEntity.content,
+                    content: .case1(contextEntity.content),
                     role: role
                 )
             )

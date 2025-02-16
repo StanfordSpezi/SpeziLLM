@@ -7,25 +7,17 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import SpeziChat
 
 
 extension LLMFogSession {
-    private static let modelNotFoundRegex: Regex = {
-        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
-            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
-        }
-        
-        return regex
-    }()
-
-    
     /// Based on the input prompt, generate the output via some OpenAI API, e.g., Ollama.
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name
+    func _generate( // swiftlint:disable:this identifier_name function_body_length
         continuation: AsyncThrowingStream<String, Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
@@ -34,11 +26,17 @@ extension LLMFogSession {
         }
 
         do {
-            let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
+            let response = try await fogNodeClient.createChatCompletion(openAIChatQuery)
 
-            if case let .undocumented(statusCode: statusCode, _) = response {
-                Self.logger.error("SpeziLLMFog: Error during generation. Status code: \(statusCode)")
-                let llmError = handleErrorCode(statusCode)
+            if case let .undocumented(statusCode: statusCode, payload) = response {
+                var errorMessage: String?
+                if let body = payload.body,
+                   let bodyData = try? await ArraySlice(collecting: body, upTo: 8 * 1024),
+                   let bodyString = String(data: Data(bodyData), encoding: .utf8) {
+                    errorMessage = bodyString
+                }
+
+                let llmError = handleErrorCode(statusCode: statusCode, message: errorMessage)
                 await finishGenerationWithError(llmError, on: continuation)
                 return
             }
@@ -57,7 +55,6 @@ extension LLMFogSession {
                 }
 
                 // Only consider the first found assistant content result
-                // todo: check if that really works, not 100% sure
                 guard let firstChoice = choices.first,
                       firstChoice.delta.role == .assistant,
                       let content = firstChoice.delta.content,
@@ -87,13 +84,13 @@ extension LLMFogSession {
                     context.completeAssistantStreaming()
                 }
             }
-        } catch let error as URLError {
+        } catch let error as ClientError {
             Self.logger.error("SpeziLLMFog: Connectivity Issues with the Fog Node: \(error)")
             await finishGenerationWithError(LLMFogError.connectivityIssues(error), on: continuation)
             return
         } catch {
-            Self.logger.error("SpeziLLMFog: Unknwon Generation error occurred - \(error)")
-            await finishGenerationWithError(LLMFogError.generationError, on: continuation)
+            Self.logger.error("SpeziLLMFog: Unknown Generation error occurred - \(error)")
+            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuation)
             return
         }
 

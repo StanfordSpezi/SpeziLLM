@@ -29,7 +29,6 @@ let package = Package(
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
         .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "2.21.2"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
-        //.package(url: "https://github.com/StanfordBDHG/OpenAI", .upToNextMinor(from: "0.2.9")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.2.2"),
@@ -74,6 +73,7 @@ let package = Package(
             name: "SpeziLLMOpenAI",
             dependencies: [
                 .target(name: "SpeziLLM"),
+                .target(name: "GeneratedOpenAIClient"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
@@ -81,20 +81,20 @@ let package = Package(
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
-            ],
-            plugins: [
-                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]
         ),
         .target(
             name: "SpeziLLMFog",
             dependencies: [
                 .target(name: "SpeziLLM"),
+                .target(name: "GeneratedOpenAIClient"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "Spezi", package: "Spezi")
-                //.product(name: "OpenAI", package: "OpenAI")
-            ],
+            ]
+        ),
+        .target(
+            name: "GeneratedOpenAIClient",
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]

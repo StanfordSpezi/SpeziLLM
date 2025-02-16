@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import SpeziLLM
 

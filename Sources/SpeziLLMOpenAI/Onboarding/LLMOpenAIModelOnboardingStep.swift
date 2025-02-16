@@ -14,28 +14,23 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
-        public static let models: [LLMOpenAIRequestType.modelPayload] = [
-            .init(
-                value1: "GPT 3.5 Turbo",
-                value2: .gpt_hyphen_3_period_5_hyphen_turbo
-            ),
-            .init(
-                value1: "GPT 4 Turbo",
-                value2: .gpt_hyphen_4_hyphen_turbo
-            ),
-            .init(
-                value1: "GPT 4O",
-                value2: .gpt_hyphen_4o
-            )
+        public static let models: [LLMOpenAIParameters.ModelType] = [
+            .gpt3_5_turbo,
+            .gpt4_turbo,
+            .gpt4o,
+            .o3_mini,
+            .o3_mini_high,
+            .o1,
+            .o1_mini
         ]
     }
     
     
-    @State private var modelSelection: LLMOpenAIRequestType.modelPayload
+    @State private var modelSelection: LLMOpenAIParameters.ModelType
     private let actionText: String
-    private let action: (LLMOpenAIRequestType.modelPayload) -> Void
-    private let models: [LLMOpenAIRequestType.modelPayload]
-    
+    private let action: (LLMOpenAIParameters.ModelType) -> Void
+    private let models: [LLMOpenAIParameters.ModelType]
+
     
     public var body: some View {
         OnboardingView(
@@ -50,11 +45,9 @@ public struct LLMOpenAIModelOnboardingStep: View {
                     String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module),
                     selection: $modelSelection
                 ) {
-                    ForEach(models, id: \.value1) { model in
-                        if let modelStr = model.value1 {
-                            Text(modelStr)
-                                .tag(model)
-                        }
+                    ForEach(models, id: \.rawValue) { model in
+                        Text(model.rawValue)
+                            .tag(model)
                     }
                 }
                     #if !os(macOS)
@@ -78,11 +71,11 @@ public struct LLMOpenAIModelOnboardingStep: View {
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
     ///   - models: The models that should be displayed in the picker user interface.
-    ///   - action: Action that should be performed after the openAI model selection has been done, selection is passed as closure argument.
+    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     public init(
         actionText: LocalizedStringResource? = nil,
-        models: [LLMOpenAIRequestType.modelPayload] = Default.models,
-        _ action: @escaping (LLMOpenAIRequestType.modelPayload) -> Void
+        models: [LLMOpenAIParameters.ModelType] = Default.models,
+        _ action: @escaping (LLMOpenAIParameters.ModelType) -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
@@ -98,12 +91,12 @@ public struct LLMOpenAIModelOnboardingStep: View {
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
-        models: [LLMOpenAIRequestType.modelPayload] = Default.models,
-        _ action: @escaping (LLMOpenAIRequestType.modelPayload) -> Void
+        models: [LLMOpenAIParameters.ModelType] = Default.models,
+        _ action: @escaping (LLMOpenAIParameters.ModelType) -> Void
     ) {
         self.actionText = String(actionText)
         self.models = models
         self.action = action
-        _modelSelection = State(initialValue: models.first ?? .init(value2: .gpt_hyphen_3_period_5_hyphen_turbo))
+        _modelSelection = State(initialValue: models.first ?? .gpt3_5_turbo)
     }
 }

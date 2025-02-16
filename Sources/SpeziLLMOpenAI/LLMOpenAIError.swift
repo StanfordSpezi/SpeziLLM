@@ -17,7 +17,7 @@ public enum LLMOpenAIError: LLMError {
     /// OpenAI API token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(URLError)
+    case connectivityIssues(Error)
     /// Couldn't store the OpenAI token to a secure storage location
     case storageError
     /// Quota limit reached
@@ -32,17 +32,8 @@ public enum LLMOpenAIError: LLMError {
     case invalidFunctionCallArguments(Error)
     /// Exception during function call execution
     case functionCallError(Error)
-    
-    
-    /// Maps the enum cases to error message from the OpenAI API
-    var openAIErrorMessage: String? {
-        switch self {
-        case .invalidAPIToken: "invalid_api_key"
-        case .insufficientQuota: "insufficient_quota"
-        default: nil
-        }
-    }
-    
+
+
     public var errorDescription: String? {
         switch self {
         case .missingAPIToken:
@@ -144,7 +135,7 @@ extension LLMOpenAISession {
             LLMOpenAISession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
             return LLMOpenAIError.invalidAPIToken
         case 403:
-            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Model access check - Country, region, or territory not supported")
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Model access check - Model type or country not supported")
             return LLMOpenAIError.invalidAPIToken
         case 429:
             LLMOpenAISession.logger.error("SpeziLLMOpenAI: Rate limit reached for requests")

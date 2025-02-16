@@ -6,7 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+import GeneratedOpenAIClient
 import OpenAPIRuntime
+
 
 /// Helper to process the returned stream by the LLM output generation call, especially in regards to the function call and a possible stop reason
 struct LLMOpenAIStreamResult {

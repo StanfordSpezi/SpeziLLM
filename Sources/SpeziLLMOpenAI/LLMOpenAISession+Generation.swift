@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 import SpeziChat
 import SpeziLLM
@@ -29,10 +30,9 @@ extension LLMOpenAISession {
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             do {
-                let response = try await chatGPTClient.createChatCompletion(openAIChatQuery)
+                let response = try await openAiClient.createChatCompletion(openAIChatQuery)
 
                 if case let .undocumented(statusCode: statusCode, _) = response {
-                    Self.logger.error("LLMOpenAI: Error during generation. Status code: \(statusCode)")
                     let llmError = handleErrorCode(statusCode)
                     await finishGenerationWithError(llmError, on: continuation)
                     return
@@ -89,12 +89,12 @@ extension LLMOpenAISession {
                         context.completeAssistantStreaming()
                     }
                 }
-            } catch let error as URLError {
+            } catch let error as ClientError {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return
             } catch {
-                Self.logger.error("SpeziLLMOpenAI: Unknwon Generation error occurred - \(error)")
+                Self.logger.error("SpeziLLMOpenAI: Unknown Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
                 return
             }
