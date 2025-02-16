@@ -57,7 +57,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
         XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
         #else
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "GPT 4O")
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-4o")
         XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
         #endif
         
