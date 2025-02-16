@@ -113,7 +113,6 @@ struct LLMLocalDemoView: View {
 ### LLM Configuration
 
 - ``LLMLocalParameters``
-- ``LLMLocalContextParameters``
 - ``LLMLocalSamplingParameters``
 
 ### Misc

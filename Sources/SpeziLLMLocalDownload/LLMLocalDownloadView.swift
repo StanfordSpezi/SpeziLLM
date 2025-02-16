@@ -17,7 +17,7 @@ import SwiftUI
 /// 
 /// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
 ///
-/// The ``LLMLocalDownloadView/init(downloadDescription:llmDownloadUrl:llmStorageUrl:action:)-9hraf`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
+/// The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
 ///
 /// The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
 ///

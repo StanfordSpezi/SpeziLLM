@@ -41,6 +41,8 @@ extension LLMContext {
     ///
     /// - Parameters:
     ///    - input: The ``LLMContextEntity/Role-swift.enum/user`` input that should be appended. Can contain Markdown-formatted text.
+    ///    - id: A unique identifier of the ``LLMContextEntity``.
+    ///    - date: The `Date` of the ``LLMContextEntity``.
     @MainActor
     public mutating func append(userInput input: String, id: UUID = .init(), date: Date = .now) {
         self.append(.init(role: .user, content: input, id: id, date: date))
@@ -70,6 +72,7 @@ extension LLMContext {
     ///
     /// - Parameters:
     ///    - functionName: The name of the ``LLMContextEntity/Role-swift.enum/tool(id:name:)`` that is called by the LLM.
+    ///    - functionID: The id of the ``LLMContextEntity``.
     ///    - functionResponse: The response `String` of the ``LLMContextEntity/Role-swift.enum/tool(id:name:)`` that is called by the LLM.
     @MainActor
     public mutating func append(forFunction functionName: String, withID functionID: String, response functionResponse: String) {
