@@ -12,7 +12,7 @@ import SpeziLLMOpenAI
 struct LLMOpenAIFunctionPerson: LLMFunction {
     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
         static let itemSchema: LLMFunctionParameterItemSchema = {
-            guard let schema = try? LLMFunctionParameterPropertySchema(
+            guard let schema = try? LLMFunctionParameterItemSchema(
                 .init(name: "firstName", type: .string, description: "The first name of the person"),
                 .init(name: "lastName", type: .string, description: "The last name of the person")
             ) else {

@@ -48,8 +48,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("LLMFunctionParameterWrapper+ArrayTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -89,8 +88,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LMMFunctionParameter+ArrayTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -124,8 +122,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -165,8 +162,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+ArrayTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }

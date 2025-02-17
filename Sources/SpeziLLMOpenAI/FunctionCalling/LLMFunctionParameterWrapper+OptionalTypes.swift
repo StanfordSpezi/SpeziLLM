@@ -36,8 +36,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionparaemter+OptionalType")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -65,8 +64,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -88,8 +86,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
                 "const": const.map { String($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionalParameterWrapper+OptionalTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -120,8 +117,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
                 "enum": `enum`.map { $0.map { String($0) as Any? } }
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -165,8 +161,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionPropertyWrapper+OptionalType")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -207,8 +202,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -242,8 +236,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalTypes.swift")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -284,8 +277,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("SpeziLLMOpenAI - initialization error - LLMFunctionParameterWrapper+OptionalType")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }

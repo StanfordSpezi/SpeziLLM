@@ -27,9 +27,13 @@ import Foundation
 /// ```swift
 /// /// Manual conformance to `LLMFunctionParameter` of a custom type.
 /// extension Data: LLMFunctionParameter {
-///     public static var schema: LLMFunctionParameterPropertySchema {
-///         .init(type: .string)
-///     }
+///     public static var schema: LLMFunctionParameterPropertySchema = {
+///         guard let schema = try? LLMFunctionParameterPropertySchema(type: .string) else {
+///             preconditionFailure("Couldn't create function calling schema definition.")
+///         }
+///
+///         return schema
+///     }()
 /// }
 ///
 /// struct WeatherFunction: LLMFunction {

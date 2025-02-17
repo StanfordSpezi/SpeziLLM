@@ -44,8 +44,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("Couldn't create FunctionParameterWrapper+CustomType \(error)")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
@@ -85,8 +84,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "uniqueItems": uniqueItems as Any?
             ].compactMapValues { $0 }))
         } catch {
-            self.init(description: "")
-            logger.error("Couldn't create LLMFunctionParameterWrapper+CustomTypes")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
         }
     }
 }
