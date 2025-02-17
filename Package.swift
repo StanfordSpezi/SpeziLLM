@@ -95,6 +95,9 @@ let package = Package(
         ),
         .target(
             name: "GeneratedOpenAIClient",
+            swiftSettings: [
+                .unsafeFlags(["-suppress-warnings"])
+            ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]

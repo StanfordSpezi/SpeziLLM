@@ -26,11 +26,11 @@ extension LLMFunctionParameterItemSchema {
         let description: String
 
 
-        /// Initializes a ``LLMFunctionParameterItemSchema/Property``.
+        /// Initializes a `LLMFunctionParameterItemSchema/Property`.
         ///
         /// - Parameters:
         ///   - name: The name of the parameter.
-        ///   - type: The type of the parameter, see ``LLMFunctionParameterItemSchema/Property/PropertyType``.
+        ///   - type: The type of the parameter, see `LLMFunctionParameterItemSchema/Property/PropertyType`.
         ///   - description: The description of the parameter.
         public init(name: String, type: PropertyType, description: String) {
             self.name = name
@@ -41,13 +41,13 @@ extension LLMFunctionParameterItemSchema {
 
 
     /// Initialize a simple, one-level, object-based ``LLMFunctionParameterItemSchema``.
-    /// - Parameter objectProperties: The ``LLMFunctionParameterItemSchema/Property``s of the schema.
+    /// - Parameter objectProperties: The `LLMFunctionParameterItemSchema/Property`s of the schema.
     public init(_ objectProperties: Property...) throws {
         try self.init(objectProperties)
     }
 
     /// Initialize a simple, one-level, object-based ``LLMFunctionParameterItemSchema``.
-    /// - Parameter objectProperties: The ``LLMFunctionParameterItemSchema/Property``s of the schema.
+    /// - Parameter objectProperties: The `LLMFunctionParameterItemSchema/Property`s of the schema.
     public init(_ objectProperties: [Property]) throws {
         try self.init(
             unvalidatedValue: [
