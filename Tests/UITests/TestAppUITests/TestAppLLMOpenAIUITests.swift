@@ -54,8 +54,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.menuItems["gpt-4o"].tap()
         XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
         #elseif os(visionOS)
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeDown()
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toNormalizedSliderPosition: 0.1)
         XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
         #else
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-4o")
