@@ -54,8 +54,8 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.menuItems["gpt-4o"].tap()
         XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
         #elseif os(visionOS)
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toNormalizedSliderPosition: 0.1)
-        XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
+        XCTAssert(app.pickerWheels["o1-mini"].waitForExistence(timeout: 2))     // swipe down to the o1-mini model
         #else
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-4o")
         XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
@@ -70,7 +70,11 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         let alert = app.alerts["Model Selected"]
         
         XCTAssertTrue(alert.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
+        #if os(visionOS)
+        XCTAssertTrue(alert.staticTexts["o1-mini"].exists, "The correct model was not registered.")
+        #else
         XCTAssertTrue(alert.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
+        #endif
 
         let okButton = alert.buttons["OK"]
         XCTAssertTrue(okButton.exists, "The OK button on the alert was not found.")
