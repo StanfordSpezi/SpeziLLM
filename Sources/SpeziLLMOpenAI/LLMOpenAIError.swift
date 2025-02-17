@@ -32,6 +32,8 @@ public enum LLMOpenAIError: LLMError {
     case invalidFunctionCallArguments(Error)
     /// Exception during function call execution
     case functionCallError(Error)
+    /// Error during the extraction of function call schema definition from the SpeziLLM function calling DSL.
+    case functionCallSchemaExtractionError(Error)
 
 
     public var errorDescription: String? {
@@ -56,6 +58,8 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
     }
     
@@ -81,6 +85,8 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
     }
 
@@ -106,6 +112,8 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
     }
     
@@ -122,6 +130,7 @@ public enum LLMOpenAIError: LLMError {
         case (.invalidFunctionCallName, .invalidFunctionCallName): true
         case (.invalidFunctionCallArguments, .invalidFunctionCallArguments): true
         case (.functionCallError, .functionCallError): true
+        case (.functionCallSchemaExtractionError, .functionCallSchemaExtractionError): true
         default: false
         }
     }

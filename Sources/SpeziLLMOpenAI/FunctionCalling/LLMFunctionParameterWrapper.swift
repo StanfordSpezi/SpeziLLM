@@ -60,7 +60,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
         self.init(schema: T.schema)
     }
 
-    init(schema: LLMFunctionParameterItemSchema ) {
+    init(schema: LLMFunctionParameterItemSchema) {
         self.schema = schema
     }
     

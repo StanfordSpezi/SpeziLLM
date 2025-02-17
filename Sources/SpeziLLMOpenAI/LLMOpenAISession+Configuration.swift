@@ -24,9 +24,9 @@ extension LLMOpenAISession {
     /// Provides the ``LLMOpenAISession/context``, the `` LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``, as well as the declared ``LLMFunction``s
     /// in an OpenAI `Operations.createChatCompletion.Input` representation used for querying the OpenAI API.
     var openAIChatQuery: Operations.createChatCompletion.Input {
-        get async {
-            let functions: [Components.Schemas.ChatCompletionTool] = schema.functions.values.compactMap { function in
-                Components.Schemas.ChatCompletionTool(
+        get async throws {
+            let functions: [Components.Schemas.ChatCompletionTool] = try schema.functions.values.compactMap { function in
+                try Components.Schemas.ChatCompletionTool(
                     _type: .function,
                     function: Components.Schemas.FunctionObject(
                         description: Swift.type(of: function).description,

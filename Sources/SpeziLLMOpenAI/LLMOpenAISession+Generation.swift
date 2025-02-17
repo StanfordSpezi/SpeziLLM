@@ -93,6 +93,10 @@ extension LLMOpenAISession {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
                 return
+            } catch let error as LLMOpenAIError {
+                Self.logger.error("SpeziLLMOpenAI: \(error.localizedDescription)")
+                await finishGenerationWithError(LLMOpenAIError.functionCallSchemaExtractionError(error), on: continuation)
+                return
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Unknown Generation error occurred - \(error)")
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)

@@ -28,26 +28,33 @@ extension LLMFunction {
     
     /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines them into the complete parameter schema of the ``LLMFunction``.
     var schema: LLMFunctionParameterSchema {
-        let requiredPropertyNames = Array(
-            parameterValueCollectors
-                .filter {
-                    !$0.value.isOptional
-                }
-                .keys
-        )
-        
-        let properties = schemaValueCollectors.compactMapValues { $0.schema }
-        
-        var functionParameterSchema: LLMFunctionParameterSchema = .init()
-        do {
-            functionParameterSchema.additionalProperties = try .init(unvalidatedValue: [
-                "type": "object",
-                "properties": properties.mapValues { $0.value },
-                "required": requiredPropertyNames
-            ])
-        } catch {
-            Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI").error("Error creating OpenAPIObjectContainer.")
+        get throws {
+            let requiredPropertyNames = Array(
+                parameterValueCollectors
+                    .filter {
+                        !$0.value.isOptional
+                    }
+                    .keys
+            )
+
+            let properties = schemaValueCollectors.compactMapValues { $0.schema }
+
+            var functionParameterSchema: LLMFunctionParameterSchema = .init()
+            do {
+                functionParameterSchema.additionalProperties = try .init(
+                    unvalidatedValue: [
+                        "type": "object",
+                        "properties": properties.mapValues { $0.value },
+                        "required": requiredPropertyNames
+                    ]
+                )
+            } catch {
+                // Errors should be incredibly rare here
+                Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+                    .error("SpeziLLMOpenAI: Error extracting the function call schema DSL into the `LLMFunctionParameterSchema`: \(error.localizedDescription).")
+                throw LLMOpenAIError.functionCallSchemaExtractionError(error)
+            }
+            return functionParameterSchema
         }
-        return functionParameterSchema
     }
 }

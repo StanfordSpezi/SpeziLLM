@@ -25,19 +25,16 @@ import OpenAPIRuntime
 /// struct LLMOpenAIFunctionPerson: LLMFunction {
 ///     /// Manual conformance to `LLMFunctionParameterArrayElement` of a custom array item type.
 ///     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
-///         static let itemSchema: LLMFunctionParameterItemSchema = .init(
-///             "type": "object",
-///             "properties": [
-///                 "firstName": [
-///                     "type": "string",
-///                     "description": "The first name of the person")
-///                 ],
-///                 "lastName": [
-///                     "type": "string",
-///                     "description": "The last name of the person"
-///                 ]
-///             ]
-///         )
+///         static let itemSchema: LLMFunctionParameterItemSchema = {
+///             guard let schema = try? LLMFunctionParameterPropertySchema(
+///                 .init(name: "firstName", type: .string, description: "The first name of the person"),
+///                 .init(name: "lastName", type: .string, description: "The last name of the person")
+///             ) else {
+///                 preconditionFailure("Couldn't create function calling schema definition.")
+///             }
+///
+///             return schema
+///         }()
 ///
 ///         let firstName: String
 ///         let lastName: String
