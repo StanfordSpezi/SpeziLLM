@@ -45,7 +45,8 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziViews", package: "SpeziViews")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMLocal",
@@ -57,7 +58,8 @@ let package = Package(
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
                 .product(name: "MLXLLM", package: "mlx-swift-examples")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMLocalDownload",
@@ -66,7 +68,8 @@ let package = Package(
                 .product(name: "SpeziViews", package: "SpeziViews"),
                 .target(name: "SpeziLLMLocal"),
                 .product(name: "MLXLLM", package: "mlx-swift-examples")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMOpenAI",
@@ -78,7 +81,8 @@ let package = Package(
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMFog",
@@ -86,13 +90,15 @@ let package = Package(
                 .target(name: "SpeziLLM"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "OpenAI", package: "OpenAI")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .testTarget(
             name: "SpeziLLMTests",
             dependencies: [
                 .target(name: "SpeziLLMOpenAI")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         )
     ]
 )

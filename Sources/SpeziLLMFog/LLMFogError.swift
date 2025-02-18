@@ -20,7 +20,7 @@ public enum LLMFogError: LLMError {
     /// Error during generation
     case generationError
     /// Error during accessing the Fog LLM Model
-    case modelAccessError(Error)
+    case modelAccessError(any Error)
     /// Fog CA certificate is missing / not readable.
     case missingCaCertificate
     /// No mDNS services were found
@@ -28,7 +28,7 @@ public enum LLMFogError: LLMError {
     /// Network error during mDNS service discovery.
     case mDnsServiceDiscoveryNetworkError
     /// Unknown error
-    case unknownError(Error)
+    case unknownError(any Error)
     
     
     public var errorDescription: String? {

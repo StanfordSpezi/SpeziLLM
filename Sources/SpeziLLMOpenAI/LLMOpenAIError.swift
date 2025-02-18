@@ -25,13 +25,13 @@ public enum LLMOpenAIError: LLMError {
     /// Error during generation
     case generationError
     /// Error during accessing the OpenAI Model
-    case modelAccessError(Error)
+    case modelAccessError(any Error)
     /// Invalid function call name
     case invalidFunctionCallName
     /// Invalid function call parameters (mismatch between sent parameters from OpenAI and declared ones within the ``LLMFunction``), including the decoding error
-    case invalidFunctionCallArguments(Error)
+    case invalidFunctionCallArguments(any Error)
     /// Exception during function call execution
-    case functionCallError(Error)
+    case functionCallError(any Error)
     
     
     /// Maps the enum cases to error message from the OpenAI API

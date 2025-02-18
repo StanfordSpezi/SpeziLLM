@@ -119,7 +119,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     
     
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)

@@ -27,7 +27,7 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
         if let value = injectedValue {
             return value
         // If the unwrapped injectedValue is nil, return nil
-        } else if let selfCasted = self as? NilValueProtocol {
+        } else if let selfCasted = self as? any NilValueProtocol {
             return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
         // Fail if not injected yet
         } else {

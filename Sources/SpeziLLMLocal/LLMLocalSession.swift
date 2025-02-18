@@ -118,7 +118,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// Based on the input prompt, generate the output.
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         task = Task(priority: platform.configuration.taskPriority) {

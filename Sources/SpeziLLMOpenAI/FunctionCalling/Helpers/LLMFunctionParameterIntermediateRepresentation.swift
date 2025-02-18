@@ -34,7 +34,7 @@ enum LLMFunctionParameterIntermediary: Codable {
     }
     
     
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
@@ -62,7 +62,7 @@ enum LLMFunctionParameterIntermediary: Codable {
     }
     
     
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         
         switch self {

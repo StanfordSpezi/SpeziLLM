@@ -114,7 +114,7 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     
     
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
@@ -149,7 +149,7 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     }
     
     public func setup(
-        continuation: AsyncThrowingStream<String, Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
         // Setup the model, if not already done
         if wrappedModel == nil {

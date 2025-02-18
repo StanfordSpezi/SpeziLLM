@@ -26,14 +26,14 @@ extension LLMFogSession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     func _generate( // swiftlint:disable:this identifier_name
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
         }
         
-        let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
+        let chatStream: AsyncThrowingStream<ChatStreamResult, any Error> = await self.model.chatsStream(query: self.openAIChatQuery)
         
         do {
             for try await streamResult in chatStream {

@@ -18,7 +18,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {
@@ -26,7 +26,7 @@ extension LLMOpenAISession {
         }
         
         while true {
-            let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
+            let chatStream: AsyncThrowingStream<ChatStreamResult, any Error> = await self.model.chatsStream(query: self.openAIChatQuery)
             
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             

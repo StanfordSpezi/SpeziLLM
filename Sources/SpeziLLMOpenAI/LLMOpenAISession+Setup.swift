@@ -16,7 +16,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
@@ -72,7 +72,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the model access test was successful, `false` otherwise.
-    private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    private func modelAccessTest(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         do {
             _ = try await self.model.model(query: .init(model: schema.parameters.modelType))
             Self.logger.error("SpeziLLMOpenAI: Model access check completed")

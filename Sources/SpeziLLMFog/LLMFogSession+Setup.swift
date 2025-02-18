@@ -17,7 +17,7 @@ extension LLMFogSession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    func _setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         // swiftlint:disable:previous function_body_length identifier_name
         Self.logger.debug("SpeziLLMFog: Fog LLM is being initialized")
         await MainActor.run {
