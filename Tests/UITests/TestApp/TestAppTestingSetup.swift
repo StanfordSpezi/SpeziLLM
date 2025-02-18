@@ -27,7 +27,6 @@ private struct TestAppTestingSetup: ViewModifier {
                         for: .genericPassword(forService: "openai.com")
                     )
                 }
-                
                 if FeatureFlags.showOnboarding {
                     completedOnboardingFlow = false
                 }

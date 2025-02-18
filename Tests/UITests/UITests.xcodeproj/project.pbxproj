@@ -740,8 +740,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/SpeziFirebase";
 			requirement = {
-				branch = "lukas/spezistorage-2.0";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.3;
 			};
 		};
 		979D418E2BB3EBD8001953BD /* XCRemoteSwiftPackageReference "SpeziAccount" */ = {
