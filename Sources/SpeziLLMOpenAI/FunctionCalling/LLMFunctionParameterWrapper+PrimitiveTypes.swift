@@ -34,7 +34,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
                     "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -63,7 +63,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
                 "maximum": maximum.map { Double($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -86,7 +86,7 @@ extension _LLMFunctionParameterWrapper where T == Bool {
                 "const": const.map { String($0) } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -119,7 +119,7 @@ extension _LLMFunctionParameterWrapper where T: StringProtocol {
                 "enum": `enum`.map { $0.map { String($0) } } as Any?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`")
+            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
