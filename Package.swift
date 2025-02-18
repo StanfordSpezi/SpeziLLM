@@ -31,7 +31,7 @@ let package = Package(
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.1.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "1.2.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.2.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.3")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.8.0"),
@@ -46,7 +46,8 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziViews", package: "SpeziViews")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMLocal",
@@ -58,7 +59,8 @@ let package = Package(
                 .product(name: "MLXRandom", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
                 .product(name: "MLXLLM", package: "mlx-swift-examples")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMLocalDownload",
@@ -67,7 +69,8 @@ let package = Package(
                 .product(name: "SpeziViews", package: "SpeziViews"),
                 .target(name: "SpeziLLMLocal"),
                 .product(name: "MLXLLM", package: "mlx-swift-examples")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMOpenAI",
@@ -79,9 +82,10 @@ let package = Package(
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
-                .product(name: "SpeziSecureStorage", package: "SpeziStorage"),
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMFog",
@@ -91,7 +95,8 @@ let package = Package(
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
                 .product(name: "Spezi", package: "Spezi")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "GeneratedOpenAIClient",
@@ -103,7 +108,8 @@ let package = Package(
             name: "SpeziLLMTests",
             dependencies: [
                 .target(name: "SpeziLLMOpenAI")
-            ]
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         )
     ]
 )

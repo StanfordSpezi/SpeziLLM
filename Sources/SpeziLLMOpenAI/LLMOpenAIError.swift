@@ -17,7 +17,7 @@ public enum LLMOpenAIError: LLMError {
     /// OpenAI API token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(Error)
+    case connectivityIssues(any Error)
     /// Couldn't store the OpenAI token to a secure storage location
     case storageError
     /// Quota limit reached
@@ -25,15 +25,15 @@ public enum LLMOpenAIError: LLMError {
     /// Error during generation
     case generationError
     /// Error during accessing the OpenAI Model
-    case modelAccessError(Error)
+    case modelAccessError(any Error)
     /// Invalid function call name
     case invalidFunctionCallName
     /// Invalid function call parameters (mismatch between sent parameters from OpenAI and declared ones within the ``LLMFunction``), including the decoding error
-    case invalidFunctionCallArguments(Error)
+    case invalidFunctionCallArguments(any Error)
     /// Exception during function call execution
-    case functionCallError(Error)
+    case functionCallError(any Error)
     /// Error during the extraction of function call schema definition from the SpeziLLM function calling DSL.
-    case functionCallSchemaExtractionError(Error)
+    case functionCallSchemaExtractionError(any Error)
 
 
     public var errorDescription: String? {

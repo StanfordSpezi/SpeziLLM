@@ -12,7 +12,7 @@ import Foundation
 /// Defines universally occurring `Error`s while handling LLMs with SpeziLLM.
 public enum LLMDefaultError: LLMError {
     /// Indicates an unknown error during LLM execution.
-    case unknown(Error)
+    case unknown(any Error)
     
     
     public var errorDescription: String? {

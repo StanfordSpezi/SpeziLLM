@@ -18,13 +18,12 @@ extension LLMFogSession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     func _generate( // swiftlint:disable:this identifier_name function_body_length
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
         }
-
         do {
             let response = try await fogNodeClient.createChatCompletion(openAIChatQuery)
 

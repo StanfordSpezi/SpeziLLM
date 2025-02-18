@@ -14,11 +14,11 @@ import SpeziAccount
 import SpeziFirebaseAccount
 import SpeziFirebaseAccountStorage
 #endif
+import SpeziKeychainStorage
 import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
-import SpeziSecureStorage
 
 
 class TestAppDelegate: SpeziAppDelegate {

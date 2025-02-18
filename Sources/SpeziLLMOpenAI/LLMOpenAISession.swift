@@ -12,8 +12,8 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziKeychainStorage
 import SpeziLLM
-import SpeziSecureStorage
 
 
 /// Represents an ``LLMOpenAISchema`` in execution.
@@ -76,7 +76,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     
     let platform: LLMOpenAIPlatform
     let schema: LLMOpenAISchema
-    let secureStorage: SecureStorage
+    let keychainStorage: KeychainStorage
     
     /// A set of `Task`s managing the ``LLMOpenAISession`` output generation.
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
@@ -103,13 +103,13 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     /// Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     ///
     /// - Parameters:
-    ///     - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
-    ///     - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
-    ///     - secureStorage: Reference to the `SecureStorage` from `SpeziStorage` in order to securely persist the token.
-    init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, secureStorage: SecureStorage) {
+    ///   - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
+    ///   - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
+    ///   - keychainStorage: Reference to the `KeychainStorage` from `SpeziStorage` in order to securely persist the token.
+    init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema
-        self.secureStorage = secureStorage
+        self.keychainStorage = keychainStorage
         
         // Inject system prompts into context
         Task { @MainActor in
@@ -121,7 +121,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     
     
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)

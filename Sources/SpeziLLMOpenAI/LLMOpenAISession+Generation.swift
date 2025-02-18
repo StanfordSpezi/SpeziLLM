@@ -19,7 +19,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {

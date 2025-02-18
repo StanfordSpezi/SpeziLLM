@@ -29,7 +29,7 @@ public final class LLMLocalDownloadManager: NSObject {
         case idle
         case downloading(progress: Progress)
         case downloaded
-        case error(LocalizedError)
+        case error(any LocalizedError)
         
         
         public static func == (lhs: LLMLocalDownloadManager.DownloadState, rhs: LLMLocalDownloadManager.DownloadState) -> Bool {

@@ -18,7 +18,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initaliseClient(_ continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    private func initaliseClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         // Overwrite API token if passed
         if let overwritingToken = schema.parameters.overwritingToken {
             do {
@@ -36,9 +36,9 @@ extension LLMOpenAISession {
             }
         } else {
             // If token is present within the Spezi `SecureStorage`
-            guard let credentials = try? secureStorage.retrieveCredentials(
-                LLMOpenAIConstants.credentialsUsername,
-                server: LLMOpenAIConstants.credentialsServer
+            guard let credentials = try? keychainStorage.retrieveCredentials(
+                withUsername: LLMOpenAIConstants.credentialsUsername,
+                for: .openAIKey
             ) else {
                 Self.logger.error("""
                 SpeziLLMOpenAI: Missing OpenAI API token.
@@ -76,7 +76,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
@@ -104,7 +104,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the model access test was successful, `false` otherwise.
-    private func modelAccessTest(continuation: AsyncThrowingStream<String, Error>.Continuation) async -> Bool {
+    private func modelAccessTest(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         do {
             if case let .undocumented(statusCode, _) = try await openAiClient
                 .retrieveModel(.init(path: .init(model: schema.parameters.modelType))) {

@@ -33,7 +33,7 @@ public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
     
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
-    let functions: [String: LLMFunction]
+    let functions: [String: any LLMFunction]
     public let injectIntoContext: Bool
     
     
