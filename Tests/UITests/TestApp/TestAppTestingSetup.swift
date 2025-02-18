@@ -8,7 +8,6 @@
 
 import Security
 import SpeziKeychainStorage
-@testable import SpeziLLMOpenAI
 import SwiftUI
 
 
