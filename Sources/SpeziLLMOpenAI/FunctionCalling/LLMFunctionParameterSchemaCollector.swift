@@ -22,7 +22,7 @@ protocol LLMFunctionParameterSchemaCollector {
 
 extension LLMFunction {
     typealias LLMFunctionParameterSchema = Components.Schemas.FunctionParameters
-    var schemaValueCollectors: [String: LLMFunctionParameterSchemaCollector] {
+    var schemaValueCollectors: [String: any LLMFunctionParameterSchemaCollector] {
         retrieveProperties(ofType: (any LLMFunctionParameterSchemaCollector).self)
     }
     

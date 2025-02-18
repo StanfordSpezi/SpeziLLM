@@ -16,7 +16,7 @@ public enum LLMFogError: LLMError {
     /// Fog LLM user token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(Error)
+    case connectivityIssues(any Error)
     /// Error during generation
     case generationError
     /// Error during accessing the Fog LLM Model
