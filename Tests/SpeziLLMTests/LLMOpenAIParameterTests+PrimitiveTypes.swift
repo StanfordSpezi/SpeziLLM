@@ -56,7 +56,7 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: "gpt-4o")
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -75,27 +75,27 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
         
         // Validate parameter schema
         let schemaPrimitiveInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intParameter"])
-        XCTAssertEqual(schemaPrimitiveInt.schema.type, .integer)
-        XCTAssertEqual(schemaPrimitiveInt.schema.description, "Primitive Int Parameter")
-        XCTAssertEqual(schemaPrimitiveInt.schema.multipleOf, 3)
+        XCTAssertEqual(schemaPrimitiveInt.schema.value["type"] as? String, "integer")
+        XCTAssertEqual(schemaPrimitiveInt.schema.value["description"] as? String, "Primitive Int Parameter")
+        XCTAssertEqual(schemaPrimitiveInt.schema.value["multipleOf"] as? Int, 3)
         
         let schemaPrimitiveDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleParameter"])
-        XCTAssertEqual(schemaPrimitiveDouble.schema.type, .number)
-        XCTAssertEqual(schemaPrimitiveDouble.schema.description, "Primitive Double Parameter")
-        XCTAssertEqual(schemaPrimitiveDouble.schema.minimum, 12.3)
-        XCTAssertEqual(schemaPrimitiveDouble.schema.maximum, 34.56)
+        XCTAssertEqual(schemaPrimitiveDouble.schema.value["type"] as? String, "number")
+        XCTAssertEqual(schemaPrimitiveDouble.schema.value["description"] as? String, "Primitive Double Parameter")
+        XCTAssertEqual(schemaPrimitiveDouble.schema.value["minimum"] as? Double, 12.3)
+        XCTAssertEqual(schemaPrimitiveDouble.schema.value["maximum"] as? Double, 34.56)
         
         let schemaPrimitiveBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolParameter"])
-        XCTAssertEqual(schemaPrimitiveBool.schema.type, .boolean)
-        XCTAssertEqual(schemaPrimitiveBool.schema.description, "Primitive Bool Parameter")
-        XCTAssertEqual(schemaPrimitiveBool.schema.const, "false")
+        XCTAssertEqual(schemaPrimitiveBool.schema.value["type"] as? String, "boolean")
+        XCTAssertEqual(schemaPrimitiveBool.schema.value["description"] as? String, "Primitive Bool Parameter")
+        XCTAssertEqual(schemaPrimitiveBool.schema.value["const"] as? String, "false")
         
         let schemaPrimitiveString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringParameter"])
-        XCTAssertEqual(schemaPrimitiveString.schema.type, .string)
-        XCTAssertEqual(schemaPrimitiveString.schema.description, "Primitive String Parameter")
-        XCTAssertEqual(schemaPrimitiveString.schema.format, "date-time")
-        XCTAssertEqual(schemaPrimitiveString.schema.pattern, "/d/d/d/d")
-        XCTAssertEqual(schemaPrimitiveString.schema.enum, ["1234", "5678"])
+        XCTAssertEqual(schemaPrimitiveString.schema.value["type"] as? String, "string")
+        XCTAssertEqual(schemaPrimitiveString.schema.value["description"] as? String, "Primitive String Parameter")
+        XCTAssertEqual(schemaPrimitiveString.schema.value["format"] as? String, "date-time")
+        XCTAssertEqual(schemaPrimitiveString.schema.value["pattern"] as? String, "/d/d/d/d")
+        XCTAssertEqual(schemaPrimitiveString.schema.value["enum"] as? [String], ["1234", "5678"])
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

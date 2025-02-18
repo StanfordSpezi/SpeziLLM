@@ -7,76 +7,94 @@
 //
 
 import Foundation
-import OpenAI
+import GeneratedOpenAIClient
+import OpenAPIRuntime
 import SpeziChat
 
 
 extension LLMFogSession {
-    private static let modelNotFoundRegex = "model '([\\w:]+)' not found, try pulling it first"
-    
     /// Based on the input prompt, generate the output via some OpenAI API, e.g., Ollama.
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name
-        continuation: AsyncThrowingStream<String, Error>.Continuation
+    func _generate( // swiftlint:disable:this identifier_name function_body_length
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
         }
-        
-        let chatStream: AsyncThrowingStream<ChatStreamResult, Error> = await self.model.chatsStream(query: self.openAIChatQuery)
-        
         do {
-            for try await streamResult in chatStream {
-                guard await !checkCancellation(on: continuation) else {
+            let response = try await fogNodeClient.createChatCompletion(openAIChatQuery)
+
+            if case let .undocumented(statusCode: statusCode, payload) = response {
+                var errorMessage: String?
+                if let body = payload.body,
+                   let bodyData = try? await ArraySlice(collecting: body, upTo: 8 * 1024),
+                   let bodyString = String(data: Data(bodyData), encoding: .utf8) {
+                    errorMessage = bodyString
+                }
+
+                let llmError = handleErrorCode(statusCode: statusCode, message: errorMessage)
+                await finishGenerationWithError(llmError, on: continuation)
+                return
+            }
+
+            let chatStream = try response.ok.body.text_event_hyphen_stream
+                .asDecodedServerSentEventsWithJSONData(
+                    of: Components.Schemas.CreateChatCompletionStreamResponse.self,
+                    decoder: .init(),
+                    while: { incomingData in incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8)) }
+                )
+
+            for try await chatStreamResult in chatStream {
+                guard let choices = chatStreamResult.data?.choices else {
+                    Self.logger.error("SpeziLLMFog: Couldn't obtain choices from stream response.")
+                    return
+                }
+
+                // Only consider the first found assistant content result
+                guard let firstChoice = choices.first,
+                      firstChoice.delta.role == .assistant,
+                      let content = firstChoice.delta.content,
+                      !content.isEmpty else {
+                    continue
+                }
+
+                if await checkCancellation(on: continuation) {
                     Self.logger.debug("SpeziLLMFog: LLM inference cancelled because of Task cancellation.")
                     return
                 }
-                
-                let outputPiece = streamResult.choices.first?.delta.content ?? ""
-                
+
+                // Automatically inject the yielded string piece into the `LLMLocal/context`
                 if schema.injectIntoContext {
                     await MainActor.run {
-                        context.append(assistantOutput: outputPiece)
+                        context.append(assistantOutput: content)
                     }
                 }
-                
-                continuation.yield(outputPiece)
+
+                continuation.yield(content)
             }
-            
+
             continuation.finish()
+
             if schema.injectIntoContext {
                 await MainActor.run {
                     context.completeAssistantStreaming()
                 }
             }
-        } catch let error as APIErrorResponse {
-            // Sadly, there's no better way to check the error messages as there aren't any Ollama error codes as with the OpenAI API
-            if error.error.message.range(of: Self.modelNotFoundRegex, options: .regularExpression) != nil {
-                Self.logger.error("SpeziLLMFog: LLM model type could not be accessed on fog node - \(error.error.message)")
-                await finishGenerationWithError(LLMFogError.modelAccessError(error), on: continuation)
-            } else if error.error.code == "401" || error.error.code == "403" {
-                Self.logger.error("SpeziLLMFog: LLM model could not be accessed as the passed token is invalid.")
-                await finishGenerationWithError(LLMFogError.invalidAPIToken, on: continuation)
-            } else {
-                Self.logger.error("SpeziLLMFog: Generation error occurred - \(error)")
-                await finishGenerationWithError(LLMFogError.generationError, on: continuation)
-            }
-            return
-        } catch let error as URLError {
+        } catch let error as ClientError {
             Self.logger.error("SpeziLLMFog: Connectivity Issues with the Fog Node: \(error)")
             await finishGenerationWithError(LLMFogError.connectivityIssues(error), on: continuation)
             return
         } catch {
-            Self.logger.error("SpeziLLMFog: Generation error occurred - \(error)")
-            await finishGenerationWithError(LLMFogError.generationError, on: continuation)
+            Self.logger.error("SpeziLLMFog: Unknown Generation error occurred - \(error)")
+            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuation)
             return
         }
-        
+
         Self.logger.debug("SpeziLLMFog: Fog LLM completed an inference")
-        
+
         await MainActor.run {
             self.state = .ready
         }

@@ -61,6 +61,36 @@
         }
       }
     },
+    "LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function Call schema definition could not be extracted."
+          }
+        }
+      }
+    },
+    "LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The LLM Function Call schema definition could not be extracted from the defined function call."
+          }
+        }
+      }
+    },
+    "LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the input query or restart the application."
+          }
+        }
+      }
+    },
     "LLM_GENERATION_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {

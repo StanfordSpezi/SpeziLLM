@@ -16,11 +16,11 @@ public enum LLMFogError: LLMError {
     /// Fog LLM user token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(URLError)
+    case connectivityIssues(any Error)
     /// Error during generation
     case generationError
     /// Error during accessing the Fog LLM Model
-    case modelAccessError(Error)
+    case modelAccessError(String)
     /// Fog CA certificate is missing / not readable.
     case missingCaCertificate
     /// No mDNS services were found
@@ -28,8 +28,8 @@ public enum LLMFogError: LLMError {
     /// Network error during mDNS service discovery.
     case mDnsServiceDiscoveryNetworkError
     /// Unknown error
-    case unknownError(Error)
-    
+    case unknownError(String)
+
     
     public var errorDescription: String? {
         switch self {
@@ -106,6 +106,36 @@ public enum LLMFogError: LLMError {
         case (.mDnsServiceDiscoveryNetworkError, .mDnsServiceDiscoveryNetworkError): true
         case (.unknownError, .unknownError): true
         default: false
+        }
+    }
+}
+
+
+extension LLMFogSession {
+    private static let modelNotFoundRegex: Regex = {
+        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
+            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
+        }
+
+        return regex
+    }()
+
+
+    func handleErrorCode(statusCode: Int, message: String?) -> LLMFogError {
+        switch statusCode {
+        case 401, 403:
+            Self.logger.error("SpeziLLMFog: LLM model could not be accessed as the passed authentication token is invalid.")
+            return .invalidAPIToken
+        case 404:
+            if let message,
+               message.contains(Self.modelNotFoundRegex) {
+                LLMFogSession.logger.error("SpeziLLMFog: Model could not be accessed, ensure to pull it first on the Ollama fog node: \(message)")
+                return .modelAccessError(message)
+            }
+            fallthrough
+        default:
+            LLMFogSession.logger.error("SpeziLLMFog: Unknown error occurred: \(statusCode) \(message ?? "")")
+            return .unknownError("\(statusCode) \(message ?? "")")
         }
     }
 }

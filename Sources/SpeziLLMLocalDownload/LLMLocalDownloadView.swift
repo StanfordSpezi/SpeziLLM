@@ -17,7 +17,7 @@ import SwiftUI
 /// 
 /// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
 ///
-/// The ``LLMLocalDownloadView/init(downloadDescription:llmDownloadUrl:llmStorageUrl:action:)-9hraf`` initializer accepts a download description displayed in the view, the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
+/// The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
 ///
 /// The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
 ///
@@ -39,9 +39,8 @@ import SwiftUI
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(
-///             downloadDescription: "The Llama2 7B model will be downloaded",
-///             llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, // Download the Llama2 7B model
-///             llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") // Store the downloaded LLM in the caches directory
+///             model: .llama3_8B_4bit,
+///             downloadDescription: "The Llama3 8B model will be downloaded"
 ///         ) {
 ///             onboardingNavigationPath.nextStep()
 ///         }
@@ -177,9 +176,8 @@ public struct LLMLocalDownloadView: View {
     /// Creates a ``LLMLocalDownloadView`` that presents an onboarding view that helps with downloading the necessary LLM files from remote servers.
     ///
     /// - Parameters:
+    ///   - model: An `LLMLocalModel` representing the model to download.
     ///   - downloadDescription: Localized description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
-    ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
-    ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     public init(
         model: LLMLocalModel,
@@ -196,9 +194,8 @@ public struct LLMLocalDownloadView: View {
     /// Creates a ``LLMLocalDownloadView`` that presents an onboarding view that helps with downloading the necessary LLM files from remote servers.
     ///
     /// - Parameters:
+    ///   - model: An `LLMLocalModel` representing the model to download.
     ///   - downloadDescription: Description of the to-be-downloaded model shown in the ``LLMLocalDownloadView``.
-    ///   - llmDownloadUrl: The remote `URL` from where the LLM file should be downloaded.
-    ///   - llmDownloadLocation: The local `URL` where the LLM file should be stored.
     ///   - action: The action that should be performed when pressing the primary button of the view.
     @_disfavoredOverload
     public init<S: StringProtocol>(
@@ -218,7 +215,7 @@ public struct LLMLocalDownloadView: View {
 #if DEBUG
 #Preview {
     LLMLocalDownloadView(
-        model: .phi3_4bit,
+        model: .llama3_8B_4bit,
         downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
         action: {}
     )

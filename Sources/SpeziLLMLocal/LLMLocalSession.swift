@@ -10,6 +10,7 @@
 import Foundation
 import MLX
 import MLXLLM
+import MLXLMCommon
 import MLXRandom
 import os
 import SpeziChat
@@ -83,7 +84,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
-    @MainActor public var modelConfiguration: ModelConfiguration?
+    @MainActor public var modelConfiguration: ModelRegistry?
     @MainActor public var modelContainer: ModelContainer?
     
     
@@ -117,7 +118,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// Based on the input prompt, generate the output.
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         task = Task(priority: platform.configuration.taskPriority) {
@@ -131,7 +132,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
                 }
             }
             
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             

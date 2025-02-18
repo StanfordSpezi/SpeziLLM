@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OpenAPIRuntime
 
 
 /// Represents an LLM function calling parameter in the form of an `array` element.
@@ -24,13 +25,16 @@ import Foundation
 /// struct LLMOpenAIFunctionPerson: LLMFunction {
 ///     /// Manual conformance to `LLMFunctionParameterArrayElement` of a custom array item type.
 ///     struct CustomArrayItemType: LLMFunctionParameterArrayElement {
-///         static let itemSchema: LLMFunctionParameterItemSchema = .init(
-///             type: .object,
-///             properties: [
-///                 "firstName": .init(type: .string, description: "The first name of the person"),
-///                 "lastName": .init(type: .string, description: "The last name of the person")
-///             ]
-///         )
+///         static let itemSchema: LLMFunctionParameterItemSchema = {
+///             guard let schema = try? LLMFunctionParameterItemSchema(
+///                 .init(name: "firstName", type: .string, description: "The first name of the person"),
+///                 .init(name: "lastName", type: .string, description: "The last name of the person")
+///             ) else {
+///                 preconditionFailure("Couldn't create function calling schema definition.")
+///             }
+///
+///             return schema
+///         }()
 ///
 ///         let firstName: String
 ///         let lastName: String

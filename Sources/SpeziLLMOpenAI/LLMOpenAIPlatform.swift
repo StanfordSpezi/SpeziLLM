@@ -10,8 +10,8 @@ import Foundation
 import os
 import Spezi
 import SpeziFoundation
+import SpeziKeychainStorage
 import SpeziLLM
-import SpeziSecureStorage
 
 /// LLM execution platform of an ``LLMOpenAISchema``.
 ///
@@ -48,7 +48,7 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     
     @MainActor public var state: LLMPlatformState = .idle
     @Dependency(LLMOpenAITokenSaver.self) private var tokenSaver
-    @Dependency(SecureStorage.self) private var secureStorage
+    @Dependency(KeychainStorage.self) private var keychainStorage
     
     /// Creates an instance of the ``LLMOpenAIPlatform``.
     ///
@@ -69,9 +69,9 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
         // If token passed via init
         if let apiToken = configuration.apiToken {
             do {
-                try secureStorage.store(
-                    credentials: Credentials(username: LLMOpenAIConstants.credentialsUsername, password: apiToken),
-                    server: LLMOpenAIConstants.credentialsServer
+                try keychainStorage.store(
+                    Credentials(username: LLMOpenAIConstants.credentialsUsername, password: apiToken),
+                    for: .openAIKey
                 )
             } catch {
                 preconditionFailure("""
@@ -82,7 +82,7 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     }
     
     public func callAsFunction(with llmSchema: LLMOpenAISchema) -> LLMOpenAISession {
-        LLMOpenAISession(self, schema: llmSchema, secureStorage: secureStorage)
+        LLMOpenAISession(self, schema: llmSchema, keychainStorage: keychainStorage)
     }
     
     func exclusiveAccess() async throws {

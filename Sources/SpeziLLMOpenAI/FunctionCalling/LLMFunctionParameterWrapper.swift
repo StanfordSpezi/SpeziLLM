@@ -6,28 +6,34 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAI
+import OpenAPIRuntime
+import OSLog
 
+
+// NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
 
 /// Alias of the OpenAI `JSONSchema/Property` type, describing properties within an object schema.
-public typealias LLMFunctionParameterPropertySchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property
+public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObjectContainer
 /// Alias of the OpenAI `JSONSchema/Item` type, describing array items within an array schema.
-public typealias LLMFunctionParameterItemSchema = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters.Property.Items
+public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
 
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
 public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+    /// A Swift Logger that logs important information and errors.
+    var logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    
     private var injectedValue: T?
-    var schema: LLMFunctionParameterPropertySchema
     
     
+    var schema: LLMFunctionParameterItemSchema
     public var wrappedValue: T {
         // If the unwrapped injectedValue is not nil, return the non-nil value
         if let value = injectedValue {
             return value
         // If the unwrapped injectedValue is nil, return nil
-        } else if let selfCasted = self as? NilValueProtocol {
+        } else if let selfCasted = self as? any NilValueProtocol {
             return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
         // Fail if not injected yet
         } else {
@@ -50,26 +56,11 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
-    public convenience init<D: StringProtocol>(description: D) where T: LLMFunctionParameter {
-        self.init(schema: .init(
-            type: T.schema.type,
-            description: String(description),   // Take description from the property wrapper, all other things from self defined schema
-            format: T.schema.format,
-            items: T.schema.items,
-            required: T.schema.required,
-            pattern: T.schema.pattern,
-            const: T.schema.const,
-            enum: T.schema.enum,
-            multipleOf: T.schema.multipleOf,
-            minimum: T.schema.minimum,
-            maximum: T.schema.maximum,
-            minItems: T.schema.minItems,
-            maxItems: T.schema.maxItems,
-            uniqueItems: T.schema.uniqueItems
-        ))
+    public convenience init(description _: some StringProtocol) where T: LLMFunctionParameter {
+        self.init(schema: T.schema)
     }
-    
-    init(schema: LLMFunctionParameterPropertySchema) {
+
+    init(schema: LLMFunctionParameterItemSchema) {
         self.schema = schema
     }
     
@@ -108,8 +99,3 @@ extension LLMFunction {
     public typealias Parameter<WrappedValue> =
         _LLMFunctionParameterWrapper<WrappedValue> where WrappedValue: Decodable
 }
-
-
-/// Ensuring `Sendable` conformances of ``LLMFunctionParameterPropertySchema`` and ``LLMFunctionParameterItemSchema``
-extension LLMFunctionParameterPropertySchema: @unchecked @retroactive Sendable {}
-extension LLMFunctionParameterItemSchema: @unchecked @retroactive Sendable {}

@@ -14,11 +14,11 @@ import SpeziAccount
 import SpeziFirebaseAccount
 import SpeziFirebaseAccountStorage
 #endif
+import SpeziKeychainStorage
 import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
-import SpeziSecureStorage
 
 
 class TestAppDelegate: SpeziAppDelegate {
@@ -49,6 +49,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
                 LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
                 LLMOpenAIPlatform()
+                LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
             }
         }
     }

@@ -12,21 +12,34 @@ import XCTest
 
 final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
-        static var itemSchema: SpeziLLMOpenAI.LLMFunctionParameterItemSchema = .init(
-            type: .object,
-            properties: [
-                "propertyA": .init(type: .string, description: "First parameter"),
-                "propertyB": .init(type: .integer, description: "Second parameter")
-            ]
-        )
-        
+        static var itemSchema: LLMFunctionParameterItemSchema = {
+            do {
+                return try .init(unvalidatedValue: [
+                    "type": "object",
+                    "properties": [
+                        "propertyA": [
+                            "type": "string",
+                            "description": "First parameter"
+                        ],
+                        "propertyB": [
+                            "type": "integer",
+                            "description": "Second parameter"
+                        ]
+                    ]
+                ])
+            } catch {
+                print("unable to initialse schema in LLMOpenAIParameterCustomTypesTets")
+                return .init()
+            }
+        }()
+
         var propertyA: String
         var propertyB: Int
     }
-    
+
     struct Parameters: Encodable {
         static let shared = Self()
-        
+
         let customArrayParameter = [
             CustomType(propertyA: "testA", propertyB: 123),
             CustomType(propertyA: "testB", propertyB: 456)
@@ -65,7 +78,7 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: "gpt-4o")
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -82,25 +95,33 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
         
         // Validate parameter schema
         let schemaCustomArray = try XCTUnwrap(llmFunction.schemaValueCollectors["customArrayParameter"])
-        XCTAssertEqual(schemaCustomArray.schema.type, .array)
-        XCTAssertEqual(schemaCustomArray.schema.description, "Custom Array Parameter")
-        XCTAssertEqual(schemaCustomArray.schema.minItems, 1)
-        XCTAssertEqual(schemaCustomArray.schema.maxItems, 5)
-        XCTAssertFalse(schemaCustomArray.schema.uniqueItems ?? true)
-        XCTAssertEqual(schemaCustomArray.schema.items?.type, .object)
-        XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyA"]?.type, .string)
-        XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyA"]?.description, "First parameter")
-        XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyB"]?.type, .integer)
-        XCTAssertEqual(schemaCustomArray.schema.items?.properties?["propertyB"]?.description, "Second parameter")
+        var schema = schemaCustomArray.schema.value
+        var items = schemaCustomArray.schema.value["items"] as? [String: Any]
+        var properties = items?["properties"] as? [String: Any]
+        
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Custom Array Parameter")
+        XCTAssertEqual(schema["minItems"] as? Int, 1)
+        XCTAssertEqual(schema["maxItems"] as? Int, 5)
+        XCTAssertFalse(schema["uniqueItems"] as? Bool ?? true)
+        XCTAssertEqual(items?["type"] as? String, "object")
+        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["type"] as? String, "string")
+        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["description"] as? String, "First parameter")
+        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["type"] as? String, "integer")
+        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["description"] as? String, "Second parameter")
         
         let schemaCustomOptionalArray = try XCTUnwrap(llmFunction.schemaValueCollectors["customOptionalArrayParameter"])
-        XCTAssertEqual(schemaCustomOptionalArray.schema.type, .array)
-        XCTAssertEqual(schemaCustomOptionalArray.schema.description, "Custom Optional Array Parameter")
-        XCTAssertEqual(schemaCustomOptionalArray.schema.items?.type, .object)
-        XCTAssertEqual(schemaCustomOptionalArray.schema.items?.properties?["propertyA"]?.type, .string)
-        XCTAssertEqual(schemaCustomOptionalArray.schema.items?.properties?["propertyA"]?.description, "First parameter")
-        XCTAssertEqual(schemaCustomOptionalArray.schema.items?.properties?["propertyB"]?.type, .integer)
-        XCTAssertEqual(schemaCustomOptionalArray.schema.items?.properties?["propertyB"]?.description, "Second parameter")
+        schema = schemaCustomOptionalArray.schema.value
+        items = schemaCustomOptionalArray.schema.value["items"] as? [String: Any]
+        properties = items?["properties"] as? [String: Any]
+        
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Custom Optional Array Parameter")
+        XCTAssertEqual(items?["type"] as? String, "object")
+        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["type"] as? String, "string")
+        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["description"] as? String, "First parameter")
+        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["type"] as? String, "integer")
+        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["description"] as? String, "Second parameter")
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

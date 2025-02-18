@@ -61,7 +61,7 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
     }
     
     let llm = LLMOpenAISchema(
-        parameters: .init(modelType: .gpt4_turbo)
+        parameters: .init(modelType: "gpt-4o")
     ) {
         LLMFunctionTest(someInitArg: "testArg")
     }
@@ -80,30 +80,36 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
         
         // Validate parameter schema
         let schemaEnum = try XCTUnwrap(llmFunction.schemaValueCollectors["enumParameter"])
-        XCTAssertEqual(schemaEnum.schema.type, .string)
-        XCTAssertEqual(schemaEnum.schema.description, "Enum Parameter")
-        XCTAssertEqual(schemaEnum.schema.const, "optionA")
-        XCTAssertEqual(schemaEnum.schema.enum, CustomEnumType.allCases.map { $0.rawValue })
+        var schema = schemaEnum.schema.value
+        XCTAssertEqual(schema["type"] as? String, "string")
+        XCTAssertEqual(schema["description"] as? String, "Enum Parameter")
+        XCTAssertEqual(schema["const"] as? String, "optionA")
+        XCTAssertEqual(schema["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         let schemaOptionalEnum = try XCTUnwrap(llmFunction.schemaValueCollectors["optionalEnumParameter"])
-        XCTAssertEqual(schemaOptionalEnum.schema.type, .string)
-        XCTAssertEqual(schemaOptionalEnum.schema.description, "Optional Enum Parameter")
-        XCTAssertEqual(schemaOptionalEnum.schema.enum, CustomEnumType.allCases.map { $0.rawValue })
+        schema = schemaOptionalEnum.schema.value
+        XCTAssertEqual(schema["type"] as? String, "string")
+        XCTAssertEqual(schema["description"] as? String, "Optional Enum Parameter")
+        XCTAssertEqual(schema["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         let schemaArrayEnum = try XCTUnwrap(llmFunction.schemaValueCollectors["arrayEnumParameter"])
-        XCTAssertEqual(schemaArrayEnum.schema.type, .array)
-        XCTAssertEqual(schemaArrayEnum.schema.description, "Array Enum Parameter")
-        XCTAssertEqual(schemaArrayEnum.schema.minItems, 1)
-        XCTAssertEqual(schemaArrayEnum.schema.maxItems, 5)
-        XCTAssertFalse(schemaArrayEnum.schema.uniqueItems ?? true)
-        XCTAssertEqual(schemaArrayEnum.schema.items?.type, .string)
-        XCTAssertEqual(schemaArrayEnum.schema.items?.enum, CustomEnumType.allCases.map { $0.rawValue })
+        schema = schemaArrayEnum.schema.value
+        var items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Array Enum Parameter")
+        XCTAssertEqual(schema["minItems"] as? Int, 1)
+        XCTAssertEqual(schema["maxItems"] as? Int, 5)
+        XCTAssertFalse(schema["uniqueItems"] as? Bool ?? true)
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         let schemaOptionalArrayEnum = try XCTUnwrap(llmFunction.schemaValueCollectors["optionalArrayEnumParameter"])
-        XCTAssertEqual(schemaOptionalArrayEnum.schema.type, .array)
-        XCTAssertEqual(schemaOptionalArrayEnum.schema.description, "Optional Array Enum Parameter")
-        XCTAssertEqual(schemaOptionalArrayEnum.schema.items?.type, .string)
-        XCTAssertEqual(schemaOptionalArrayEnum.schema.items?.enum, CustomEnumType.allCases.map { $0.rawValue })
+        schema = schemaOptionalArrayEnum.schema.value
+        items = schema["items"] as? [String: Any]
+        XCTAssertEqual(schema["type"] as? String, "array")
+        XCTAssertEqual(schema["description"] as? String, "Optional Array Enum Parameter")
+        XCTAssertEqual(items?["type"] as? String, "string")
+        XCTAssertEqual(items?["enum"] as? [String], CustomEnumType.allCases.map { $0.rawValue })
         
         // Validate parameter injection
         let parameterData = try XCTUnwrap(

@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// Represents an LLM function calling parameter.
 ///
 /// The ``LLMFunctionParameter``enables developers to manually specify the conformance of Swift types to the [OpenAI Function calling schema](https://platform.openai.com/docs/guides/function-calling). <!-- markdown-link-check-disable-line -->
@@ -28,9 +27,13 @@ import Foundation
 /// ```swift
 /// /// Manual conformance to `LLMFunctionParameter` of a custom type.
 /// extension Data: LLMFunctionParameter {
-///     public static var schema: LLMFunctionParameterPropertySchema {
-///         .init(type: .string)
-///     }
+///     public static var schema: LLMFunctionParameterPropertySchema = {
+///         guard let schema = try? LLMFunctionParameterPropertySchema(type: .string) else {
+///             preconditionFailure("Couldn't create function calling schema definition.")
+///         }
+///
+///         return schema
+///     }()
 /// }
 ///
 /// struct WeatherFunction: LLMFunction {

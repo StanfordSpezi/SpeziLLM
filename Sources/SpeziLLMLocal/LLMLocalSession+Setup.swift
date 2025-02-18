@@ -9,6 +9,7 @@
 import Foundation
 import Hub
 import MLXLLM
+import MLXLMCommon
 
 
 extension LLMLocalSession {
@@ -26,7 +27,7 @@ extension LLMLocalSession {
     }
     
     // swiftlint:disable:next identifier_name
-    internal func _setup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
+    internal func _setup(continuation: AsyncThrowingStream<String, any Error>.Continuation?) async -> Bool {
 #if targetEnvironment(simulator)
         return await _mockSetup(continuation: continuation)
 #endif
@@ -46,10 +47,10 @@ extension LLMLocalSession {
         }
         
         do {
-            let modelContainer = try await loadModelContainer(configuration: self.schema.configuration)
+            let modelContainer = try await LLMModelFactory.shared.loadContainer(configuration: self.schema.configuration)
             
-            let numParams = await modelContainer.perform { [] model, _ in
-                model.numParameters()
+            let numParams = await modelContainer.perform { modelContext in
+                modelContext.model.numParameters()
             }
             
             await MainActor.run {
@@ -67,7 +68,7 @@ extension LLMLocalSession {
         return true
     }
     
-    private func _mockSetup(continuation: AsyncThrowingStream<String, Error>.Continuation?) async -> Bool {
+    private func _mockSetup(continuation: AsyncThrowingStream<String, any Error>.Continuation?) async -> Bool {
         Self.logger.debug("SpeziLLMLocal: Local Mock LLM is being initialized")
         
         await MainActor.run {
