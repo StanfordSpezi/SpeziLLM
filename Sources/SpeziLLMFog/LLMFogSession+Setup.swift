@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import Network
-import OpenAI
+import OpenAPIRuntime
+import OpenAPIURLSession
 
 
 extension LLMFogSession {
@@ -59,22 +61,56 @@ extension LLMFogSession {
             await finishGenerationWithError(error, on: continuation)
             return false
         } catch {
-            await finishGenerationWithError(LLMFogError.unknownError(error), on: continuation)
+            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuation)
             return false
         }
-        
-        self.wrappedModel = OpenAI(
-            configuration: .init(
-                token: await schema.parameters.authToken(),
-                host: fogServiceAddress,
-                port: (caCertificate != nil) ? 443 : 80,
-                scheme: (caCertificate != nil) ? "https" : "http",
-                timeoutInterval: platform.configuration.timeout,
-                caCertificate: caCertificate,
-                expectedHost: platform.configuration.host
-            )
+
+        // Initialize the OpenAI client
+        let host: String
+        // If IPv6 address, surround the address with '[' and ']' as required by RFC 3986: https://datatracker.ietf.org/doc/html/rfc3986
+        if fogServiceAddress.contains(":") && !fogServiceAddress.hasPrefix("[") && !fogServiceAddress.hasSuffix("]") {
+            host = "[\(fogServiceAddress)]"
+        } else {
+            host = fogServiceAddress
+        }
+
+        // URL in format: `http(s)://<DISCOVERED_SERVICE_ADDRESS>:<PORT>/v1`
+        let urlString = """
+        \((caCertificate != nil) ? "https" : "http")://\(host):\((caCertificate != nil) ? 443 : 80)/v1
+        """
+        guard let url = URL(string: urlString) else {
+            await finishGenerationWithError(LLMFogError.mDnsServiceDiscoveryNetworkError, on: continuation)
+            return false
+        }
+
+        wrappedClient = Client(
+            serverURL: url,
+            transport: {
+                let session = URLSession(
+                    configuration: .default,
+                    delegate: TransportCertificateValidationDelegate(
+                        caCertificate: caCertificate,
+                        expectedHost: platform.configuration.host,
+                        logger: Self.logger
+                    ),
+                    delegateQueue: nil
+                )
+                session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
+
+                return URLSessionTransport(
+                    configuration: .init(
+                        session: session
+                    )
+                )
+            }(),
+            middlewares: [
+                AuthMiddleware(
+                    authToken: schema.parameters.authToken,
+                    expectedHost: platform.configuration.host
+                )
+            ]
         )
-        
+
         await MainActor.run {
             self.state = .ready
         }
