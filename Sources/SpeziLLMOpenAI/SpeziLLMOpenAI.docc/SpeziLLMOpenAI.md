@@ -190,7 +190,6 @@ Now the OpenAI API Key entry view will appear within your application's onboardi
 - ``LLMOpenAIAPITokenOnboardingStep``
 - ``LLMOpenAIModelOnboardingStep``
 - ``LLMOpenAITokenSaver``
-- ``LLMOpenAIModelType``
 
 ### LLM Configuration
 

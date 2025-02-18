@@ -15,13 +15,13 @@ import SpeziViews
 
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
-/// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
+/// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(model:)`` initializer,
 /// passing a download `URL` as well as a storage `URL` to the ``LLMLocalDownloadManager``.
 /// The download of a model is started via ``LLMLocalDownloadManager/startDownload()`` and can be cancelled (early) via ``LLMLocalDownloadManager/cancelDownload()``.
 /// 
 /// The current state of the ``LLMLocalDownloadManager`` is exposed via the ``LLMLocalDownloadManager/state`` property which
 /// is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
-/// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
+/// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded`` which indicates that the download has finished.
 @Observable
 public final class LLMLocalDownloadManager: NSObject {
     /// An enum containing all possible states of the ``LLMLocalDownloadManager``.
@@ -56,7 +56,7 @@ public final class LLMLocalDownloadManager: NSObject {
     /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
     ///
     /// - Parameters:
-    ///   - modelID: The Huggingface model ID of the LLM that needs to be downloaded.
+    ///   - model: The Huggingface model ID of the LLM that needs to be downloaded.
     public init(model: LLMLocalModel) {
         self.model = model
     }

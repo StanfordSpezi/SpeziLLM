@@ -7,7 +7,9 @@
 //
 
 import Foundation
-import class OpenAI.OpenAI
+import GeneratedOpenAIClient
+import OpenAPIRuntime
+import OpenAPIURLSession
 import os
 import SpeziChat
 import SpeziKeychainStorage
@@ -80,20 +82,20 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
     /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
     @ObservationIgnored private var lock = NSLock()
-    
+    /// The wrapped client instance communicating with the OpenAI API
+    @ObservationIgnored var wrappedClient: Client?
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
-    @ObservationIgnored var wrappedModel: OpenAI?
-    
-    
-    var model: OpenAI {
-        guard let model = wrappedModel else {
+
+    var openAiClient: Client {
+        guard let client = wrappedClient else {
             preconditionFailure("""
-            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAISession` before being initialized.
+            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
             Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
-        return model
+        return client
     }
     
     
@@ -134,7 +136,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             }
             
             // Setup the model, if not already done
-            if wrappedModel == nil {
+            if wrappedClient == nil {
                 guard await setup(continuation: continuation) else {
                     return
                 }

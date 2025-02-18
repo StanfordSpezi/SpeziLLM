@@ -27,7 +27,17 @@ services:
     depends_on:
       - ollama
       - auth-service
+    profiles:
+      - "!linux"
+
+  traefik-linux:
+    extends: traefik
+    depends_on:
+      - ollama
+      - auth-service
       - avahi
+    profiles:
+      - linux
   
   # LLM inference service Ollama
   ollama:

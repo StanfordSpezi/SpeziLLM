@@ -19,7 +19,7 @@ import SwiftUI
 struct LLMFogChatTestView: View {
     static let schema = LLMFogSchema(
         parameters: .init(
-            modelType: .gemma2B,
+            modelType: .llama3_2,
             systemPrompt: "You're a helpful assistant that answers questions from users.",
             authToken: {
                 // As SpeziAccount, SpeziFirebase and the firebase-ios-sdk currently don't support visionOS and macOS, perform fog node token authentication only on iOS

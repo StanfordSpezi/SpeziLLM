@@ -18,7 +18,10 @@ enum LLMFunctionParameterIntermediary: Codable {
     case double(Double)
     case array(Array<LLMFunctionParameterIntermediary>)
     case dictionary([String: LLMFunctionParameterIntermediary])
-    
+
+
+    static let encoder = JSONEncoder()
+
     
     /// Provides a representation of the received JSON where each first-level parameter (the key) maps to the respective nested JSON `Data`.
     var topLayerJSONRepresentation: [String: Data] {
@@ -28,7 +31,7 @@ enum LLMFunctionParameterIntermediary: Codable {
             }
             
             return try dictionary.mapValues {
-                try JSONEncoder().encode($0)
+                try Self.encoder.encode($0)
             }
         }
     }
