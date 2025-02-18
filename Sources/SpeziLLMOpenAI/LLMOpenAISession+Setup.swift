@@ -32,9 +32,9 @@ extension LLMOpenAISession {
             )
         } else {
             // If token is present within the Spezi `SecureStorage`
-            guard let credentials = try? secureStorage.retrieveCredentials(
-                LLMOpenAIConstants.credentialsUsername,
-                server: LLMOpenAIConstants.credentialsServer
+            guard let credentials = try? keychainStorage.retrieveCredentials(
+                withUsername: LLMOpenAIConstants.credentialsUsername,
+                for: .openAIKey
             ) else {
                 Self.logger.error("""
                 SpeziLLMOpenAI: Missing OpenAI API token.
