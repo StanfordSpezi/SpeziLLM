@@ -25,7 +25,7 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
-                "const": const.map { String($0) } as Any?,
+                "const": const.map { String($0) } as (any Sendable)?,
                 "enum": T.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
@@ -50,7 +50,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
-                "const": const.map { String($0) } as Any?,
+                "const": const.map { String($0) } as (any Sendable)?,
                 "enum": T.Wrapped.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
@@ -83,11 +83,11 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "description": String(description),
                 "items": [
                     "type": "string",
-                    "const": const.map { String($0) } as Any?,
+                    "const": const.map { String($0) } as (any Sendable)?,
                     "enum": T.Element.allCases.map { String($0.rawValue) }
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
                 "uniqueItems": uniqueItems
             ].compactMapValues { $0 }))
         } catch {
@@ -122,12 +122,12 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 "description": String(description),
                 "items": [
                     "type": "string",
-                    "const": const.map { String($0) } as Any?,
+                    "const": const.map { String($0) } as (any Sendable)?,
                     "enum": T.Wrapped.Element.allCases.map { String($0.rawValue) }
                 ],
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")

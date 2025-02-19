@@ -39,9 +39,9 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                     "minimum": itemSchema["minimum"],
                     "maximum": itemSchema["maximum"]
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -79,9 +79,9 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                     "minimum": itemSchema["minimum"],
                     "maximum": itemSchema["maximum"]
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")

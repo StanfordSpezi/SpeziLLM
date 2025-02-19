@@ -112,7 +112,7 @@ public enum LLMFogError: LLMError {
 
 
 extension LLMFogSession {
-    private static let modelNotFoundRegex: Regex = {
+    nonisolated(unsafe) private static let modelNotFoundRegex: Regex = {
         guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
             preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
         }

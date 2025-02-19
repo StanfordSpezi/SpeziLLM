@@ -9,7 +9,7 @@
 import Foundation
 import MLX
 import MLXLLM
-import MLXLMCommon
+@preconcurrency import MLXLMCommon
 import MLXRandom
 import os
 import SpeziChat

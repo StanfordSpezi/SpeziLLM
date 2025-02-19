@@ -30,10 +30,10 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "integer",
                 "description": String(description),
-                "const": const.map { String($0) } as Any?,
-                "multipleOf": multipleOf as Any?,
-                "minimum": minimum.map { Double($0) } as Any?,
-                "maximum": maximum.map { Double($0) } as Any?
+                "const": const.map { String($0) } as (any Sendable)?,
+                "multipleOf": multipleOf as (any Sendable)?,
+                "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                "maximum": maximum.map { Double($0) } as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -59,9 +59,9 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "number",
                 "description": String(description),
-                "const": const.map { String($0) } as Any?,
-                "minimum": minimum.map { Double($0) } as Any?,
-                "maximum": maximum.map { Double($0) } as Any?
+                "const": const.map { String($0) } as (any Sendable)?,
+                "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                "maximum": maximum.map { Double($0) } as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -83,7 +83,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "boolean",
                 "description": String(description),
-                "const": const.map { String($0) } as Any?
+                "const": const.map { String($0) } as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -111,10 +111,10 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "string",
                 "description": String(description),
-                "format": format?.rawValue as Any?,
-                "pattern": pattern.map { String($0) } as Any?,
-                "const": const.map { String($0) } as Any?,
-                "enum": `enum`.map { $0.map { String($0) as Any? } }
+                "format": format?.rawValue as (any Sendable)?,
+                "pattern": pattern.map { String($0) } as (any Sendable)?,
+                "const": const.map { String($0) } as (any Sendable)?,
+                "enum": `enum`.map { $0.map { String($0) as (any Sendable)? } }
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -151,14 +151,14 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "description": String(description),
                 "items": [
                     "type": "integer",
-                    "const": const.map { String($0) } as Any?,
-                    "multipleOf": multipleOf.map { Int($0) } as Any?,
-                    "minimum": minimum.map { Double($0) } as Any?,
-                    "maximum": maximum.map { Double($0) } as Any?
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "multipleOf": multipleOf.map { Int($0) } as (any Sendable)?,
+                    "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                    "maximum": maximum.map { Double($0) } as (any Sendable)?
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -193,13 +193,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "description": String(description),
                 "items": [
                     "type": "number",
-                    "const": const.map { String($0) } as Any?,
-                    "minimum": minimum.map { Double($0) } as Any?,
-                    "maximum": maximum.map { Double($0) } as Any?
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                    "maximum": maximum.map { Double($0) } as (any Sendable)?
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -229,11 +229,11 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "description": String(description),
                 "items": [
                     "type": "boolean",
-                    "const": const.map { String($0) } as Any?
+                    "const": const.map { String($0) } as (any Sendable)?
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -268,13 +268,13 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
                 "description": String(description),
                 "items": [
                     "type": "string",
-                    "pattern": pattern.map { String($0) } as Any?,
-                    "const": const.map { String($0) } as Any?,
-                    "enum": `enum`.map { $0.map { String($0) } } as Any?
+                    "pattern": pattern.map { String($0) } as (any Sendable)?,
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "enum": `enum`.map { $0.map { String($0) } } as (any Sendable)?
                 ].compactMapValues { $0 },
-                "minItems": minItems as Any?,
-                "maxItems": maxItems as Any?,
-                "uniqueItems": uniqueItems as Any?
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
             preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
