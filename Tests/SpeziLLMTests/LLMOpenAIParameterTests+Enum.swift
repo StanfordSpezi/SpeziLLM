@@ -26,8 +26,8 @@ final class LLMOpenAIParameterEnumTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_enum_function"
-        static var description: String = "This is a test enum LLM function."
+        static let name: String = "test_enum_function"
+        static let description: String = "This is a test enum LLM function."
         
         let someInitArg: String
         

@@ -18,8 +18,8 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_invalid_parameters_function"
-        static var description: String = "This is a test invalid parameters LLM function."
+        static let name: String = "test_invalid_parameters_function"
+        static let description: String = "This is a test invalid parameters LLM function."
         
         let someInitArg: String
         

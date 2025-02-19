@@ -21,8 +21,8 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_function"
-        static var description: String = "This is a test LLM function."
+        static let name: String = "test_function"
+        static let description: String = "This is a test LLM function."
         
         let someInitArg: String
         
