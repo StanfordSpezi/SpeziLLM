@@ -23,7 +23,7 @@ import SpeziViews
 /// is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
 /// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded`` which indicates that the download has finished.
 @Observable
-public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
+public final class LLMLocalDownloadManager: NSObject {
     /// An enum containing all possible states of the ``LLMLocalDownloadManager``.
     public enum DownloadState: Equatable {
         case idle
@@ -113,12 +113,18 @@ public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
     }
 
     private func downloadWithHub() async throws {
+        // Sadly, we need this workaround to make the Swift compiler (strict concurrency checking) happy
+        @MainActor
+        func mutate(progress: Progress) {
+              self.state = .downloading(progress: progress)
+        }
+
         let repo = Hub.Repo(id: model.hubID)
         let modelFiles = ["*.safetensors", "config.json"]
         
         try await HubApi.shared.snapshot(from: repo, matching: modelFiles) { progress in
-            Task { @MainActor in
-                self.state = .downloading(progress: progress)
+            Task { @MainActor [mutate] in
+                mutate(progress)
             }
         }
     }

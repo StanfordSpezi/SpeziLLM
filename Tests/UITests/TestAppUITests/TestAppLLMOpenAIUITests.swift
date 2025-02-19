@@ -12,7 +12,6 @@ import XCTestExtensions
 
 @MainActor
 class TestAppLLMOpenAIUITests: XCTestCase {
-    @MainActor
     override func setUp() async throws {
         try super.setUpWithError()
         
