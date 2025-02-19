@@ -10,8 +10,10 @@ import XCTest
 import XCTestExtensions
 
 
+@MainActor
 class TestAppLLMOpenAIUITests: XCTestCase {
-    override func setUpWithError() throws {
+    @MainActor
+    override func setUp() async throws {
         try super.setUpWithError()
         
         continueAfterFailure = false
