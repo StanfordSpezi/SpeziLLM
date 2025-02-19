@@ -27,7 +27,7 @@ public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
     public enum Defaults {
         /// Empty default of passed function calls (`_LLMFunctionCollection`).
         /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.
-        public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
+        nonisolated(unsafe) public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
     }
     
     

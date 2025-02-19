@@ -21,8 +21,8 @@ final class LLMOpenAIParameterArrayTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_array_function"
-        static var description: String = "This is a test array LLM function."
+        static let name: String = "test_array_function"
+        static let description: String = "This is a test array LLM function."
         
         let someInitArg: String
         

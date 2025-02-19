@@ -112,13 +112,7 @@ public enum LLMFogError: LLMError {
 
 
 extension LLMFogSession {
-    private static let modelNotFoundRegex: Regex = {
-        guard let regex = try? Regex("model '([\\w:]+)' not found, try pulling it first") else {
-            preconditionFailure("SpeziLLMFog: Error Regex could not be parsed")
-        }
-
-        return regex
-    }()
+    private static let modelNotFoundRegex = "model '([\\w:]+)' not found, try pulling it first"
 
 
     func handleErrorCode(statusCode: Int, message: String?) -> LLMFogError {
@@ -128,7 +122,7 @@ extension LLMFogSession {
             return .invalidAPIToken
         case 404:
             if let message,
-               message.contains(Self.modelNotFoundRegex) {
+               message.range(of: Self.modelNotFoundRegex, options: .regularExpression) != nil {
                 LLMFogSession.logger.error("SpeziLLMFog: Model could not be accessed, ensure to pull it first on the Ollama fog node: \(message)")
                 return .modelAccessError(message)
             }

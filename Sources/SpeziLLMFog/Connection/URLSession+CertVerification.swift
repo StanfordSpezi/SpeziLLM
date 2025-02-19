@@ -8,7 +8,7 @@
 
 import Foundation
 import os
-import Security
+@preconcurrency import Security
 
 
 final class TransportCertificateValidationDelegate: NSObject, URLSessionDelegate {

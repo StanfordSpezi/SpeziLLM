@@ -12,7 +12,7 @@ import XCTest
 
 final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
-        static var itemSchema: LLMFunctionParameterItemSchema = {
+        static let itemSchema: LLMFunctionParameterItemSchema = {
             do {
                 return try .init(unvalidatedValue: [
                     "type": "object",
@@ -49,8 +49,8 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_custom_type_function"
-        static var description: String = "This is a test custom type LLM function."
+        static let name: String = "test_custom_type_function"
+        static let description: String = "This is a test custom type LLM function."
         
         let someInitArg: String
         

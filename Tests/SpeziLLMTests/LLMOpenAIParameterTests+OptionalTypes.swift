@@ -25,8 +25,8 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
     }
     
     struct LLMFunctionTest: LLMFunction {
-        static var name: String = "test_optional_function"
-        static var description: String = "This is a test optional LLM function."
+        static let name: String = "test_optional_function"
+        static let description: String = "This is a test optional LLM function."
         
         let someInitArg: String
         
