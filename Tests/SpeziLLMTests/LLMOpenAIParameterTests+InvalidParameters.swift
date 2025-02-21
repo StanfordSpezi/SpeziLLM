@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 @testable import SpeziLLMOpenAI
-import XCTest
+import Testing
 
 
-final class LLMOpenAIInvalidParametersTests: XCTestCase {
+struct LLMOpenAIInvalidParametersTests {
     struct Parameters: Encodable {
         static let shared = Self()
         
@@ -37,7 +38,7 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
         
         
         func execute() async throws -> String? {
-            XCTFail("Execution of function should have never happened as parameters mismatch!")
+            Issue.record("Execution of function should have never happened as parameters mismatch!")
             
             return someInitArg
         }
@@ -49,30 +50,33 @@ final class LLMOpenAIInvalidParametersTests: XCTestCase {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
+    @Test()
     func testLLMFunctionPrimitiveParameters() async throws {
-        XCTAssertEqual(llm.functions.count, 1)
-        let llmFunctionPair = try XCTUnwrap(llm.functions.first)
+        #expect(llm.functions.count == 1)
+        let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        XCTAssertEqual(llmFunctionPair.key, LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTest.name)
         let llmFunction = llmFunctionPair.value
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["randomParameter"])).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["randomParameter"])).isOptional)
         
         // Validate parameter schema
-        let schemaRandomParameter = try XCTUnwrap(llmFunction.schemaValueCollectors["randomParameter"])
+        let schemaRandomParameter = try #require(llmFunction.schemaValueCollectors["randomParameter"])
         let schema = schemaRandomParameter.schema.value
-        XCTAssertEqual(schema["type"] as? String, "string")
-        XCTAssertEqual(schema["description"] as? String, "Random Parameter")
-        XCTAssertEqual(schema["pattern"] as? String, "/d/d/d/d")
+        #expect(schema["type"] as? String == "string")
+        #expect(schema["description"] as? String == "Random Parameter")
+        #expect(schema["pattern"] as? String == "/d/d/d/d")
         
         // Validate parameter injection
-        let parameterData = try XCTUnwrap(
-            JSONEncoder().encode(Parameters.shared)
+        let parameterData = try #require(
+            try JSONEncoder().encode(Parameters.shared)
         )
         
-        XCTAssertThrowsError(
-            try llmFunction.injectParameters(from: parameterData),
+        #expect(
+            throws: (any Error).self,
             "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
-        )
+        ) {
+            try llmFunction.injectParameters(from: parameterData)
+        }
     }
 }

@@ -6,11 +6,11 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 @testable import SpeziLLMOpenAI
-import XCTest
+import Testing
 
-
-final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
+struct LLMOpenAIParameterPrimitiveTypesTests {
     struct Parameters: Encodable {
         static let shared = Self()
         
@@ -46,10 +46,10 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
         
         
         func execute() async throws -> String? {
-            XCTAssertEqual(intParameter, Parameters.shared.intParameter)
-            XCTAssertEqual(doubleParameter, Parameters.shared.doubleParameter)
-            XCTAssertEqual(boolParameter, Parameters.shared.boolParameter)
-            XCTAssertEqual(stringParameter, Parameters.shared.stringParameter)
+            #expect(intParameter == Parameters.shared.intParameter)
+            #expect(doubleParameter == Parameters.shared.doubleParameter)
+            #expect(boolParameter == Parameters.shared.boolParameter)
+            #expect(stringParameter == Parameters.shared.stringParameter)
             
             return someInitArg
         }
@@ -61,49 +61,50 @@ final class LLMOpenAIParameterPrimitiveTypesTests: XCTestCase {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
+    @Test()
     func testLLMFunctionPrimitiveParameters() async throws {
-        XCTAssertEqual(llm.functions.count, 1)
-        let llmFunctionPair = try XCTUnwrap(llm.functions.first)
+        #expect(llm.functions.count == 1)
+        let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        XCTAssertEqual(llmFunctionPair.key, LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTest.name)
         let llmFunction = llmFunctionPair.value
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["intParameter"])).isOptional)
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["doubleParameter"])).isOptional)
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["boolParameter"])).isOptional)
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["stringParameter"])).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["intParameter"])).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["doubleParameter"])).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["boolParameter"])).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["stringParameter"])).isOptional)
         
         // Validate parameter schema
-        let schemaPrimitiveInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intParameter"])
-        XCTAssertEqual(schemaPrimitiveInt.schema.value["type"] as? String, "integer")
-        XCTAssertEqual(schemaPrimitiveInt.schema.value["description"] as? String, "Primitive Int Parameter")
-        XCTAssertEqual(schemaPrimitiveInt.schema.value["multipleOf"] as? Int, 3)
+        let schemaPrimitiveInt = try #require(llmFunction.schemaValueCollectors["intParameter"])
+        #expect(schemaPrimitiveInt.schema.value["type"] as? String == "integer")
+        #expect(schemaPrimitiveInt.schema.value["description"] as? String == "Primitive Int Parameter")
+        #expect(schemaPrimitiveInt.schema.value["multipleOf"] as? Int == 3)
         
-        let schemaPrimitiveDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleParameter"])
-        XCTAssertEqual(schemaPrimitiveDouble.schema.value["type"] as? String, "number")
-        XCTAssertEqual(schemaPrimitiveDouble.schema.value["description"] as? String, "Primitive Double Parameter")
-        XCTAssertEqual(schemaPrimitiveDouble.schema.value["minimum"] as? Double, 12.3)
-        XCTAssertEqual(schemaPrimitiveDouble.schema.value["maximum"] as? Double, 34.56)
+        let schemaPrimitiveDouble = try #require(llmFunction.schemaValueCollectors["doubleParameter"])
+        #expect(schemaPrimitiveDouble.schema.value["type"] as? String == "number")
+        #expect(schemaPrimitiveDouble.schema.value["description"] as? String == "Primitive Double Parameter")
+        #expect(schemaPrimitiveDouble.schema.value["minimum"] as? Double == 12.3)
+        #expect(schemaPrimitiveDouble.schema.value["maximum"] as? Double == 34.56)
         
-        let schemaPrimitiveBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolParameter"])
-        XCTAssertEqual(schemaPrimitiveBool.schema.value["type"] as? String, "boolean")
-        XCTAssertEqual(schemaPrimitiveBool.schema.value["description"] as? String, "Primitive Bool Parameter")
-        XCTAssertEqual(schemaPrimitiveBool.schema.value["const"] as? String, "false")
+        let schemaPrimitiveBool = try #require(llmFunction.schemaValueCollectors["boolParameter"])
+        #expect(schemaPrimitiveBool.schema.value["type"] as? String == "boolean")
+        #expect(schemaPrimitiveBool.schema.value["description"] as? String == "Primitive Bool Parameter")
+        #expect(schemaPrimitiveBool.schema.value["const"] as? String == "false")
         
-        let schemaPrimitiveString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringParameter"])
-        XCTAssertEqual(schemaPrimitiveString.schema.value["type"] as? String, "string")
-        XCTAssertEqual(schemaPrimitiveString.schema.value["description"] as? String, "Primitive String Parameter")
-        XCTAssertEqual(schemaPrimitiveString.schema.value["format"] as? String, "date-time")
-        XCTAssertEqual(schemaPrimitiveString.schema.value["pattern"] as? String, "/d/d/d/d")
-        XCTAssertEqual(schemaPrimitiveString.schema.value["enum"] as? [String], ["1234", "5678"])
+        let schemaPrimitiveString = try #require(llmFunction.schemaValueCollectors["stringParameter"])
+        #expect(schemaPrimitiveString.schema.value["type"] as? String == "string")
+        #expect(schemaPrimitiveString.schema.value["description"] as? String == "Primitive String Parameter")
+        #expect(schemaPrimitiveString.schema.value["format"] as? String == "date-time")
+        #expect(schemaPrimitiveString.schema.value["pattern"] as? String == "/d/d/d/d")
+        #expect(schemaPrimitiveString.schema.value["enum"] as? [String] == ["1234", "5678"])
         
         // Validate parameter injection
-        let parameterData = try XCTUnwrap(
-            JSONEncoder().encode(Parameters.shared)
+        let parameterData = try #require(
+            try JSONEncoder().encode(Parameters.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
-        XCTAssertEqual(llmFunctionResponse, "testArg")
+        #expect(llmFunctionResponse == "testArg")
     }
 }

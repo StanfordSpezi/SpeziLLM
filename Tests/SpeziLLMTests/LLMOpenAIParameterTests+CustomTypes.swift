@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 @testable import SpeziLLMOpenAI
-import XCTest
+import Testing
 
 
-final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
+struct LLMOpenAIParameterCustomTypesTests {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
         static let itemSchema: LLMFunctionParameterItemSchema = {
             do {
@@ -70,8 +71,8 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
         
         
         func execute() async throws -> String? {
-            XCTAssertEqual(customArrayParameter, Parameters.shared.customArrayParameter)
-            XCTAssertEqual(customOptionalArrayParameter, Parameters.shared.customOptionalArrayParameter)
+            #expect(customArrayParameter == Parameters.shared.customArrayParameter)
+            #expect(customOptionalArrayParameter == Parameters.shared.customOptionalArrayParameter)
             
             return someInitArg
         }
@@ -83,53 +84,54 @@ final class LLMOpenAIParameterCustomTypesTests: XCTestCase {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
+    @Test()
     func testLLMFunctionPrimitiveParameters() async throws {
-        XCTAssertEqual(llm.functions.count, 1)
-        let llmFunctionPair = try XCTUnwrap(llm.functions.first)
+        #expect(llm.functions.count == 1)
+        let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        XCTAssertEqual(llmFunctionPair.key, LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTest.name)
         let llmFunction = llmFunctionPair.value
-        XCTAssert(!(try XCTUnwrap(llmFunction.parameterValueCollectors["customArrayParameter"])).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["customOptionalArrayParameter"]).isOptional)
+        #expect(!(try #require(llmFunction.parameterValueCollectors["customArrayParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["customOptionalArrayParameter"]).isOptional)
         
         // Validate parameter schema
-        let schemaCustomArray = try XCTUnwrap(llmFunction.schemaValueCollectors["customArrayParameter"])
+        let schemaCustomArray = try #require(llmFunction.schemaValueCollectors["customArrayParameter"])
         var schema = schemaCustomArray.schema.value
         var items = schemaCustomArray.schema.value["items"] as? [String: Any]
         var properties = items?["properties"] as? [String: Any]
         
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Custom Array Parameter")
-        XCTAssertEqual(schema["minItems"] as? Int, 1)
-        XCTAssertEqual(schema["maxItems"] as? Int, 5)
-        XCTAssertFalse(schema["uniqueItems"] as? Bool ?? true)
-        XCTAssertEqual(items?["type"] as? String, "object")
-        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["type"] as? String, "string")
-        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["description"] as? String, "First parameter")
-        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["type"] as? String, "integer")
-        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["description"] as? String, "Second parameter")
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Custom Array Parameter")
+        #expect(schema["minItems"] as? Int == 1)
+        #expect(schema["maxItems"] as? Int == 5)
+        #expect(!(schema["uniqueItems"] as? Bool ?? true))
+        #expect(items?["type"] as? String == "object")
+        #expect((properties?["propertyA"] as? [String: Any])?["type"] as? String == "string")
+        #expect((properties?["propertyA"] as? [String: Any])?["description"] as? String == "First parameter")
+        #expect((properties?["propertyB"] as? [String: Any])?["type"] as? String == "integer")
+        #expect((properties?["propertyB"] as? [String: Any])?["description"] as? String == "Second parameter")
         
-        let schemaCustomOptionalArray = try XCTUnwrap(llmFunction.schemaValueCollectors["customOptionalArrayParameter"])
+        let schemaCustomOptionalArray = try #require(llmFunction.schemaValueCollectors["customOptionalArrayParameter"])
         schema = schemaCustomOptionalArray.schema.value
         items = schemaCustomOptionalArray.schema.value["items"] as? [String: Any]
         properties = items?["properties"] as? [String: Any]
         
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Custom Optional Array Parameter")
-        XCTAssertEqual(items?["type"] as? String, "object")
-        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["type"] as? String, "string")
-        XCTAssertEqual((properties?["propertyA"] as? [String: Any])?["description"] as? String, "First parameter")
-        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["type"] as? String, "integer")
-        XCTAssertEqual((properties?["propertyB"] as? [String: Any])?["description"] as? String, "Second parameter")
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Custom Optional Array Parameter")
+        #expect(items?["type"] as? String == "object")
+        #expect((properties?["propertyA"] as? [String: Any])?["type"] as? String == "string")
+        #expect((properties?["propertyA"] as? [String: Any])?["description"] as? String == "First parameter")
+        #expect((properties?["propertyB"] as? [String: Any])?["type"] as? String == "integer")
+        #expect((properties?["propertyB"] as? [String: Any])?["description"] as? String == "Second parameter")
         
         // Validate parameter injection
-        let parameterData = try XCTUnwrap(
-            JSONEncoder().encode(Parameters.shared)
+        let parameterData = try #require(
+            try JSONEncoder().encode(Parameters.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
-        XCTAssertEqual(llmFunctionResponse, "testArg")
+        #expect(llmFunctionResponse == "testArg")
     }
 }

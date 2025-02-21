@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 @testable import SpeziLLMOpenAI
-import XCTest
+import Testing
 
 
-final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
+struct LLMOpenAIParameterOptionalTypesTests {
     struct Parameters: Encodable {
         static let shared = Self()
         
@@ -60,15 +61,15 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         
         
         func execute() async throws -> String? {
-            XCTAssertEqual(intParameter, Parameters.shared.intParameter)
-            XCTAssertEqual(doubleParameter, Parameters.shared.doubleParameter)
-            XCTAssertEqual(boolParameter, Parameters.shared.boolParameter)
-            XCTAssertEqual(stringParameter, Parameters.shared.stringParameter)
-            XCTAssertEqual(intArrayParameter, Parameters.shared.intArrayParameter)
-            XCTAssertEqual(doubleArrayParameter, Parameters.shared.doubleArrayParameter)
-            XCTAssertEqual(boolArrayParameter, Parameters.shared.boolArrayParameter)
-            XCTAssertEqual(stringArrayParameter, Parameters.shared.stringArrayParameter)
-            XCTAssertNil(arrayNilParameter)
+            #expect(intParameter == Parameters.shared.intParameter)
+            #expect(doubleParameter == Parameters.shared.doubleParameter)
+            #expect(boolParameter == Parameters.shared.boolParameter)
+            #expect(stringParameter == Parameters.shared.stringParameter)
+            #expect(intArrayParameter == Parameters.shared.intArrayParameter)
+            #expect(doubleArrayParameter == Parameters.shared.doubleArrayParameter)
+            #expect(boolArrayParameter == Parameters.shared.boolArrayParameter)
+            #expect(stringArrayParameter == Parameters.shared.stringArrayParameter)
+            #expect(arrayNilParameter == nil)
             
             return someInitArg
         }
@@ -80,94 +81,95 @@ final class LLMOpenAIParameterOptionalTypesTests: XCTestCase {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
+    @Test()
     func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
-        XCTAssertEqual(llm.functions.count, 1)
-        let llmFunctionPair = try XCTUnwrap(llm.functions.first)
+        #expect(llm.functions.count == 1)
+        let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        XCTAssertEqual(llmFunctionPair.key, LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTest.name)
         let llmFunction = llmFunctionPair.value
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["intParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["boolParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["stringParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["intArrayParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["doubleArrayParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["boolArrayParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["stringArrayParameter"]).isOptional)
-        XCTAssert(try XCTUnwrap(llmFunction.parameterValueCollectors["arrayNilParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["intParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["boolParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["stringParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["intArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["doubleArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["boolArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["stringArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["arrayNilParameter"]).isOptional)
         
         // Validate parameter schema
-        let schemaOptionalInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intParameter"])
+        let schemaOptionalInt = try #require(llmFunction.schemaValueCollectors["intParameter"])
         var schema = schemaOptionalInt.schema.value
-        XCTAssertEqual(schema["type"] as? String, "integer")
-        XCTAssertEqual(schema["description"] as? String, "Optional Int Parameter")
-        XCTAssertEqual(schema["multipleOf"] as? Int, 3)
+        #expect(schema["type"] as? String == "integer")
+        #expect(schema["description"] as? String == "Optional Int Parameter")
+        #expect(schema["multipleOf"] as? Int == 3)
         
-        let schemaOptionalDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleParameter"])
+        let schemaOptionalDouble = try #require(llmFunction.schemaValueCollectors["doubleParameter"])
         schema = schemaOptionalDouble.schema.value
-        XCTAssertEqual(schema["type"] as? String, "number")
-        XCTAssertEqual(schema["description"] as? String, "Optional Double Parameter")
-        XCTAssertEqual(schema["minimum"] as? Double, 12)
-        XCTAssertEqual(schema["maximum"] as? Double, 34)
+        #expect(schema["type"] as? String == "number")
+        #expect(schema["description"] as? String == "Optional Double Parameter")
+        #expect(schema["minimum"] as? Double == 12)
+        #expect(schema["maximum"] as? Double == 34)
         
-        let schemaOptionalBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolParameter"])
+        let schemaOptionalBool = try #require(llmFunction.schemaValueCollectors["boolParameter"])
         schema = schemaOptionalBool.schema.value
-        XCTAssertEqual(schema["type"] as? String, "boolean")
-        XCTAssertEqual(schema["description"] as? String, "Optional Bool Parameter")
-        XCTAssertEqual(schema["const"] as? String, "false")
+        #expect(schema["type"] as? String == "boolean")
+        #expect(schema["description"] as? String == "Optional Bool Parameter")
+        #expect(schema["const"] as? String == "false")
         
-        let schemaOptionalString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringParameter"])
+        let schemaOptionalString = try #require(llmFunction.schemaValueCollectors["stringParameter"])
         schema = schemaOptionalString.schema.value
-        XCTAssertEqual(schema["type"] as? String, "string")
-        XCTAssertEqual(schema["description"] as? String, "Optional String Parameter")
-        XCTAssertEqual(schema["format"] as? String, "date-time")
-        XCTAssertEqual(schema["pattern"] as? String, "/d/d/d/d")
-        XCTAssertEqual(schema["enum"] as? [String], ["1234", "5678"])
+        #expect(schema["type"] as? String == "string")
+        #expect(schema["description"] as? String == "Optional String Parameter")
+        #expect(schema["format"] as? String == "date-time")
+        #expect(schema["pattern"] as? String == "/d/d/d/d")
+        #expect(schema["enum"] as? [String] == ["1234", "5678"])
         
-        let schemaArrayInt = try XCTUnwrap(llmFunction.schemaValueCollectors["intArrayParameter"])
+        let schemaArrayInt = try #require(llmFunction.schemaValueCollectors["intArrayParameter"])
         schema = schemaArrayInt.schema.value
         var items = schema["items"] as? [String: Any]
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Optional Int Array Parameter")
-        XCTAssertEqual(schema["minItems"] as? Int, 1)
-        XCTAssertEqual(schema["maxItems"] as? Int, 9)
-        XCTAssertTrue(schema["uniqueItems"] as? Bool ?? false)
-        XCTAssertEqual(items?["type"] as? String, "integer")
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Optional Int Array Parameter")
+        #expect(schema["minItems"] as? Int == 1)
+        #expect(schema["maxItems"] as? Int == 9)
+        #expect(schema["uniqueItems"] as? Bool ?? false)
+        #expect(items?["type"] as? String == "integer")
         
-        let schemaArrayDouble = try XCTUnwrap(llmFunction.schemaValueCollectors["doubleArrayParameter"])
+        let schemaArrayDouble = try #require(llmFunction.schemaValueCollectors["doubleArrayParameter"])
         schema = schemaArrayDouble.schema.value
         items = schema["items"] as? [String: Any]
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Optional Double Array Parameter")
-        XCTAssertEqual(items?["type"] as? String, "number")
-        XCTAssertEqual(items?["minimum"] as? Double, 12.3)
-        XCTAssertEqual(items?["maximum"] as? Double, 45.6)
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Optional Double Array Parameter")
+        #expect(items?["type"] as? String == "number")
+        #expect(items?["minimum"] as? Double == 12.3)
+        #expect(items?["maximum"] as? Double == 45.6)
         
-        let schemaArrayBool = try XCTUnwrap(llmFunction.schemaValueCollectors["boolArrayParameter"])
+        let schemaArrayBool = try #require(llmFunction.schemaValueCollectors["boolArrayParameter"])
         schema = schemaArrayBool.schema.value
         items = schema["items"] as? [String: Any]
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Optional Bool Array Parameter")
-        XCTAssertEqual(items?["type"] as? String, "boolean")
-        XCTAssertEqual(items?["const"] as? String, "true")
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Optional Bool Array Parameter")
+        #expect(items?["type"] as? String == "boolean")
+        #expect(items?["const"] as? String == "true")
         
-        let schemaArrayString = try XCTUnwrap(llmFunction.schemaValueCollectors["stringArrayParameter"])
+        let schemaArrayString = try #require(llmFunction.schemaValueCollectors["stringArrayParameter"])
         schema = schemaArrayString.schema.value
         items = schema["items"] as? [String: Any]
-        XCTAssertEqual(schema["type"] as? String, "array")
-        XCTAssertEqual(schema["description"] as? String, "Optional String Array Parameter")
-        XCTAssertEqual(items?["type"] as? String, "string")
-        XCTAssertEqual(items?["pattern"] as? String, "/d/d/d/d")
-        XCTAssertEqual(items?["enum"] as? [String], ["1234", "5678"])
+        #expect(schema["type"] as? String == "array")
+        #expect(schema["description"] as? String == "Optional String Array Parameter")
+        #expect(items?["type"] as? String == "string")
+        #expect(items?["pattern"] as? String == "/d/d/d/d")
+        #expect(items?["enum"] as? [String] == ["1234", "5678"])
         
         // Validate parameter injection
-        let parameterData = try XCTUnwrap(
-            JSONEncoder().encode(Parameters.shared)
+        let parameterData = try #require(
+            try JSONEncoder().encode(Parameters.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
-        XCTAssertEqual(llmFunctionResponse, "testArg")
+        #expect(llmFunctionResponse == "testArg")
     }
 }
