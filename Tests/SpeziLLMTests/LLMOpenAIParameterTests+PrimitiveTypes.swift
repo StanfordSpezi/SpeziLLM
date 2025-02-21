@@ -61,7 +61,7 @@ struct LLMOpenAIParameterPrimitiveTypesTests {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
-    @Test()
+    @Test("Test Primitive Type Parameters")
     func testLLMFunctionPrimitiveParameters() async throws {
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)

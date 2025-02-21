@@ -81,7 +81,7 @@ struct LLMOpenAIParameterOptionalTypesTests {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
-    @Test()
+    @Test("Test Optional Parameters")
     func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)

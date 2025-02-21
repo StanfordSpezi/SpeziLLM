@@ -50,7 +50,7 @@ struct LLMOpenAIInvalidParametersTests {
         LLMFunctionTest(someInitArg: "testArg")
     }
     
-    @Test()
+    @Test("Test Invalid Parameters")
     func testLLMFunctionPrimitiveParameters() async throws {
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
