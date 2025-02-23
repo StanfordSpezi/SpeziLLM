@@ -26,6 +26,11 @@ Without preprocessing, these issues result in unnecessary warnings during the Sw
 
 After updating the used [OpenAI OpenAPI specification](https://github.com/openai/openai-openapi) in SpeziLLM, run the preprocessing script to prepare the spec for use in SpeziLLM.
 
+#### Prerequisits:
+
+Make sure Node.js and npm are installed on your system, either via `brew install node` on macOS or `sudo apt install nodejs npm` on Ubuntu / Linux.
+Also, ensure that the OpenAI OpenAPI spec is located in the `openapi.yaml` file.
+
 #### **Steps:**
 1. Navigate to the generated client directory:
 
@@ -33,18 +38,19 @@ After updating the used [OpenAI OpenAPI specification](https://github.com/openai
 cd Sources/GeneratedOpenAIClient
 ```
 
-2. Ensure the script is executable:
+
+2. Install dependencies (if not already installed):
 
 ```sh
-chmod +x preprocess-openapi-spec.sh
+npm install
 ```
 
 
 3. Run the preprocessing script:
 
 ```sh
-./preprocess-openapi-spec.sh
+npm run preprocess
 ```
 
 
-After running the script, the specification will be correctly formatted and ready for Swift client code generation.
+After running the script, the specification will be correctly formatted (including the Spezi copyright header) and ready for Swift client code generation.

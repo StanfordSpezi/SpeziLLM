@@ -1,0 +1,17 @@
+{
+  "name": "openapi-preprocessor",
+  "version": "1.0.0",
+  "description": "A script to preprocess and clean the OpenAPI specification file for SpeziLLM usage.",
+  "main": "preprocess-openapi-spec.js",
+  "scripts": {
+    "preprocess": "node preprocess-openapi-spec.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "config": {
+    "openapiFile": "openapi.yaml"
+  },
+  "author": "Philipp Zagar",
+  "license": "MIT"
+}
