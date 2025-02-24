@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -10,8 +10,9 @@ import Foundation
 @testable import SpeziLLMOpenAI
 import Testing
 
-struct LLMOpenAIParameterPrimitiveTypesTests {
-    struct Parameters: Encodable {
+@Suite("LLM OpenAI Function Calling Parameter DSL Tests")
+struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this type_name
+    struct ParametersPrimitive: Encodable {
         static let shared = Self()
         
         let intParameter = 12
@@ -20,7 +21,7 @@ struct LLMOpenAIParameterPrimitiveTypesTests {
         let stringParameter = "1234"
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestPrimitive: LLMFunction {
         static let name: String = "test_function"
         static let description: String = "This is a test LLM function."
         
@@ -46,33 +47,34 @@ struct LLMOpenAIParameterPrimitiveTypesTests {
         
         
         func execute() async throws -> String? {
-            #expect(intParameter == Parameters.shared.intParameter)
-            #expect(doubleParameter == Parameters.shared.doubleParameter)
-            #expect(boolParameter == Parameters.shared.boolParameter)
-            #expect(stringParameter == Parameters.shared.stringParameter)
+            #expect(intParameter == ParametersPrimitive.shared.intParameter)
+            #expect(doubleParameter == ParametersPrimitive.shared.doubleParameter)
+            #expect(boolParameter == ParametersPrimitive.shared.boolParameter)
+            #expect(stringParameter == ParametersPrimitive.shared.stringParameter)
             
             return someInitArg
         }
     }
     
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
     
     @Test("Test Primitive Type Parameters")
     func testLLMFunctionPrimitiveParameters() async throws {
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestPrimitive(someInitArg: "testArg")
+        }
+        
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestPrimitive.name)
         let llmFunction = llmFunctionPair.value
-        #expect(!(try #require(llmFunction.parameterValueCollectors["intParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["doubleParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["boolParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["stringParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["intParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["boolParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["stringParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaPrimitiveInt = try #require(llmFunction.schemaValueCollectors["intParameter"])
@@ -100,7 +102,7 @@ struct LLMOpenAIParameterPrimitiveTypesTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            try JSONEncoder().encode(ParametersPrimitive.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)

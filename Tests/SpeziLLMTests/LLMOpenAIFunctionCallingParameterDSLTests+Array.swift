@@ -11,8 +11,8 @@ import Foundation
 import Testing
 
 
-struct LLMOpenAIParameterArrayTests {
-    struct Parameters: Encodable {
+extension LLMOpenAIFunctionCallingParameterDSLTests {
+    struct ParametersArray: Encodable {
         static let shared = Self()
         
         let intArrayParameter = [1, 2]
@@ -21,7 +21,7 @@ struct LLMOpenAIParameterArrayTests {
         let stringArrayParameter = ["test1", "test2"]
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestArray: LLMFunction {
         static let name: String = "test_array_function"
         static let description: String = "This is a test array LLM function."
         
@@ -47,33 +47,34 @@ struct LLMOpenAIParameterArrayTests {
         
         
         func execute() async throws -> String? {
-            #expect(intArrayParameter == Parameters.shared.intArrayParameter)
-            #expect(doubleArrayParameter == Parameters.shared.doubleArrayParameter)
-            #expect(boolArrayParameter == Parameters.shared.boolArrayParameter)
-            #expect(stringArrayParameter == Parameters.shared.stringArrayParameter)
+            #expect(intArrayParameter == ParametersArray.shared.intArrayParameter)
+            #expect(doubleArrayParameter == ParametersArray.shared.doubleArrayParameter)
+            #expect(boolArrayParameter == ParametersArray.shared.boolArrayParameter)
+            #expect(stringArrayParameter == ParametersArray.shared.stringArrayParameter)
             
             return someInitArg
         }
     }
     
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
     
     @Test("Test Array Parameters")
-    func testLLMFunctionPrimitiveParameters() async throws {
+    func testLLMFunctionArrayParameters() async throws { // swiftlint:disable:this function_body_length
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestArray(someInitArg: "testArg")
+        }
+
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestArray.name)
         let llmFunction = llmFunctionPair.value
-        #expect(!(try #require(llmFunction.parameterValueCollectors["intArrayParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["doubleArrayParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["boolArrayParameter"])).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["stringArrayParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["intArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["doubleArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["boolArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameterValueCollectors["stringArrayParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaArrayInt = try #require(llmFunction.schemaValueCollectors["intArrayParameter"])
@@ -114,7 +115,7 @@ struct LLMOpenAIParameterArrayTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            try JSONEncoder().encode(ParametersArray.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)

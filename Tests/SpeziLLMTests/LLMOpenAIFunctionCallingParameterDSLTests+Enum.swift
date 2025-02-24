@@ -11,13 +11,13 @@ import Foundation
 import Testing
 
 
-struct LLMOpenAIParameterEnumTests {
+extension LLMOpenAIFunctionCallingParameterDSLTests {
     enum CustomEnumType: String, LLMFunctionParameterEnum, Encodable {
         case optionA
         case optionB
     }
     
-    struct Parameters: Encodable {
+    struct ParametersEnum: Encodable {
         static let shared = Self()
         
         let enumParameter = CustomEnumType.optionB
@@ -26,7 +26,7 @@ struct LLMOpenAIParameterEnumTests {
         let optionalArrayEnumParameter = [CustomEnumType.optionB, CustomEnumType.optionA]
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestEnum: LLMFunction {
         static let name: String = "test_enum_function"
         static let description: String = "This is a test enum LLM function."
         
@@ -52,32 +52,33 @@ struct LLMOpenAIParameterEnumTests {
         
         
         func execute() async throws -> String? {
-            #expect(enumParameter == Parameters.shared.enumParameter)
-            #expect(optionalEnumParameter == Parameters.shared.optionalEnumParameter)
-            #expect(arrayEnumParameter == Parameters.shared.arrayEnumParameter)
-            #expect(optionalArrayEnumParameter == Parameters.shared.optionalArrayEnumParameter)
+            #expect(enumParameter == ParametersEnum.shared.enumParameter)
+            #expect(optionalEnumParameter == ParametersEnum.shared.optionalEnumParameter)
+            #expect(arrayEnumParameter == ParametersEnum.shared.arrayEnumParameter)
+            #expect(optionalArrayEnumParameter == ParametersEnum.shared.optionalArrayEnumParameter)
             
             return someInitArg
         }
     }
     
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
     
     @Test("Test Enum Parameters")
-    func testLLMFunctionPrimitiveParameters() async throws {
+    func testLLMFunctionEnumParameters() async throws {
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestEnum(someInitArg: "testArg")
+        }
+
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestEnum.name)
         let llmFunction = llmFunctionPair.value
-        #expect(!(try #require(llmFunction.parameterValueCollectors["enumParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["enumParameter"]).isOptional == false)
         #expect(try #require(llmFunction.parameterValueCollectors["optionalEnumParameter"]).isOptional)
-        #expect(!(try #require(llmFunction.parameterValueCollectors["arrayEnumParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["arrayEnumParameter"]).isOptional == false)
         #expect(try #require(llmFunction.parameterValueCollectors["optionalArrayEnumParameter"]).isOptional)
         
         // Validate parameter schema
@@ -115,7 +116,7 @@ struct LLMOpenAIParameterEnumTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            try JSONEncoder().encode(ParametersEnum.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)

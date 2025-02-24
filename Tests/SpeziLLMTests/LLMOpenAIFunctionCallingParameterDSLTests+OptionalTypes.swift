@@ -11,8 +11,8 @@ import Foundation
 import Testing
 
 
-struct LLMOpenAIParameterOptionalTypesTests {
-    struct Parameters: Encodable {
+extension LLMOpenAIFunctionCallingParameterDSLTests {
+    struct ParametersOptional: Encodable {
         static let shared = Self()
         
         let intParameter = 123
@@ -25,7 +25,7 @@ struct LLMOpenAIParameterOptionalTypesTests {
         let stringArrayParameter = ["1234", "5678"]
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestOptional: LLMFunction {
         static let name: String = "test_optional_function"
         static let description: String = "This is a test optional LLM function."
         
@@ -61,33 +61,34 @@ struct LLMOpenAIParameterOptionalTypesTests {
         
         
         func execute() async throws -> String? {
-            #expect(intParameter == Parameters.shared.intParameter)
-            #expect(doubleParameter == Parameters.shared.doubleParameter)
-            #expect(boolParameter == Parameters.shared.boolParameter)
-            #expect(stringParameter == Parameters.shared.stringParameter)
-            #expect(intArrayParameter == Parameters.shared.intArrayParameter)
-            #expect(doubleArrayParameter == Parameters.shared.doubleArrayParameter)
-            #expect(boolArrayParameter == Parameters.shared.boolArrayParameter)
-            #expect(stringArrayParameter == Parameters.shared.stringArrayParameter)
+            #expect(intParameter == ParametersOptional.shared.intParameter)
+            #expect(doubleParameter == ParametersOptional.shared.doubleParameter)
+            #expect(boolParameter == ParametersOptional.shared.boolParameter)
+            #expect(stringParameter == ParametersOptional.shared.stringParameter)
+            #expect(intArrayParameter == ParametersOptional.shared.intArrayParameter)
+            #expect(doubleArrayParameter == ParametersOptional.shared.doubleArrayParameter)
+            #expect(boolArrayParameter == ParametersOptional.shared.boolArrayParameter)
+            #expect(stringArrayParameter == ParametersOptional.shared.stringArrayParameter)
             #expect(arrayNilParameter == nil)
             
             return someInitArg
         }
     }
     
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
     
     @Test("Test Optional Parameters")
     func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestOptional(someInitArg: "testArg")
+        }
+        
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestOptional.name)
         let llmFunction = llmFunctionPair.value
         #expect(try #require(llmFunction.parameterValueCollectors["intParameter"]).isOptional)
         #expect(try #require(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional)
@@ -165,7 +166,7 @@ struct LLMOpenAIParameterOptionalTypesTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            try JSONEncoder().encode(ParametersOptional.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)

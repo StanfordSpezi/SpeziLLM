@@ -11,7 +11,7 @@ import Foundation
 import Testing
 
 
-struct LLMOpenAIParameterCustomTypesTests {
+extension LLMOpenAIFunctionCallingParameterDSLTests {
     struct CustomType: LLMFunctionParameterArrayElement, Encodable, Equatable {
         static let itemSchema: LLMFunctionParameterItemSchema = {
             do {
@@ -38,7 +38,7 @@ struct LLMOpenAIParameterCustomTypesTests {
         var propertyB: Int
     }
 
-    struct Parameters: Encodable {
+    struct ParametersCustom: Encodable {
         static let shared = Self()
 
         let customArrayParameter = [
@@ -49,7 +49,7 @@ struct LLMOpenAIParameterCustomTypesTests {
         let customOptionalArrayParameter: [CustomType] = []
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestCustom: LLMFunction {
         static let name: String = "test_custom_type_function"
         static let description: String = "This is a test custom type LLM function."
         
@@ -71,28 +71,29 @@ struct LLMOpenAIParameterCustomTypesTests {
         
         
         func execute() async throws -> String? {
-            #expect(customArrayParameter == Parameters.shared.customArrayParameter)
-            #expect(customOptionalArrayParameter == Parameters.shared.customOptionalArrayParameter)
+            #expect(customArrayParameter == ParametersCustom.shared.customArrayParameter)
+            #expect(customOptionalArrayParameter == ParametersCustom.shared.customOptionalArrayParameter)
             
             return someInitArg
         }
     }
     
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
     
     @Test("Test Custom Type Parameters")
-    func testLLMFunctionPrimitiveParameters() async throws {
+    func testLLMFunctionCustomParameters() async throws {
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestCustom(someInitArg: "testArg")
+        }
+
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestCustom.name)
         let llmFunction = llmFunctionPair.value
-        #expect(!(try #require(llmFunction.parameterValueCollectors["customArrayParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["customArrayParameter"]).isOptional == false)
         #expect(try #require(llmFunction.parameterValueCollectors["customOptionalArrayParameter"]).isOptional)
         
         // Validate parameter schema
@@ -127,7 +128,7 @@ struct LLMOpenAIParameterCustomTypesTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            try JSONEncoder().encode(ParametersCustom.shared)
         )
         
         try llmFunction.injectParameters(from: parameterData)

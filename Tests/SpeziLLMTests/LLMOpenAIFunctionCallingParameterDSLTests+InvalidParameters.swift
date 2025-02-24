@@ -11,14 +11,14 @@ import Foundation
 import Testing
 
 
-struct LLMOpenAIInvalidParametersTests {
-    struct Parameters: Encodable {
+extension LLMOpenAIFunctionCallingParameterDSLTests {
+    struct ParametersInvalid: Encodable {
         static let shared = Self()
         
         let intParameter = 12
     }
     
-    struct LLMFunctionTest: LLMFunction {
+    struct LLMFunctionTestInvalid: LLMFunction {
         static let name: String = "test_invalid_parameters_function"
         static let description: String = "This is a test invalid parameters LLM function."
         
@@ -43,22 +43,22 @@ struct LLMOpenAIInvalidParametersTests {
             return someInitArg
         }
     }
-    
-    let llm = LLMOpenAISchema(
-        parameters: .init(modelType: "gpt-4o")
-    ) {
-        LLMFunctionTest(someInitArg: "testArg")
-    }
-    
+        
     @Test("Test Invalid Parameters")
-    func testLLMFunctionPrimitiveParameters() async throws {
+    func testLLMFunctionInvalidParameters() async throws {
+        let llm = LLMOpenAISchema(
+            parameters: .init(modelType: "gpt-4o")
+        ) {
+            LLMFunctionTestInvalid(someInitArg: "testArg")
+        }
+
         #expect(llm.functions.count == 1)
         let llmFunctionPair = try #require(llm.functions.first)
         
         // Validate parameter metadata
-        #expect(llmFunctionPair.key == LLMFunctionTest.name)
+        #expect(llmFunctionPair.key == LLMFunctionTestInvalid.name)
         let llmFunction = llmFunctionPair.value
-        #expect(!(try #require(llmFunction.parameterValueCollectors["randomParameter"])).isOptional)
+        #expect(try #require(llmFunction.parameterValueCollectors["randomParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaRandomParameter = try #require(llmFunction.schemaValueCollectors["randomParameter"])
@@ -69,11 +69,11 @@ struct LLMOpenAIInvalidParametersTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            try JSONEncoder().encode(Parameters.shared)
+            JSONEncoder().encode(ParametersInvalid.shared)
         )
-        
+
         #expect(
-            throws: (any Error).self,
+            throws: DecodingError.self,
             "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
         ) {
             try llmFunction.injectParameters(from: parameterData)
