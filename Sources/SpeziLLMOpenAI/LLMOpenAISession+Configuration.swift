@@ -46,7 +46,7 @@ extension LLMOpenAISession {
                             logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
                                 .modelParameters
                                 .logitBias,
-                            max_tokens: schema.modelParameters.maxOutputLength,
+                            max_completion_tokens: schema.modelParameters.maxOutputLength,
                             n: schema.modelParameters.completionsPerOutput,
                             presence_penalty: schema.modelParameters.presencePenalty,
                             response_format: schema.modelParameters.responseFormat,

@@ -32,7 +32,7 @@ extension LLMFogSession {
                         model: .init(value1: schema.parameters.modelType),
                         frequency_penalty: schema.modelParameters.frequencyPenalty,
                         logit_bias: nil,
-                        max_tokens: schema.modelParameters.maxOutputLength,
+                        max_completion_tokens: schema.modelParameters.maxOutputLength,
                         n: nil,
                         presence_penalty: schema.modelParameters.presencePenalty,
                         response_format: schema.modelParameters.responseFormat,
