@@ -69,7 +69,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         // Validate parameter injection
         let parameterData = try #require(
-            JSONEncoder().encode(ParametersInvalid.shared)
+            try JSONEncoder().encode(ParametersInvalid.shared)
         )
 
         #expect(
