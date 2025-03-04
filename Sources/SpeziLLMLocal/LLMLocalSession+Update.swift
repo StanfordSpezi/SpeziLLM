@@ -15,6 +15,7 @@ extension LLMLocalSession {
     /// - Parameters:
     ///   - parameters: A dictionary or object containing parameters that control the LLM generation process.
     ///   - samplingParameters: An object representing the sampling parameters for the LLM.
+    ///   - tools: Available tools that the LLM can access and use.
     ///   - injectIntoContext: A Boolean value indicating whether the inference output from the ``LLMLocalSession``
     ///     should be automatically inserted into the ``LLMLocalSession/context``. Defaults to `false`.
     ///
@@ -23,6 +24,7 @@ extension LLMLocalSession {
     public func update(
         parameters: LLMLocalParameters? = nil,
         samplingParameters: LLMLocalSamplingParameters? = nil,
+        tools: [LLMLocalSchema.LLMTool]? = nil,
         injectIntoContext: Bool? = nil // swiftlint:disable:this discouraged_optional_boolean
     ) {
         cancel()
@@ -31,6 +33,7 @@ extension LLMLocalSession {
             configuration: self.schema.configuration,
             parameters: parameters ?? self.schema.parameters,
             samplingParameters: samplingParameters ?? self.schema.samplingParameters,
+            tools: tools ?? self.schema.tools,
             injectIntoContext: injectIntoContext ?? self.schema.injectIntoContext
         )
     }
