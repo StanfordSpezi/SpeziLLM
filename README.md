@@ -134,19 +134,7 @@ struct LLMLocalDemoView: View {
 }
 ```
 
-The [`LLMChatViewSchema`](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillm/llmchatviewschema) can be used to easily create a conversational chat interface for your chatbot application with a local LLM.
-
-```swift
-struct LLMLocalChatView: View {
-    var body: some View {
-        LLMChatViewSchema(
-            with: LLMLocalSchema(
-                model: .llama3_8B_4bit
-            )
-        )
-    }
-}
-```
+To enhance performance and reduce resource usage, you can call `LLMlocalSchema/offload()`, which offloads the model and frees up system resources. Subsequently, invoking `LLMlocalSchema/setup()` or `LLMlocalSchema/generate()` will reload the model into memory as needed.
 
 > [!NOTE]  
 > To learn more about the usage of SpeziLLMLocal, please refer to the comprehensive [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
