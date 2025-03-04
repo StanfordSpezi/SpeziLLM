@@ -27,7 +27,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.21.2")),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "2.21.2"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", revision: "0c50f71e1a3fcaaf09d1f93721a55e4f291bc442"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
         .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.1.0"),

@@ -14,6 +14,7 @@ import MLXRandom
 import os
 import SpeziChat
 import SpeziLLM
+import Tokenizers
 
 
 extension LLMLocalSession {
@@ -26,7 +27,7 @@ extension LLMLocalSession {
         )
     }
     
-    // swiftlint:disable:next identifier_name
+    // swiftlint:disable:next identifier_name function_body_length
     internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
 #if targetEnvironment(simulator)
         await _mockGenerate(continuation: continuation)
@@ -44,7 +45,11 @@ extension LLMLocalSession {
             await self.context.formattedChat
         }
         
-        guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
+        guard let modelInput: LMInput = try? await prepareModelInput(
+            messages: messages,
+            tools: self.schema.tools,
+            modelContainer: modelContainer
+        ) else {
             await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuation)
             return
         }
@@ -64,7 +69,6 @@ extension LLMLocalSession {
                 ) { tokens in
                     processTokens(tokens, modelContext: modelContext, continuation: continuation)
                 }
-                
                 processRemainingTokens(result: result, modelContext: modelContext, continuation: continuation)
                 return result
             }
@@ -87,13 +91,31 @@ extension LLMLocalSession {
         }
     }
     
-    private func prepareModelInput(messages: [[String: String]], modelContainer: ModelContainer) async throws -> LMInput {
-        try await modelContainer.perform { modelContext in
+    private func prepareModelInput(
+        messages: [[String: String]],
+        tools: [LLMLocalSchema.LLMTool],
+        modelContainer: ModelContainer
+    ) async throws -> LMInput {
+        let tools = tools.isEmpty ? nil : tools
+        
+        return try await modelContainer.perform { modelContext in
             if let chatTemplate = self.schema.parameters.chatTemplate {
-                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTemplate)
+                let tokens = try modelContext.tokenizer.applyChatTemplate(
+                    messages: messages,
+                    chatTemplate: .literal(chatTemplate),
+                    addGenerationPrompt: true,
+                    truncation: false,
+                    maxLength: nil,
+                    tools: tools
+                )
                 return LMInput(text: .init(tokens: MLXArray(tokens)))
             } else {
-                return try await modelContext.processor.prepare(input: .init(messages: messages))
+                return try await modelContext.processor.prepare(
+                    input: .init(
+                        messages: messages,
+                        tools: tools
+                    )
+                )
             }
         }
     }

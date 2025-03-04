@@ -21,11 +21,14 @@ import SpeziLLM
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
 public struct LLMLocalSchema: LLMSchema {
     public typealias Platform = LLMLocalPlatform
+    public typealias LLMTool = [String: any Sendable]
     
     /// Closure to properly format the ``LLMLocal/context`` to a `String` which is tokenized and passed to the LLM.
     let parameters: LLMLocalParameters
     /// Sampling parameters of the LLM.
     let samplingParameters: LLMLocalSamplingParameters
+    /// Available tools that the LLM can access and use
+    let tools: [LLMTool]
     /// Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``.
     public let injectIntoContext: Bool
     /// The models configuration which is based on `mlx-libraries`
@@ -37,16 +40,19 @@ public struct LLMLocalSchema: LLMSchema {
     ///   - model: The `LLMLocalModel` to be used by the schema.
     ///   - parameters: Parameters controlling the LLM generation process.
     ///   - samplingParameters: Represents the sampling parameters of the LLM.
+    ///   - tools: Available tools that the LLM can access and use
     ///   - injectIntoContext: Indicates if the inference output by the ``LLMLocalSession`` should automatically be inserted into the ``LLMLocalSession/context``, defaults to false.
     public init(
         model: LLMLocalModel,
         parameters: LLMLocalParameters = .init(),
         samplingParameters: LLMLocalSamplingParameters = .init(),
+        tools: [LLMTool] = [], //
         injectIntoContext: Bool = false
     ) {
         self.parameters = parameters
         self.samplingParameters = samplingParameters
         self.injectIntoContext = injectIntoContext
+        self.tools = tools
         self.configuration = .init(id: model.hubID)
     }
     
@@ -55,11 +61,13 @@ public struct LLMLocalSchema: LLMSchema {
         configuration: ModelConfiguration,
         parameters: LLMLocalParameters = .init(),
         samplingParameters: LLMLocalSamplingParameters = .init(),
+        tools: [LLMTool] = [],
         injectIntoContext: Bool = false
     ) {
         self.configuration = configuration
         self.parameters = parameters
         self.samplingParameters = samplingParameters
+        self.tools = tools
         self.injectIntoContext = injectIntoContext
     }
 }
