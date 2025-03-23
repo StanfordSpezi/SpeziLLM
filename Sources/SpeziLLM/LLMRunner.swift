@@ -162,11 +162,12 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The ready to use `AsyncThrowingStream`.
+    @MainActor
     public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, any Error> {
         let llmSession = callAsFunction(with: llmSchema)
-        await MainActor.run {
-            llmSession.context = context
-        }
+//        await MainActor.run {
+        llmSession.context = context
+//        }
         
         return try await llmSession.generate()
     }
@@ -180,6 +181,7 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The completed output `String`.
+    @MainActor
     public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> String {
         var output = ""
         
