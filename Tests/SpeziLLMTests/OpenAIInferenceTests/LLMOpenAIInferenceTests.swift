@@ -4,7 +4,7 @@
 //
 //  Created by Sébastien Letzelter on 27.03.25.
 //
-
+import os
 @testable import Spezi
 @testable import SpeziLLM
 @testable import SpeziLLMOpenAI
@@ -34,25 +34,27 @@ class LLMOpenAIInferenceTests {
             "The value to return to ensure the test was succesful is \"abcdefghijklmnopqrstuvwxyz\""
         }
     }
+    
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMInferenceTests")
 
     @MainActor
-    @Test(
-        .enabled(
-            if: ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] != nil &&
-                !(ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] ?? "").isEmpty,
-            "Skip test if no OPEN AI API Token is set as an environment variable"
-        )
-    )
+    internal func initTestLLMSession(_ schema: LLMOpenAISchema) throws -> LLMOpenAISession {
+        let llmOpenAIPlatform = LLMOpenAIPlatform(configuration: LLMOpenAIPlatformConfiguration(apiToken: "mocked-token"))
+
+        let runner = LLMRunner { llmOpenAIPlatform }
+        try DependencyManager([runner]).resolve()
+        runner.configure()
+
+        return llmOpenAIPlatform.callAsFunction(with: schema)
+    }
+
+
+    @MainActor
+    @Test
     func testOpenAIFunctionCalling() async throws {
         guard let openAIToken = ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] else {
             return
         }
-
-        let llmOpenAIPlatform = LLMOpenAIPlatform(configuration: LLMOpenAIPlatformConfiguration(apiToken: openAIToken))
-                                             
-        let runner = LLMRunner { llmOpenAIPlatform }
-        try DependencyManager([runner]).resolve()
-        runner.configure()
 
         let schema = LLMOpenAISchema(
             parameters: .init(modelType: .gpt4o_mini, overwritingToken: openAIToken)
@@ -62,12 +64,19 @@ class LLMOpenAIInferenceTests {
         
         var context = LLMContext()
         context.append(userInput: "Hello! Return me the value needed for this test")
+        
+        let llmSession = try initTestLLMSession(schema)
+        var oneShot = ""
+        for try await stringPiece in try await llmSession.generate() {
+            oneShot.append(stringPiece)
+        }
 
-        let oneShot: String = try await runner.oneShot(with: schema, context: context)
-        print(oneShot)
+        Self.logger.debug("""
+                          LLMOpenAIInferenceTests: Received GPT response from OpenAI API call, during testOpenAIFunctionCalling()
+                          Response: \(oneShot)
+                          """)
 
         try #require(!oneShot.isEmpty)
         #expect(oneShot.contains("abcdefghijklmnopqrstuvwxyz"))
     }
-
 }
