@@ -83,12 +83,12 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
     @ObservationIgnored private var lock = NSLock()
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored var wrappedClient: Client?
+    @ObservationIgnored var wrappedClient: (any LLMOpenAIChatClientProtocol)?
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-    var openAiClient: Client {
+    var openAiClient: any LLMOpenAIChatClientProtocol {
         guard let client = wrappedClient else {
             preconditionFailure("""
             SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.

@@ -26,7 +26,7 @@ extension LLMOpenAISession {
                     serverURL: Servers.Server1.url(),
                     transport: URLSessionTransport(),
                     middlewares: [AuthMiddleware(APIKey: overwritingToken)]
-                )
+                ) as! any LLMOpenAIChatClientProtocol
             } catch {
                 Self.logger.error("""
                 SpeziLLMOpenAI: Couldn't create OpenAI OpenAPI client with the passed API token.
@@ -59,7 +59,7 @@ extension LLMOpenAISession {
                         return URLSessionTransport(configuration: .init(session: session))
                     }(),
                     middlewares: [AuthMiddleware(APIKey: credentials.password)]
-                )
+                ) as! any LLMOpenAIChatClientProtocol
             } catch {
                 Self.logger.error("""
                 LLMOpenAI: Couldn't create OpenAI OpenAPI client with the token present in the Spezi secure storage.
