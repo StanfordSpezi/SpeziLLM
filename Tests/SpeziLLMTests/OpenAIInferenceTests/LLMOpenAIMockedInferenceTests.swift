@@ -62,14 +62,13 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         llmSession.context = context
         llmSession.wrappedClient = mockClient
 
-        var firstChatCompletionCalled = false
+        var chatCompletionCalls = 0
         mockClient.createChatCompletionHandler = { input in
             var builder = ChatResponseBuilder()
 
-            if !firstChatCompletionCalled {
+            if chatCompletionCalls == 0 {
                 try builder.append(functionName: LLMOpenAITestFunction.name, arguments: "{}")
                 builder.done()
-                firstChatCompletionCalled = true
             } else {
                 if case let .json(inputBody) = input.body {
                     // Expect to find the function call's result added in the input
@@ -84,17 +83,17 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
                 builder.done()
             }
 
+            chatCompletionCalls += 1
             return builder.toChatOutput()
         }
         
-        // Execute the mocked LLM
         var oneShot = ""
         for try await stringPiece in try await llmSession.generate() {
             oneShot.append(stringPiece)
         }
         
-        // Expect that the chatCompletionHandler was called at least 2 times: first for the function call, second time for text generation
-        #expect(firstChatCompletionCalled)
+        // Expect that the chatCompletionHandler was called 2 times: first for the function call, second time for text generation
+        #expect(chatCompletionCalls == 2, "Chat completion handler was not called twice")
         // Expect that the (mocked) LLM returned an answer
         #expect(oneShot == "Function should have been called!")
     }

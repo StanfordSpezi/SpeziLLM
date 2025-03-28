@@ -20,9 +20,9 @@ import Testing
 //   Name:  OPENAI_API_TOKEN
 //   Value: your-secret-key-here
 @Suite("LLM OpenAI Inference Tests (Using API Key)",
-       .enabled(
-           if: ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] != nil &&
-               !(ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] ?? "").isEmpty,
+       .disabled(
+           if: ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"] == nil ||
+           ProcessInfo.processInfo.environment["OPENAI_API_TOKEN"]?.isEmpty ?? true,
            "Skip test if no OPEN AI API Token is set as an environment variable"
        )
 )
