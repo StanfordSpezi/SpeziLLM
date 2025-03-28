@@ -1,8 +1,9 @@
 //
-//  Test.swift
-//  SpeziLLM
+// This source file is part of the Stanford Spezi open source project
 //
-//  Created by Sébastien Letzelter on 12.03.25.
+// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
 //
 
 import GeneratedOpenAIClient
@@ -14,6 +15,7 @@ import SwiftUI
 
 
 extension LLMOpenAIMockedInferenceTests {
+    /// A mock implementation of the OpenAI API `Client`
     final class MockChatClient: LLMOpenAIChatClientProtocol {
         var retrieveModelHandler: ((GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws ->
                                    GeneratedOpenAIClient.Operations.retrieveModel.Output)?
@@ -38,11 +40,12 @@ extension LLMOpenAIMockedInferenceTests {
         }
     }
     
+    /// Helper struct for building mocked streaming responses from the OpenAI API.
     struct ChatResponseBuilder {
-        static let responseChunkId = UUID().uuidString
-        static let responseTimestamp = Int(Date().timeIntervalSince1970)
+        private static let responseChunkId = UUID().uuidString
+        private static let responseTimestamp = Int(Date().timeIntervalSince1970)
         
-        let createMockChatResponse: (String) throws -> String = { message in
+        private let createMockChatResponse: (String) throws -> String = { message in
             String(decoding: try JSONEncoder().encode(
                 Components.Schemas.CreateChatCompletionStreamResponse(
                     id: Self.responseChunkId,
@@ -60,8 +63,8 @@ extension LLMOpenAIMockedInferenceTests {
                 )
             ), as: UTF8.self)
         }
-
-        let createMockFunctionCallResponse: (String, String) throws -> String = { name, arguments in
+        
+        private let createMockFunctionCallResponse: (String, String) throws -> String = { name, arguments in
             String(decoding: try JSONEncoder().encode(
                 Components.Schemas.CreateChatCompletionStreamResponse(
                     id: Self.responseChunkId,
@@ -83,20 +86,30 @@ extension LLMOpenAIMockedInferenceTests {
             ), as: UTF8.self)
         }
         
-        private(set) var data: [String] = []
+        private var data: [String] = []
         
+        /// Appends a standard assistant text message to the response.
+        /// - Parameter text: The message content to append.
         mutating func append(text: String) throws {
             try data.append("data: \(createMockChatResponse(text))\n\n")
         }
-
+        
+        /// Appends a tool function call message to the response.
+        /// - Parameters:
+        ///   - functionName: The name of the function being "called".
+        ///   - arguments: The stringified arguments passed to the function.
         mutating func append(functionName: String, arguments: String) throws {
             try data.append("data: \(createMockFunctionCallResponse(functionName, arguments))\n\n")
         }
-
+        
+        /// Appends the `[DONE]` marker to signify the end of the stream.
         mutating func done() {
             data.append("data: [DONE]\n\n")
         }
-        
+
+        /// Converts the built response data into an `Operations.createChatCompletion.Output` object
+        /// suitable for use as a mock API response.
+        /// - Returns: An OpenAI API chat completion response.
         func toChatOutput() -> Operations.createChatCompletion.Output {
             let stream = AsyncStream<String> { continuation in
                 for chunk in data {
