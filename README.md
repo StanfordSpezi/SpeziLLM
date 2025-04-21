@@ -63,7 +63,7 @@ The target enables developers to easily execute medium-size Language Models (LLM
 > Spezi LLM Local is not compatible with simulators. The underlying [`mlx-swift`](https://github.com/ml-explore/mlx-swift) requires a modern Metal MTLGPUFamily and the simulator does not provide that.
 
 > [!IMPORTANT]
-> Important: To use the LLM local target, some LLMs require adding the *Increase Memory Limit* entitlement to the project.
+> To use the LLM local target, some LLMs require adding the *Increase Memory Limit* entitlement to the project.
 
 #### Setup
 
@@ -232,6 +232,15 @@ The `SpeziLLMFog` target enables you to use LLMs running on [Fog node](https://e
 
 > [!IMPORTANT]
 > `SpeziLLMFog` requires a `SpeziLLMFogNode` within the local network hosted on some computing resource that actually performs the inference requests. `SpeziLLMFog` provides the `SpeziLLMFogNode` Docker-based package that enables an easy setup of these fog nodes. See the `FogNode` directory on the root level of the SPM package as well as the respective `README.md` for more details.
+
+> [!IMPORTANT]
+> `SpeziLLMFog` performs dynamic discovery of available fog node services in the local network using Bonjour. To enable this functionality, the consuming application must configure the following `Info.plist` entries:
+> - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+`"This app uses local network access to discover nearby services."`
+> - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+> For use with `SpeziLLMFog`, include the following entry:
+>   - `_https._tcp` (for discovering secured services via TLS)
+>   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
 
 #### Setup
 

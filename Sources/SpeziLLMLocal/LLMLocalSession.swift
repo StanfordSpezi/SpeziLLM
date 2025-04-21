@@ -27,9 +27,6 @@ import SpeziLLM
 ///
 /// - Warning: The ``LLMLocalSession`` shouldn't be created manually but always through the ``LLMLocalPlatform`` via the `LLMRunner`.
 ///
-/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),     <!-- markdown-link-check-disable-line -->
-/// introduced in Xcode 15 and Swift 5.9. Please refer to <doc:SpeziLLMLocal#Setup> for more information.
-///
 /// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
 /// ### Usage

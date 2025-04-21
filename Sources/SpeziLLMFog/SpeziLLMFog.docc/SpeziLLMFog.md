@@ -34,6 +34,14 @@ The core components of the ``SpeziLLMFog`` target are the ``LLMFogSchema``, ``LL
 
 > Important: ``SpeziLLMFog`` requires a `SpeziLLMFogNode` within the local network hosted on some computing resource that actually performs the inference requests. ``SpeziLLMFog`` provides the `SpeziLLMFogNode` Docker-based package that enables an out-of-the-box setup of these fog nodes. See the `FogNode` directory on the root level of the SPM package as well as the respective `README.md` for more details.
 
+> Important: ``SpeziLLMFog`` performs dynamic discovery of available fog node services in the local network using Bonjour. To enable this functionality, the consuming application must configure the following `Info.plist` entries:
+> - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+`"This app uses local network access to discover nearby services."`
+> - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+> For use with ``SpeziLLMFog``, include the following entry:
+>   - `_https._tcp` (for discovering secured services via TLS)
+>   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
+
 ### LLM Fog
 
 ``LLMFogSchema`` offers a variety of configuration possibilities that are supported by the Fog LLM APIs (mirroring the OpenAI API implementation), such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMFogSchema/init(parameters:modelParameters:injectIntoContext:)`` initializer and the ``LLMFogParameters`` and ``LLMFogModelParameters``.
