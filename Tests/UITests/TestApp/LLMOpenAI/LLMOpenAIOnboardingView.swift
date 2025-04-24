@@ -29,6 +29,7 @@ struct LLMOpenAIOnboardingView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.headline)
+                            .accessibilityLabel(content: Text("Cancel"))
                     }
                 }
             }
