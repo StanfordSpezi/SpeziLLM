@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */; };
+		109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */; };
+		109E6A5B2DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */; };
+		109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
@@ -25,13 +29,11 @@
 		9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */; };
 		9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */; };
 		9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2562B0316740006B6BD /* Localizable.xcstrings */; };
-		9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2572B0316740006B6BD /* Localizable.xcstrings.license */; };
 		9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */; };
 		976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9761794F2B034E0400E1046E /* TestAppDelegate.swift */; };
 		976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */; };
 		976179542B03501100E1046E /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179532B03501100E1046E /* FeatureFlags.swift */; };
 		976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 976CE5162BA2C05100E21810 /* GoogleService-Info.plist */; };
-		976CE5192BA2C49900E21810 /* AccountSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE5182BA2C49900E21810 /* AccountSheet.swift */; };
 		976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */; };
 		9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */; };
 		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
@@ -56,6 +58,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		102BDD882DB6F20400FF084E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingView.swift; sourceTree = "<group>"; };
+		109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogOnboardingDiscoveryAuthView.swift; sourceTree = "<group>"; };
+		109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogOnboardingFlow.swift; sourceTree = "<group>"; };
+		109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogTestView.swift; sourceTree = "<group>"; };
 		2F68C3C6292E9F8F00B3E12C /* SpeziLLM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziLLM; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -72,13 +79,11 @@
 		9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingWelcomeView.swift; sourceTree = "<group>"; };
 		9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingFlow.swift; sourceTree = "<group>"; };
 		9756D2562B0316740006B6BD /* Localizable.xcstrings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		9756D2572B0316740006B6BD /* Localizable.xcstrings.license */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Localizable.xcstrings.license; sourceTree = "<group>"; };
 		9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalChatTestView.swift; sourceTree = "<group>"; };
 		9761794F2B034E0400E1046E /* TestAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
 		976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppLLMLocalUITests.swift; sourceTree = "<group>"; };
 		976179532B03501100E1046E /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		976CE5162BA2C05100E21810 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		976CE5182BA2C49900E21810 /* AccountSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSheet.swift; sourceTree = "<group>"; };
 		976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSetupHeader.swift; sourceTree = "<group>"; };
 		9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIOnboardingView.swift; sourceTree = "<group>"; };
 		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
@@ -118,6 +123,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		109E6A592DB6E8E5009F9E9F /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				976CE51A2BA2C4C600E21810 /* Account */,
+				102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */,
+				109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */,
+				109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		2F6D138928F5F384007C25D6 = {
 			isa = PBXGroup;
 			children = (
@@ -142,6 +158,7 @@
 		2F6D139428F5F384007C25D6 /* TestApp */ = {
 			isa = PBXGroup;
 			children = (
+				102BDD882DB6F20400FF084E /* Info.plist */,
 				977447212B992D3A00D1F85E /* TestApp.entitlements */,
 				9756D25A2B0316790006B6BD /* Resources */,
 				97DD56B32B02F72D00389331 /* LLMLocal */,
@@ -207,7 +224,6 @@
 			children = (
 				976CE5162BA2C05100E21810 /* GoogleService-Info.plist */,
 				9756D2562B0316740006B6BD /* Localizable.xcstrings */,
-				9756D2572B0316740006B6BD /* Localizable.xcstrings.license */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -215,7 +231,6 @@
 		976CE51A2BA2C4C600E21810 /* Account */ = {
 			isa = PBXGroup;
 			children = (
-				976CE5182BA2C49900E21810 /* AccountSheet.swift */,
 				976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */,
 			);
 			path = Account;
@@ -233,8 +248,9 @@
 		97C93FCE2B999DA40023F4B9 /* LLMFog */ = {
 			isa = PBXGroup;
 			children = (
-				976CE51A2BA2C4C600E21810 /* Account */,
+				109E6A592DB6E8E5009F9E9F /* Onboarding */,
 				97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */,
+				109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */,
 			);
 			path = LLMFog;
 			sourceTree = "<group>";
@@ -271,7 +287,7 @@
 				2F6D138E28F5F384007C25D6 /* Sources */,
 				2F6D138F28F5F384007C25D6 /* Frameworks */,
 				2F6D139028F5F384007C25D6 /* Resources */,
-				43A784C02A85FDED00C4FE91 /* ShellScript */,
+				43A784C02A85FDED00C4FE91 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -364,7 +380,6 @@
 				9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */,
 				976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */,
 				2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */,
-				9756D2592B0316740006B6BD /* Localizable.xcstrings.license in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,7 +393,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		43A784C02A85FDED00C4FE91 /* ShellScript */ = {
+		43A784C02A85FDED00C4FE91 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 12;
@@ -388,6 +403,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -415,15 +431,18 @@
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
 				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
 				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
+				109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */,
+				109E6A5B2DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift in Sources */,
 				976179542B03501100E1046E /* FeatureFlags.swift in Sources */,
 				9748DBED2B5C811F00B917EE /* LLMOpenAIFunctionHealthData.swift in Sources */,
 				976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */,
 				9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */,
 				97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */,
+				109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
 				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
-				976CE5192BA2C49900E21810 /* AccountSheet.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
+				102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +605,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TestApp/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app uses the local network to discover nearby fog node services.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The Test Application uses the micophone to test the dication functionality.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech recognition necessary for transcribing voice input.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -628,6 +649,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TestApp/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app uses the local network to discover nearby fog node services.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The Test Application uses the micophone to test the dication functionality.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech recognition necessary for transcribing voice input.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

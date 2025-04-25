@@ -12,7 +12,7 @@ import SwiftUI
 
 /// Displays a multi-step onboarding flow for the Local LLM example application.
 struct LLMLocalOnboardingFlow: View {
-    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
+    @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedOnboardingFlow = false
     
     
     var body: some View {
