@@ -56,7 +56,7 @@ extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
                                              T.Key: StringProtocol & Hashable,
                                              T.Value: BinaryFloatingPoint {
     /// Declares a ``LLMFunction/Parameter``  of type `object`
-    /// representing a dictionary with `String`-based keys and `Int`-based values.
+    /// representing a dictionary with `String`-based keys and `Float` or `Double` (`BinaryFloatingPoint`) -based values.
     ///
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
