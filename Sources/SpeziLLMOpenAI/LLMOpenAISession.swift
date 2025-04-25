@@ -50,7 +50,7 @@ import SpeziLLM
 ///                 let llmSession: LLMOpenAISession = runner(
 ///                     with: LLMOpenAISchema(
 ///                         parameters: .init(
-///                             modelType: .gpt3_5Turbo,
+///                             modelType: .gpt4o,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingToken: "abc123"
 ///                         )
