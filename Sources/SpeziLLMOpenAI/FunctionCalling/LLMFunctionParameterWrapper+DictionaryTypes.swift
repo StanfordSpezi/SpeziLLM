@@ -99,7 +99,7 @@ extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
     ///    - pattern: A Regular Expression that the keys of the objects needs to conform to.
     public convenience init(
         description: some StringProtocol,
-        const: (any StringProtocol)? = nil,
+        const: (any StringProtocol)? = nil
     ) {
         self.init(description: description, const: const, valueType: .string)
     }
