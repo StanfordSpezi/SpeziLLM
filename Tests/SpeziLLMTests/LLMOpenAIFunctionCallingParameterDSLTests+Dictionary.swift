@@ -58,7 +58,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     
     
     @Test("Test Dictionary Parameters")
-    func testLLMFunctionDictionaryParameters() async throws { // swiftlint:disable:this function_body_length
+    func testLLMFunctionDictionaryParameters() async throws {
         let llm = LLMOpenAISchema(
             parameters: .init(modelType: "gpt-4o")
         ) {
