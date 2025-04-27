@@ -104,10 +104,10 @@ extension LLMFogSession {
                 )
             }(),
             middlewares: [
-                AuthMiddleware(
-                    authToken: schema.parameters.authToken,
-                    expectedHost: platform.configuration.host
-                )
+                // Injects the bearer auth token for account verification into request headers
+                BearerAuthMiddleware(authToken: schema.parameters.authToken),
+                // Injects the expected custom hostname into request headers
+                ExpectedHostMiddleware(expectedHost: platform.configuration.host)
             ]
         )
 

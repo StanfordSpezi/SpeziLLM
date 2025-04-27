@@ -13,27 +13,47 @@ import OpenAPIURLSession
 
 
 extension LLMOpenAISession {
+    /// Set up the OpenAI LLM execution client.
+    ///
+    /// - Parameters:
+    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    /// - Returns: `true` if the setup was successful, `false` otherwise.
+    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
+        await MainActor.run {
+            self.state = .loading
+        }
+        
+        if await !self.initializeClient(continuation) {
+            return false
+        }
+
+        // Check access to the specified OpenAI model
+        if schema.parameters.modelAccessTest,
+           await !modelAccessTest(continuation: continuation) {
+            return false
+        }
+        
+        await MainActor.run {
+            self.state = .ready
+        }
+        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
+        return true
+    }
+
     /// Initialize the OpenAI OpenAPI client
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initaliseClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         // Overwrite API token if passed
         if let overwritingToken = schema.parameters.overwritingToken {
-            do {
-                wrappedClient = try Client(
-                    serverURL: Servers.Server1.url(),
-                    transport: URLSessionTransport(),
-                    middlewares: [AuthMiddleware(APIKey: overwritingToken)]
-                )
-            } catch {
-                Self.logger.error("""
-                SpeziLLMOpenAI: Couldn't create OpenAI OpenAPI client with the passed API token.
-                \(error.localizedDescription)
-                """)
-                return false
-            }
+            self.wrappedClient = Client(
+                serverURL: self.platform.configuration.serverUrl,
+                transport: URLSessionTransport(),
+                middlewares: [BearerAuthMiddleware(authToken: { overwritingToken }), RetryMiddleware()]
+            )
         } else {
             // If token is present within the Spezi `SecureStorage`
             guard let credentials = try? keychainStorage.retrieveCredentials(
@@ -50,55 +70,20 @@ extension LLMOpenAISession {
             }
 
             // Initialize the OpenAI model
-            do {
-                wrappedClient = try Client(
-                    serverURL: Servers.Server1.url(),
-                    transport: {
-                        let session = URLSession.shared
-                        session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
-                        return URLSessionTransport(configuration: .init(session: session))
-                    }(),
-                    middlewares: [AuthMiddleware(APIKey: credentials.password)]
-                )
-            } catch {
-                Self.logger.error("""
-                LLMOpenAI: Couldn't create OpenAI OpenAPI client with the token present in the Spezi secure storage.
-                \(error.localizedDescription)
-                """)
-                return false
-            }
+            self.wrappedClient = Client(
+                serverURL: self.platform.configuration.serverUrl,
+                transport: {
+                    let session = URLSession.shared
+                    session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
+                    return URLSessionTransport(configuration: .init(session: session))
+                }(),
+                middlewares: [BearerAuthMiddleware(authToken: { credentials.password }), RetryMiddleware()]
+            )
         }
+
         return true
     }
 
-    /// Set up the OpenAI LLM execution client.
-    ///
-    /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
-        await MainActor.run {
-            self.state = .loading
-        }
-        
-        if await !initaliseClient(continuation) {
-            return false
-        }
-
-        // Check access to the specified OpenAI model
-        if schema.parameters.modelAccessTest,
-           await !modelAccessTest(continuation: continuation) {
-            return false
-        }
-        
-        await MainActor.run {
-            self.state = .ready
-        }
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
-        return true
-    }
-    
     /// Tests access to the OpenAI model.
     ///
     /// - Parameters:
