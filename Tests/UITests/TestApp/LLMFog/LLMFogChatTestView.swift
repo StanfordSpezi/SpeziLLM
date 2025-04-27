@@ -34,9 +34,6 @@ struct LLMFogChatTestView: View {
     )
     
     @State var showOnboarding = false
-    #if os(iOS)
-    @State var presentingAccount = false
-    #endif
     
     
     var body: some View {
@@ -48,14 +45,5 @@ struct LLMFogChatTestView: View {
             }
         }
             .navigationTitle("LLM_FOG_CHAT_VIEW_TITLE")
-            #if os(iOS)
-            .sheet(isPresented: $presentingAccount) {
-                AccountSheet()
-            }
-            .accountRequired {
-                AccountSheet()
-            }
-            #endif
-            .accentColor(.orange)  // Fog Orange
     }
 }

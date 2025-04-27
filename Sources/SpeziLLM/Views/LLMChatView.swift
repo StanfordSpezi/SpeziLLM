@@ -81,7 +81,7 @@ public struct LLMChatView<Session: LLMSession>: View {
                             }
                             
                             llm.context.completeAssistantStreaming()
-                        } catch let error as LLMError {
+                        } catch let error as any LLMError {
                             llm.state = .error(error: error)
                         } catch {
                             llm.state = .error(error: LLMDefaultError.unknown(error))

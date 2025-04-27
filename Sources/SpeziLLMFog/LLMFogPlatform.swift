@@ -20,6 +20,14 @@ import SpeziLLM
 /// It is important to note that the ``LLMFogPlatform`` discovers fog computing resources within the local network and then dispatches LLM inference jobs to these fog nodes.
 /// In turn, that means that such a fog node must exist within the local network, see the `FogNode` distributed with the package.
 ///
+/// > Important: To enable the discovery of available fog nodes in the local network via Bonjour, the consuming application must configure the following `Info.plist` entries:
+/// > - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+/// `"This app uses local network access to discover nearby services."`
+/// > - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+/// > For use with ``SpeziLLMFog``, include the following entry:
+/// >   - `_https._tcp` (for discovering secured services via TLS)
+/// >   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
+///
 /// In order to establish a secure connection to the fog node, the TLS encryption mechanism is used.
 /// That results in the need for the ``LLMFogPlatform`` to be configured via ``LLMFogPlatform/init(configuration:)`` and
 /// ``LLMFogPlatformConfiguration/init(host:caCertificate:taskPriority:concurrentStreams:timeout:mDnsBrowsingTimeout:)`` with the custom
