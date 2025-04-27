@@ -1,7 +1,15 @@
+//
+// This source file is part of the Stanford Spezi open source project
+//
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
+//
+
 import Foundation
 
 /// Error that occur during requesting access to the local network for discovering fog nodes.
-public enum LLMFogOnboardingDiscoveryError: LocalizedError {
+public enum LLMFogDiscoveryAuthorizationError: LocalizedError {
     /// Indicates that the user denied the authorization to access the local network
     case authorizationDenied
     /// Indicates that the authorization to access the local network could not be completed

@@ -1,3 +1,11 @@
+//
+// This source file is part of the Stanford Spezi open source project
+//
+// SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
+//
+
 import SpeziOnboarding
 import SpeziViews
 import SwiftUI
@@ -111,13 +119,13 @@ public struct LLMFogDiscoveryAuthorizationView: View {
             do {
                 authGranted = try await self.requestLocalNetworkAuthorization()
             } catch {
-                throw LLMFogOnboardingDiscoveryError.authorizationFailed
+                throw LLMFogDiscoveryAuthorizationError.authorizationFailed
             }
             
             if authGranted {
                 authorizationGranted = true
             } else {
-                throw LLMFogOnboardingDiscoveryError.authorizationDenied
+                throw LLMFogDiscoveryAuthorizationError.authorizationDenied
             }
         } label: {
             Text("FOG_DISCOVERY_REQUEST_AUTH_BUTTON", bundle: .module)

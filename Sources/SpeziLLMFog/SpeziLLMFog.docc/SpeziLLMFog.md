@@ -75,6 +75,11 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
 On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
 
+In addition to set local network discovery entitlements described above, users must grant explicit authorization for local network access.
+This authorization can be requested during the app’s onboarding process using ``LLMFogDiscoveryAuthorizationView``.
+It informs users about the need for local network access, prompts them to grant it, and attempts to verify the access status (note: the OS does not expose this information).
+For detailed guidance on integrating the ``LLMFogDiscoveryAuthorizationView`` in an onboarding flow managed by `[SpeziOnboarding`](https://swiftpackageindex.com/stanfordspezi/spezionboarding), refer to the in-line documentation of the ``LLMFogDiscoveryAuthorizationView``.
+
 #### Usage
 
 The code example below showcases the interaction with a Fog LLM through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.

@@ -266,6 +266,11 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 }
 ```
 
+In addition to set local network discovery entitlements described above, users must grant explicit authorization for local network access.
+This authorization can be requested during the app’s onboarding process using `LLMFogDiscoveryAuthorizationView`.
+It informs users about the need for local network access, prompts them to grant it, and attempts to verify the access status (note: the OS does not expose this information).
+For detailed guidance on integrating the `LLMFogDiscoveryAuthorizationView` in an onboarding flow managed by `[SpeziOnboarding`](https://swiftpackageindex.com/stanfordspezi/spezionboarding), refer to the in-line documentation of the `LLMFogDiscoveryAuthorizationView`.
+
 #### Usage
 
 The code example below showcases the interaction with a Fog LLM through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
