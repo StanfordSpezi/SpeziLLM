@@ -41,8 +41,10 @@ package struct RetryMiddleware {
     package enum DelayPolicy: Hashable {
         /// No delay; retry immediately.
         case none
-        /// Pause for a fixed number of seconds before retry.
+        /// Fixed pause before each retry.
         case constant(TimeInterval)
+        /// Binary exponential backoff using a base interval.
+        case exponential(base: TimeInterval)
     }
 
     // MARK: - Configuration Properties
@@ -51,20 +53,21 @@ package struct RetryMiddleware {
     package var signals: Set<RetryableSignal>
     /// Policy that governs retry attempts.
     package var policy: RetryingPolicy
-    /// Delay applied before each retry.
+    /// Delay strategy applied before each retry.
     package var delay: DelayPolicy
 
+    // MARK: - Initializer
 
     /// Creates a retry middleware with custom rules.
     ///
     /// - Parameters:
-    ///   - signals: Conditions that trigger a retry evaluation.
-    ///   - policy: How many times to retry.
-    ///   - delay: Delay strategy between retries.
+    ///   - signals: Conditions that trigger a retry evaluation, defaults to the typical HTTP 429 and 500s status codes
+    ///   - policy: How many times to retry, defaults to 3 attempts.
+    ///   - delay: Delay strategy between retries, defaults to exponential backoff with base 1 sec.
     package init(
         signals: Set<RetryableSignal> = [.statusCode(429), .statusRange(500..<600), .onError],
         policy: RetryingPolicy = .attempts(3),
-        delay: DelayPolicy = .constant(1)
+        delay: DelayPolicy = .exponential(base: 1)
     ) {
         self.signals = signals
         self.policy = policy
@@ -95,7 +98,7 @@ extension RetryMiddleware: ClientMiddleware {
                 let (response, responseBody) = try await next(request, body, baseURL)
 
                 if shouldRetry(status: response.status.code) && attempt < maxAttempts {
-                    try await pauseBeforeRetry()
+                    try await pauseBeforeRetry(attempt)
                     continue
                 }
 
@@ -103,7 +106,7 @@ extension RetryMiddleware: ClientMiddleware {
 
             } catch {
                 if signals.contains(.onError) && attempt < maxAttempts {
-                    try await pauseBeforeRetry()
+                    try await pauseBeforeRetry(attempt)
                     continue
                 }
                 throw error
@@ -127,13 +130,17 @@ extension RetryMiddleware: ClientMiddleware {
         })
     }
 
-    /// Applies delay before the next retry.
-    private func pauseBeforeRetry() async throws {
+    /// Applies delay before the next retry based on the delay policy.
+    private func pauseBeforeRetry(_ attempt: Int) async throws {
+        let interval: TimeInterval
         switch delay {
         case .none:
             return
         case .constant(let seconds):
-            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            interval = seconds
+        case .exponential(let base):
+            interval = base * pow(2, Double(attempt - 1))
         }
+        try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
     }
 }
