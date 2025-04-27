@@ -1,6 +1,126 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "FOG_DISCOVERY_AUTH_GRANTED_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network access has been granted!"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_GRANTED_NEXT_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting access to discover available fog computing resources in the network that perform the LLM inference."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Node Discovery"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog node discovery rights have not been granted."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network access has been denied by the user."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please go to the OS settings, browser for the app and explicitly enable local network access."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting access for fog node discovery has failed."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting local network access has failed."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try restart the app and the device. If the error persists, go to the OS settings, browser for the app and explicitly enable local network access."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_REQUEST_AUTH_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request network access"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_REQUEST_AUTH_INFO" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tapping the button will prompt a request for local network access. Please tap “Allow” to continue."
+          }
+        }
+      }
+    },
     "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
