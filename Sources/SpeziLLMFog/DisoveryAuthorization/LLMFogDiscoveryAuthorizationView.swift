@@ -56,6 +56,8 @@ import SwiftUI
 /// }
 /// ```
 public struct LLMFogDiscoveryAuthorizationView: View {
+    @Environment(LLMFogPlatform.self) var fogPlatform
+
     /// The action that should be performed when pressing the primary button of the view.
     private let action: () async throws -> Void
 

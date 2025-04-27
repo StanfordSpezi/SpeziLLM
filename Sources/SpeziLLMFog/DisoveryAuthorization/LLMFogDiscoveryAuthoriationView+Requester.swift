@@ -21,11 +21,12 @@ extension LLMFogDiscoveryAuthorizationView {
     /// - Returns: `true` if local network permission is granted, `false` if denied.
     func requestLocalNetworkAuthorization() async throws -> Bool {      // swiftlint:disable:this function_body_length cyclomatic_complexity
         let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
-        let type = "_https._tcp"        // todo: what about http
+        // If CA cert is set, browse for https discovery, otherwise http
+        let type = (self.fogPlatform.configuration.caCertificate != nil) ? "_https._tcp" : "_http._tcp"
 
         let listener = try NWListener(using: NWParameters(tls: .none, tcp: NWProtocolTCP.Options()))
         listener.service = NWListener.Service(name: UUID().uuidString, type: type)
-        listener.newConnectionHandler = { _ in } // Required to avoid POSIX error 22
+        listener.newConnectionHandler = { _ in }
 
         let parameters = NWParameters()
         parameters.includePeerToPeer = true
