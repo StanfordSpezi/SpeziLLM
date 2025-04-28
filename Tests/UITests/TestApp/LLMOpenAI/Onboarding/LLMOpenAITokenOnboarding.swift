@@ -30,7 +30,7 @@ struct LLMOpenAITokenOnboarding: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.headline)
-                            .accessibilityLabel("Cancel")
+                            .accessibilityLabel(Text("DISMISS_BUTTON_LABEL"))
                     }
                 }
             }

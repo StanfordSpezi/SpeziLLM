@@ -34,6 +34,14 @@ The core components of the ``SpeziLLMFog`` target are the ``LLMFogSchema``, ``LL
 
 > Important: ``SpeziLLMFog`` requires a `SpeziLLMFogNode` within the local network hosted on some computing resource that actually performs the inference requests. ``SpeziLLMFog`` provides the `SpeziLLMFogNode` Docker-based package that enables an out-of-the-box setup of these fog nodes. See the `FogNode` directory on the root level of the SPM package as well as the respective `README.md` for more details.
 
+> Important: ``SpeziLLMFog`` performs dynamic discovery of available fog node services in the local network using Bonjour. To enable this functionality, the consuming application must configure the following `Info.plist` entries:
+> - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+`"This app uses local network access to discover nearby services."`
+> - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+> For use with ``SpeziLLMFog``, include the following entry:
+>   - `_https._tcp` (for discovering secured services via TLS)
+>   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
+
 ### LLM Fog
 
 ``LLMFogSchema`` offers a variety of configuration possibilities that are supported by the Fog LLM APIs (mirroring the OpenAI API implementation), such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMFogSchema/init(parameters:modelParameters:injectIntoContext:)`` initializer and the ``LLMFogParameters`` and ``LLMFogModelParameters``.
@@ -66,6 +74,11 @@ class LLMFogAppDelegate: SpeziAppDelegate {
 
 - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
 On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
+
+In addition to set local network discovery entitlements described above, users must grant explicit authorization for local network access.
+This authorization can be requested during the app’s onboarding process using ``LLMFogDiscoveryAuthorizationView``.
+It informs users about the need for local network access, prompts them to grant it, and attempts to verify the access status (note: the OS does not expose this information).
+For detailed guidance on integrating the ``LLMFogDiscoveryAuthorizationView`` in an onboarding flow managed by `[SpeziOnboarding`](https://swiftpackageindex.com/stanfordspezi/spezionboarding), refer to the in-line documentation of the ``LLMFogDiscoveryAuthorizationView``.
 
 #### Usage
 

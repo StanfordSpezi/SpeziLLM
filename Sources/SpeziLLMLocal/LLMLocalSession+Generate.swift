@@ -31,8 +31,7 @@ extension LLMLocalSession {
 #if targetEnvironment(simulator)
         await _mockGenerate(continuation: continuation)
         return
-#endif
-        
+#else
         guard let modelContainer = await self.modelContainer else {
             await handleError("Failed to load `modelContainer`", error: .modelNotFound, continuation: continuation)
             return
@@ -85,6 +84,7 @@ extension LLMLocalSession {
             await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuation)
             return
         }
+#endif
     }
     
     private func prepareModelInput(messages: [[String: String]], modelContainer: ModelContainer) async throws -> LMInput {

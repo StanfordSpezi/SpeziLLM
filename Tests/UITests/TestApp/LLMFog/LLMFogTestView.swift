@@ -11,24 +11,19 @@ import SpeziOnboarding
 import SwiftUI
 
 
-struct LLMLocalTestView: View {
-    @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedOnboardingFlow = false
-    let mockMode: Bool
-    
-    
+struct LLMFogTestView: View {
+    @AppStorage(StorageKeys.fogOnboardingFlowComplete) private var completedOnboardingFlow = false
+
+
     var body: some View {
-        LLMLocalChatTestView(mockMode: mockMode)
+        LLMFogChatTestView()
             .sheet(isPresented: !$completedOnboardingFlow) {
-                LLMLocalOnboardingFlow()
+                LLMFogOnboardingFlow()
                     #if os(macOS)
                     .frame(minWidth: 400, minHeight: 550)
                     #endif
             }
-    }
-    
-    
-    init(mockMode: Bool = false) {
-        self.mockMode = mockMode
+            .accentColor(.orange)  // Fog Orange
     }
 }
 
@@ -36,12 +31,7 @@ struct LLMLocalTestView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
-        LLMLocalTestView(mockMode: true)
+        LLMFogTestView()
     }
-        .previewWith {
-            LLMRunner {
-                LLMMockPlatform()
-            }
-        }
 }
 #endif
