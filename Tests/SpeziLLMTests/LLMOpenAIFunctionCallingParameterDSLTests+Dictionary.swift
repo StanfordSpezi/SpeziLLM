@@ -25,8 +25,6 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         static let name: String = "test_dictionary_function"
         static let description: String = "This is a test dictionary LLM function."
         
-        let someInitArg: String
-        
         // swiftlint:disable attributes
         
         @Parameter(description: "Int Dictionary Parameter")
@@ -41,9 +39,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // swiftlint:enable attributes
         
         
-        init(someInitArg: String) {
-            self.someInitArg = someInitArg
-        }
+        init() {}
         
         
         func execute() async throws -> String? {
@@ -52,7 +48,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
             #expect(boolDictionaryParameter == ParametersDictionary.shared.boolDictionaryParameter)
             #expect(stringDictionaryParameter == ParametersDictionary.shared.stringDictionaryParameter)
             
-            return someInitArg
+            return "Test completed"
         }
     }
     
@@ -62,7 +58,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         let llm = LLMOpenAISchema(
             parameters: .init(modelType: "gpt-4o")
         ) {
-            LLMFunctionTestDictionary(someInitArg: "testArg")
+            LLMFunctionTestDictionary()
         }
 
         #expect(llm.functions.count == 1)
@@ -111,6 +107,6 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "testArg")
+        #expect(llmFunctionResponse == "Test completed")
     }
 }
