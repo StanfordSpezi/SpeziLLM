@@ -11,9 +11,8 @@ import HTTPTypes
 import OpenAPIRuntime
 
 
-/// A `ClientMiddleware` for injecting the Firebase Auth token into outgoing requests so that the Fog Node can verify the authenticity of requests.
-/// Also sets the expected hostname of the request, required for proper custom TLS verification.
-struct AuthMiddleware: ClientMiddleware {
+/// Middleware to set the expected host name of the request, required for proper custom TLS verification.
+struct ExpectedHostMiddleware: ClientMiddleware {
     private let hostHeaderKey: HTTPField.Name = {
         guard let hostHeader = HTTPField.Name("Host") else {
             preconditionFailure("SpeziLLMFog: Failed to create HTTPField.Name for `Host`.")
@@ -22,12 +21,10 @@ struct AuthMiddleware: ClientMiddleware {
         return hostHeader
     }()
 
-    private let authToken: @Sendable () async -> String?
     private let expectedHost: String?
 
 
-    init(authToken: @Sendable @escaping () async -> String?, expectedHost: String?) {
-        self.authToken = authToken
+    init(expectedHost: String?) {
         self.expectedHost = expectedHost
     }
 
@@ -40,9 +37,6 @@ struct AuthMiddleware: ClientMiddleware {
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         var request = request
-        if let authToken = await self.authToken() {
-            request.headerFields[.authorization] = "Bearer \(authToken)"
-        }
         if let expectedHost = expectedHost {
             request.headerFields[hostHeaderKey] = expectedHost
         }
