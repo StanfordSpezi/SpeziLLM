@@ -18,7 +18,7 @@ import SpeziLLM
 /// The ``LLMOpenAIPlatform`` turns a received ``LLMOpenAISchema`` to an executable ``LLMOpenAISession``.
 /// Use ``LLMOpenAIPlatform/callAsFunction(with:)`` with an ``LLMOpenAISchema`` parameter to get an executable ``LLMOpenAISession`` that does the actual inference.
 ///
-/// The platform can be configured with the ``LLMOpenAIPlatformConfiguration``, enabling developers to specify properties like a custom server `URL`s, API tokens or timeouts.
+/// The platform can be configured with the ``LLMOpenAIPlatformConfiguration``, enabling developers to specify properties like a custom server `URL`s, API tokens, the retry policy or timeouts.
 ///
 /// - Important: ``LLMOpenAIPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMOpenAIPlatform``.
 /// The `SpeziLLM` `LLMRunner` must be configured with the ``LLMOpenAIPlatform`` within the Spezi `Configuration`.
@@ -68,11 +68,11 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     
     
     public func configure() {
-        // If token passed via init
-        if let apiToken = configuration.apiToken {
+        // If constant token is passed, store in keychain
+        if case let .constant(authToken) = configuration.authToken {
             do {
                 try keychainStorage.store(
-                    Credentials(username: LLMOpenAIConstants.credentialsUsername, password: apiToken),
+                    Credentials(username: LLMOpenAIConstants.credentialsUsername, password: authToken),
                     for: .openAIKey
                 )
             } catch {

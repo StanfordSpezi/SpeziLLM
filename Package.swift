@@ -100,8 +100,11 @@ let package = Package(
         ),
         .target(
             name: "GeneratedOpenAIClient",
+            dependencies: [
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
+            ],
             plugins: [
-                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]
         ),
         .testTarget(

@@ -10,6 +10,7 @@ import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
+import SpeziKeychainStorage
 
 
 extension LLMOpenAISession {
@@ -48,24 +49,35 @@ extension LLMOpenAISession {
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         // Overwrite API token if passed
-        if let overwritingToken = schema.parameters.overwritingToken {
-            self.wrappedClient = Client(
-                serverURL: self.platform.configuration.serverUrl,
-                transport: URLSessionTransport(),
-                middlewares: [BearerAuthMiddleware(authToken: { overwritingToken }), RetryMiddleware()]
-            )
-        } else {
-            // If token is present within the Spezi `SecureStorage`
-            guard let credentials = try? keychainStorage.retrieveCredentials(
-                withUsername: LLMOpenAIConstants.credentialsUsername,
-                for: .openAIKey
-            ) else {
+        if let overwritingAuthToken = self.schema.parameters.overwritingAuthToken {
+            guard let bearerAuthMiddleware = self.buildBearerAuthMiddleware(authToken: overwritingAuthToken) else {
+                // todo: fix text and error desc
                 Self.logger.error("""
                 SpeziLLMOpenAI: Missing OpenAI API token.
                 Please ensure that the token is either passed directly via the Spezi `Configuration`
                 or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
                 """)
-                await finishGenerationWithError(LLMOpenAIError.missingAPIToken, on: continuation)
+                await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
+                return false
+            }
+
+            self.wrappedClient = Client(
+                serverURL: self.platform.configuration.serverUrl,
+                transport: URLSessionTransport(),
+                middlewares: [
+                    bearerAuthMiddleware,
+                    RetryMiddleware(policy: self.platform.configuration.retryPolicy)
+                ]
+            )
+        } else {
+            guard let bearerAuthMiddleware = self.buildBearerAuthMiddleware(authToken: self.platform.configuration.authToken) else {
+                // todo: fix text and error desc
+                Self.logger.error("""
+                SpeziLLMOpenAI: Missing OpenAI API token.
+                Please ensure that the token is either passed directly via the Spezi `Configuration`
+                or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
+                """)
+                await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
                 return false
             }
 
@@ -77,7 +89,10 @@ extension LLMOpenAISession {
                     session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
                     return URLSessionTransport(configuration: .init(session: session))
                 }(),
-                middlewares: [BearerAuthMiddleware(authToken: { credentials.password }), RetryMiddleware()]
+                middlewares: [
+                    bearerAuthMiddleware,
+                    RetryMiddleware(policy: self.platform.configuration.retryPolicy)
+                ]
             )
         }
 
@@ -107,5 +122,19 @@ extension LLMOpenAISession {
             await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
         return false
+    }
+
+    private func buildBearerAuthMiddleware(authToken: RemoteLLMInferenceAuthToken) -> BearerAuthMiddleware? {
+        // Extract token from keychain if specified
+        if case .keychain(let credential) = authToken {
+            let credential = try? keychainStorage.retrieveCredentials(
+                withUsername: LLMOpenAIConstants.credentialsUsername,
+                for: credential
+            )
+
+            return try? .init(authToken: authToken, keychainToken: credential?.password)
+        } else {
+            return try? .init(authToken: authToken, keychainToken: nil)
+        }
     }
 }

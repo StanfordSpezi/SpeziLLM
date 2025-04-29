@@ -6,53 +6,18 @@
 // SPDX-License-Identifier: MIT
 //
 
-import OpenAPIRuntime
 import Foundation
 import HTTPTypes
+import OpenAPIRuntime
 
 /// Middleware that retries HTTP requests based on defined conditions.
-package struct RetryMiddleware {
-
-    // MARK: - Retry Signals
-
-    /// Conditions under which a request should be retried.
-    package enum RetryableSignal: Hashable {
-        /// Retry when response status matches this code.
-        case statusCode(Int)
-        /// Retry when status falls within this range.
-        case statusRange(Range<Int>)
-        /// Retry when an error is thrown by downstream middleware or transport.
-        case onError
-    }
-
-    // MARK: - Retry Policy
-
-    /// Determines how many times to retry.
-    package enum RetryingPolicy: Hashable {
-        /// Never retry.
-        case never
-        /// Retry up to the specified number of attempts.
-        case attempts(Int)
-    }
-
-    // MARK: - Delay Policy
-
-    /// Defines delay between retries.
-    package enum DelayPolicy: Hashable {
-        /// No delay; retry immediately.
-        case none
-        /// Fixed pause before each retry.
-        case constant(TimeInterval)
-        /// Binary exponential backoff using a base interval.
-        case exponential(base: TimeInterval)
-    }
-
-    // MARK: - Configuration Properties
-
+package struct RetryMiddleware: Sendable {
+    // todo: we need to expose probably all of these parameters for fog. for openai, we probably only expose the max attemps
+    
     /// Signals that trigger evaluation of the retry policy.
     package var signals: Set<RetryableSignal>
     /// Policy that governs retry attempts.
-    package var policy: RetryingPolicy
+    package var policy: RetryPolicy
     /// Delay strategy applied before each retry.
     package var delay: DelayPolicy
 
@@ -66,7 +31,7 @@ package struct RetryMiddleware {
     ///   - delay: Delay strategy between retries, defaults to exponential backoff with base 1 sec.
     package init(
         signals: Set<RetryableSignal> = [.statusCode(429), .statusRange(500..<600), .onError],
-        policy: RetryingPolicy = .attempts(3),
+        policy: RetryPolicy = .attempts(3),
         delay: DelayPolicy = .exponential(base: 1)
     ) {
         self.signals = signals
@@ -103,12 +68,12 @@ extension RetryMiddleware: ClientMiddleware {
                 }
 
                 return (response, responseBody)
-
             } catch {
                 if signals.contains(.onError) && attempt < maxAttempts {
                     try await pauseBeforeRetry(attempt)
                     continue
                 }
+
                 throw error
             }
         }
@@ -141,6 +106,6 @@ extension RetryMiddleware: ClientMiddleware {
         case .exponential(let base):
             interval = base * pow(2, Double(attempt - 1))
         }
-        try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+        try await Task.sleep(for: .seconds(interval))
     }
 }

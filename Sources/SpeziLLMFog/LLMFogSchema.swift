@@ -36,7 +36,7 @@ import SpeziLLM
 ///     )
 /// )
 /// ```
-public struct LLMFogSchema: LLMSchema, @unchecked Sendable {
+public struct LLMFogSchema: LLMSchema, Sendable {
     public typealias Platform = LLMFogPlatform
     
     

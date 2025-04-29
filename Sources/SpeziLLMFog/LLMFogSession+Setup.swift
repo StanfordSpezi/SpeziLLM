@@ -105,9 +105,17 @@ extension LLMFogSession {
             }(),
             middlewares: [
                 // Injects the bearer auth token for account verification into request headers
-                BearerAuthMiddleware(authToken: schema.parameters.authToken),
+                try! BearerAuthMiddleware(authToken: {      // TODO: Force unwrap
+                    if let overwritingToken = self.schema.parameters.overwritingAuthToken {
+                        return overwritingToken
+                    }
+
+                    return self.platform.configuration.authToken
+                }(), keychainToken: nil),       // TODO: Should we allow a keychain auth token here?
                 // Injects the expected custom hostname into request headers
-                ExpectedHostMiddleware(expectedHost: platform.configuration.host)
+                ExpectedHostMiddleware(expectedHost: platform.configuration.host),
+                // Retry policy for failed requests
+                RetryMiddleware()
             ]
         )
 
@@ -186,5 +194,19 @@ extension LLMFogSession {
         Self.logger.debug("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service resolved to: \(resolvedService).")
         
         return resolvedService
+    }
+
+    private func buildBearerAuthMiddleware(authToken: RemoteLLMInferenceAuthToken) -> BearerAuthMiddleware? {
+        // Extract token from keychain if specified
+        if case .keychain(let credential) = authToken {
+            let credential = try? keychainStorage.retrieveCredentials(
+                withUsername: LLMOpenAIConstants.credentialsUsername,
+                for: credential
+            )
+
+            return try? .init(authToken: authToken, keychainToken: credential?.password)
+        } else {
+            return try? .init(authToken: authToken, keychainToken: nil)
+        }
     }
 }
