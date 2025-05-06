@@ -241,6 +241,15 @@
         }
       }
     },
+    "LLM_MISSING_KEYCHAIN_TOKEN_ERROR_DESCRIPTION" : {
+
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_FAILURE_REASON" : {
+
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_RECORVERY_SUGGESTION" : {
+
+    },
     "LLM_MODEL_ACCESS_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {

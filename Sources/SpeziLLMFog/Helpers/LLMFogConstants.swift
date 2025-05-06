@@ -7,7 +7,7 @@
 //
 
 
-/// Constants used throughout the `SpeziLLMOpenAI` target.
-enum LLMOpenAIConstants {
-    static let credentialsUsername = "OpenAI_Token"
+/// Constants used throughout the `SpeziLLMFog` target.
+enum LLMFogConstants {
+    static let credentialsUsername = "LLM_Fog_Token"
 }

@@ -40,7 +40,7 @@ import SpeziLLM
 ///     }
 /// }
 /// ```
-public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Sendable {
+public final class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Sendable {
     /// A Swift Logger that logs important information from the ``LLMLocalSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
@@ -49,7 +49,7 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     let configuration: LLMOpenAIPlatformConfiguration
     
     @MainActor public var state: LLMPlatformState = .idle
-    @Dependency(LLMOpenAITokenSaver.self) private var tokenSaver
+//    @Dependency(LLMOpenAITokenSaver.self) private var tokenSaver
     @Dependency(KeychainStorage.self) private var keychainStorage
     
     /// Creates an instance of the ``LLMOpenAIPlatform``.
@@ -69,6 +69,7 @@ public class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Se
     
     public func configure() {
         // If constant token is passed, store in keychain
+        // todo: i'm not sure if that is actually smart? probably we should not store the constant that is passed in keychain and just use the token in memory? as we already have it..
         if case let .constant(authToken) = configuration.authToken {
             do {
                 try keychainStorage.store(

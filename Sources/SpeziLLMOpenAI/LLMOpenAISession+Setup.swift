@@ -48,53 +48,42 @@ extension LLMOpenAISession {
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
-        // Overwrite API token if passed
-        if let overwritingAuthToken = self.schema.parameters.overwritingAuthToken {
-            guard let bearerAuthMiddleware = self.buildBearerAuthMiddleware(authToken: overwritingAuthToken) else {
-                // todo: fix text and error desc
-                Self.logger.error("""
-                SpeziLLMOpenAI: Missing OpenAI API token.
-                Please ensure that the token is either passed directly via the Spezi `Configuration`
-                or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
-                """)
-                await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
-                return false
-            }
+        guard let bearerAuthMiddleware = try? BearerAuthMiddleware.build(
+            authToken: {
+                if let overwritingToken = self.schema.parameters.overwritingAuthToken {
+                    return overwritingToken
+                }
 
-            self.wrappedClient = Client(
-                serverURL: self.platform.configuration.serverUrl,
-                transport: URLSessionTransport(),
-                middlewares: [
-                    bearerAuthMiddleware,
-                    RetryMiddleware(policy: self.platform.configuration.retryPolicy)
-                ]
-            )
-        } else {
-            guard let bearerAuthMiddleware = self.buildBearerAuthMiddleware(authToken: self.platform.configuration.authToken) else {
-                // todo: fix text and error desc
-                Self.logger.error("""
-                SpeziLLMOpenAI: Missing OpenAI API token.
-                Please ensure that the token is either passed directly via the Spezi `Configuration`
-                or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
-                """)
-                await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
-                return false
-            }
-
-            // Initialize the OpenAI model
-            self.wrappedClient = Client(
-                serverURL: self.platform.configuration.serverUrl,
-                transport: {
-                    let session = URLSession.shared
-                    session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
-                    return URLSessionTransport(configuration: .init(session: session))
-                }(),
-                middlewares: [
-                    bearerAuthMiddleware,
-                    RetryMiddleware(policy: self.platform.configuration.retryPolicy)
-                ]
-            )
+                return self.platform.configuration.authToken
+            }(),
+            keychainStorage: self.keychainStorage,
+            keychainUsername: LLMOpenAIConstants.credentialsUsername
+        ) else {
+            // todo: fix error desc
+            Self.logger.error("""
+            SpeziLLMOpenAI: Missing OpenAI API token.
+            Please ensure that the token is either passed directly via the Spezi `Configuration`
+            or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
+            """)
+            await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
+            return false
         }
+
+        // Initialize the OpenAI model
+        self.wrappedClient = Client(
+            serverURL: self.platform.configuration.serverUrl,
+            transport: {
+                let session = URLSession.shared
+                session.configuration.timeoutIntervalForRequest = platform.configuration.timeout
+                return URLSessionTransport(configuration: .init(session: session))
+            }(),
+            middlewares: [
+                // Injects the bearer auth token for account verification into request headers
+                bearerAuthMiddleware,
+                // Retry policy for failed requests
+                RetryMiddleware(policy: self.platform.configuration.retryPolicy)
+            ]
+        )
 
         return true
     }
@@ -122,19 +111,5 @@ extension LLMOpenAISession {
             await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
         }
         return false
-    }
-
-    private func buildBearerAuthMiddleware(authToken: RemoteLLMInferenceAuthToken) -> BearerAuthMiddleware? {
-        // Extract token from keychain if specified
-        if case .keychain(let credential) = authToken {
-            let credential = try? keychainStorage.retrieveCredentials(
-                withUsername: LLMOpenAIConstants.credentialsUsername,
-                for: credential
-            )
-
-            return try? .init(authToken: authToken, keychainToken: credential?.password)
-        } else {
-            return try? .init(authToken: authToken, keychainToken: nil)
-        }
     }
 }

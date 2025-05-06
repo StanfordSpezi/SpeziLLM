@@ -1,0 +1,21 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "LLM_AUTH_TOKEN_COLLECTOR_PROMPT" : {
+
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SAVE_BUTTON" : {
+
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SUBTITLE" : {
+
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SUBTITLE_HINT" : {
+
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_TITLE" : {
+
+    }
+  },
+  "version" : "1.0"
+}
