@@ -9,6 +9,7 @@
 import Foundation
 import Spezi
 #if os(iOS)
+import FirebaseAuth
 import FirebaseFirestore
 import SpeziAccount
 import SpeziFirebaseAccount
@@ -47,7 +48,23 @@ class TestAppDelegate: SpeziAppDelegate {
             LLMRunner {
                 LLMMockPlatform()
                 // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
-                LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
+                LLMFogPlatform(
+                    configuration:
+                        .init(
+                            host: "spezillmfog.local",
+                            caCertificate: nil,
+                            authToken: {
+                                #if os(iOS)
+                                    return .closure {
+                                        // Get Firebase ID token
+                                        try? await Auth.auth().currentUser?.getIDToken()
+                                    }
+                                #else
+                                    return nil
+                                #endif
+                            }()
+                        )
+                )
                 LLMOpenAIPlatform()
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
             }

@@ -6,8 +6,15 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SpeziKeychainStorage
+
 
 /// Constants used throughout the `SpeziLLMFog` target.
 enum LLMFogConstants {
     static let credentialsUsername = "LLM_Fog_Token"
+}
+
+/// The credentials tag of the OpenAI API key in the secure enclave.
+extension CredentialsTag {
+    static let fogAuthToken = CredentialsTag.genericPassword(forService: "spezifog.edu")
 }

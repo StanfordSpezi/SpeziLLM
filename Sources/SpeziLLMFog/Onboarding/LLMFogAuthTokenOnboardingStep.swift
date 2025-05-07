@@ -15,9 +15,7 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
-public struct LLMOpenAIAPITokenOnboardingStep: View {
-    //@Environment(LLMOpenAITokenSaver.self) private var tokenSaver
-
+public struct LLMFogAuthTokenOnboardingStep: View {
     private let actionText: String
     private let action: () -> Void
     
@@ -25,8 +23,8 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: .openAIKey,
-                username: LLMOpenAIConstants.credentialsUsername
+                tag: .fogAuthToken,
+                username: LLMFogConstants.credentialsUsername
             )
         ) {
             self.action()
@@ -63,7 +61,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
 
 #if DEBUG
 #Preview {
-    LLMOpenAIAPITokenOnboardingStep(
+    LLMFogAuthTokenOnboardingStep(
         actionText: "Continue"
     ) {
 

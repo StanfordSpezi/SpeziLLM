@@ -369,6 +369,9 @@
           }
         }
       }
+    },
+    "OPENAI_API_KEY_SAVE_BUTTON" : {
+
     }
   },
   "version" : "1.0"

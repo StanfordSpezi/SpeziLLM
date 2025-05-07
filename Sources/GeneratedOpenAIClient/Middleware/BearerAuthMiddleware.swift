@@ -75,22 +75,12 @@ package struct BearerAuthMiddleware: ClientMiddleware {
     }
 
 
-    package func intercept(
-        _ request: HTTPRequest,
-        body: HTTPBody?,
-        baseURL: URL,
-        operationID _: String,
-        next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
-    ) async throws -> (HTTPResponse, HTTPBody?) {
-        var request = request
-        if let authToken = await self.authToken.token {
-            request.headerFields[.authorization] = "Bearer \(authToken)"
-        }
-        return try await next(request, body, baseURL)
-    }
-
     // todo docs
-    package static func build(authToken: RemoteLLMInferenceAuthToken, keychainStorage: KeychainStorage?, keychainUsername: String?) throws(RemoteLLMInferenceAuthTokenError) -> Self {
+    package static func build(
+        authToken: RemoteLLMInferenceAuthToken,
+        keychainStorage: KeychainStorage?,
+        keychainUsername: String?
+    ) throws(RemoteLLMInferenceAuthTokenError) -> Self {
         // Extract token from keychain if specified
         if case .keychain(let credentialTag) = authToken {
             let credential: Credentials?
@@ -117,20 +107,20 @@ package struct BearerAuthMiddleware: ClientMiddleware {
             return try .init(authToken: authToken, keychainToken: nil)
         }
     }
-}
-
-package enum RemoteLLMInferenceAuthTokenError: LLMError {
-    /// The auth method indicated that a token should be in the keychain, however there is none
-    case noTokenInKeychain
-    /// Couldn't access the keychain
-    case keychainAccessError(Error? = nil)
 
 
-    package static func == (lhs: RemoteLLMInferenceAuthTokenError, rhs: RemoteLLMInferenceAuthTokenError) -> Bool {
-        switch (lhs, rhs) {
-            case (.noTokenInKeychain, .noTokenInKeychain): true
-        case (.keychainAccessError, .keychainAccessError): true
-        default: false
+    /// Intercepting outgoing requests by injecting a Bearer auth token into the header.
+    package func intercept(
+        _ request: HTTPRequest,
+        body: HTTPBody?,
+        baseURL: URL,
+        operationID _: String,
+        next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
+    ) async throws -> (HTTPResponse, HTTPBody?) {
+        var request = request
+        if let authToken = await self.authToken.token {
+            request.headerFields[.authorization] = "Bearer \(authToken)"
         }
+        return try await next(request, body, baseURL)
     }
 }
