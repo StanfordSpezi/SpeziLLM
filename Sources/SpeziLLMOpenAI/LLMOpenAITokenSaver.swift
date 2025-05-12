@@ -126,8 +126,3 @@ public class LLMOpenAITokenSaver: Module, EnvironmentAccessible, DefaultInitiali
         }
     }
 }
-
-
-extension CredentialsTag {
-    static let openAIKey = CredentialsTag.genericPassword(forService: "openai.com")
-}

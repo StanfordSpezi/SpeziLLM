@@ -12,6 +12,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziKeychainStorage
 import SpeziLLM
 
 
@@ -71,7 +72,8 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     
     let platform: LLMFogPlatform
     let schema: LLMFogSchema
-    
+    let keychainStorage: KeychainStorage
+
     /// A set of `Task`s managing the ``LLMFogSession`` output generation.
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
     /// Ensuring thread-safe access to the `LLMFogSession/task`.
@@ -101,10 +103,11 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     /// - Parameters:
     ///    - platform: Reference to the ``LLMFogPlatform`` where the ``LLMFogSession`` is running on.
     ///    - schema: The configuration of the Fog LLM expressed by the ``LLMFogSchema``.
-    init(_ platform: LLMFogPlatform, schema: LLMFogSchema) {
+    init(_ platform: LLMFogPlatform, schema: LLMFogSchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema
-        
+        self.keychainStorage = keychainStorage
+
         // Inject system prompts into context
         Task { @MainActor in
             schema.parameters.systemPrompts.forEach { systemPrompt in

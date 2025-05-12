@@ -15,21 +15,21 @@ import SwiftUI
 
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
-/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+/// - Warning: Ensure that the ``LLMFogPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
-/// - Important: The ``LLMOpenAIAPITokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
-public struct LLMOpenAIAPITokenOnboardingStep: View {
+/// - Important: The ``LLMFogAuthTokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
+public struct LLMFogAuthTokenOnboardingStep: View {
     private let actionText: String
     private let action: () -> Void
 
-    @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
+    @Environment(LLMFogPlatform.self) private var fogPlatform
 
     private var credentialsTag: CredentialsTag {
-        guard case let .keychain(tag) = openAiPlatform.configuration.authToken else {
+        guard case let .keychain(tag) = fogPlatform.configuration.authToken else {
             fatalError(
             """
-            Use of the `LLMOpenAIAPITokenOnboardingStep` without specifying the
-            `LLMOpenAIPlatform.Configuration.authToken` to `.keychain` is not supported.
+            Use of the `LLMFogAuthTokenOnboardingStep` without specifying the
+            `LLMFogPlatform.Configuration.authToken` to `.keychain` is not supported.
             """
             )
         }
@@ -41,8 +41,8 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: .openAIKey,
-                username: LLMOpenAIConstants.credentialsUsername
+                tag: self.credentialsTag,
+                username: LLMFogConstants.credentialsUsername
             )
         ) {
             self.action()
@@ -79,12 +79,12 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
 
 #if DEBUG
 #Preview {
-    LLMOpenAIAPITokenOnboardingStep(
+    LLMFogAuthTokenOnboardingStep(
         actionText: "Continue"
     ) {}
         .previewWith {
-            LLMOpenAIPlatform(
-                configuration: .init(authToken: .keychain(.openAIKey))
+            LLMFogPlatform(
+                configuration: .init(connectionType: .http, authToken: .keychain(.fogAuthToken))
             )
         }
 }

@@ -332,6 +332,7 @@
       }
     },
     "OPENAI_API_KEY_PROMPT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -376,6 +377,7 @@
       }
     },
     "OPENAI_API_KEY_SUBTITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -398,6 +400,7 @@
       }
     },
     "OPENAI_API_KEY_SUBTITLE_HINT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -420,6 +423,7 @@
       }
     },
     "OPENAI_API_KEY_TITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
