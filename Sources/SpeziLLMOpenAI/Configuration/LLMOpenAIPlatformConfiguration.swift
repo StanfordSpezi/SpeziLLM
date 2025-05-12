@@ -42,14 +42,14 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
     ///
     /// - Parameters:
     ///   - serverUrl: The server `URL` that the inference tasks are dispatched to. Defaults to the OpenAI API endpoint specified in the OpenAI OpenAPI document.
-    ///   - authToken: Specifies the OpenAI API token on a global basis, defaults to `nil`.
+    ///   - authToken: Specifies the OpenAI API token on a global basis.
     ///   - concurrentStreams: Indicates the maximum number of concurrent streams to the OpenAI API, defaults to `10`.
     ///   - timeout: Indicates the maximum network timeout of OpenAI requests in seconds. defaults to `60`.
     ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     public init(
-        serverUrl: URL = Defaults.defaultServerUrl,
-        authToken: RemoteLLMInferenceAuthToken = .none,
+        serverUrl: URL = Defaults.defaultServerUrl,     // swiftlint:disable:this function_default_parameter_at_end
+        authToken: RemoteLLMInferenceAuthToken,
         concurrentStreams: Int = 10,
         timeout: TimeInterval = 60,
         retryPolicy: RetryPolicy = .attempts(3),

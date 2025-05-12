@@ -155,5 +155,8 @@ public struct LLMFogDiscoveryAuthorizationView: View {
     LLMFogDiscoveryAuthorizationView(
         action: {}
     )
+        .previewWith {
+            LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+        }
 }
 #endif

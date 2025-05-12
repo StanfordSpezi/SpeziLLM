@@ -16,5 +16,6 @@ enum LLMFogConstants {
 
 /// The credentials tag of the OpenAI API key in the secure enclave.
 extension CredentialsTag {
-    static let fogAuthToken = CredentialsTag.genericPassword(forService: "spezifog.edu")
+    /// Default `CredentialsTag` of the SpeziLLMFog auth token.
+    public static let fogAuthToken = CredentialsTag.genericPassword(forService: "spezifog.edu")
 }

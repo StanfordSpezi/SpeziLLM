@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import os.log
+import Network
 import Spezi
 import SpeziFoundation
 import SpeziKeychainStorage
@@ -62,14 +64,20 @@ import SpeziLLM
 /// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
 /// On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
 public final class LLMFogPlatform: LLMPlatform, @unchecked Sendable {
+    /// A Swift Logger that logs important information from the ``LLMFogPlatform``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
+
+    @Dependency(KeychainStorage.self) private var keychainStorage
+
     /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
     private let semaphore: AsyncSemaphore
     let configuration: LLMFogPlatformConfiguration
-    @Dependency(KeychainStorage.self) private var keychainStorage
 
     @MainActor public var state: LLMPlatformState = .idle
-    
-    
+    /// If set, the user indicated a preferred fog service to connect to. Can change over time.
+    @MainActor public var preferredFogService: NWBrowser.Result?
+
+
     /// Creates an instance of the ``LLMFogPlatform``.
     ///
     /// - Parameters:

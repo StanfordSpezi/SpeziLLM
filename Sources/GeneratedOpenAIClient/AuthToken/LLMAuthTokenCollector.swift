@@ -55,17 +55,17 @@ public struct LLMAuthTokenCollector: View {
                             self.promptResource.localizedString(),
                             text: $token
                         )
-                        .frame(height: 50)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.vertical, 16)
+                            .frame(height: 50)
+                            .textFieldStyle(.roundedBorder)
+                            .padding(.vertical, 16)
 
                         Text(
                             (try? AttributedString(
                                 markdown: self.hintResource.localizedString()
                             )) ?? ""
                         )
-                        .multilineTextAlignment(.center)
-                        .font(.caption)
+                            .multilineTextAlignment(.center)
+                            .font(.caption)
                     }
                 }
             },
@@ -73,7 +73,7 @@ public struct LLMAuthTokenCollector: View {
                 OnboardingActionsView(
                     self.actionTextResource,
                     action: {
-                        try? keychainStorage.store(
+                        try keychainStorage.store(
                             Credentials(
                                 username: credentialsConfig.username,
                                 password: token
@@ -83,21 +83,22 @@ public struct LLMAuthTokenCollector: View {
                         action()
                     }
                 )
-                .disabled(token.isEmpty)
+                    .disabled(token.isEmpty)
             }
         )
-        .task {
-            if let stored = try? keychainStorage.retrieveCredentials(
-                withUsername: credentialsConfig.username,
-                for: credentialsConfig.tag
-            )?.password {
-                token = stored
+            .task {
+                if let stored = try? keychainStorage.retrieveCredentials(
+                    withUsername: credentialsConfig.username,
+                    for: credentialsConfig.tag
+                )?.password {
+                    token = stored
+                }
             }
-        }
     }
 
 
-    /// Create a new LLMAuthTokenCollector.
+    /// Create a new ``LLMAuthTokenCollector``.
+    ///
     /// - Parameters:
     ///   - credentialsConfig: How to store the token.
     ///   - titleResource: Localized title. Defaults to `Defaults.title`.
@@ -135,5 +136,8 @@ public struct LLMAuthTokenCollector: View {
     ) {
         // completion
     }
+        .previewWith {
+            KeychainStorage()
+        }
 }
 #endif

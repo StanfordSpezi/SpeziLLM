@@ -8,22 +8,40 @@
 
 import GeneratedOpenAIClient
 import Spezi
+import SpeziKeychainStorage
 import SpeziOnboarding
 import SwiftUI
 
 
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
-/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+/// - Warning: Ensure that the ``LLMFogPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: The ``LLMFogAuthTokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
 public struct LLMFogAuthTokenOnboardingStep: View {
     private let actionText: String
     private let action: () -> Void
-    
+
+    @Environment(LLMFogPlatform.self) private var fogPlatform
+
+    private var credentialsTag: CredentialsTag {
+        guard case let .keychain(tag) = fogPlatform.configuration.authToken else {
+            fatalError(
+            """
+            Use of the `LLMFogAuthTokenOnboardingStep` without specifying the
+            `LLMFogPlatform.Configuration.authToken` to `.keychain` is not supported.
+            """
+            )
+        }
+
+        return tag
+    }
+
     
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: .fogAuthToken,
+                tag: self.credentialsTag,
                 username: LLMFogConstants.credentialsUsername
             )
         ) {
@@ -63,8 +81,11 @@ public struct LLMFogAuthTokenOnboardingStep: View {
 #Preview {
     LLMFogAuthTokenOnboardingStep(
         actionText: "Continue"
-    ) {
-
-    }
+    ) {}
+        .previewWith {
+            LLMFogPlatform(
+                configuration: .init(connectionType: .http, authToken: .keychain(.fogAuthToken))
+            )
+        }
 }
 #endif

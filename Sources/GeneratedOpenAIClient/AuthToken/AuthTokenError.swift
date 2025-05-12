@@ -18,8 +18,8 @@ package enum RemoteLLMInferenceAuthTokenError: LLMError {
 
     package static func == (lhs: RemoteLLMInferenceAuthTokenError, rhs: RemoteLLMInferenceAuthTokenError) -> Bool {
         switch (lhs, rhs) {
-            case (.noTokenInKeychain, .noTokenInKeychain): true
-            case (.keychainAccessError, .keychainAccessError): true
+        case (.noTokenInKeychain, .noTokenInKeychain): true
+        case (.keychainAccessError, .keychainAccessError): true
         default: false
         }
     }

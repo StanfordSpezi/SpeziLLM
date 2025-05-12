@@ -29,7 +29,7 @@ extension LLMFogSession {
         
         var caCertificate: SecCertificate?
         
-        if let caCertificateUrl = platform.configuration.caCertificate {
+        if case let .https(caCertificateUrl) = self.platform.configuration.connectionType {
             // Load the specified CA certificate and strip out irrelevant data
             guard let caCertificateContents = try? String(contentsOf: caCertificateUrl, encoding: .utf8)
                     .replacingOccurrences(of: "-----BEGIN CERTIFICATE-----", with: "")
@@ -51,8 +51,9 @@ extension LLMFogSession {
         let fogServiceAddress: String
         
         do {
+            // todo: check the preffered fog node on the platform, if set use that one, otherwise discover a random one
             // Discover and resolve fog service
-            fogServiceAddress = try await resolveFogService(secureTraffic: caCertificate != nil)
+            fogServiceAddress = try await Self.resolveFogService(configuration: self.platform.configuration)
             self.discoveredServiceAddress = fogServiceAddress
         } catch is CancellationError {
             Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
@@ -80,7 +81,7 @@ extension LLMFogSession {
         \((caCertificate != nil) ? "https" : "http")://\(host):\((caCertificate != nil) ? 443 : 80)/v1
         """
         guard let url = URL(string: urlString) else {
-            await finishGenerationWithError(LLMFogError.mDnsServiceDiscoveryNetworkError, on: continuation)
+            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
             return false
         }
 
@@ -143,12 +144,12 @@ extension LLMFogSession {
     }
     
     /// Resolves a Spezi Fog LLM computing resource to an IP address.
-    private func resolveFogService(secureTraffic: Bool = true) async throws -> String {
+    private static func resolveFogService(configuration: LLMFogPlatformConfiguration) async throws -> String {
         // Browse for configured mDNS services
         let browser = NWBrowser(
             for: .bonjour(
-                type: secureTraffic ? "_https._tcp" : "_http._tcp",
-                domain: platform.configuration.host + "."
+                type: configuration.connectionType.mDnsServiceType,
+                domain: configuration.host + "."
             ),
             using: .init()
         )
@@ -156,11 +157,11 @@ extension LLMFogSession {
         browser.start(queue: .global(qos: .userInitiated))
         
         // Possible `Cancellation` error handled in the caller
-        try await Task.sleep(for: platform.configuration.mDnsBrowsingTimeout)
+        try await Task.sleep(for: configuration.mDnsBrowsingTimeout)
         
         guard let discoveredEndpoint = browser.browseResults.randomElement()?.endpoint else {
             browser.cancel()
-            Self.logger.error("SpeziLLMFog: A \(self.platform.configuration.host + ".") mDNS service of type '_https._tcp' could not be found.")
+            Self.logger.error("SpeziLLMFog: A \(configuration.host + ".") mDNS service of type '\(configuration.connectionType.mDnsServiceType)' could not be found.")
             throw LLMFogError.mDnsServicesNotFound
         }
         
@@ -192,7 +193,7 @@ extension LLMFogSession {
                 case .cancelled, .failed:
                     connection.cancel()
                     Self.logger.error("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service could not be resolved because of a network error.")
-                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError)
+                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(NWError.tls(.max)))      // todo: dummy error
                     return
                 default:
                     break

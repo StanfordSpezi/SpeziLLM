@@ -1,6 +1,22 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@.%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@.%2$@"
+          }
+        }
+      }
+    },
+    "Domain: %@" : {
+
+    },
+    "Done" : {
+
+    },
     "FOG_DISCOVERY_AUTH_GRANTED_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -120,6 +136,18 @@
           }
         }
       }
+    },
+    "FOG_DISCOVERY_SELECT_NEXT_BUTTON" : {
+
+    },
+    "FOG_DISCOVERY_SELECT_SUBTITLE" : {
+
+    },
+    "FOG_DISCOVERY_SELECT_TITLE" : {
+
+    },
+    "Interface: %@" : {
+
     },
     "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
       "localizations" : {
@@ -370,7 +398,34 @@
         }
       }
     },
+    "Metadata" : {
+
+    },
+    "More information about service" : {
+
+    },
+    "Name: %@" : {
+
+    },
+    "No metadata" : {
+
+    },
+    "No TXT records" : {
+
+    },
     "OPENAI_API_KEY_SAVE_BUTTON" : {
+
+    },
+    "Selected service" : {
+
+    },
+    "Service" : {
+
+    },
+    "Service Info" : {
+
+    },
+    "Type: %@" : {
 
     }
   },

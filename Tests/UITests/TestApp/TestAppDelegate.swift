@@ -47,25 +47,25 @@ class TestAppDelegate: SpeziAppDelegate {
             
             LLMRunner {
                 LLMMockPlatform()
-                // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
+                // HTTP connection type with no CA certificate (meaning no encrypted traffic) for development purposes
                 LLMFogPlatform(
                     configuration:
                         .init(
                             host: "spezillmfog.local",
-                            caCertificate: nil,
+                            connectionType: .http,      // change to `.https` and pass the CA cert URL from above in a production-ready setup
                             authToken: {
                                 #if os(iOS)
-                                    return .closure {
+                                    .closure {
                                         // Get Firebase ID token
                                         try? await Auth.auth().currentUser?.getIDToken()
                                     }
                                 #else
-                                    return nil
+                                    .none
                                 #endif
                             }()
                         )
                 )
-                LLMOpenAIPlatform()
+                LLMOpenAIPlatform(configuration: .init(authToken: .keychain(.openAIKey)))
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
             }
         }

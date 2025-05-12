@@ -16,5 +16,6 @@ enum LLMOpenAIConstants {
 
 /// The credentials tag of the OpenAI API key in the secure enclave.
 extension CredentialsTag {
-    static let openAIKey = CredentialsTag.genericPassword(forService: "openai.com")
+    /// Default `CredentialsTag` of the SpeziLLMOpenAI OpenAI API key.
+    public static let openAIKey = CredentialsTag.genericPassword(forService: "openai.com")
 }

@@ -8,6 +8,7 @@
 
 import GeneratedOpenAIClient
 import Spezi
+import SpeziKeychainStorage
 import SpeziOnboarding
 import SwiftUI
 
@@ -15,12 +16,27 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: The ``LLMOpenAIAPITokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 public struct LLMOpenAIAPITokenOnboardingStep: View {
-    //@Environment(LLMOpenAITokenSaver.self) private var tokenSaver
-
     private let actionText: String
     private let action: () -> Void
-    
+
+    @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
+
+    private var credentialsTag: CredentialsTag {
+        guard case let .keychain(tag) = openAiPlatform.configuration.authToken else {
+            fatalError(
+            """
+            Use of the `LLMOpenAIAPITokenOnboardingStep` without specifying the
+            `LLMOpenAIPlatform.Configuration.authToken` to `.keychain` is not supported.
+            """
+            )
+        }
+
+        return tag
+    }
+
     
     public var body: some View {
         LLMAuthTokenCollector(
@@ -65,8 +81,11 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
 #Preview {
     LLMOpenAIAPITokenOnboardingStep(
         actionText: "Continue"
-    ) {
-
-    }
+    ) {}
+        .previewWith {
+            LLMOpenAIPlatform(
+                configuration: .init(authToken: .keychain(.openAIKey))
+            )
+        }
 }
 #endif

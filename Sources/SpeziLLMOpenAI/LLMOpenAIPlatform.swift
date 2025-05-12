@@ -40,17 +40,16 @@ import SpeziLLM
 ///     }
 /// }
 /// ```
-public final class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchecked Sendable {
+public final class LLMOpenAIPlatform: LLMPlatform, @unchecked Sendable {
     /// A Swift Logger that logs important information from the ``LLMLocalSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
-    
+
     /// Enforce an arbitrary number of concurrent execution jobs of OpenAI LLMs.
     private let semaphore: AsyncSemaphore
     let configuration: LLMOpenAIPlatformConfiguration
-    
-    @MainActor public var state: LLMPlatformState = .idle
-//    @Dependency(LLMOpenAITokenSaver.self) private var tokenSaver
+
     @Dependency(KeychainStorage.self) private var keychainStorage
+    @MainActor public var state: LLMPlatformState = .idle
     
     /// Creates an instance of the ``LLMOpenAIPlatform``.
     ///
@@ -60,30 +59,8 @@ public final class LLMOpenAIPlatform: LLMPlatform, DefaultInitializable, @unchec
         self.configuration = configuration
         self.semaphore = AsyncSemaphore(value: configuration.concurrentStreams)
     }
-    
-    /// Convenience initializer for the ``LLMOpenAIPlatform``.
-    public required convenience init() {
-        self.init(configuration: .init())
-    }
-    
-    
-    public func configure() {
-        // If constant token is passed, store in keychain
-        // todo: i'm not sure if that is actually smart? probably we should not store the constant that is passed in keychain and just use the token in memory? as we already have it..
-        if case let .constant(authToken) = configuration.authToken {
-            do {
-                try keychainStorage.store(
-                    Credentials(username: LLMOpenAIConstants.credentialsUsername, password: authToken),
-                    for: .openAIKey
-                )
-            } catch {
-                preconditionFailure("""
-                SpeziLLMOpenAI: Configured OpenAI API token could not be stored within the SpeziSecureStorage.
-                """)
-            }
-        }
-    }
-    
+
+
     public func callAsFunction(with llmSchema: LLMOpenAISchema) -> LLMOpenAISession {
         LLMOpenAISession(self, schema: llmSchema, keychainStorage: keychainStorage)
     }

@@ -12,13 +12,13 @@ import SpeziViews
 import SwiftUI
 
 
-/// Onboarding view for authorizing local network access.
-struct LLMFogOnboardingDiscoveryAuthView: View {
+/// Onboarding view for selecting a specific fog node to dispatch inference requests to
+struct LLMFogDiscoverySelectionOnboardingView: View {
     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
 
 
     var body: some View {
-        LLMFogDiscoveryAuthorizationView {
+        LLMFogDiscoverySelectionView { _ in
             onboardingNavigationPath.nextStep()
         }
     }
@@ -28,7 +28,15 @@ struct LLMFogOnboardingDiscoveryAuthView: View {
 #if DEBUG
 #Preview {
     OnboardingStack {
-        LLMFogOnboardingDiscoveryAuthView()
+        LLMFogAuthTokenOnboardingView()
     }
+        .previewWith {
+            LLMFogPlatform(
+                configuration: .init(
+                    connectionType: .http,
+                    authToken: .keychain(.fogAuthToken)
+                )
+            )
+        }
 }
 #endif

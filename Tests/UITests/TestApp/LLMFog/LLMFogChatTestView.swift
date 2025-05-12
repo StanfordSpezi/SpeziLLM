@@ -18,8 +18,8 @@ struct LLMFogChatTestView: View {
             modelType: .llama3_2,
             systemPrompt: "You're a helpful assistant that answers questions from users."
         )
-    )
-    
+    )       // todo: create github issue that fog service broadcassts available models and SpeziLLM parses and matches that
+
     @State var showOnboarding = false
     
     
