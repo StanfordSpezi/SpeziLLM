@@ -110,6 +110,11 @@ extension LLMOpenAISession {
                 break
             }
             
+            // Set the state to callingTools to indicate that function calls are being processed
+            await MainActor.run {
+                self.state = .callingTools
+            }
+            
             // Inject the requested function calls into the LLM context
             let functionCallContext: [LLMContextEntity.ToolCall] = functionCalls.compactMap { functionCall in
                 guard let functionCallID = functionCall.id,
@@ -193,6 +198,11 @@ extension LLMOpenAISession {
             } catch {
                 // Stop LLM inference in case of a function call error
                 return
+            }
+            
+            // Set the state back to generating after function calls are completed
+            await MainActor.run {
+                self.state = .generating
             }
         }
         
