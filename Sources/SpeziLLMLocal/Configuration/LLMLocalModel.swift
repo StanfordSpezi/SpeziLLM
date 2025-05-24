@@ -43,6 +43,8 @@ public enum LLMLocalModel {
     /// Gemma 2, 2 Billion Parameters, Instruction-Tuned, 4-bit Version
     case gemma_2_2b_it_4bit
     /// Qwen 1.5, 0.5 Billion Parameters, Chat-Tuned, 4-bit Version
+    case medgemma_4b_it_4bit
+    /// MedGemma 4 Billion Parameters, Instruction-Tuned, 4-bit Version
     case qwen1_5_0_5b_4bit
     /// Qwen 2, 7 Billion Parameters, 4-bit version
     case qwen2_7b_4bit
@@ -104,6 +106,8 @@ public enum LLMLocalModel {
             return "mlx-community/DeepSeek-R1-Distill-Qwen-7B-4bit"
         case .deepseek_r1_distill_llama_8b_4bit:
             return "mlx-community/DeepSeek-R1-Distill-Llama-8B-4bit-mlx"
+        case .medgemma_4b_it_4bit:
+            return "mlx-community/medgemma-4b-it-4bit"
         case .custom(let id):
             return id
         }
