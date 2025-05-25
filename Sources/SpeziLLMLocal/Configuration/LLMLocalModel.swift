@@ -42,9 +42,9 @@ public enum LLMLocalModel {
     case gemma_2_9b_it_4bit
     /// Gemma 2, 2 Billion Parameters, Instruction-Tuned, 4-bit Version
     case gemma_2_2b_it_4bit
-    /// Qwen 1.5, 0.5 Billion Parameters, Chat-Tuned, 4-bit Version
-    case medgemma_4b_it_4bit
     /// MedGemma 4 Billion Parameters, Instruction-Tuned, 4-bit Version
+    case medgemma_4b_it_4bit
+    /// Qwen 1.5, 0.5 Billion Parameters, Chat-Tuned, 4-bit Version
     case qwen1_5_0_5b_4bit
     /// Qwen 2, 7 Billion Parameters, 4-bit version
     case qwen2_7b_4bit
