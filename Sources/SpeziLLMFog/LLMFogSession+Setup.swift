@@ -142,9 +142,11 @@ extension LLMFogSession {
         Self.logger.debug("SpeziLLMFog: Fog LLM finished initializing, now ready to use")
         return true
     }
-    
+}
+
+extension LLMFogSession {
     /// Resolves a Spezi Fog LLM computing resource to an IP address.
-    private static func resolveFogService(configuration: LLMFogPlatformConfiguration) async throws -> String {
+    fileprivate static func resolveFogService(configuration: LLMFogPlatformConfiguration) async throws -> String {
         // Browse for configured mDNS services
         let browser = NWBrowser(
             for: .bonjour(
@@ -153,23 +155,23 @@ extension LLMFogSession {
             ),
             using: .init()
         )
-        
+
         browser.start(queue: .global(qos: .userInitiated))
-        
+
         // Possible `Cancellation` error handled in the caller
         try await Task.sleep(for: configuration.mDnsBrowsingTimeout)
-        
+
         guard let discoveredEndpoint = browser.browseResults.randomElement()?.endpoint else {
             browser.cancel()
             Self.logger.error("SpeziLLMFog: A \(configuration.host + ".") mDNS service of type '\(configuration.connectionType.mDnsServiceType)' could not be found.")
             throw LLMFogError.mDnsServicesNotFound
         }
-        
+
         browser.cancel()
-        
+
         // Resolve the discovered endpoint to a hostname
         let connection = NWConnection(to: discoveredEndpoint, using: .tcp)
-        
+
         let resolvedService = try await withCheckedThrowingContinuation { continuation in
             connection.stateUpdateHandler = { state in
                 switch state {
@@ -182,12 +184,12 @@ extension LLMFogSession {
                         case .ipv6(let ipv6Address): ipv6Address.debugDescription.components(separatedBy: "%").first
                         default: nil
                         }
-                        
+
                         continuation.resume(returning: ipAddress)
                     } else {
                         continuation.resume(returning: nil)
                     }
-                    
+
                     connection.stateUpdateHandler = nil // Prevent further updates
                     connection.cancel()
                 case .cancelled, .failed:
@@ -199,17 +201,17 @@ extension LLMFogSession {
                     break
                 }
             }
-            
+
             connection.start(queue: .global(qos: .userInitiated))
         }
-        
+
         guard let resolvedService else {
             Self.logger.error("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service could not be resolved to an IP.")
             throw LLMFogError.mDnsServicesNotFound
         }
-        
+
         Self.logger.debug("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service resolved to: \(resolvedService).")
-        
+
         return resolvedService
     }
 }

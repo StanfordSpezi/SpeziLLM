@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import os.log
 import Network
+import os.log
 import Spezi
 import SpeziFoundation
 import SpeziKeychainStorage

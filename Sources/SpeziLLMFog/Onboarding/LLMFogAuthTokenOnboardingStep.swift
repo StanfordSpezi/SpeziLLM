@@ -44,13 +44,14 @@ public struct LLMFogAuthTokenOnboardingStep: View {
                 tag: self.credentialsTag,
                 username: LLMFogConstants.credentialsUsername
             ),
-            titleResource: "LLM_AUTH_TOKEN_ONBOARDING_TITLE",
-            subtitleResource: "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE",
-            promptResource: "LLM_AUTH_TOKEN_ONBOARDING_PROMPT",
-            hintResource: "LLM_AUTH_TOKEN_ONBOARDING_HINT",
-            actionTextResource: "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT") {
-                self.action()
-            }
+            titleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
+            subtitleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
+            promptResource: .init("LLM_AUTH_TOKEN_ONBOARDING_PROMPT", bundle: .atURL(from: .module)),
+            hintResource: .init("LLM_AUTH_TOKEN_ONBOARDING_HINT", bundle: .atURL(from: .module)),
+            actionTextResource: .init("LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT", bundle: .atURL(from: .module))
+        ) {
+            self.action()
+        }
     }
     
     
