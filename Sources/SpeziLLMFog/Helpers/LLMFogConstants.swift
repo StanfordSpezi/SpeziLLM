@@ -9,13 +9,13 @@
 import SpeziKeychainStorage
 
 
-/// Constants used throughout the `SpeziLLMOpenAI` target.
-enum LLMOpenAIConstants {
-    static let credentialsUsername = "OpenAI_Token"
+/// Constants used throughout the `SpeziLLMFog` target.
+enum LLMFogConstants {
+    static let credentialsUsername = "LLM_Fog_Token"
 }
 
 /// The credentials tag of the OpenAI API key in the secure enclave.
 extension CredentialsTag {
-    /// Default `CredentialsTag` of the SpeziLLMOpenAI OpenAI API key.
-    public static let openAIKey = CredentialsTag.genericPassword(forService: "openai.com")
+    /// Default `CredentialsTag` of the SpeziLLMFog auth token.
+    public static let fogAuthToken = CredentialsTag.genericPassword(forService: "spezifog.edu")
 }

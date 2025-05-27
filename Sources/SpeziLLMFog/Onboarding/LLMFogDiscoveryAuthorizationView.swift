@@ -69,6 +69,12 @@ public struct LLMFogDiscoveryAuthorizationView: View {
 
     public var body: some View {
         OnboardingView(
+            titleView: {
+                OnboardingTitleView(
+                    title: .init("FOG_DISCOVERY_AUTH_TITLE", bundle: .atURL(from: .module)),
+                    subtitle: .init("FOG_DISCOVERY_AUTH_SUBTITLE", bundle: .atURL(from: .module))
+                )
+            },
             contentView: {
                 VStack {
                     informationView
@@ -99,11 +105,6 @@ public struct LLMFogDiscoveryAuthorizationView: View {
 
     /// Presents information about the authorization of local network access.
     @ViewBuilder private var informationView: some View {
-        OnboardingTitleView(
-            title: .init("FOG_DISCOVERY_AUTH_TITLE", bundle: .atURL(from: .module)),
-            subtitle: .init("FOG_DISCOVERY_AUTH_SUBTITLE", bundle: .atURL(from: .module))
-        )
-        Spacer()
         Image(systemName: "network")
             .font(.system(size: 130))
             .foregroundColor(.accentColor)
@@ -116,6 +117,12 @@ public struct LLMFogDiscoveryAuthorizationView: View {
     /// Button which requests the authorization to access the local network.
     @ViewBuilder private var requestAuthButton: some View {
         AsyncButton(state: $viewState) {
+            // authorization check only works on real devices, stubbing behavior on simulator
+            #if targetEnvironment(simulator)
+            self.authorizationGranted = true
+            return
+            #endif
+
             let authGranted: Bool
 
             do {
@@ -125,7 +132,7 @@ public struct LLMFogDiscoveryAuthorizationView: View {
             }
             
             if authGranted {
-                authorizationGranted = true
+                self.authorizationGranted = true
             } else {
                 throw LLMFogDiscoveryAuthorizationError.authorizationDenied
             }
@@ -155,5 +162,8 @@ public struct LLMFogDiscoveryAuthorizationView: View {
     LLMFogDiscoveryAuthorizationView(
         action: {}
     )
+        .previewWith {
+            LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+        }
 }
 #endif

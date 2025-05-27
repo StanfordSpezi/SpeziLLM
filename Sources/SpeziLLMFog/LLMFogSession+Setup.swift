@@ -11,6 +11,7 @@ import GeneratedOpenAIClient
 import Network
 import OpenAPIRuntime
 import OpenAPIURLSession
+import SpeziKeychainStorage
 
 
 extension LLMFogSession {
@@ -28,7 +29,7 @@ extension LLMFogSession {
         
         var caCertificate: SecCertificate?
         
-        if let caCertificateUrl = platform.configuration.caCertificate {
+        if case let .https(caCertificateUrl) = self.platform.configuration.connectionType {
             // Load the specified CA certificate and strip out irrelevant data
             guard let caCertificateContents = try? String(contentsOf: caCertificateUrl, encoding: .utf8)
                     .replacingOccurrences(of: "-----BEGIN CERTIFICATE-----", with: "")
@@ -50,8 +51,9 @@ extension LLMFogSession {
         let fogServiceAddress: String
         
         do {
+            // todo: check the preferred fog node on the platform, if set use that one, otherwise discover a random one
             // Discover and resolve fog service
-            fogServiceAddress = try await resolveFogService(secureTraffic: caCertificate != nil)
+            fogServiceAddress = try await Self.resolveFogService(configuration: self.platform.configuration)
             self.discoveredServiceAddress = fogServiceAddress
         } catch is CancellationError {
             Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
@@ -79,7 +81,28 @@ extension LLMFogSession {
         \((caCertificate != nil) ? "https" : "http")://\(host):\((caCertificate != nil) ? 443 : 80)/v1
         """
         guard let url = URL(string: urlString) else {
-            await finishGenerationWithError(LLMFogError.mDnsServiceDiscoveryNetworkError, on: continuation)
+            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
+            return false
+        }
+
+        guard let bearerAuthMiddleware = try? BearerAuthMiddleware.build(
+            authToken: {
+                if let overwritingToken = self.schema.parameters.overwritingAuthToken {
+                    return overwritingToken
+                }
+
+                return self.platform.configuration.authToken
+            }(),
+            keychainStorage: self.keychainStorage,
+            keychainUsername: LLMFogConstants.credentialsUsername
+        ) else {
+            // todo: fix error desc
+            Self.logger.error("""
+            SpeziLLMFog: Missing API token in keychain.
+            Please ensure that the token is either passed directly via the Spezi `Configuration`
+            or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
+            """)
+            await finishGenerationWithError(LLMFogError.missingTokenInKeychain, on: continuation)
             return false
         }
 
@@ -104,10 +127,12 @@ extension LLMFogSession {
                 )
             }(),
             middlewares: [
-                AuthMiddleware(
-                    authToken: schema.parameters.authToken,
-                    expectedHost: platform.configuration.host
-                )
+                // Injects the bearer auth token for account verification into request headers
+                bearerAuthMiddleware,
+                // Injects the expected custom hostname into request headers
+                ExpectedHostMiddleware(expectedHost: platform.configuration.host),
+                // Retry policy for failed requests
+                RetryMiddleware()
             ]
         )
 
@@ -117,34 +142,36 @@ extension LLMFogSession {
         Self.logger.debug("SpeziLLMFog: Fog LLM finished initializing, now ready to use")
         return true
     }
-    
+}
+
+extension LLMFogSession {
     /// Resolves a Spezi Fog LLM computing resource to an IP address.
-    private func resolveFogService(secureTraffic: Bool = true) async throws -> String {
+    fileprivate static func resolveFogService(configuration: LLMFogPlatformConfiguration) async throws -> String {
         // Browse for configured mDNS services
         let browser = NWBrowser(
             for: .bonjour(
-                type: secureTraffic ? "_https._tcp" : "_http._tcp",
-                domain: platform.configuration.host + "."
+                type: configuration.connectionType.mDnsServiceType,
+                domain: configuration.host + "."
             ),
             using: .init()
         )
-        
+
         browser.start(queue: .global(qos: .userInitiated))
-        
+
         // Possible `Cancellation` error handled in the caller
-        try await Task.sleep(for: platform.configuration.mDnsBrowsingTimeout)
-        
+        try await Task.sleep(for: configuration.mDnsBrowsingTimeout)
+
         guard let discoveredEndpoint = browser.browseResults.randomElement()?.endpoint else {
             browser.cancel()
-            Self.logger.error("SpeziLLMFog: A \(self.platform.configuration.host + ".") mDNS service of type '_https._tcp' could not be found.")
+            Self.logger.error("SpeziLLMFog: A \(configuration.host + ".") mDNS service of type '\(configuration.connectionType.mDnsServiceType)' could not be found.")
             throw LLMFogError.mDnsServicesNotFound
         }
-        
+
         browser.cancel()
-        
+
         // Resolve the discovered endpoint to a hostname
         let connection = NWConnection(to: discoveredEndpoint, using: .tcp)
-        
+
         let resolvedService = try await withCheckedThrowingContinuation { continuation in
             connection.stateUpdateHandler = { state in
                 switch state {
@@ -157,34 +184,34 @@ extension LLMFogSession {
                         case .ipv6(let ipv6Address): ipv6Address.debugDescription.components(separatedBy: "%").first
                         default: nil
                         }
-                        
+
                         continuation.resume(returning: ipAddress)
                     } else {
                         continuation.resume(returning: nil)
                     }
-                    
+
                     connection.stateUpdateHandler = nil // Prevent further updates
                     connection.cancel()
                 case .cancelled, .failed:
                     connection.cancel()
                     Self.logger.error("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service could not be resolved because of a network error.")
-                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError)
+                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(NWError.tls(.max)))      // todo: dummy error
                     return
                 default:
                     break
                 }
             }
-            
+
             connection.start(queue: .global(qos: .userInitiated))
         }
-        
+
         guard let resolvedService else {
             Self.logger.error("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service could not be resolved to an IP.")
             throw LLMFogError.mDnsServicesNotFound
         }
-        
+
         Self.logger.debug("SpeziLLMFog: \(discoveredEndpoint.debugDescription) mDNS service resolved to: \(resolvedService).")
-        
+
         return resolvedService
     }
 }

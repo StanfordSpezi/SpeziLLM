@@ -1,0 +1,56 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "LLM_AUTH_TOKEN_COLLECTOR_PROMPT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM Auth Token"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter the required LLM auth token."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_SUBTITLE_HINT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Depending on the type and hosting environment of the LLM, an auth token might be required. Please clarify this with the app developers."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_COLLECTOR_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM Auth Token"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

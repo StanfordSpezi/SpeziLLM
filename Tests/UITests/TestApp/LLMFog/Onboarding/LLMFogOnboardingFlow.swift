@@ -6,6 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if os(iOS)
+@_spi(TestingSupport) import SpeziAccount
+#endif
+import SpeziLLMFog
 import SpeziOnboarding
 import SwiftUI
 
@@ -23,7 +27,14 @@ struct LLMFogOnboardingFlow: View {
 #endif
 
             // Allow discovering and connecting to local network services
-            LLMFogOnboardingDiscoveryAuthView()
+            LLMFogDiscoveryAuthOnboardingView()
+
+            // Select available fog node within local network
+            LLMFogDiscoverySelectionOnboardingView()
+
+            // Potentially collect a static auth token for the fog node from user in onboarding
+            // if auth token on `LLMFogPlatform` is specified as `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
+            // LLMFogAuthTokenOnboardingView()
         }
             .interactiveDismissDisabled(!completedOnboardingFlow)
     }
@@ -33,5 +44,10 @@ struct LLMFogOnboardingFlow: View {
 #if DEBUG
 #Preview {
     LLMFogOnboardingFlow()
+#if os(iOS)
+        .previewWith {
+            AccountConfiguration(service: InMemoryAccountService())
+        }
+#endif
 }
 #endif
