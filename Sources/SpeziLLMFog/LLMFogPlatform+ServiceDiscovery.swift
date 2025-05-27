@@ -10,7 +10,6 @@ import Network
 
 
 extension LLMFogPlatform {
-    // todo: check if we actually want something like that!
     /// Browse for mDNS services and return the final set observed after `mDnsBrowsingTimeout` elapses.
     static func discoverFogServices(
         configuration: LLMFogPlatformConfiguration
@@ -63,7 +62,7 @@ extension LLMFogPlatform {
         guard
             let path = connection.currentPath,
             case let .hostPort(host, _) = path.remoteEndpoint,
-            let rawAddress = host.debugDescription          // todo: check if this split works, but we need to refine that either way..
+            let rawAddress = host.debugDescription
                 .split(separator: "%", maxSplits: 1, omittingEmptySubsequences: true)
                 .first
         else {

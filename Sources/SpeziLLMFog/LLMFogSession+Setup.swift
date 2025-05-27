@@ -51,7 +51,7 @@ extension LLMFogSession {
         let fogServiceAddress: String
         
         do {
-            // todo: check the preffered fog node on the platform, if set use that one, otherwise discover a random one
+            // todo: check the preferred fog node on the platform, if set use that one, otherwise discover a random one
             // Discover and resolve fog service
             fogServiceAddress = try await Self.resolveFogService(configuration: self.platform.configuration)
             self.discoveredServiceAddress = fogServiceAddress

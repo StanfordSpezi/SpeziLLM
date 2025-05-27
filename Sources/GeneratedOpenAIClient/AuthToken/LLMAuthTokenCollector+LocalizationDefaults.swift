@@ -10,7 +10,6 @@ import SwiftUI
 
 
 extension LLMAuthTokenCollector {
-    // todo: make these translations
     /// Localization defaults of the ``LLMAuthTokenCollector``.
     @_documentation(visibility: internal)
     public enum Defaults {

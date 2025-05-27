@@ -47,7 +47,7 @@ struct ServiceDiscoverySequence: AsyncSequence, Sendable {
                 type: self.serviceType,
                 domain: self.host + "."
             ),
-            using: .tcp         // todo: check this, was ".init" before
+            using: .tcp
         )
 
         browser.parameters.includePeerToPeer = self.includePeerToPeer

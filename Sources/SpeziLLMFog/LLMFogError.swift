@@ -37,7 +37,6 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
-        // todo: proper localizations. this error only happens if user picked keychain auth type but no token is there
         case .missingTokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
@@ -61,7 +60,6 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
-        // todo: proper localizations. this error only happens if user picked keychain auth type but no token is there
         case .missingTokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_RECORVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
@@ -85,7 +83,6 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
-        // todo: proper localizations. this error only happens if user picked keychain auth type but no token is there
         case .missingTokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .connectivityIssues:
