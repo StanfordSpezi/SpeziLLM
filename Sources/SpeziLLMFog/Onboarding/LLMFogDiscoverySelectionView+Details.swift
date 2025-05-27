@@ -16,9 +16,8 @@ extension LLMFogDiscoverySelectionView {
         let service: NWBrowser.Result
         @Environment(\.dismiss) private var dismiss
 
-
         var body: some View {
-            NavigationStack {
+            NavigationStack {   // swiftlint:disable:this closure_body_length
                 Form {
                     Section("Service") {
                         switch service.endpoint {
@@ -32,38 +31,31 @@ extension LLMFogDiscoverySelectionView {
                         }
                     }
 
-                    self.metadataView
-                        .navigationTitle("Service Info")
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { dismiss() }
+                    Section("Metadata") {
+                        switch service.metadata {
+                        case .bonjour(let txt) where !txt.dictionary.isEmpty:
+                            ForEach(txt.dictionary.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                                HStack {
+                                    Text(key).bold()
+                                    Spacer()
+                                    Text(value)
+                                }
                             }
-                        }
-                }
-            }
-        }
-
-        @ViewBuilder private var metadataView: some View {
-            Section("Metadata") {
-                switch service.metadata {
-                case .bonjour(let txt):
-                    if txt.dictionary.isEmpty {
-                        Text("No TXT records")
-                    } else {
-                        ForEach(txt.dictionary.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                            HStack {
-                                Text(key).bold()
-                                Spacer()
-                                Text(value)
-                            }
+                        default:
+                            Text("No metadata")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
                         }
                     }
-                case .none:
-                    Text("No metadata")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                @unknown default:
-                    fatalError("Unknown Service metadata")
+                }
+                .navigationTitle("Service Info")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") {
+                            dismiss()
+                        }
+                    }
                 }
             }
         }

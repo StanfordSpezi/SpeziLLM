@@ -41,12 +41,16 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: .openAIKey,
+                tag: self.credentialsTag,
                 username: LLMOpenAIConstants.credentialsUsername
-            )
-        ) {
-            self.action()
-        }
+            ),
+            titleResource: "LLM_AUTH_TOKEN_ONBOARDING_TITLE",
+            subtitleResource: "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE",
+            promptResource: "LLM_AUTH_TOKEN_ONBOARDING_PROMPT",
+            hintResource: "LLM_AUTH_TOKEN_ONBOARDING_HINT",
+            actionTextResource: "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT") {
+                self.action()
+            }
     }
     
     

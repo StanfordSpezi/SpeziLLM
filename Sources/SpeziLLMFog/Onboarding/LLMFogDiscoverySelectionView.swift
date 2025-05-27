@@ -30,46 +30,52 @@ public struct LLMFogDiscoverySelectionView: View {
 
     public var body: some View {
         OnboardingView(
+            titleView: {
+                OnboardingTitleView(
+                    title: .init("FOG_DISCOVERY_SELECT_TITLE", bundle: .atURL(from: .module)),
+                    subtitle: .init("FOG_DISCOVERY_SELECT_SUBTITLE", bundle: .atURL(from: .module))
+                )
+            },
             contentView: {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("FOG_DISCOVERY_SELECT_TITLE", bundle: .module)
-                        .font(.title2).bold()
-                    Text("FOG_DISCOVERY_SELECT_SUBTITLE", bundle: .module)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                List {
+                    Section(
+                        header: HStack {
+                            Text("Available fog nodes")
+                                .font(.callout)
+                                .foregroundColor(.secondary)
 
-                    List(discoveredServices, id: \.endpoint) { service in
-                        serviceRow(service)
-                            .padding(.vertical, 6)
+                            // As long as View is shown, continuously discover fog nodes
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .scaleEffect(0.75, anchor: .center)
+                                .accessibilityLabel("Searching for available fog nodes")
+                        }
+                    ) {
+                        ForEach(discoveredServices, id: \.endpoint) { service in
+                            self.serviceRow(service)
+                        }
                     }
-                    .listStyle(.plain)
-                    .frame(maxHeight: 300)
                 }
-                .padding()
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
                 .task {
                     await discoverFogServices()
                 }
-                .sheet(isPresented: $isShowingInfo) {
-                    if let infoService {
-                        ServiceDetailView(service: infoService)
-                    }
+                .sheet(item: $infoService) { service in
+                    ServiceDetailView(service: service)
+                        .id(service.endpoint.debugDescription)
                 }
             },
             actionView: {
-                AsyncButton(state: $viewState) {
+                OnboardingActionsView(.init("FOG_DISCOVERY_SELECT_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     guard let service = selectedService else {
-                        fatalError("Inconsistent `LLMFogDiscoverySelectionView` state")
+                        return
                     }
-                    
+
                     self.fogPlatform.preferredFogService = service      // set preferred service on the `LLMFogPlatform`
                     try await action(service)
-                } label: {
-                    Text("FOG_DISCOVERY_SELECT_NEXT_BUTTON", bundle: .module)
-                        .frame(maxWidth: .infinity)
                 }
-                .disabled(selectedService == nil)
-                .buttonStyle(.borderedProminent)
-                .padding(.horizontal)
+                    .disabled(self.selectedService == nil)
             }
         )
         .viewStateAlert(state: $viewState)
@@ -83,9 +89,8 @@ public struct LLMFogDiscoverySelectionView: View {
 
     @ViewBuilder
     private func serviceRow(_ service: NWBrowser.Result) -> some View {     // swiftlint:disable:this function_body_length
-        HStack {    // swiftlint:disable:this closure_body_length
-            VStack(alignment: .leading, spacing: 4) {   // swiftlint:disable:this closure_body_length
-                // Endpoint info
+        HStack(spacing: 16) {       // swiftlint:disable:this closure_body_length
+            VStack(alignment: .leading, spacing: 4) {       // swiftlint:disable:this closure_body_length
                 switch service.endpoint {
                 case let .service(name, type, domain, _):
                     Text(name)
@@ -100,57 +105,58 @@ public struct LLMFogDiscoverySelectionView: View {
                         .foregroundColor(.secondary)
                 }
 
-                // Metadata preview (up to two entries)
+                // metadata preview (up to two entries)
                 switch service.metadata {
-                case .bonjour(let txt):
-                    if txt.dictionary.isEmpty {
-                        Text("No TXT records")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(Array(txt.dictionary.sorted(by: { $0.key < $1.key }).prefix(2)), id: \.key) { key, value in
-                            HStack(spacing: 4) {
-                                Text(key)
-                                    .font(.caption2)
-                                    .bold()
-                                Text(value)
-                                    .font(.caption2)
-                            }
+                case .bonjour(let txt) where !txt.dictionary.isEmpty:
+                    ForEach(
+                        Array(
+                            txt.dictionary
+                            .sorted(by: { $0.key < $1.key })
+                            .prefix(2)      // limit to two metadata keys in preview
+                        ), id: \.key
+                    ) { key, value in
+                        HStack(spacing: 4) {
+                            Text(key)
+                                .font(.caption2)
+                                .bold()
+                            Text(value)
+                                .font(.caption2)
                         }
                     }
-                case .none:
+                default:
                     Text("No metadata")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                @unknown default:
-                    fatalError("Unknown Service metadata")
                 }
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                selectedService = service
-            }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             if selectedService == service {
                 Image(systemName: "checkmark")
                     .foregroundColor(.accentColor)
-                    .accessibilityLabel(Text("Selected service"))
+                    .accessibilityLabel("Selected service")
             }
 
-            Button(action: {
+            Button {
                 infoService = service
-                isShowingInfo = true
-            }) {
+            } label: {
                 Image(systemName: "info.circle")
-                    .accessibilityLabel(Text("More information about service"))
+                    .accessibilityLabel("More information about service")
             }
             .buttonStyle(.plain)
-            .padding(.leading, 8)
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // toggle selection
+            if selectedService == service {
+                selectedService = nil
+            } else {
+                selectedService = service
+            }
         }
     }
-
 
     private func discoverFogServices() async {
         let discoverySequence = ServiceDiscoverySequence(
@@ -192,3 +198,7 @@ public struct LLMFogDiscoverySelectionView: View {
         }
 }
 #endif
+
+extension NWBrowser.Result: @retroactive Identifiable {
+    public var id: Int { self.hashValue }
+}

@@ -17,6 +17,8 @@ extension LLMFogDiscoveryAuthorizationView {
     ///
     /// Based on: https://gist.github.com/mac-cain13/fa684f54a7ae1bba8669e78d28611784
     ///
+    /// - Note: This authorization check only works on real devices. On simulators, this check will always fail.
+    ///
     /// - Throws: A network error or `CancellationError` if cancelled.
     /// - Returns: `true` if local network permission is granted, `false` if denied.
     func requestLocalNetworkAuthorization() async throws -> Bool {      // swiftlint:disable:this function_body_length cyclomatic_complexity

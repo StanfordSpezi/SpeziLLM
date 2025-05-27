@@ -43,10 +43,14 @@ public struct LLMFogAuthTokenOnboardingStep: View {
             credentialsConfig: .init(
                 tag: self.credentialsTag,
                 username: LLMFogConstants.credentialsUsername
-            )
-        ) {
-            self.action()
-        }
+            ),
+            titleResource: "LLM_AUTH_TOKEN_ONBOARDING_TITLE",
+            subtitleResource: "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE",
+            promptResource: "LLM_AUTH_TOKEN_ONBOARDING_PROMPT",
+            hintResource: "LLM_AUTH_TOKEN_ONBOARDING_HINT",
+            actionTextResource: "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT") {
+                self.action()
+            }
     }
     
     
@@ -58,7 +62,7 @@ public struct LLMFogAuthTokenOnboardingStep: View {
         _ action: @escaping () -> Void
     ) {
         self.init(
-            actionText: actionText?.localizedString() ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
+            actionText: actionText?.localizedString() ?? String(localized: "FOG_API_KEY_SAVE_BUTTON", bundle: .module),
             action
         )
     }

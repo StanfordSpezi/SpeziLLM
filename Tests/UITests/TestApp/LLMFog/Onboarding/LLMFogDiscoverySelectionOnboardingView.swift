@@ -28,7 +28,7 @@ struct LLMFogDiscoverySelectionOnboardingView: View {
 #if DEBUG
 #Preview {
     OnboardingStack {
-        LLMFogAuthTokenOnboardingView()
+        LLMFogDiscoverySelectionOnboardingView()
     }
         .previewWith {
             LLMFogPlatform(
