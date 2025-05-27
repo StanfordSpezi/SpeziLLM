@@ -27,6 +27,22 @@ package struct BearerAuthMiddleware: ClientMiddleware {
         case closure(@Sendable () async -> String?)
 
 
+        var token: String? {
+            get async {
+                switch self {
+                case .none:
+                    return nil
+                case .constant(let token):
+                    return token
+                case .keychain(let token):
+                    return token
+                case .closure(let tokenClosure):
+                    return await tokenClosure()
+                }
+            }
+        }
+
+
         init(from authToken: RemoteLLMInferenceAuthToken, keychainToken: String?) throws(RemoteLLMInferenceAuthTokenError) {
             switch authToken {
             case .none:
@@ -41,22 +57,6 @@ package struct BearerAuthMiddleware: ClientMiddleware {
                 self = .keychain(keychainToken)
             case .closure(let tokenClosure):
                 self = .closure(tokenClosure)
-            }
-        }
-
-
-        var token: String? {
-            get async {
-                switch self {
-                case .none:
-                    return nil
-                case .constant(let token):
-                    return token
-                case .keychain(let token):
-                    return token
-                case .closure(let tokenClosure):
-                    return await tokenClosure()
-                }
             }
         }
     }
@@ -75,7 +75,12 @@ package struct BearerAuthMiddleware: ClientMiddleware {
     }
 
 
-    // todo docs
+    /// Build the middleware from the ``RemoteLLMInferenceAuthToken``.
+    ///
+    /// - Parameters:
+    ///   - authToken: The auth token and its type.
+    ///   - keychainStorage: The key chain storage layer.
+    ///   - keychainUsername: The key chain user name.
     package static func build(
         authToken: RemoteLLMInferenceAuthToken,
         keychainStorage: KeychainStorage?,

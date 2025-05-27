@@ -49,9 +49,11 @@ extension LLMFogDiscoverySelectionView {
                     }
                 }
                 .navigationTitle("Service Info")
+#if !os(macOS)
                 .navigationBarTitleDisplayMode(.inline)
+#endif
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
                             dismiss()
                         }
