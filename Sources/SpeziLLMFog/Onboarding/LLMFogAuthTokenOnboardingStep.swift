@@ -13,7 +13,7 @@ import SpeziOnboarding
 import SwiftUI
 
 
-/// View to display an onboarding step for the user to enter an OpenAI API Key.
+/// View to display an onboarding step for the user to enter an fog auth token.
 /// 
 /// - Warning: Ensure that the ``LLMFogPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///

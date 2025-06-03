@@ -83,7 +83,7 @@ public struct LLMFogParameters: Sendable {
     
     /// The to-be-used Fog LLM model.
     let modelType: String
-    /// Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    /// Token to authenticate with the fog node (such as a Firebase Token). Overwrites the token defined on the ``LLMFogPlatform``.
     let overwritingAuthToken: RemoteLLMInferenceAuthToken?
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
@@ -93,7 +93,7 @@ public struct LLMFogParameters: Sendable {
     ///
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Meta's Llama models.
-    ///   - overwritingAuthToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    ///   - overwritingAuthToken: Token to authenticate with the fog node (such as a Firebase Token), defaults to `nil`. Overwrites the token defined on the ``LLMFogPlatform``.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
     public init(
         modelType: FogModelType,
@@ -107,7 +107,7 @@ public struct LLMFogParameters: Sendable {
     ///
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Meta's Llama models.
-    ///   - overwritingAuthToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    ///   - overwritingAuthToken: Token to authenticate with the fog node (such as a Firebase Token), defaults to `nil`. Overwrites the token defined on the ``LLMFogPlatform``.
     ///   - systemPrompts: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
     @_disfavoredOverload
     public init(

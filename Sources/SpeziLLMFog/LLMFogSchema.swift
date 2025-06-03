@@ -16,7 +16,7 @@ import SpeziLLM
 /// The ``LLMFogSchema`` is used as a configuration for the to-be-used Fog LLM. It contains all information necessary for the creation of an executable ``LLMFogSession``.
 /// It is bound to the ``LLMFogPlatform`` that is responsible for turning the ``LLMFogSchema`` to an ``LLMFogSession``.
 ///
-/// - Important: The ``LLMFogSchema`` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the ``LLMFogParameters/init(modelType:systemPrompt:authToken:)``. The token is created via the closure upon every LLM inference request, as the ``LLMFogSession`` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
+/// - Important: The ``LLMFogSchema`` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the ``LLMFogParameters/init(modelType:overwritingAuthToken:systemPrompt:)``. The token is created via the closure upon every LLM inference request, as the ``LLMFogSession`` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
 ///
@@ -29,10 +29,8 @@ import SpeziLLM
 /// var schema = LLMFogSchema(
 ///     parameters: .init(
 ///         modelType: .llama7B,
+///         overwritingAuthToken: .none,
 ///         systemPrompt: "You're a helpful assistant that answers questions from users.",
-///         authToken: {
-///             // Return authorization token as `String` or `nil` if no token is required by the Fog node.
-///         }
 ///     )
 /// )
 /// ```

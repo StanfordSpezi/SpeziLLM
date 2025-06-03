@@ -35,7 +35,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
     let host: String
     /// The connection type to the fog node.
     let connectionType: ConnectionType
-    /// Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    /// Token to authenticate with the fog node (such as a Firebase Token).
     let authToken: RemoteLLMInferenceAuthToken
     /// Task priority of the initiated LLM inference tasks.
     let taskPriority: TaskPriority
@@ -54,7 +54,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
     /// - Parameters:
     ///   - host: The name of the to-be-discovered service within the local network via mDNS. The hostname must match the issued TLS certificate of the fog node. Defaults to `spezillmfog.local` which is used for the mDNS advertisements as well as the TLS certificate.
     ///   - connectionType: The connection type to the fog node.
-    ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
+    ///   - authToken: Token to authenticate with the fog node (such as a Firebase Token).
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     ///   - concurrentStreams: Indicates the number of concurrent streams to the Fog LLM, defaults to `5`.
     ///   - timeout: Indicates the maximum network timeout of Fog LLM requests in seconds. defaults to `60`.
