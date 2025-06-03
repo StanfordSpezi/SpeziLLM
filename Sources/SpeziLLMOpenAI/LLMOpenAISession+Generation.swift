@@ -107,12 +107,10 @@ extension LLMOpenAISession {
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
+                await MainActor.run {
+                    self.state = .generating
+                }
                 break
-            }
-            
-            // Set the state to callingTools to indicate that function calls are being processed
-            await MainActor.run {
-                self.state = .callingTools
             }
             
             // Inject the requested function calls into the LLM context
@@ -125,6 +123,7 @@ extension LLMOpenAISession {
                 return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
+                self.state = .callingTools
                 context.append(functionCalls: functionCallContext)
             }
             
@@ -199,13 +198,13 @@ extension LLMOpenAISession {
                 // Stop LLM inference in case of a function call error
                 return
             }
-            
-            // Set the state back to generating after function calls are completed
-            await MainActor.run {
-                self.state = .generating
-            }
         }
         
+        // Set the state back to generating after function calls are completed
+        await MainActor.run {
+            self.state = .generating
+        }
+
         continuation.finish()
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
         
