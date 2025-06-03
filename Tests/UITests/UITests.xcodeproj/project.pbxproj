@@ -45,6 +45,7 @@
 		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
 		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
 		97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */; };
+		BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
 		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
 		97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogChatTestView.swift; sourceTree = "<group>"; };
+		BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionRecursive.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +195,7 @@
 		9748DBEF2B5C813000B917EE /* Functions */ = {
 			isa = PBXGroup;
 			children = (
+				BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */,
 				9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */,
 				977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */,
 				9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */,
@@ -336,7 +339,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					2F6D139128F5F384007C25D6 = {
 						CreatedOnToolsVersion = 14.1;
@@ -443,6 +446,7 @@
 				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 				102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */,
+				BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

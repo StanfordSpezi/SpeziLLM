@@ -22,6 +22,7 @@ struct LLMOpenAIChatTestView: View {
         LLMOpenAIFunctionWeather()
         LLMOpenAIFunctionHealthData()
         LLMOpenAIFunctionPerson()
+        LLMOpenAIFunctionRecursive()
     }
     
     @LLMSessionProvider(schema: Self.schema) var llm: LLMOpenAISession
