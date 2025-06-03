@@ -12,7 +12,30 @@ import SpeziViews
 import SwiftUI
 
 
-/// Enables users to select a preferred fog service to use.
+/// Select a preferred fog service to use.
+///
+/// The ``LLMFogDiscoverySelectionView`` enables users to discover and select a fog service within the local network.
+/// During the `View`s display, the local network is continuously browsed for mDNS services and the result list is displayed to the user.
+/// The user then selects a preferred fog resource to use. This resource is set on the ``LLMFogPlatform`` and provided as an action closure argument.
+///
+/// Users can view details about the individually discovered resources via a detailed info botton.
+/// Once the `View` is discarded, the browsing of the local network finishes.
+///
+/// ### Usage
+///
+/// An example usage of the ``LLMFogDiscoverySelectionView`` within an onboarding flow can be found below:
+///
+/// ```swift
+/// struct LLMFogDiscoverySelectionOnboardingView: View {
+///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///
+///     var body: some View {
+///         LLMFogDiscoverySelectionView { _ in
+///             onboardingNavigationPath.nextStep()
+///         }
+///     }
+/// }
+/// ```
 public struct LLMFogDiscoverySelectionView: View {
     @Environment(LLMFogPlatform.self) private var fogPlatform
 
@@ -185,7 +208,7 @@ public struct LLMFogDiscoverySelectionView: View {
                 self.discoveredServices = sorted
             }
         } catch {
-            viewState = .error(AnyLocalizedError(error: error))     // todo: better error
+            viewState = .error(AnyLocalizedError(error: error))     // only `LLMFogError` thrown here, mapped correctly
         }
     }
 }

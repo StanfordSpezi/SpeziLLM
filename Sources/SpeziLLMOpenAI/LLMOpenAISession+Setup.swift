@@ -59,11 +59,9 @@ extension LLMOpenAISession {
             keychainStorage: self.keychainStorage,
             keychainUsername: LLMOpenAIConstants.credentialsUsername
         ) else {
-            // todo: fix error desc
             Self.logger.error("""
-            SpeziLLMOpenAI: Missing OpenAI API token.
-            Please ensure that the token is either passed directly via the Spezi `Configuration`
-            or stored within the `SecureStorage` via the `LLMOpenAITokenSaver` before dispatching the first inference.
+            SpeziLLMOpenAI: Missing OpenAI API token in keychain.
+            Please ensure that the keychain is accessible and the token is present.
             """)
             await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
             return false

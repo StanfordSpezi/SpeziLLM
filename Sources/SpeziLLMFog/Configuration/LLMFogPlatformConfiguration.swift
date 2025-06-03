@@ -43,6 +43,8 @@ public struct LLMFogPlatformConfiguration: Sendable {
     let concurrentStreams: Int
     /// Maximum network timeout of Fog LLM requests in seconds.
     let timeout: TimeInterval
+    /// The retry policy that should be used.
+    let retryPolicy: RetryPolicy
     /// Duration of mDNS browsing for Fog LLM services.
     let mDnsBrowsingTimeout: Duration
     
@@ -56,6 +58,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     ///   - concurrentStreams: Indicates the number of concurrent streams to the Fog LLM, defaults to `5`.
     ///   - timeout: Indicates the maximum network timeout of Fog LLM requests in seconds. defaults to `60`.
+    ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - mDnsBrowsingTimeout: Duration of mDNS browsing for Fog LLM services, default to `100ms`.
     public init(
         host: String = "spezillmfog.local",     // swiftlint:disable:this function_default_parameter_at_end
@@ -64,6 +67,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
         taskPriority: TaskPriority = .userInitiated,
         concurrentStreams: Int = 5,
         timeout: TimeInterval = 60,
+        retryPolicy: RetryPolicy = .attempts(3),
         mDnsBrowsingTimeout: Duration = .milliseconds(100)
     ) {
         self.host = host
@@ -72,6 +76,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
         self.taskPriority = taskPriority
         self.concurrentStreams = concurrentStreams
         self.timeout = timeout
+        self.retryPolicy = retryPolicy
         self.mDnsBrowsingTimeout = mDnsBrowsingTimeout
     }
 }

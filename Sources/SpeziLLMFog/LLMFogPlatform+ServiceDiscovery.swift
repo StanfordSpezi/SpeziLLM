@@ -48,7 +48,7 @@ extension LLMFogPlatform {
                     continuation.resume()
                 case .failed(let error):
                     connection.stateUpdateHandler = nil
-                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(error))
+                    continuation.resume(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(cause: error))
                 case .cancelled:
                     connection.stateUpdateHandler = nil
                     continuation.resume(throwing: CancellationError())

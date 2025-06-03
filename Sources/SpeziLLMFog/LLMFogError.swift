@@ -28,7 +28,7 @@ public enum LLMFogError: LLMError {
     /// No mDNS services were found
     case mDnsServicesNotFound
     /// Network error during mDNS service discovery.
-    case mDnsServiceDiscoveryNetworkError(NWError)
+    case mDnsServiceDiscoveryNetworkError(cause: NWError? = nil)
     /// Unknown error
     case unknownError(String)
 

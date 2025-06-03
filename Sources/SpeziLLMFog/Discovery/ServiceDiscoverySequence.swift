@@ -61,7 +61,7 @@ struct ServiceDiscoverySequence: AsyncSequence, Sendable {
                 switch state {
                 case .failed(let error):
                     LLMFogPlatform.logger.error("SpeziLLMFog: MDNS service discovery failed with error \(error.debugDescription)")
-                    continuation.finish(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(error))
+                    continuation.finish(throwing: LLMFogError.mDnsServiceDiscoveryNetworkError(cause: error))
                 case .cancelled:
                     continuation.finish()
                 default:

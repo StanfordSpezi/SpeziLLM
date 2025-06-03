@@ -12,8 +12,6 @@ import OpenAPIRuntime
 
 /// Middleware that retries HTTP requests based on defined conditions.
 package struct RetryMiddleware: Sendable {
-    // todo: we need to expose probably all of these parameters for fog. for openai, we probably only expose the max attemps
-    
     /// Signals that trigger evaluation of the retry policy.
     package var signals: Set<RetryableSignal>
     /// Policy that governs retry attempts.
