@@ -33,7 +33,7 @@ public struct LLMAuthTokenCollector: View {
     private let promptResource: LocalizedStringResource
     private let hintResource: LocalizedStringResource
     private let actionTextResource: LocalizedStringResource
-    private let action: () -> Void
+    private let action: () async throws -> Void
 
     @State private var token: String = ""
 
@@ -80,7 +80,7 @@ public struct LLMAuthTokenCollector: View {
                             ),
                             for: credentialsConfig.tag
                         )
-                        action()
+                        try await action()
                     }
                 )
                     .disabled(token.isEmpty)
@@ -114,7 +114,7 @@ public struct LLMAuthTokenCollector: View {
         promptResource: LocalizedStringResource = Defaults.prompt,
         hintResource: LocalizedStringResource = Defaults.hint,
         actionTextResource: LocalizedStringResource = Defaults.action,
-        action: @escaping () -> Void
+        action: @escaping () async throws -> Void
     ) {
         self.credentialsConfig = credentialsConfig
         self.titleResource = titleResource

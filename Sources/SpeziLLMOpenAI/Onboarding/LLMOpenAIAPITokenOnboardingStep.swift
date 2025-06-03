@@ -20,7 +20,7 @@ import SwiftUI
 /// - Important: The ``LLMOpenAIAPITokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 public struct LLMOpenAIAPITokenOnboardingStep: View {
     private let actionText: String
-    private let action: () -> Void
+    private let action: () async throws -> Void
 
     @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
 
@@ -50,7 +50,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
             hintResource: .init("LLM_AUTH_TOKEN_ONBOARDING_HINT", bundle: .atURL(from: .module)),
             actionTextResource: .init("LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT", bundle: .atURL(from: .module))
         ) {
-            self.action()
+            try await self.action()
         }
     }
     
@@ -60,7 +60,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     ///   - action: Action that should be performed after the openAI API key has been persisted.
     public init(
         actionText: LocalizedStringResource? = nil,
-        _ action: @escaping () -> Void
+        _ action: @escaping () async throws -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
@@ -74,7 +74,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
-        _ action: @escaping () -> Void
+        _ action: @escaping () async throws -> Void
     ) {
         self.actionText = String(actionText)
         self.action = action

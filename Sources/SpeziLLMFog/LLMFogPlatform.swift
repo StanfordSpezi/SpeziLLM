@@ -54,7 +54,8 @@ import SpeziLLM
 ///     override var configuration: Configuration {
 ///         Configuration {
 ///             LLMRunner {
-///                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+///                 LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+///                 // If required, specify `.https` connection type, including the certificate
 ///             }
 ///         }
 ///     }

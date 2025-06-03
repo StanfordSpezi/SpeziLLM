@@ -65,7 +65,8 @@ class LLMFogAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
             LLMRunner {
-                LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+                LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+                // If required, specify `.https` connection type, including the certificate
             }
         }
     }
@@ -107,10 +108,8 @@ struct LLMFogDemoView: View {
                     with: LLMFogSchema(
                         parameters: .init(
                             modelType: .llama7B,
-                            systemPrompt: "You're a helpful assistant that answers questions from users.",
-                            authToken: { 
-                                // Return authorization token as `String` or `nil` if no token is required by the Fog node.
-                            }
+                            overwritingAuthToken: .none,    // potentially overwrite default auth token defined on the `LLMFogPlatform`
+                            systemPrompt: "You're a helpful assistant that answers questions from users."
                         )
                     )
                 )
