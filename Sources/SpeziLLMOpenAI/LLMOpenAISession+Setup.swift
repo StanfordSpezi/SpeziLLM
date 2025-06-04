@@ -42,13 +42,13 @@ extension LLMOpenAISession {
         return true
     }
 
-    /// Initialize the OpenAI OpenAPI client
+    /// Initialize the OpenAI OpenAPI client.
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
-        guard let bearerAuthMiddleware = try? BearerAuthMiddleware.build(
+        let bearerAuthMiddleware = BearerAuthMiddleware(
             authToken: {
                 if let overwritingToken = self.schema.parameters.overwritingAuthToken {
                     return overwritingToken
@@ -58,14 +58,7 @@ extension LLMOpenAISession {
             }(),
             keychainStorage: self.keychainStorage,
             keychainUsername: LLMOpenAIConstants.credentialsUsername
-        ) else {
-            Self.logger.error("""
-            SpeziLLMOpenAI: Missing OpenAI API token in keychain.
-            Please ensure that the keychain is accessible and the token is present.
-            """)
-            await finishGenerationWithError(LLMOpenAIError.missingAPITokenInKeychain, on: continuation)
-            return false
-        }
+        )
 
         // Initialize the OpenAI model
         self.wrappedClient = Client(

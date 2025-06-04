@@ -91,7 +91,7 @@ extension LLMFogSession {
             return false
         }
 
-        guard let bearerAuthMiddleware = try? BearerAuthMiddleware.build(
+        let bearerAuthMiddleware = BearerAuthMiddleware(
             authToken: {
                 if let overwritingToken = self.schema.parameters.overwritingAuthToken {
                     return overwritingToken
@@ -101,14 +101,7 @@ extension LLMFogSession {
             }(),
             keychainStorage: self.keychainStorage,
             keychainUsername: LLMFogConstants.credentialsUsername
-        ) else {
-            Self.logger.error("""
-            SpeziLLMFog: Missing API token in keychain.
-            Please ensure that the keychain is accessible and the token is present.
-            """)
-            await finishGenerationWithError(LLMFogError.missingTokenInKeychain, on: continuation)
-            return false
-        }
+        )
 
         wrappedClient = Client(
             serverURL: url,
