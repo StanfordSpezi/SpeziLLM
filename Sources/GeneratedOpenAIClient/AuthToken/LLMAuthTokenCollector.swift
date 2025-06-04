@@ -13,7 +13,8 @@ import SwiftUI
 
 
 /// `View` for the user to enter an auth token for remote LLM inference.
-/// Strings are fully configurable via init parameters using `LocalizedStringResource`.
+///
+/// The displayed text is fully configurable via init parameters using `LocalizedStringResource`, with sensible fallback defaults.
 public struct LLMAuthTokenCollector: View {
     public struct CredentialsConfig: Sendable {
         public let tag: CredentialsTag

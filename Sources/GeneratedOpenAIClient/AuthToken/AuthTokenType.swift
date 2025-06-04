@@ -9,14 +9,14 @@
 import SpeziKeychainStorage
 
 
-/// The type of auth token, either a constant one or a dynamically generated one via a closure.
+/// The type of auth token for remote LLM services, such as the OpenAI or Fog layer.
 public enum RemoteLLMInferenceAuthToken: Sendable {
-    /// No auth token
+    /// No auth token.
     case none
-    /// Content auth token that is hardcoded
+    /// Constant auth token that is static during the lifetime of the ``RemoteLLMInferenceAuthToken``.
     case constant(String)
-    /// Auth token is derived from user input and stored in keychain
+    /// Auth token persisted in the keychain tagged with the `CredentialsTag`, dynamically read from the keychain upon every request.
     case keychain(CredentialsTag)
-    /// Dynamic auth token produced by closure.
+    /// Auth token dynamically produced by a closure, reevaluated upon every request.
     case closure(@Sendable () async -> String?)
 }

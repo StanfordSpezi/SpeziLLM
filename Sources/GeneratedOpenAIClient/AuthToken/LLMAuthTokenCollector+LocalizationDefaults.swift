@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
+import Foundation
 
 
 extension LLMAuthTokenCollector {

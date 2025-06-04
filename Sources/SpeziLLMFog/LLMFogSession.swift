@@ -98,11 +98,13 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
 
     
     /// Creates an instance of a ``LLMFogSession`` responsible for LLM inference.
+    ///
     /// Only the ``LLMFogPlatform`` should create an instance of ``LLMFogSession``.
     ///
     /// - Parameters:
     ///    - platform: Reference to the ``LLMFogPlatform`` where the ``LLMFogSession`` is running on.
     ///    - schema: The configuration of the Fog LLM expressed by the ``LLMFogSchema``.
+    ///    - keychainStorage: The `KeychainStorage` module to potentially read the auth token from.
     init(_ platform: LLMFogPlatform, schema: LLMFogSchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema

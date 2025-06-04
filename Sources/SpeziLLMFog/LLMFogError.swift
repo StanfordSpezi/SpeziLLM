@@ -15,7 +15,7 @@ import SpeziLLM
 public enum LLMFogError: LLMError {
     /// Fog LLM user token is invalid.
     case invalidAPIToken
-    /// OpenAI API token is missing.
+    /// Fog auth token is missing.
     case missingTokenInKeychain
     /// Connectivity error
     case connectivityIssues(any Error)

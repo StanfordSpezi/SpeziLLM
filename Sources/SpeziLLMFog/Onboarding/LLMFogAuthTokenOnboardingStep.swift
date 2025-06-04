@@ -57,7 +57,7 @@ public struct LLMFogAuthTokenOnboardingStep: View {
     
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
-    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    ///   - action: Action that should be performed after the auth token has been persisted.
     public init(
         actionText: LocalizedStringResource? = nil,
         _ action: @escaping () async throws -> Void
@@ -70,7 +70,7 @@ public struct LLMFogAuthTokenOnboardingStep: View {
     
     /// - Parameters:
     ///   - actionText: Text that should appear on the action button without localization.
-    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    ///   - action: Action that should be performed after the auth token has been persisted.
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,

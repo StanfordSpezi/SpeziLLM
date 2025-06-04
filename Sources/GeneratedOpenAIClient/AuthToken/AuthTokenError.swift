@@ -9,6 +9,7 @@
 import SpeziLLM
 
 
+/// Errors that originate from the handling of ``RemoteLLMInferenceAuthToken``.
 package enum RemoteLLMInferenceAuthTokenError: LLMError {
     /// The auth method indicated that a token should be in the keychain, however there is none
     case noTokenInKeychain
