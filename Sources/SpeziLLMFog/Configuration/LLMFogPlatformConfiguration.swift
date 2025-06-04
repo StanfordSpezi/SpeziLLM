@@ -32,21 +32,21 @@ public struct LLMFogPlatformConfiguration: Sendable {
     }
 
     /// Name of the to-be-discovered service within the local network.
-    let host: String
+    public let host: String
     /// The connection type to the fog node.
-    let connectionType: ConnectionType
+    public let connectionType: ConnectionType
     /// Token to authenticate with the fog node (such as a Firebase Token).
-    let authToken: RemoteLLMInferenceAuthToken
+    public let authToken: RemoteLLMInferenceAuthToken
     /// Task priority of the initiated LLM inference tasks.
-    let taskPriority: TaskPriority
+    public let taskPriority: TaskPriority
     /// Number of concurrent streams to the Fog LLM.
-    let concurrentStreams: Int
+    public let concurrentStreams: Int
     /// Maximum network timeout of Fog LLM requests in seconds.
-    let timeout: TimeInterval
+    public let timeout: TimeInterval
     /// The retry policy that should be used.
-    let retryPolicy: RetryPolicy
+    public let retryPolicy: RetryPolicy
     /// Duration of mDNS browsing for Fog LLM services.
-    let mDnsBrowsingTimeout: Duration
+    public let mDnsBrowsingTimeout: Duration
     
     
     /// Creates the ``LLMFogPlatformConfiguration`` which configures the Spezi ``LLMFogPlatform``.

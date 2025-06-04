@@ -46,7 +46,8 @@ public final class LLMOpenAIPlatform: LLMPlatform, @unchecked Sendable {
 
     /// Enforce an arbitrary number of concurrent execution jobs of OpenAI LLMs.
     private let semaphore: AsyncSemaphore
-    let configuration: LLMOpenAIPlatformConfiguration
+    /// Configuration of the platform.
+    public let configuration: LLMOpenAIPlatformConfiguration
 
     @Dependency(KeychainStorage.self) private var keychainStorage
     @MainActor public var state: LLMPlatformState = .idle

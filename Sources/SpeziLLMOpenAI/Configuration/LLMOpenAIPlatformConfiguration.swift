@@ -25,17 +25,17 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
     }
 
     /// The server endpoint that the inference tasks are dispatched to.
-    let serverUrl: URL
+    public let serverUrl: URL
     /// The OpenAI API token on a global basis.
-    let authToken: RemoteLLMInferenceAuthToken
+    public let authToken: RemoteLLMInferenceAuthToken
     /// Indicates the maximum number of concurrent streams to the OpenAI API.
-    let concurrentStreams: Int
+    public let concurrentStreams: Int
     /// Maximum network timeout of OpenAI requests in seconds.
-    let timeout: TimeInterval
+    public let timeout: TimeInterval
     /// The retry policy that should be used.
-    let retryPolicy: RetryPolicy
+    public let retryPolicy: RetryPolicy
     /// The task priority of the initiated LLM inference tasks.
-    let taskPriority: TaskPriority
+    public let taskPriority: TaskPriority
 
     
     /// Creates the ``LLMOpenAIPlatformConfiguration`` which configures the Spezi ``LLMOpenAIPlatform``.
