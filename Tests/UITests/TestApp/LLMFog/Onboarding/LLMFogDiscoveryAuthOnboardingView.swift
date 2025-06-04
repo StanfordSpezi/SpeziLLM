@@ -34,7 +34,10 @@ struct LLMFogDiscoveryAuthOnboardingView: View {
             LLMFogPlatform(
                 configuration: .init(
                     connectionType: .http,
-                    authToken: .keychain(.fogAuthToken)
+                    authToken: .keychain(
+                        tag: .fogAuthToken,
+                        username: LLMFogConstants.credentialsUsername
+                    )
                 )
             )
         }

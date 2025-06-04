@@ -56,8 +56,7 @@ extension LLMOpenAISession {
 
                 return self.platform.configuration.authToken
             }(),
-            keychainStorage: self.keychainStorage,
-            keychainUsername: LLMOpenAIConstants.credentialsUsername
+            keychainStorage: self.keychainStorage
         )
 
         // Initialize the OpenAI model

@@ -24,8 +24,8 @@ public struct LLMFogAuthTokenOnboardingStep: View {
 
     @Environment(LLMFogPlatform.self) private var fogPlatform
 
-    private var credentialsTag: CredentialsTag {
-        guard case let .keychain(tag) = fogPlatform.configuration.authToken else {
+    private var credentials: (tag: CredentialsTag, username: String) {
+        guard case let .keychain(tag, username) = fogPlatform.configuration.authToken else {
             fatalError(
             """
             Use of the `LLMFogAuthTokenOnboardingStep` without specifying the
@@ -34,15 +34,15 @@ public struct LLMFogAuthTokenOnboardingStep: View {
             )
         }
 
-        return tag
+        return (tag, username)
     }
 
     
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: self.credentialsTag,
-                username: LLMFogConstants.credentialsUsername
+                tag: self.credentials.tag,
+                username: self.credentials.username
             ),
             titleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
             subtitleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
@@ -89,7 +89,10 @@ public struct LLMFogAuthTokenOnboardingStep: View {
     ) {}
         .previewWith {
             LLMFogPlatform(
-                configuration: .init(connectionType: .http, authToken: .keychain(.fogAuthToken))
+                configuration: .init(
+                    connectionType: .http,
+                    authToken: .keychain(tag: .fogAuthToken, username: LLMFogConstants.credentialsUsername)
+                )
             )
         }
 }

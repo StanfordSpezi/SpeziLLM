@@ -15,8 +15,8 @@ public enum RemoteLLMInferenceAuthToken: Sendable {
     case none
     /// Constant auth token that is static during the lifetime of the ``RemoteLLMInferenceAuthToken``.
     case constant(String)
-    /// Auth token persisted in the keychain tagged with the `CredentialsTag`, dynamically read from the keychain upon every request.
-    case keychain(CredentialsTag)
+    /// Auth token persisted in the keychain tagged with the `CredentialsTag` and username, dynamically read from the keychain upon every request.
+    case keychain(tag: CredentialsTag, username: String)
     /// Auth token dynamically produced by a closure, reevaluated upon every request.
     case closure(@Sendable () async -> String?)
 }

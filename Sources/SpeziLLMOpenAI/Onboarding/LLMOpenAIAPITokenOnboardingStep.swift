@@ -24,8 +24,8 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
 
     @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
 
-    private var credentialsTag: CredentialsTag {
-        guard case let .keychain(tag) = openAiPlatform.configuration.authToken else {
+    private var credentials: (tag: CredentialsTag, username: String) {
+        guard case let .keychain(tag, username) = openAiPlatform.configuration.authToken else {
             fatalError(
             """
             Use of the `LLMOpenAIAPITokenOnboardingStep` without specifying the
@@ -34,15 +34,15 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
             )
         }
 
-        return tag
+        return (tag, username)
     }
 
     
     public var body: some View {
         LLMAuthTokenCollector(
             credentialsConfig: .init(
-                tag: self.credentialsTag,
-                username: LLMOpenAIConstants.credentialsUsername
+                tag: self.credentials.tag,
+                username: self.credentials.username
             ),
             titleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
             subtitleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
@@ -89,7 +89,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     ) {}
         .previewWith {
             LLMOpenAIPlatform(
-                configuration: .init(authToken: .keychain(.openAIKey))
+                configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername))
             )
         }
 }

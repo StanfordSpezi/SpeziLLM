@@ -17,7 +17,6 @@ import SpeziLLM
 package struct BearerAuthMiddleware: ClientMiddleware {
     private let authToken: RemoteLLMInferenceAuthToken
     private let keychainStorage: KeychainStorage?
-    private let keychainUsername: String?
 
 
     /// Build the middleware from a ``RemoteLLMInferenceAuthToken``.
@@ -25,15 +24,12 @@ package struct BearerAuthMiddleware: ClientMiddleware {
     /// - Parameters:
     ///   - authToken: The auth token and its type.
     ///   - keychainStorage: The key chain storage layer.
-    ///   - keychainUsername: The key chain user name.
     package init(
         authToken: RemoteLLMInferenceAuthToken,
-        keychainStorage: KeychainStorage?,
-        keychainUsername: String?
+        keychainStorage: KeychainStorage?
     ) {
         self.authToken = authToken
         self.keychainStorage = keychainStorage
-        self.keychainUsername = keychainUsername
 
         // Check if keychain storage is specified
         if case .keychain = authToken {
@@ -63,12 +59,12 @@ package struct BearerAuthMiddleware: ClientMiddleware {
         case .constant(let string):
             authToken = string
 
-        case .keychain(let credentialsTag):  // extract the keychain token on every request
+        case let .keychain(credentialsTag, username):  // extract the keychain token on every request
             let credential: Credentials?
 
             do {
                 credential = try keychainStorage?.retrieveCredentials(
-                    withUsername: keychainUsername,
+                    withUsername: username,
                     for: credentialsTag
                 )
             } catch {

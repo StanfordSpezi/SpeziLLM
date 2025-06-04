@@ -49,7 +49,7 @@ struct LLMOpenAITokenOnboarding: View {
         .previewWith {
             LLMOpenAIPlatform(
                 configuration: .init(
-                    authToken: .keychain(.openAIKey)
+                    authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)
                 )
             )
         }

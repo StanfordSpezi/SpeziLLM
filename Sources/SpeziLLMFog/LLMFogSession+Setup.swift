@@ -99,8 +99,7 @@ extension LLMFogSession {
 
                 return self.platform.configuration.authToken
             }(),
-            keychainStorage: self.keychainStorage,
-            keychainUsername: LLMFogConstants.credentialsUsername
+            keychainStorage: self.keychainStorage
         )
 
         wrappedClient = Client(

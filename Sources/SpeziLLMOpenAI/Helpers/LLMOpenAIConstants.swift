@@ -10,8 +10,9 @@ import SpeziKeychainStorage
 
 
 /// Constants used throughout the `SpeziLLMOpenAI` target.
-enum LLMOpenAIConstants {
-    static let credentialsUsername = "OpenAI_Token"
+public enum LLMOpenAIConstants {
+    /// Default credentials username of `SpeziLLMOpenAI` .
+    public static let credentialsUsername = "OpenAI_Token"
 }
 
 /// The credentials tag of the OpenAI API key in the secure enclave.
