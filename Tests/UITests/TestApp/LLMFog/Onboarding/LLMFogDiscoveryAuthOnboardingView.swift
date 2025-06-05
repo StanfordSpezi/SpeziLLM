@@ -13,7 +13,7 @@ import SwiftUI
 
 
 /// Onboarding view for authorizing local network access.
-struct LLMFogOnboardingDiscoveryAuthView: View {
+struct LLMFogDiscoveryAuthOnboardingView: View {
     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
 
 
@@ -28,7 +28,18 @@ struct LLMFogOnboardingDiscoveryAuthView: View {
 #if DEBUG
 #Preview {
     OnboardingStack {
-        LLMFogOnboardingDiscoveryAuthView()
+        LLMFogDiscoveryAuthOnboardingView()
     }
+        .previewWith {
+            LLMFogPlatform(
+                configuration: .init(
+                    connectionType: .http,
+                    authToken: .keychain(
+                        tag: .fogAuthToken,
+                        username: LLMFogConstants.credentialsUsername
+                    )
+                )
+            )
+        }
 }
 #endif
