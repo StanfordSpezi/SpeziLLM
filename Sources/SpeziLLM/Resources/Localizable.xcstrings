@@ -11,6 +11,16 @@
         }
       }
     },
+    "LLM_STATE_CALLING_TOOLS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state calling tools."
+          }
+        }
+      }
+    },
     "LLM_STATE_GENERATING" : {
       "localizations" : {
         "en" : {
