@@ -28,7 +28,7 @@ import Spezi
 /// The example below demonstrates a concrete implementation of the ``LLMPlatform`` with the ``LLMMockSchema`` and ``LLMMockSession``.
 ///
 /// ```swift
-/// public actor LLMMockPlatform: LLMPlatform {
+/// public final class LLMMockPlatform: LLMPlatform {
 ///     @MainActor public let state: LLMPlatformState = .idle
 ///
 ///     public init() {}
@@ -38,7 +38,7 @@ import Spezi
 ///     }
 /// }
 /// ```
-public protocol LLMPlatform: Module, EnvironmentAccessible {
+public protocol LLMPlatform: ServiceModule, EnvironmentAccessible, Sendable {
     /// The ``LLMSchema`` that is bound to the ``LLMPlatform``.
     associatedtype Schema: LLMSchema
     /// The ``LLMSession`` that is created from the ``LLMSchema`` by the ``LLMPlatform``.
@@ -58,6 +58,11 @@ public protocol LLMPlatform: Module, EnvironmentAccessible {
     ///
     /// - Returns: The ready to use ``LLMSession``.
     func callAsFunction(with: Schema) -> Session
+}
+
+extension LLMPlatform {
+    /// Default empty implementation of `run()` method of `ServiceModule`
+    public func run() async {}
 }
 
 

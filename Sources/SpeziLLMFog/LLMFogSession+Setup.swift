@@ -60,7 +60,9 @@ extension LLMFogSession {
                 fogServiceAddress = try await Self.resolveFogService(discoveredEndpoint: fogServiceEndpoint)
             }
 
-            self.discoveredServiceAddress = fogServiceAddress
+            await MainActor.run {
+                self.discoveredServiceAddress = fogServiceAddress
+            }
         } catch is CancellationError {
             Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
             continuation.finish()
@@ -102,7 +104,7 @@ extension LLMFogSession {
             keychainStorage: self.keychainStorage
         )
 
-        wrappedClient = Client(
+        self.fogNodeClient = Client(
             serverURL: url,
             transport: {
                 let session = URLSession(

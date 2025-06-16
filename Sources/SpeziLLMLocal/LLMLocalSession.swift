@@ -60,16 +60,13 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMLocalSession: LLMSession, @unchecked Sendable {
+public final class LLMLocalSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMLocalSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
     
     let platform: LLMLocalPlatform
-    var schema: LLMLocalSchema
-    
-    /// A task managing the ``LLMLocalSession`` output generation.
-    @ObservationIgnored private var task: Task<(), Never>?
-    
+    let schema: LLMLocalSchema
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     /// Overrides the `context` with a custom highly customizable context in the `swift-transformers` format.
@@ -82,24 +79,19 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     
     
     /// Creates an instance of a ``LLMLocalSession`` responsible for LLM inference.
-    /// Only the ``LLMLocalPlatform`` should create an instance of ``LLMLocalSession``.
     ///
     /// - Parameters:
-    ///     - platform: Reference to the ``LLMLocalPlatform`` where the ``LLMLocalSession`` is running on.
-    ///     - schema: The configuration of the local LLM expressed by the ``LLMLocalSchema``.
+    ///    - platform: Reference to the ``LLMLocalPlatform`` where the ``LLMLocalSession`` is running on.
+    ///    - schema: The configuration of the local LLM expressed by the ``LLMLocalSchema``.
+    ///
+    /// - Important: Only the ``LLMLocalPlatform`` should create an instance of ``LLMLocalSession``.
     init(_ platform: LLMLocalPlatform, schema: LLMLocalSchema) {
         self.platform = platform
         self.schema = schema
-        
-        // Inject system prompt into context
-        if let systemPrompt = schema.parameters.systemPrompt {
-            Task { @MainActor in
-                context.append(systemMessage: systemPrompt)
-            }
-        }
     }
     
     /// Initializes the model in advance.
+    ///
     /// Calling this method before user interaction prepares the model, which leads to reduced response time for the first prompt.
     public func setup() async throws {
         guard await _setup(continuation: nil) else {
@@ -112,40 +104,45 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        
-        task = Task(priority: platform.configuration.taskPriority) {
-            if await state == .uninitialized {
-                guard await _setup(continuation: continuation) else {
+        // Inject system prompts into context
+        if await self.context.isEmpty {
+            await MainActor.run {
+                if let prompt = self.schema.parameters.systemPrompt {
+                    self.context.append(systemMessage: prompt)
+                }
+            }
+        }
+
+        return try self.platform.queue.submit { continuation in
+            if await self.state == .uninitialized {
+                guard await self._setup(continuation: continuation) else {
                     await MainActor.run {
-                        state = .error(error: LLMLocalError.modelNotReadyYet)
+                        self.state = .error(error: LLMLocalError.modelNotReadyYet)
                     }
-                    await finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
+                    await self.finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
                     return
                 }
             }
-            
-            if await checkCancellation(on: continuation) {
+
+            if await self.checkCancellation(on: continuation) {
                 return
             }
-            
+
             await MainActor.run {
                 self.state = .generating
             }
-            
+
             // Execute the output generation of the LLM
-            await _generate(continuation: continuation)
+            await self._generate(continuation: continuation)
         }
-        
-        return stream
     }
     
     
     public func cancel() {
-        task?.cancel()
+        // TODO: Cancel task in the inference queue
     }
     
     deinit {
-        cancel()
+        self.cancel()
     }
 }

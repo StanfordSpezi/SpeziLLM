@@ -69,7 +69,7 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
+public final class LLMOpenAISession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
@@ -77,96 +77,84 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     let platform: LLMOpenAIPlatform
     let schema: LLMOpenAISchema
     let keychainStorage: KeychainStorage
-    
-    /// A set of `Task`s managing the ``LLMOpenAISession`` output generation.
-    @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
-    /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
-    @ObservationIgnored private var lock = NSLock()
+
+    private let clientLock = NSLock()
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored var wrappedClient: Client?
+    @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
     var openAiClient: Client {
-        guard let client = wrappedClient else {
-            preconditionFailure("""
-            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
-            Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
-            """)
+        get {
+            let client = self.clientLock.withLock { self.wrappedClient }
+
+            guard let client else {
+                fatalError("""
+                SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
+                Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
+                """)
+            }
+            return client
         }
-        return client
+
+        set {
+            self.clientLock.withLock {
+                self.wrappedClient = newValue
+            }
+        }
     }
     
     
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
-    /// Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     ///
     /// - Parameters:
     ///   - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
     ///   - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
     ///   - keychainStorage: Reference to the `KeychainStorage` from `SpeziStorage` in order to securely persist the token.
+    ///
+    /// - Important: Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema
         self.keychainStorage = keychainStorage
-        
-        // Inject system prompts into context
-        Task { @MainActor in
-            schema.parameters.systemPrompts.forEach { systemPrompt in
-                context.append(systemMessage: systemPrompt)
-            }
-        }
     }
     
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        try await platform.exclusiveAccess()
-        
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        
-        // Execute the output generation of the LLM
-        let task = Task(priority: platform.configuration.taskPriority) {
-            // Unregister as soon as `Task` finishes
-            defer {
-                Task {
-                    await platform.signal()
+        // Inject system prompts into context
+        if await self.context.isEmpty {
+            await MainActor.run {
+                for prompt in self.schema.parameters.systemPrompts {
+                    self.context.append(systemMessage: prompt)
                 }
             }
-            
+        }
+
+        return try self.platform.queue.submit { continuation in
             // Setup the model, if not already done
-            if wrappedClient == nil {
-                guard await setup(continuation: continuation) else {
+            if self.wrappedClient == nil {
+                guard await self.setup(continuation: continuation) else {
                     return
                 }
             }
-            
-            if await checkCancellation(on: continuation) {
+
+            if await self.checkCancellation(on: continuation) {
                 return
             }
-            
+
             // Execute the inference
-            await _generate(continuation: continuation)
+            await self._generate(continuation: continuation)
         }
-        
-        _ = lock.withLock {
-            tasks.insert(task)
-        }
-        
-        return stream
     }
     
     public func cancel() {
-        lock.withLock {
-            for task in tasks {
-                task.cancel()
-            }
-        }
+        // TODO: Cancel task in the inference queue
     }
     
     
     deinit {
-        cancel()
+        self.cancel()
     }
 }

@@ -65,20 +65,21 @@ import SpeziLLM
 /// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
 /// On the client-side within Spezi, one has to pass either ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/http``(as shown above) or ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/https(caCertificate:)`` with specifying the custom CA cert.
 /// If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
-public final class LLMFogPlatform: LLMPlatform, @unchecked Sendable {
+public final class LLMFogPlatform: LLMPlatform {
     /// A Swift Logger that logs important information from the ``LLMFogPlatform``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
-
-    @Dependency(KeychainStorage.self) private var keychainStorage
-
-    /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
-    private let semaphore: AsyncSemaphore
+    
     /// Configuration of the platform.
     public let configuration: LLMFogPlatformConfiguration
+    /// Queue that processed the LLM inference tasks in a structured concurrency manner.
+    let queue: LLMInferenceQueue<String>
 
-    @MainActor public var state: LLMPlatformState = .idle
+    @Dependency(KeychainStorage.self) private var keychainStorage
     /// If set, the user indicated a preferred fog service to connect to. Can change over time.
     @MainActor public var preferredFogService: NWBrowser.Result?
+    @MainActor public var state: LLMPlatformState {
+        self.queue.platformState
+    }
 
 
     /// Creates an instance of the ``LLMFogPlatform``.
@@ -87,31 +88,32 @@ public final class LLMFogPlatform: LLMPlatform, @unchecked Sendable {
     ///     - configuration: The configuration of the platform.
     public init(configuration: LLMFogPlatformConfiguration) {
         self.configuration = configuration
-        self.semaphore = AsyncSemaphore(value: configuration.concurrentStreams)
+        self.queue = LLMInferenceQueue(
+            maxConcurrentTasks: configuration.concurrentStreams,
+            taskPriority: configuration.taskPriority
+        )
     }
     
-    
-    public nonisolated func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
+
+    public func run() async {
+        do {
+            // Run the LLM task queue
+            try await self.queue.runQueue()
+        } catch is CancellationError {
+            // No-op, shutdown
+        } catch {
+            fatalError("Inconsistent state of the LLMFogPlatform: \(error)")
+        }
+    }
+
+    public func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
         LLMFogSession(self, schema: llmSchema, keychainStorage: self.keychainStorage)
     }
-    
-    func exclusiveAccess() async throws {
-        try await semaphore.waitCheckingCancellation()
-        
-        if await state != .processing {
-            await MainActor.run {
-                state = .processing
-            }
-        }
-    }
-    
-    func signal() async {
-        let otherTasksWaiting = semaphore.signal()
-        
-        if !otherTasksWaiting {
-            await MainActor.run {
-                state = .idle
-            }
-        }
+
+
+    deinit {
+        self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
     }
 }
+
+extension LLMFogPlatform: @unchecked Sendable {} // unchecked because of the `Dependency` property wrapper storage

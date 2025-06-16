@@ -65,7 +65,7 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMFogSession: LLMSession, @unchecked Sendable {
+public final class LLMFogSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMFogSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
     
@@ -74,26 +74,33 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     let schema: LLMFogSchema
     let keychainStorage: KeychainStorage
 
-    /// A set of `Task`s managing the ``LLMFogSession`` output generation.
-    @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
-    /// Ensuring thread-safe access to the `LLMFogSession/task`.
-    @ObservationIgnored private var lock = NSLock()
-    /// The wrapped client instance communicating with the Fog LLM
-    @ObservationIgnored var wrappedClient: Client?
-    /// Discovered fog node advertising the LLM inference service
-    @ObservationIgnored var discoveredServiceAddress: String?
+    private let clientLock = NSLock()
+    /// The wrapped client instance communicating with the Fog LLM.
+    @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
+    /// Discovered fog node advertising the LLM inference service.
+    @MainActor public var discoveredServiceAddress: String?
 
     var fogNodeClient: Client {
-        guard let client = wrappedClient else {
-            preconditionFailure("""
-            SpeziLLMFog: Illegal Access - Tried to access the wrapped Fog LLM client of `LLMFogSession` before being initialized.
-            Ensure that the `LLMFogPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
-            """)
+        get {
+            let client = self.clientLock.withLock { self.wrappedClient }
+
+            guard let client else {
+                fatalError("""
+                SpeziLLMFog: Illegal Access - Tried to access the wrapped Fog LLM client of `LLMFogSession` before being initialized.
+                Ensure that the `LLMFogPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
+                """)
+            }
+            return client
         }
-        return client
+
+        set {
+            self.clientLock.withLock {
+                self.wrappedClient = newValue
+            }
+        }
     }
 
     
@@ -109,54 +116,38 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
         self.platform = platform
         self.schema = schema
         self.keychainStorage = keychainStorage
-
-        // Inject system prompts into context
-        Task { @MainActor in
-            schema.parameters.systemPrompts.forEach { systemPrompt in
-                context.append(systemMessage: systemPrompt)
-            }
-        }
     }
     
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        try await platform.exclusiveAccess()
-        
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        
-        // Execute the output generation of the LLM
-        let task = Task(priority: platform.configuration.taskPriority) {
-            // Unregister as soon as `Task` finishes
-            defer {
-                Task {
-                    await platform.signal()
+        // Inject system prompts into context
+        if await self.context.isEmpty {
+            await MainActor.run {
+                for prompt in self.schema.parameters.systemPrompts {
+                    self.context.append(systemMessage: prompt)
                 }
             }
-            
+        }
+
+        return try self.platform.queue.submit { continuation in
             // Setup the fog LLM, if not already done
-            guard await setup(continuation: continuation),
-                  await !checkCancellation(on: continuation) else {
+            guard await self.setup(continuation: continuation),
+                  await !self.checkCancellation(on: continuation) else {
                 return
             }
 
             // Execute the inference
-            await _generate(continuation: continuation)
+            await self._generate(continuation: continuation)
         }
-        
-        _ = lock.withLock {
-            tasks.insert(task)
-        }
-        
-        return stream
     }
     
     public func setup(
         continuation: AsyncThrowingStream<String, any Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
         // Setup the model, if not already done
-        if wrappedClient == nil {
-            guard await _setup(continuation: continuation) else {
+        if self.wrappedClient == nil {
+            guard await self._setup(continuation: continuation) else {
                 return false
             }
         }
@@ -165,15 +156,11 @@ public final class LLMFogSession: LLMSession, @unchecked Sendable {
     }
     
     public func cancel() {
-        lock.withLock {
-            for task in tasks {
-                task.cancel()
-            }
-        }
+        // TODO: Cancel task in the inference queue
     }
     
     
     deinit {
-        cancel()
+        self.cancel()
     }
 }

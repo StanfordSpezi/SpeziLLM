@@ -76,7 +76,7 @@ extension RetryMiddleware: ClientMiddleware {
             }
         }
 
-        preconditionFailure("Reached unreachable code in retry loop")
+        fatalError("Reached unreachable code in retry loop")
     }
 
     /// Checks if the status code matches any retry conditions.

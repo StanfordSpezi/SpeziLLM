@@ -25,7 +25,7 @@ extension LLMOpenAISession {
             self.state = .loading
         }
         
-        if await !self.initializeClient(continuation) {
+        if !self.initializeClient(continuation) {
             return false
         }
 
@@ -47,7 +47,7 @@ extension LLMOpenAISession {
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) -> Bool {
         let bearerAuthMiddleware = BearerAuthMiddleware(
             authToken: {
                 if let overwritingToken = self.schema.parameters.overwritingAuthToken {
@@ -60,7 +60,7 @@ extension LLMOpenAISession {
         )
 
         // Initialize the OpenAI model
-        self.wrappedClient = Client(
+        self.openAiClient = Client(
             serverURL: self.platform.configuration.serverUrl,
             transport: {
                 let session = URLSession.shared
