@@ -34,13 +34,13 @@ struct LLMOpenAIFunctionRecursive: LLMFunction {
         Message: \(currentMessage)
         """
 
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await Task.sleep(for: .seconds(2))
 
         if callCount < maxCalls {
             return """
             \(response)
             
-            Please call the recursive_call function again with these parameters:
+            Please call the \(LLMOpenAIFunctionRecursive.name) function again with these parameters:
             - callCount: \(callCount + 1)
             - maxCalls: \(maxCalls)
             - message: "Continuing recursive chain - \(callCount + 1) of \(maxCalls)"

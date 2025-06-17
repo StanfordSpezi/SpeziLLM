@@ -106,7 +106,7 @@ extension LLMOpenAISession {
             let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }.flatMap { $0 }
 
             // Exit the while loop if we don't have any function calls
-            guard !functionCalls.isEmpty else {
+            guard !functionCalls.isEmpty, !self.hasActiveToolCalls() else {
                 await MainActor.run {
                     self.state = .generating
                 }
@@ -123,7 +123,6 @@ extension LLMOpenAISession {
                 return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
-                self.state = .callingTools
                 context.append(functionCalls: functionCallContext)
             }
             
@@ -137,12 +136,20 @@ extension LLMOpenAISession {
                             Arguments: \(functionCall.arguments ?? "")
                             """)
 
+                            let isFirstToolCall = self.incrementToolCallCounter()
+                            if isFirstToolCall {
+                                await MainActor.run {
+                                    self.state = .callingTools
+                                }
+                            }
+
                             guard let functionName = functionCall.name,
                                   let functionID = functionCall.id,
                                   let functionArgument = functionCall.arguments?.data(using: .utf8),
                                   let function = self.schema.functions[functionName] else {
                                 Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallName, on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallName
                             }
 
@@ -152,6 +159,7 @@ extension LLMOpenAISession {
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Invalid function call arguments - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallArguments(error), on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallArguments(error)
                             }
 
@@ -164,12 +172,14 @@ extension LLMOpenAISession {
                             } catch is CancellationError {
                                 if await self.checkCancellation(on: continuation) {
                                     Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
+                                    self.decrementToolCallCounter()
                                     throw CancellationError()
                                 }
                                 return
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.functionCallError(error)
                             }
                             
@@ -189,6 +199,8 @@ extension LLMOpenAISession {
                                     response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
                                 )
                             }
+
+                            self.decrementToolCallCounter()
                         }
                     }
 
@@ -199,15 +211,10 @@ extension LLMOpenAISession {
                 return
             }
         }
-        
-        // Set the state back to generating after function calls are completed
-        await MainActor.run {
-            self.state = .generating
-        }
 
         continuation.finish()
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
-        
+
         await MainActor.run {
             self.state = .ready
         }
