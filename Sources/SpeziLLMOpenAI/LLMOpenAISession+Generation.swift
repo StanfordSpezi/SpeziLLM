@@ -106,7 +106,7 @@ extension LLMOpenAISession {
             let functionCalls = llmStreamResults.values.compactMap { $0.functionCall }.flatMap { $0 }
 
             // Exit the while loop if we don't have any function calls
-            guard !functionCalls.isEmpty, !self.hasActiveToolCalls() else {
+            guard !functionCalls.isEmpty else {
                 await MainActor.run {
                     self.state = .generating
                 }
@@ -125,7 +125,14 @@ extension LLMOpenAISession {
             await MainActor.run {
                 context.append(functionCalls: functionCallContext)
             }
-            
+
+            let isFirstToolCall = self.incrementToolCallCounter(by: functionCalls.count)
+            if isFirstToolCall {
+                await MainActor.run {
+                    self.state = .callingTools
+                }
+            }
+
             // Parallelize function call execution
             do {
                 try await withThrowingTaskGroup(of: Void.self) { group in   // swiftlint:disable:this closure_body_length
@@ -135,13 +142,6 @@ extension LLMOpenAISession {
                             SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
                             Arguments: \(functionCall.arguments ?? "")
                             """)
-
-                            let isFirstToolCall = self.incrementToolCallCounter()
-                            if isFirstToolCall {
-                                await MainActor.run {
-                                    self.state = .callingTools
-                                }
-                            }
 
                             guard let functionName = functionCall.name,
                                   let functionID = functionCall.id,
@@ -201,6 +201,12 @@ extension LLMOpenAISession {
                             }
 
                             self.decrementToolCallCounter()
+
+                            if !self.hasActiveToolCalls() {
+                                await MainActor.run {
+                                    self.state = .generating
+                                }
+                            }
                         }
                     }
 

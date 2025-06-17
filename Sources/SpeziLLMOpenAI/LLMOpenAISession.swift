@@ -176,11 +176,10 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     /// Safely increments the tool call counter and updates the state if needed.
     /// - Returns: `true` if this is the first tool call (counter was 0 before), `false` otherwise.
     @discardableResult
-    func incrementToolCallCounter() -> Bool {
+    func incrementToolCallCounter(by value: Int = 1) -> Bool {
         lock.withLock {
             let wasZero = toolCallCounter == 0
-            toolCallCounter += 1
-            print("+ \(toolCallCounter)")
+            toolCallCounter += value
             return wasZero
         }
     }
@@ -192,7 +191,6 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
         lock.withLock {
             if toolCallCounter > 0 {
                 toolCallCounter -= 1
-                print("- \(toolCallCounter)")
                 return toolCallCounter == 0
             }
             return false
