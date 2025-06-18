@@ -107,9 +107,7 @@ extension LLMOpenAISession {
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
-                await MainActor.run {
-                    self.state = .generating
-                }
+                checkForActiveToolCalls()
                 break
             }
             
@@ -126,12 +124,7 @@ extension LLMOpenAISession {
                 context.append(functionCalls: functionCallContext)
             }
 
-            let isFirstToolCall = self.incrementToolCallCounter(by: functionCalls.count)
-            if isFirstToolCall {
-                await MainActor.run {
-                    self.state = .callingTools
-                }
-            }
+            self.incrementToolCallCounter(by: functionCalls.count)
 
             // Parallelize function call execution
             do {
@@ -201,12 +194,6 @@ extension LLMOpenAISession {
                             }
 
                             self.decrementToolCallCounter()
-
-                            if !self.hasActiveToolCalls() {
-                                await MainActor.run {
-                                    self.state = .generating
-                                }
-                            }
                         }
                     }
 

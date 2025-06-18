@@ -12,6 +12,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
@@ -84,6 +85,8 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var lock = NSLock()
     /// Counter for tracking nested tool calls
     @ObservationIgnored private var toolCallCounter = 0
+    /// Ensuring thread-safe access to the `LLMOpenAISession/toolCallCounter`.
+    @ObservationIgnored private var toolCallCounterLock = RecursiveRWLock()
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored var wrappedClient: Client?
 
@@ -166,48 +169,49 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             }
         }
     }
+
+    /// Safely increments the tool call counter and updates the state if needed.
+    func incrementToolCallCounter(by value: Int = 1) {
+        toolCallCounterLock.withWriteLock {
+            let isFirstToolCall = toolCallCounter == 0
+            toolCallCounter += value
+            
+            if isFirstToolCall {
+                Task { @MainActor in
+                    self.state = .callingTools
+                }
+            }
+        }
+    }
+
+    /// Safely decrements the tool call counter and updates the state if needed.
+    func decrementToolCallCounter() {
+        toolCallCounterLock.withWriteLock {
+            guard toolCallCounter > 0 else {
+                return
+            }
+            
+            toolCallCounter -= 1
+            if toolCallCounter == 0 {
+                Task { @MainActor in
+                    self.state = .generating
+                }
+            }
+        }
+    }
     
+    /// Checks if there are active tool calls and updates the state if needed.
+    func checkForActiveToolCalls() {
+        toolCallCounterLock.withReadLock {
+            if toolCallCounter == 0 {
+                Task { @MainActor in
+                    self.state = .generating
+                }
+            }
+        }
+    }
     
     deinit {
         cancel()
     }
-    
-    
-    /// Safely increments the tool call counter and updates the state if needed.
-    /// - Returns: `true` if this is the first tool call (counter was 0 before), `false` otherwise.
-    @discardableResult
-    func incrementToolCallCounter(by value: Int = 1) -> Bool {
-        lock.withLock {
-            let wasZero = toolCallCounter == 0
-            toolCallCounter += value
-            return wasZero
-        }
-    }
-    
-    /// Safely decrements the tool call counter and updates the state if needed.
-    /// - Returns: `true` if this was the last tool call (counter is now 0), `false` otherwise.
-    @discardableResult
-    func decrementToolCallCounter() -> Bool {
-        lock.withLock {
-            if toolCallCounter > 0 {
-                toolCallCounter -= 1
-                return toolCallCounter == 0
-            }
-            return false
-        }
-    }
-
-    /// Checks if there are any active tool calls in progress.
-    /// - Returns: `true` if there are active tool calls, `false` otherwise.
-    func hasActiveToolCalls() -> Bool {
-        lock.withLock {
-            return toolCallCounter > 0
-        }
-    }
-
-    func resetToolCallCounter() {
-        lock.withLock {
-            toolCallCounter = 0
-        }
-    }   
 }
