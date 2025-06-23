@@ -17,6 +17,7 @@ struct LLMOpenAIFunctionRecursive: LLMFunction {
     static let description: String = "A function that can call itself repeatedly to demonstrate state transition issues"
 
 
+    // swiftlint:disable attributes
     @Parameter(description: "Current number of times in the recursive iteration", minimum: 1.0, maximum: 3.0)
     var callCount: Double
 
@@ -25,6 +26,7 @@ struct LLMOpenAIFunctionRecursive: LLMFunction {
 
     @Parameter(description: "Optional message to include in the response")
     var message: String?
+    // swiftlint:enable attributes
 
 
     func execute() async throws -> String? {
