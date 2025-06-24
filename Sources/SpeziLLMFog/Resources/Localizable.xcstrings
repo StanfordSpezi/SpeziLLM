@@ -1,6 +1,49 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@.%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@.%2$@"
+          }
+        }
+      }
+    },
+    "Available fog nodes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available fog nodes"
+          }
+        }
+      }
+    },
+    "Domain: %@" : {
+
+    },
+    "Done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "FOG_API_KEY_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save key"
+          }
+        }
+      }
+    },
     "FOG_DISCOVERY_AUTH_GRANTED_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -117,6 +160,89 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tapping the button will prompt a request for local network access. Please tap “Allow” to continue."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_NEXT_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select fog node"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select one of the discovered fog nodes on your local network to use as the preferred dispatch location."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Node Selection"
+          }
+        }
+      }
+    },
+    "Interface: %@" : {
+
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_HINT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the selected fog node requires a static authentication token, please enter it here."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_PROMPT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog LLM Token"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a static token for authenticating with the Fog LLM."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog LLM Token"
           }
         }
       }
@@ -241,6 +367,36 @@
         }
       }
     },
+    "LLM_MISSING_KEYCHAIN_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token for accessing the Fog LLM could not be found in the keychian"
+          }
+        }
+      }
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The local keychain did not hold the required token for accessing the Fog LLM."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_RECORVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try to set the token properly and restart the application."
+          }
+        }
+      }
+    },
     "LLM_MODEL_ACCESS_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -360,6 +516,33 @@
           }
         }
       }
+    },
+    "Metadata" : {
+
+    },
+    "More information about service" : {
+
+    },
+    "Name: %@" : {
+
+    },
+    "No metadata" : {
+
+    },
+    "Searching for available fog nodes" : {
+
+    },
+    "Selected service" : {
+
+    },
+    "Service" : {
+
+    },
+    "Service Info" : {
+
+    },
+    "Type: %@" : {
+
     }
   },
   "version" : "1.0"

@@ -41,8 +41,9 @@ import OSLog
 /// }
 /// ```
 public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
-    let configuration: LLMLocalPlatformConfiguration
-    
+    /// Configuration of the platform.
+    public let configuration: LLMLocalPlatformConfiguration
+
     @MainActor public var state: LLMPlatformState = .idle
     
     /// Creates an instance of the ``LLMLocalPlatform``.
