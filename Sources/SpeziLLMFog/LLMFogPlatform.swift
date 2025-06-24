@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import Network
+import os.log
 import Spezi
 import SpeziFoundation
+import SpeziKeychainStorage
 import SpeziLLM
 
 
@@ -30,7 +33,7 @@ import SpeziLLM
 ///
 /// In order to establish a secure connection to the fog node, the TLS encryption mechanism is used.
 /// That results in the need for the ``LLMFogPlatform`` to be configured via ``LLMFogPlatform/init(configuration:)`` and
-/// ``LLMFogPlatformConfiguration/init(host:caCertificate:taskPriority:concurrentStreams:timeout:mDnsBrowsingTimeout:)`` with the custom
+/// ``LLMFogPlatformConfiguration/init(host:connectionType:authToken:taskPriority:concurrentStreams:timeout:retryPolicy:mDnsBrowsingTimeout:)`` with the custom
 /// root CA certificate in the `.crt` format that signed the web service certificate of the fog node. See the `FogNode/README.md` and specifically the `setup.sh` script for more details.
 ///
 /// - Important: ``LLMFogPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMFogPlatform``.
@@ -51,7 +54,8 @@ import SpeziLLM
 ///     override var configuration: Configuration {
 ///         Configuration {
 ///             LLMRunner {
-///                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+///                 LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+///                 // If required, specify `.https` connection type, including the certificate
 ///             }
 ///         }
 ///     }
@@ -59,15 +63,24 @@ import SpeziLLM
 /// ```
 ///
 /// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
-/// On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
-public actor LLMFogPlatform: LLMPlatform {
+/// On the client-side within Spezi, one has to pass either ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/http``(as shown above) or ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/https(caCertificate:)`` with specifying the custom CA cert.
+/// If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
+public final class LLMFogPlatform: LLMPlatform, @unchecked Sendable {
+    /// A Swift Logger that logs important information from the ``LLMFogPlatform``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
+
+    @Dependency(KeychainStorage.self) private var keychainStorage
+
     /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
     private let semaphore: AsyncSemaphore
-    let configuration: LLMFogPlatformConfiguration
-    
+    /// Configuration of the platform.
+    public let configuration: LLMFogPlatformConfiguration
+
     @MainActor public var state: LLMPlatformState = .idle
-    
-    
+    /// If set, the user indicated a preferred fog service to connect to. Can change over time.
+    @MainActor public var preferredFogService: NWBrowser.Result?
+
+
     /// Creates an instance of the ``LLMFogPlatform``.
     ///
     /// - Parameters:
@@ -79,7 +92,7 @@ public actor LLMFogPlatform: LLMPlatform {
     
     
     public nonisolated func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
-        LLMFogSession(self, schema: llmSchema)
+        LLMFogSession(self, schema: llmSchema, keychainStorage: self.keychainStorage)
     }
     
     func exclusiveAccess() async throws {

@@ -13,23 +13,23 @@ import SpeziOnboarding
 import SwiftUI
 
 
-/// View to display an onboarding step for the user to enter an OpenAI API Key.
+/// View to display an onboarding step for the user to enter an fog auth token.
 /// 
-/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+/// - Warning: Ensure that the ``LLMFogPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
-/// - Important: The ``LLMOpenAIAPITokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
-public struct LLMOpenAIAPITokenOnboardingStep: View {
+/// - Important: The ``LLMFogAuthTokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
+public struct LLMFogAuthTokenOnboardingStep: View {
     private let actionText: String
     private let action: () async throws -> Void
 
-    @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
+    @Environment(LLMFogPlatform.self) private var fogPlatform
 
     private var credentials: (tag: CredentialsTag, username: String) {
-        guard case let .keychain(tag, username) = openAiPlatform.configuration.authToken else {
+        guard case let .keychain(tag, username) = fogPlatform.configuration.authToken else {
             fatalError(
             """
-            Use of the `LLMOpenAIAPITokenOnboardingStep` without specifying the
-            `LLMOpenAIPlatform.Configuration.authToken` to `.keychain` is not supported.
+            Use of the `LLMFogAuthTokenOnboardingStep` without specifying the
+            `LLMFogPlatform.Configuration.authToken` to `.keychain` is not supported.
             """
             )
         }
@@ -57,20 +57,20 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
-    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    ///   - action: Action that should be performed after the auth token has been persisted.
     public init(
         actionText: LocalizedStringResource? = nil,
         _ action: @escaping () async throws -> Void
     ) {
         self.init(
-            actionText: actionText?.localizedString() ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
+            actionText: actionText?.localizedString() ?? String(localized: "FOG_API_KEY_SAVE_BUTTON", bundle: .module),
             action
         )
     }
     
     /// - Parameters:
     ///   - actionText: Text that should appear on the action button without localization.
-    ///   - action: Action that should be performed after the openAI API key has been persisted.
+    ///   - action: Action that should be performed after the auth token has been persisted.
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
@@ -84,12 +84,15 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
 
 #if DEBUG
 #Preview {
-    LLMOpenAIAPITokenOnboardingStep(
+    LLMFogAuthTokenOnboardingStep(
         actionText: "Continue"
     ) {}
         .previewWith {
-            LLMOpenAIPlatform(
-                configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername))
+            LLMFogPlatform(
+                configuration: .init(
+                    connectionType: .http,
+                    authToken: .keychain(tag: .fogAuthToken, username: LLMFogConstants.credentialsUsername)
+                )
             )
         }
 }

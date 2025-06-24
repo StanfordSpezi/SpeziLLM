@@ -65,7 +65,8 @@ class LLMFogAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration {
             LLMRunner {
-                LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+                LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+                // If required, specify `.https` connection type, including the certificate
             }
         }
     }
@@ -87,10 +88,12 @@ The code example below showcases the interaction with a Fog LLM through the the 
 The ``LLMFogSchema`` defines the type and configurations of the to-be-executed ``LLMFogSession``. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the ``LLMFogPlatform``. The inference via ``LLMFogSession/generate()`` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 The ``LLMFogSession`` automatically discovers all available LLM fog nodes within the local network upon setup and the dispatches the LLM inference jobs to the fog computing resource, streaming back the response and surfaces it to the user.
 
+- Note: Use the ``LLMFogDiscoverySelectionView`` to give users more freedom about the discovered and selected fog resource within the local network.
+
 The ``LLMFogSession`` contains the ``LLMFogSession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
 Ensure the property always contains all necessary information, as the ``LLMFogSession/generate()`` function executes the inference based on the ``LLMFogSession/context``.
 
-- Important: The ``LLMFogSchema`` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the ``LLMFogParameters/init(modelType:systemPrompt:authToken:)``. The token is created via the closure upon every LLM inference request, as the ``LLMFogSession`` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
+- Important: The ``LLMFogSchema`` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the ``LLMFogParameters/init(modelType:overwritingAuthToken:systemPrompt:)``. The token is created via the closure upon every LLM inference request, as the ``LLMFogSession`` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
 
 ```swift
 struct LLMFogDemoView: View {
@@ -105,10 +108,8 @@ struct LLMFogDemoView: View {
                     with: LLMFogSchema(
                         parameters: .init(
                             modelType: .llama7B,
-                            systemPrompt: "You're a helpful assistant that answers questions from users.",
-                            authToken: { 
-                                // Return authorization token as `String` or `nil` if no token is required by the Fog node.
-                            }
+                            overwritingAuthToken: .none,    // potentially overwrite default auth token defined on the `LLMFogPlatform`
+                            systemPrompt: "You're a helpful assistant that answers questions from users."
                         )
                     )
                 )
@@ -141,6 +142,12 @@ struct LLMFogDemoView: View {
 
 - ``LLMFogParameters``
 - ``LLMFogModelParameters``
+
+### Fog node discovery and auth
+
+- ``LLMFogDiscoverySelectionView``
+- ``LLMFogDiscoveryAuthorizationView``
+- ``LLMFogAuthTokenOnboardingStep``
 
 ### Misc
 

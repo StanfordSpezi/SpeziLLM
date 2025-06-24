@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
@@ -47,8 +48,8 @@ public struct LLMOpenAIParameters: Sendable {
     /// Indicates if a model access test should be made during LLM setup.
     let modelAccessTest: Bool
     /// Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
-    let overwritingToken: String?
-    
+    let overwritingAuthToken: RemoteLLMInferenceAuthToken?
+
     
     /// Creates the ``LLMOpenAIParameters``.
     ///
@@ -56,18 +57,18 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - modelType: The to-be-used OpenAI model such as GPT3.5 or GPT4.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
-    ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
+    ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
         modelType: ModelType,
         systemPrompt: String? = Defaults.defaultOpenAISystemPrompt,
         modelAccessTest: Bool = false,
-        overwritingToken: String? = nil
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
     ) {
         self.init(
             modelType: modelType.rawValue,
             systemPrompts: systemPrompt.map { [$0] } ?? [],
             modelAccessTest: modelAccessTest,
-            overwritingToken: overwritingToken
+            overwritingAuthToken: overwritingAuthToken
         )
     }
     
@@ -77,17 +78,17 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - modelType: The to-be-used OpenAI model such as GPT3.5 or GPT4.
     ///   - systemPrompts: The to-be-used system prompt(s) of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
-    ///   - overwritingToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
+    ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     @_disfavoredOverload
     public init(
         modelType: String,
         systemPrompts: [String] = [Defaults.defaultOpenAISystemPrompt],
         modelAccessTest: Bool = false,
-        overwritingToken: String? = nil
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
     ) {
         self.modelType = modelType
         self.systemPrompts = systemPrompts
         self.modelAccessTest = modelAccessTest
-        self.overwritingToken = overwritingToken
+        self.overwritingAuthToken = overwritingAuthToken
     }
 }
