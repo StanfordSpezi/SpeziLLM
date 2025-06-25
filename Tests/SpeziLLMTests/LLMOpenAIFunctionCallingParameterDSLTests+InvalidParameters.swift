@@ -24,13 +24,9 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         let someInitArg: String
         
-        // swiftlint:disable attributes
-        
         @Parameter(description: "Random Parameter", pattern: "/d/d/d/d")
         var randomParameter: String
-        
-        // swiftlint:enable attributes
-        
+
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg

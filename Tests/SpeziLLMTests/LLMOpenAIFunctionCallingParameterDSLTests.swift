@@ -26,9 +26,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         static let description: String = "This is a test LLM function."
         
         let someInitArg: String
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Primitive Int Parameter", multipleOf: 3)
         var intParameter: Int
         @Parameter(description: "Primitive Double Parameter", minimum: 12.3, maximum: 34.56)
@@ -37,9 +35,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         var boolParameter: Bool
         @Parameter(description: "Primitive String Parameter", format: .datetime, pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringParameter: String
-        
-        // swiftlint:enable attributes
-        
+
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg

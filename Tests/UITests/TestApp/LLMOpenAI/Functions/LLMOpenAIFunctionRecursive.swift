@@ -17,11 +17,14 @@ struct LLMOpenAIFunctionRecursive: LLMFunction {
     static let description: String = "A function that can call itself repeatedly to demonstrate state transition issues"
 
 
-    @Parameter(description: "Current number of times in the recursive iteration", minimum: 1.0, maximum: 3.0) var callCount: Double
+    @Parameter(description: "Current number of times in the recursive iteration", minimum: 1.0, maximum: 3.0)
+    var callCount: Double
 
-    @Parameter(description: "Maximum number of times the function call should be called recursively", minimum: 1.0, maximum: 3.0) var maxCalls: Double
+    @Parameter(description: "Maximum number of times the function call should be called recursively", minimum: 1.0, maximum: 3.0)
+    var maxCalls: Double
 
-    @Parameter(description: "Optional message to include in the response") var message: String?
+    @Parameter(description: "Optional message to include in the response")
+    var message: String?
 
 
     func execute() async throws -> String? {
