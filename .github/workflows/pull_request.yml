@@ -18,7 +18,7 @@ jobs:
     uses: StanfordSpezi/.github/.github/workflows/reuse.yml@v2
   swiftlint:
     name: SwiftLint
-    uses: StanfordSpezi/.github/.github/workflows/swiftlint.yml@v2
+    uses: StanfordBDHG/action-swiftlint/.github/workflows/swiftlint/action-swiftlint@v4
     with:
       args: --config .swiftlint.yml --strict
   markdown_link_check:
