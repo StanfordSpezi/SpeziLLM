@@ -19,6 +19,8 @@ jobs:
   swiftlint:
     name: SwiftLint
     uses: StanfordSpezi/.github/.github/workflows/swiftlint.yml@v2
+    with:
+      args: --config .swiftlint.yml --strict
   markdown_link_check:
     name: Markdown Link Check
     uses: StanfordBDHG/.github/.github/workflows/markdown-link-check.yml@v2
