@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */; };
+		1033ED742DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */; };
 		109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */; };
-		109E6A5B2DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */; };
+		109E6A5B2DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */; };
 		109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */; };
+		10E9A7502DD1573700D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
@@ -60,9 +62,11 @@
 /* Begin PBXFileReference section */
 		102BDD882DB6F20400FF084E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingView.swift; sourceTree = "<group>"; };
-		109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogOnboardingDiscoveryAuthView.swift; sourceTree = "<group>"; };
+		1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogAuthTokenOnboardingView.swift; sourceTree = "<group>"; };
+		109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogDiscoveryAuthOnboardingView.swift; sourceTree = "<group>"; };
 		109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogOnboardingFlow.swift; sourceTree = "<group>"; };
 		109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogTestView.swift; sourceTree = "<group>"; };
+		10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogDiscoverySelectionOnboardingView.swift; sourceTree = "<group>"; };
 		2F68C3C6292E9F8F00B3E12C /* SpeziLLM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziLLM; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -128,7 +132,9 @@
 			children = (
 				976CE51A2BA2C4C600E21810 /* Account */,
 				102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */,
-				109E6A572DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift */,
+				109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */,
+				1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */,
+				10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */,
 				109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */,
 			);
 			path = Onboarding;
@@ -431,8 +437,9 @@
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
 				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
 				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
+				1033ED742DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift in Sources */,
 				109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */,
-				109E6A5B2DB6E8E5009F9E9F /* LLMFogOnboardingDiscoveryAuthView.swift in Sources */,
+				109E6A5B2DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift in Sources */,
 				976179542B03501100E1046E /* FeatureFlags.swift in Sources */,
 				9748DBED2B5C811F00B917EE /* LLMOpenAIFunctionHealthData.swift in Sources */,
 				976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */,
@@ -440,6 +447,7 @@
 				97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */,
 				109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
+				10E9A7502DD1573700D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift in Sources */,
 				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 				102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */,

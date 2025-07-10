@@ -36,11 +36,11 @@ public struct LLMLocalPlatformConfiguration: Sendable {
     }
     
     /// The cache limit in MB, to disable set limit to `0`.
-    let cacheLimit: Int?
+    public let cacheLimit: Int?
     /// The memory limit for the GPU used by MLX.
-    let memoryLimit: MemoryLimit?
+    public let memoryLimit: MemoryLimit?
     /// The task priority of the initiated LLM inference tasks.
-    let taskPriority: TaskPriority
+    public let taskPriority: TaskPriority
     
     
     /// Creates the ``LLMLocalPlatformConfiguration`` which configures the Spezi ``LLMLocalPlatform``.

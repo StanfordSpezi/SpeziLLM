@@ -15,6 +15,8 @@ import SpeziLLM
 public enum LLMFogError: LLMError {
     /// Fog LLM user token is invalid.
     case invalidAPIToken
+    /// Fog auth token is missing.
+    case missingTokenInKeychain
     /// Connectivity error
     case connectivityIssues(any Error)
     /// Error during generation
@@ -26,7 +28,7 @@ public enum LLMFogError: LLMError {
     /// No mDNS services were found
     case mDnsServicesNotFound
     /// Network error during mDNS service discovery.
-    case mDnsServiceDiscoveryNetworkError
+    case mDnsServiceDiscoveryNetworkError(cause: NWError? = nil)
     /// Unknown error
     case unknownError(String)
 
@@ -35,6 +37,8 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
+        case .missingTokenInKeychain:
+            String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
             String(localized: LocalizedStringResource("LLM_CONNECTIVITY_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .generationError:
@@ -56,6 +60,8 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
+        case .missingTokenInKeychain:
+            String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_RECORVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .connectivityIssues:
             String(localized: LocalizedStringResource("LLM_CONNECTIVITY_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .generationError:
@@ -77,6 +83,8 @@ public enum LLMFogError: LLMError {
         switch self {
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
+        case .missingTokenInKeychain:
+            String(localized: LocalizedStringResource("LLM_MISSING_KEYCHAIN_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .connectivityIssues:
             String(localized: LocalizedStringResource("LLM_CONNECTIVITY_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .generationError:
@@ -98,6 +106,7 @@ public enum LLMFogError: LLMError {
     public static func == (lhs: LLMFogError, rhs: LLMFogError) -> Bool {
         switch (lhs, rhs) {
         case (.invalidAPIToken, .invalidAPIToken): true
+        case (.missingTokenInKeychain, .missingTokenInKeychain): true
         case (.connectivityIssues, .connectivityIssues): true
         case (.generationError, .generationError): true
         case (.modelAccessError, .modelAccessError): true
