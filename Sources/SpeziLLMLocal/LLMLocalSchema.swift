@@ -47,7 +47,7 @@ public struct LLMLocalSchema: LLMSchema {
         self.parameters = parameters
         self.samplingParameters = samplingParameters
         self.injectIntoContext = injectIntoContext
-        self.configuration = .init(id: model.hubID)
+        self.configuration = .init(id: model.hubID, extraEOSTokens: parameters.extraEOSTokens)
     }
     
     @_disfavoredOverload
