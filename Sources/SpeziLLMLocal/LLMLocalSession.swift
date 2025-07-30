@@ -20,10 +20,12 @@ import SpeziLLM
 /// Represents an ``LLMLocalSchema`` in execution.
 ///
 /// The ``LLMLocalSession`` is the executable version of the local LLM containing context and state as defined by the ``LLMLocalSchema``.
-/// It utilizes the [llama.cpp library](https://github.com/ggerganov/llama.cpp) to locally execute a large language model on-device.
+/// It utilizes [MLX Swift](https://github.com/ml-explore/mlx-swift) to locally execute a large language model on-device.
 ///
 /// The inference is started by ``LLMLocalSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMLocalSession/cancel()``.
 /// The ``LLMLocalSession`` exposes its current state via the ``LLMLocalSession/context`` property, containing all the conversational history with the LLM.
+///
+/// To offload the model and to free occupied resources by the LLM when not in use, ``LLMLocalSession/offload()`` can be called.
 ///
 /// - Warning: The ``LLMLocalSession`` shouldn't be created manually but always through the ``LLMLocalPlatform`` via the `LLMRunner`.
 ///
@@ -74,7 +76,7 @@ public final class LLMLocalSession: LLMSession, Sendable {
     @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
-    @MainActor public var modelConfiguration: ModelRegistry?
+    @MainActor public var modelConfiguration: LLMRegistry?
     @MainActor public var modelContainer: ModelContainer?
     
     
@@ -97,6 +99,18 @@ public final class LLMLocalSession: LLMSession, Sendable {
         guard await _setup(continuation: nil) else {
             throw LLMLocalError.modelNotReadyYet
         }
+    }
+    
+    /// Releases the resources associated with the current ``LLMLocalSession``.
+    ///
+    /// Frees up memory resources by clearing the model container and reset the GPU cache, allowing to e.g. load a different local model.
+    public func offload() async {
+        self.cancel()
+        await MainActor.run {
+            modelContainer = nil
+            state = .uninitialized
+        }
+        MLX.GPU.clearCache()
     }
     
     

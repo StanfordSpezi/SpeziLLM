@@ -148,6 +148,11 @@ struct LLMLocalChatView: View {
 }
 ```
 
+### Offloading
+
+To optimize inference performance and minimize resource consumption within the application, use the `LLMLocalSession.offload()` method. This function unloads the model from memory, thereby freeing up system resources when the model is not actively in use.
+When further interaction with the model is required, calling either `LLMLocalSession.setup()` or `LLMLocalSession.generate()` will automatically reload the model into memory as needed.
+
 > [!NOTE]  
 > To learn more about the usage of SpeziLLMLocal, please refer to the comprehensive [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
