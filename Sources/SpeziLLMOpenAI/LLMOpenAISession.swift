@@ -7,11 +7,13 @@
 //
 
 import Foundation
-import class OpenAI.OpenAI
+import GeneratedOpenAIClient
+import OpenAPIRuntime
+import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziKeychainStorage
 import SpeziLLM
-import SpeziSecureStorage
 
 
 /// Represents an ``LLMOpenAISchema`` in execution.
@@ -48,7 +50,7 @@ import SpeziSecureStorage
 ///                 let llmSession: LLMOpenAISession = runner(
 ///                     with: LLMOpenAISchema(
 ///                         parameters: .init(
-///                             modelType: .gpt3_5Turbo,
+///                             modelType: .gpt4o,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingToken: "abc123"
 ///                         )
@@ -74,26 +76,26 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     
     let platform: LLMOpenAIPlatform
     let schema: LLMOpenAISchema
-    let secureStorage: SecureStorage
+    let keychainStorage: KeychainStorage
     
     /// A set of `Task`s managing the ``LLMOpenAISession`` output generation.
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
     /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
     @ObservationIgnored private var lock = NSLock()
-    
+    /// The wrapped client instance communicating with the OpenAI API
+    @ObservationIgnored var wrappedClient: Client?
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
-    @ObservationIgnored var wrappedModel: OpenAI?
-    
-    
-    var model: OpenAI {
-        guard let model = wrappedModel else {
+
+    var openAiClient: Client {
+        guard let client = wrappedClient else {
             preconditionFailure("""
-            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI model of `LLMOpenAISession` before being initialized.
+            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
             Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
             """)
         }
-        return model
+        return client
     }
     
     
@@ -101,13 +103,13 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     /// Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     ///
     /// - Parameters:
-    ///     - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
-    ///     - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
-    ///     - secureStorage: Reference to the `SecureStorage` from `SpeziStorage` in order to securely persist the token.
-    init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, secureStorage: SecureStorage) {
+    ///   - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
+    ///   - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
+    ///   - keychainStorage: Reference to the `KeychainStorage` from `SpeziStorage` in order to securely persist the token.
+    init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema
-        self.secureStorage = secureStorage
+        self.keychainStorage = keychainStorage
         
         // Inject system prompts into context
         Task { @MainActor in
@@ -119,7 +121,7 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     
     
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try await platform.exclusiveAccess()
         
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
@@ -134,13 +136,13 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             }
             
             // Setup the model, if not already done
-            if wrappedModel == nil {
+            if wrappedClient == nil {
                 guard await setup(continuation: continuation) else {
                     return
                 }
             }
             
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             

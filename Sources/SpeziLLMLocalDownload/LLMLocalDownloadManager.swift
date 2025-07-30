@@ -15,13 +15,13 @@ import SpeziViews
 
 /// Manages the download and storage of Large Language Models (LLM) to the local device.
 ///
-/// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
+/// One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(model:)`` initializer,
 /// passing a download `URL` as well as a storage `URL` to the ``LLMLocalDownloadManager``.
 /// The download of a model is started via ``LLMLocalDownloadManager/startDownload()`` and can be cancelled (early) via ``LLMLocalDownloadManager/cancelDownload()``.
 /// 
 /// The current state of the ``LLMLocalDownloadManager`` is exposed via the ``LLMLocalDownloadManager/state`` property which
 /// is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
-/// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
+/// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded`` which indicates that the download has finished.
 @Observable
 public final class LLMLocalDownloadManager: NSObject {
     /// An enum containing all possible states of the ``LLMLocalDownloadManager``.
@@ -29,7 +29,7 @@ public final class LLMLocalDownloadManager: NSObject {
         case idle
         case downloading(progress: Progress)
         case downloaded
-        case error(LocalizedError)
+        case error(any LocalizedError)
         
         
         public static func == (lhs: LLMLocalDownloadManager.DownloadState, rhs: LLMLocalDownloadManager.DownloadState) -> Bool {
@@ -56,7 +56,7 @@ public final class LLMLocalDownloadManager: NSObject {
     /// Initializes a ``LLMLocalDownloadManager`` instance to manage the download of Large Language Model (LLM) files from remote servers.
     ///
     /// - Parameters:
-    ///   - modelID: The Huggingface model ID of the LLM that needs to be downloaded.
+    ///   - model: The Huggingface model ID of the LLM that needs to be downloaded.
     public init(model: LLMLocalModel) {
         self.model = model
     }
@@ -79,11 +79,10 @@ public final class LLMLocalDownloadManager: NSObject {
     }
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.
+    @MainActor
     public func startDownload() async {
         if modelExist {
-            Task { @MainActor in
-                self.state = .downloaded
-            }
+            state = .downloaded
             return
         }
         
@@ -91,37 +90,42 @@ public final class LLMLocalDownloadManager: NSObject {
         downloadTask = Task(priority: .userInitiated) {
             do {
                 try await downloadWithHub()
-                await MainActor.run {
-                    self.state = .downloaded
-                }
+                state = .downloaded
             } catch {
-                await MainActor.run {
-                    self.state = .error(
-                        AnyLocalizedError(
-                            error: error,
-                            defaultErrorDescription: LocalizedStringResource("LLM_DOWNLOAD_FAILED_ERROR", bundle: .atURL(from: .module))
+                state = .error(
+                    AnyLocalizedError(
+                        error: error,
+                        defaultErrorDescription: LocalizedStringResource(
+                            "LLM_DOWNLOAD_FAILED_ERROR",
+                            bundle: .atURL(from: .module)
                         )
                     )
-                }
+                )
             }
         }
     }
     
     /// Cancels the download of a specified model via a `URLSessionDownloadTask`.
+    @MainActor
     public func cancelDownload() async {
         downloadTask?.cancel()
-        await MainActor.run {
-            self.state = .idle
-        }
+        state = .idle
     }
-    
-    @MainActor
+
     private func downloadWithHub() async throws {
+        // Sadly, we need this workaround to make the Swift compiler (strict concurrency checking) happy
+        @MainActor
+        func mutate(progress: Progress) {
+              self.state = .downloading(progress: progress)
+        }
+
         let repo = Hub.Repo(id: model.hubID)
         let modelFiles = ["*.safetensors", "config.json"]
         
         try await HubApi.shared.snapshot(from: repo, matching: modelFiles) { progress in
-            self.state = .downloading(progress: progress)
+            Task { @MainActor [mutate] in
+                mutate(progress)
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ protocol LLMFunctionParameterValueCollector {
 extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
     var isOptional: Bool {
         // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
-        T.self is ExpressibleByNilLiteral.Type
+        T.self is any ExpressibleByNilLiteral.Type
     }
     
     
@@ -35,8 +35,8 @@ extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
 
 extension LLMFunction {
     /// All ``LLMFunction/Parameter``s conforming to `LLMFunctionParameterValueCollector`, mapped by their name.
-    var parameterValueCollectors: [String: LLMFunctionParameterValueCollector] {
-        retrieveProperties(ofType: LLMFunctionParameterValueCollector.self)
+    var parameterValueCollectors: [String: any LLMFunctionParameterValueCollector] {
+        retrieveProperties(ofType: (any LLMFunctionParameterValueCollector).self)
     }
     
     

@@ -12,7 +12,7 @@ import SwiftUI
 
 
 struct LLMLocalTestView: View {
-    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
+    @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedOnboardingFlow = false
     let mockMode: Bool
     
     

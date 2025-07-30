@@ -29,7 +29,7 @@ You need to add the SpeziLLM Swift package to
  
 > Important: Spezi LLM Local is not compatible with simulators. The underlying [`mlx-swift`](https://github.com/ml-explore/mlx-swift) requires a modern Metal MTLGPUFamily and the simulator does not provide that.
 
-> Important: To use the LLM local target, some LLMs require adding the [Increase Memory Limit](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_kernel_increased-memory-limit) entitlement to the project.
+> Important: To use the LLM local target, some LLMs require adding the *Increase Memory Limit* entitlement to the project.
 
 ## Spezi LLM Local Components
 
@@ -98,7 +98,10 @@ struct LLMLocalDemoView: View {
 }
 ```
 
-> Tip: To enhance performance and reduce resource usage, you can call `LLMlocalSchema/offload()`, which offloads the model and frees up system resources. Subsequently, invoking `LLMlocalSchema/setup()` or `LLMlocalSchema/generate()` will reload the model into memory as needed.
+### Offloading
+
+To optimize inference performance and minimize resource consumption within the application, use the ``LLMLocalSession/offload()`` method. This function unloads the model from memory, thereby freeing up system resources when the model is not actively in use.
+When further interaction with the model is required, calling either ``LLMLocalSession/setup()`` or ``LLMLocalSession/generate()`` will automatically reload the model into memory as needed.
 
 ## Topics
 

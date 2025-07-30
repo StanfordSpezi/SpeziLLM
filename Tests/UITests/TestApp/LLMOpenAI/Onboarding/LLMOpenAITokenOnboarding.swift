@@ -11,6 +11,9 @@ import SpeziOnboarding
 import SwiftUI
 
 
+/// Onboarding view for getting a static API key for the OpenAI API.
+///
+/// - Important: Only use this view if the auth token on the `LLMOpenAIPlatform` is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
 struct LLMOpenAITokenOnboarding: View {
     @Environment(OnboardingNavigationPath.self) private var path
     #if os(visionOS)
@@ -30,9 +33,25 @@ struct LLMOpenAITokenOnboarding: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.headline)
+                            .accessibilityLabel(Text("DISMISS_BUTTON_LABEL"))
                     }
                 }
             }
             #endif
     }
 }
+
+#if DEBUG
+#Preview {
+    OnboardingStack {
+        LLMOpenAITokenOnboarding()
+    }
+        .previewWith {
+            LLMOpenAIPlatform(
+                configuration: .init(
+                    authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)
+                )
+            )
+        }
+}
+#endif

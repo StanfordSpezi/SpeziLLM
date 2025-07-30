@@ -13,7 +13,6 @@ extension LLMLocalSession {
     /// Updates the existing instance of the ``LLMLocalSchema`` with new parameters.
     ///
     /// - Parameters:
-    ///   - model: An instance of `LLMLocalModel` to be used by the schema.
     ///   - parameters: A dictionary or object containing parameters that control the LLM generation process.
     ///   - samplingParameters: An object representing the sampling parameters for the LLM.
     ///   - injectIntoContext: A Boolean value indicating whether the inference output from the ``LLMLocalSession``

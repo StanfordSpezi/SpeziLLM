@@ -14,9 +14,9 @@ import Foundation
 /// A ``LLMContextEntity`` can be thought of as a single message entity within a ``LLMContext``
 /// It consists of a ``LLMContextEntity/Role``, a unique identifier, a timestamp in the form of a `Date` as well as an `String`-based ``LLMContextEntity/content`` property which can contain Markdown-formatted text.
 /// Furthermore, the ``LLMContextEntity/complete`` flag indicates if the current state of the ``LLMContextEntity`` is final and the content will not be updated anymore.
-public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
+public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Sendable {
     /// Represents a tool call by the LLM, including its parameters
-    public struct ToolCall: Codable, Equatable, Hashable {
+    public struct ToolCall: Codable, Equatable, Hashable, Sendable {
         /// The ID of the function call, uniquely identifying the specific function call and matching the response to it.
         public let id: String
         /// The name of the function call.
@@ -39,7 +39,7 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable {
     }
     
     /// Indicates which ``LLMContextEntity/Role`` is associated with a ``LLMContextEntity``.
-    public enum Role: Codable, Equatable, Hashable {
+    public enum Role: Codable, Equatable, Hashable, Sendable {
         case user
         case assistant(toolCalls: [ToolCall] = [])
         case system

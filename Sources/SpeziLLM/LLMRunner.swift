@@ -129,7 +129,7 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// The ``LLMRunner`` uses the configured ``LLMPlatform``s to create an executable ``LLMSession`` from the passed ``LLMSchema``
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///
     /// - Returns: The ready to use ``LLMSession``.
     public func callAsFunction<L: LLMSchema>(with llmSchema: L) -> L.Platform.Session {
@@ -142,7 +142,7 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
         }
         
         // Checks the conformance of the related `LLMSession` to `Observable`.
-        guard L.Platform.Session.self is Observable.Type else {
+        guard L.Platform.Session.self is any Observable.Type else {
             preconditionFailure("""
             The passed `LLMSchema` \(String(describing: L.self)) corresponds to a not observable `LLMSession` type (found session was \(String(describing: L.Platform.Session.self))).
             Ensure that the used `LLMSession` type (\(String(describing: L.Platform.Session.self))) conforms to the `Observable` protocol via the `@Observable` macro.
@@ -158,11 +158,11 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// Directly returns an `AsyncThrowingStream` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The ready to use `AsyncThrowingStream`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, Error> {
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, any Error> {
         let llmSession = callAsFunction(with: llmSchema)
         await MainActor.run {
             llmSession.context = context
@@ -176,8 +176,8 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// Directly returns the finished output `String` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
-    ///   - chat: The context of the LLM used for the inference.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The completed output `String`.
     public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> String {

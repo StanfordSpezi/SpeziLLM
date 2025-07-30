@@ -40,7 +40,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
     
     
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         task = Task {
@@ -48,7 +48,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
                 self.state = .loading
             }
             try? await Task.sleep(for: .seconds(1))
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             
@@ -60,7 +60,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
             let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
             for token in tokens {
                 try? await Task.sleep(for: .milliseconds(500))
-                guard await !checkCancellation(on: continuation) else {
+                if await checkCancellation(on: continuation) {
                     return
                 }
                 await injectAndYield(token, on: continuation)
@@ -80,7 +80,7 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
         task?.cancel()
     }
     
-    private func injectAndYield(_ piece: String, on continuation: AsyncThrowingStream<String, Error>.Continuation) async {
+    private func injectAndYield(_ piece: String, on continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
         continuation.yield(piece)
         if schema.injectIntoContext {
             await MainActor.run {

@@ -7,24 +7,30 @@
 //
 
 import Security
-import SpeziSecureStorage
+import SpeziKeychainStorage
 import SwiftUI
 
 
 private struct TestAppTestingSetup: ViewModifier {
-    @Environment(SecureStorage.self) var secureStorage
-    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
-    
+    @Environment(KeychainStorage.self) var keychainStorage
+    @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedLocalOnboardingFlow = false
+    @AppStorage(StorageKeys.fogOnboardingFlowComplete) private var completedFogOnboardingFlow = false
+
     
     func body(content: Content) -> some View {
         content
             .task {
                 if FeatureFlags.resetSecureStorage {
-                    try? secureStorage.deleteAllCredentials()
+                    // NOTE: since the corresponding definitions in SpeziLLMOpenAI are internal,
+                    // we need to manually ensure that the values here match the values used by SpeziLLM.
+                    try? keychainStorage.deleteCredentials(
+                        withUsername: "OpenAIGPT",
+                        for: .genericPassword(forService: "openai.com")
+                    )
                 }
-                
                 if FeatureFlags.showOnboarding {
-                    completedOnboardingFlow = false
+                    completedLocalOnboardingFlow = false
+                    completedFogOnboardingFlow = false
                 }
             }
     }

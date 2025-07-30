@@ -13,11 +13,11 @@ import SpeziLLM
 /// Errors that can occur by interacting with the OpenAI API.
 public enum LLMOpenAIError: LLMError {
     /// OpenAI API token is missing.
-    case missingAPIToken
+    case missingAPITokenInKeychain
     /// OpenAI API token is invalid.
     case invalidAPIToken
     /// Connectivity error
-    case connectivityIssues(URLError)
+    case connectivityIssues(any Error)
     /// Couldn't store the OpenAI token to a secure storage location
     case storageError
     /// Quota limit reached
@@ -25,27 +25,20 @@ public enum LLMOpenAIError: LLMError {
     /// Error during generation
     case generationError
     /// Error during accessing the OpenAI Model
-    case modelAccessError(Error)
+    case modelAccessError(any Error)
     /// Invalid function call name
     case invalidFunctionCallName
     /// Invalid function call parameters (mismatch between sent parameters from OpenAI and declared ones within the ``LLMFunction``), including the decoding error
-    case invalidFunctionCallArguments(Error)
+    case invalidFunctionCallArguments(any Error)
     /// Exception during function call execution
-    case functionCallError(Error)
-    
-    
-    /// Maps the enum cases to error message from the OpenAI API
-    var openAIErrorMessage: String? {
-        switch self {
-        case .invalidAPIToken: "invalid_api_key"
-        case .insufficientQuota: "insufficient_quota"
-        default: nil
-        }
-    }
-    
+    case functionCallError(any Error)
+    /// Error during the extraction of function call schema definition from the SpeziLLM function calling DSL.
+    case functionCallSchemaExtractionError(any Error)
+
+
     public var errorDescription: String? {
         switch self {
-        case .missingAPIToken:
+        case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
@@ -65,12 +58,14 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         }
     }
     
     public var recoverySuggestion: String? {
         switch self {
-        case .missingAPIToken:
+        case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
@@ -90,12 +85,14 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         }
     }
 
     public var failureReason: String? {
         switch self {
-        case .missingAPIToken:
+        case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
             String(localized: LocalizedStringResource("LLM_INVALID_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
@@ -115,13 +112,15 @@ public enum LLMOpenAIError: LLMError {
             String(localized: LocalizedStringResource("LLM_INVALID_FUNCTION_ARGUMENTS_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .functionCallError:
             String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
+        case .functionCallSchemaExtractionError:
+            String(localized: LocalizedStringResource("LLM_FUNCTION_CALL_SCHEMA_EXTRACTION_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         }
     }
     
     
     public static func == (lhs: LLMOpenAIError, rhs: LLMOpenAIError) -> Bool {  // swiftlint:disable:this cyclomatic_complexity
         switch (lhs, rhs) {
-        case (.missingAPIToken, .missingAPIToken): true
+        case (.missingAPITokenInKeychain, .missingAPITokenInKeychain): true
         case (.invalidAPIToken, .invalidAPIToken): true
         case (.connectivityIssues, .connectivityIssues): true
         case (.storageError, .storageError): true
@@ -131,7 +130,34 @@ public enum LLMOpenAIError: LLMError {
         case (.invalidFunctionCallName, .invalidFunctionCallName): true
         case (.invalidFunctionCallArguments, .invalidFunctionCallArguments): true
         case (.functionCallError, .functionCallError): true
+        case (.functionCallSchemaExtractionError, .functionCallSchemaExtractionError): true
         default: false
+        }
+    }
+}
+
+// Reference: https://platform.openai.com/docs/guides/error-codes/api-errors
+extension LLMOpenAISession {
+    func handleErrorCode(_ statusCode: Int) -> LLMOpenAIError {
+        switch statusCode {
+        case 401:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
+            return LLMOpenAIError.invalidAPIToken
+        case 403:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Model access check - Model type or country not supported")
+            return LLMOpenAIError.invalidAPIToken
+        case 429:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Rate limit reached for requests")
+            return LLMOpenAIError.insufficientQuota
+        case 500:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: The server had an error while processing your request")
+            return LLMOpenAIError.generationError
+        case 503:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: The engine is currently overloaded, please try again later")
+            return LLMOpenAIError.generationError
+        default:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Received unknown return code from OpenAI")
+            return LLMOpenAIError.generationError
         }
     }
 }

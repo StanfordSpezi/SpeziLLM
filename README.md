@@ -45,7 +45,7 @@ As Spezi LLM contains a variety of different targets for specific LLM functional
 
 Spezi LLM provides a number of targets to help developers integrate LLMs in their Spezi-based applications:
 - [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm): Base infrastructure of LLM execution in the Spezi ecosystem.
-- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs like [Meta's Llama2 models](https://ai.meta.com/llama/).
+- [SpeziLLMLocal](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal): Local LLM execution capabilities directly on-device. Enables running open-source LLMs from Hugging Face like [Meta's Llama2](https://ai.meta.com/llama/), [Microsoft's Phi](https://azure.microsoft.com/en-us/products/phi), [Google's Gemma](https://ai.google.dev/gemma), or [DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1), among others. See [LLMLocalModel](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillmlocal/llmlocalmodel) for a list of models tested with SpeziLLM.
 - [SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload): Download and storage manager of local Language Models, including onboarding views. 
 - [SpeziLLMOpenAI](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai): Integration with OpenAI's GPT models via using OpenAI's API service.
 - [SpeziLLMFog](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmfog): Discover and dispatch LLM inference jobs to Fog node resources within the local network.
@@ -63,7 +63,7 @@ The target enables developers to easily execute medium-size Language Models (LLM
 > Spezi LLM Local is not compatible with simulators. The underlying [`mlx-swift`](https://github.com/ml-explore/mlx-swift) requires a modern Metal MTLGPUFamily and the simulator does not provide that.
 
 > [!IMPORTANT]
-> Important: To use the LLM local target, some LLMs require adding the [Increase Memory Limit](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_kernel_increased-memory-limit) entitlement to the project.
+> To use the LLM local target, some LLMs require adding the *Increase Memory Limit* entitlement to the project.
 
 #### Setup
 
@@ -81,6 +81,25 @@ class TestAppDelegate: SpeziAppDelegate {
     }
 }
 ```
+
+[SpeziLLMLocalDownload](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocaldownload) can be used to download an LLM from [HuggingFace](https://huggingface.co/) and save it on the device for execution. The `LLMLocalDownloadView` provides an out-of-the-box onboarding view for downloading models locally.
+
+```swift
+struct LLMLocalOnboardingDownloadView: View {
+    var body: some View {
+        LLMLocalDownloadView(
+            model: .llama3_8B_4bit,
+            downloadDescription: "The Llama3 8B model will be downloaded",
+        ) {
+            // Action to perform after the model is downloaded and the user presses the next button.
+        }
+    }
+}
+```
+
+> [!TIP]
+> The `LLMLocalDownloadView` view can be included in your onboarding process using SpeziOnboarding as [demonstrated in this example](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillmlocaldownload/llmlocaldownloadview#overview).
+
 
 #### Usage
 
@@ -100,7 +119,6 @@ struct LLMLocalDemoView: View {
                 let llmSession: LLMLocalSession = runner(
                     with: LLMLocalSchema(
                         model: .llama3_8B_4bit,
-                        formatChat: LLMLocalSchema.PromptFormattingDefaults.llama3
                     )
                 )
 
@@ -116,10 +134,27 @@ struct LLMLocalDemoView: View {
 }
 ```
 
-To enhance performance and reduce resource usage, you can call `LLMlocalSchema/offload()`, which offloads the model and frees up system resources. Subsequently, invoking `LLMlocalSchema/setup()` or `LLMlocalSchema/generate()` will reload the model into memory as needed.
+The [`LLMChatViewSchema`](https://swiftpackageindex.com/stanfordspezi/spezillm/main/documentation/spezillm/llmchatviewschema) can be used to easily create a conversational chat interface for your chatbot application with a local LLM.
+
+```swift
+struct LLMLocalChatView: View {
+    var body: some View {
+        LLMChatViewSchema(
+            with: LLMLocalSchema(
+                model: .llama3_8B_4bit
+            )
+        )
+    }
+}
+```
+
+### Offloading
+
+To optimize inference performance and minimize resource consumption within the application, use the `LLMLocalSession.offload()` method. This function unloads the model from memory, thereby freeing up system resources when the model is not actively in use.
+When further interaction with the model is required, calling either `LLMLocalSession.setup()` or `LLMLocalSession.generate()` will automatically reload the model into memory as needed.
 
 > [!NOTE]  
-> To learn more about the usage of SpeziLLMLocal, please refer to the [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
+> To learn more about the usage of SpeziLLMLocal, please refer to the comprehensive [DocC documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmlocal).
 
 ### Spezi LLM Open AI
 
@@ -149,7 +184,7 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 ```
 
 > [!IMPORTANT]
-> If using `SpeziLLMOpenAI` on macOS, ensure to add the [`Keychain Access Groups` entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/keychain-access-groups) to the enclosing Xcode project via *PROJECT_NAME > Signing&Capabilities > + Capability*. The array of keychain groups can be left empty, only the base entitlement is required.
+> If using `SpeziLLMOpenAI` on macOS, ensure to add the *`Keychain Access Groups` entitlement* to the enclosing Xcode project via *PROJECT_NAME > Signing&Capabilities > + Capability*. The array of keychain groups can be left empty, only the base entitlement is required.
 
 #### Usage
 
@@ -173,7 +208,7 @@ struct LLMOpenAIDemoView: View {
                 let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
-                            modelType: .gpt3_5Turbo,
+                            modelType: .gpt4o,
                             systemPrompt: "You're a helpful assistant that answers questions from users.",
                             overwritingToken: "abc123"
                         )
@@ -203,6 +238,15 @@ The `SpeziLLMFog` target enables you to use LLMs running on [Fog node](https://e
 > [!IMPORTANT]
 > `SpeziLLMFog` requires a `SpeziLLMFogNode` within the local network hosted on some computing resource that actually performs the inference requests. `SpeziLLMFog` provides the `SpeziLLMFogNode` Docker-based package that enables an easy setup of these fog nodes. See the `FogNode` directory on the root level of the SPM package as well as the respective `README.md` for more details.
 
+> [!IMPORTANT]
+> `SpeziLLMFog` performs dynamic discovery of available fog node services in the local network using Bonjour. To enable this functionality, the consuming application must configure the following `Info.plist` entries:
+> - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+`"This app uses local network access to discover nearby services."`
+> - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+> For use with `SpeziLLMFog`, include the following entry:
+>   - `_https._tcp` (for discovering secured services via TLS)
+>   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
+
 #### Setup
 
 In order to use Fog LLMs within the Spezi ecosystem, the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) needs to be initialized in the Spezi `Configuration` with the `LLMFogPlatform`. Only after, the `LLMRunner` can be used for inference with Fog LLMs. See the [SpeziLLM documentation](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) for more details.
@@ -219,13 +263,19 @@ class LLMFogAppDelegate: SpeziAppDelegate {
              LLMRunner {
                 // Set up the Fog platform with the custom CA certificate
                 LLMRunner {
-                    LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+                    LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+                    // If required, specify `.https` connection type, including the certificate
                 }
             }
         }
     }
 }
 ```
+
+In addition to set local network discovery entitlements described above, users must grant explicit authorization for local network access.
+This authorization can be requested during the app’s onboarding process using `LLMFogDiscoveryAuthorizationView`.
+It informs users about the need for local network access, prompts them to grant it, and attempts to verify the access status (note: the OS does not expose this information).
+For detailed guidance on integrating the `LLMFogDiscoveryAuthorizationView` in an onboarding flow managed by `[SpeziOnboarding`](https://swiftpackageindex.com/stanfordspezi/spezionboarding), refer to the in-line documentation of the `LLMFogDiscoveryAuthorizationView`.
 
 #### Usage
 
@@ -235,7 +285,7 @@ The `LLMFogSchema` defines the type and configurations of the to-be-executed `LL
 The `LLMFogSession` automatically discovers all available LLM fog nodes within the local network upon setup and the dispatches the LLM inference jobs to the fog computing resource, streaming back the response and surfaces it to the user.
 
 > [!IMPORTANT]  
-> The `LLMFogSchema` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the `LLMFogParameters/init(modelType:systemPrompt:authToken:)`. The token is created via the closure upon every LLM inference request, as the `LLMFogSession` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
+> The `LLMFogSchema` accepts a closure that returns an authorization token that is passed with every request to the Fog node in the `Bearer` HTTP field via the `LLMFogParameters/init(modelType:overwritingAuthToken:systemPrompt:)`. The token is created via the closure upon every LLM inference request, as the `LLMFogSession` may be long lasting and the token could therefore expire. Ensure that the closure appropriately caches the token in order to prevent unnecessary token refresh roundtrips to external systems.
 
 ```swift
 struct LLMFogDemoView: View {
@@ -250,10 +300,8 @@ struct LLMFogDemoView: View {
                     with: LLMFogSchema(
                         parameters: .init(
                             modelType: .llama7B,
-                            systemPrompt: "You're a helpful assistant that answers questions from users.",
-                            authToken: {
-                                // Return authorization token as `String` or `nil` if no token is required by the Fog node.
-                            }
+                            overwritingAuthToken: .none,    // potentially overwrite default auth token from `LLMFogPlatform`
+                            systemPrompt: "You're a helpful assistant that answers questions from users."
                         )
                     )
                 )

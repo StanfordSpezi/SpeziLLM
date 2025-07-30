@@ -10,6 +10,7 @@
 import Foundation
 import MLX
 import MLXLLM
+import MLXLMCommon
 import MLXRandom
 import os
 import SpeziChat
@@ -27,9 +28,6 @@ import SpeziLLM
 /// To offload the model and to free occupied resources by the LLM when not in use, ``LLMLocalSession/offload()`` can be called.
 ///
 /// - Warning: The ``LLMLocalSession`` shouldn't be created manually but always through the ``LLMLocalPlatform`` via the `LLMRunner`.
-///
-/// - Important: In order to use the LLM local target, one needs to set build parameters in the consuming Xcode project or the consuming SPM package to enable the [Swift / C++ Interop](https://www.swift.org/documentation/cxx-interop/),     <!-- markdown-link-check-disable-line -->
-/// introduced in Xcode 15 and Swift 5.9. Please refer to <doc:SpeziLLMLocal#Setup> for more information.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
@@ -71,10 +69,6 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     let platform: LLMLocalPlatform
     var schema: LLMLocalSchema
     
-    @ObservationIgnored private var modelExist: Bool {
-        false
-    }
-    
     /// A task managing the ``LLMLocalSession`` output generation.
     @ObservationIgnored private var task: Task<(), Never>?
     
@@ -85,7 +79,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     @MainActor public var customContext: [[String: String]] = []
     
     @MainActor public var numParameters: Int?
-    @MainActor public var modelConfiguration: ModelConfiguration?
+    @MainActor public var modelConfiguration: LLMRegistry?
     @MainActor public var modelContainer: ModelContainer?
     
     
@@ -115,11 +109,11 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
         }
     }
     
-    /// Releases the memory associated with the current model.
+    /// Releases the resources associated with the current ``LLMLocalSession``.
     ///
-    /// This function frees up memory resources by clearing the model container and reset the GPU cache, allowing to e.g. load a different model.
+    /// Frees up memory resources by clearing the model container and reset the GPU cache, allowing to e.g. load a different local model.
     public func offload() async {
-        cancel()
+        self.cancel()
         await MainActor.run {
             modelContainer = nil
             state = .uninitialized
@@ -131,7 +125,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
     /// Based on the input prompt, generate the output.
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output.
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, Error> {
+    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         
         task = Task(priority: platform.configuration.taskPriority) {
@@ -145,7 +139,7 @@ public final class LLMLocalSession: LLMSession, @unchecked Sendable {
                 }
             }
             
-            guard await !checkCancellation(on: continuation) else {
+            if await checkCancellation(on: continuation) {
                 return
             }
             
