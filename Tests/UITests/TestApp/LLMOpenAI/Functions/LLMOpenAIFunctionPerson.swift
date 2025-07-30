@@ -30,10 +30,8 @@ struct LLMOpenAIFunctionPerson: LLMFunction {
     static let description: String = "Gets the age of persons."
     
     
-    // swiftlint:disable attributes
     @Parameter(description: "Persons which age is to be determined.")
     var persons: [CustomArrayItemType]
-    // swiftlint:enable attributes
     
     func execute() async throws -> String? {
         persons.reduce(into: "") { partialResult, person in

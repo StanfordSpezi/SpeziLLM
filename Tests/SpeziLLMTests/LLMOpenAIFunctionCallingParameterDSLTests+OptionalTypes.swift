@@ -31,7 +31,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         let someInitArg: String
         
-        // swiftlint:disable attributes discouraged_optional_boolean discouraged_optional_collection
+        // swiftlint:disable discouraged_optional_boolean discouraged_optional_collection
         
         @Parameter(description: "Optional Int Parameter", multipleOf: 3)
         var intParameter: Int?
@@ -52,7 +52,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         @Parameter(description: "Optional String Array Nil Parameter")
         var arrayNilParameter: [String]?
         
-        // swiftlint:enable attributes discouraged_optional_boolean discouraged_optional_collection
+        // swiftlint:enable discouraged_optional_boolean discouraged_optional_collection
         
         
         init(someInitArg: String) {

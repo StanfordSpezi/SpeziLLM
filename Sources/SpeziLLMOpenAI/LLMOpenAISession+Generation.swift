@@ -107,6 +107,7 @@ extension LLMOpenAISession {
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
+                checkForActiveToolCalls()
                 break
             }
             
@@ -122,7 +123,9 @@ extension LLMOpenAISession {
             await MainActor.run {
                 context.append(functionCalls: functionCallContext)
             }
-            
+
+            self.incrementToolCallCounter(by: functionCalls.count)
+
             // Parallelize function call execution
             do {
                 try await withThrowingTaskGroup(of: Void.self) { group in   // swiftlint:disable:this closure_body_length
@@ -139,6 +142,7 @@ extension LLMOpenAISession {
                                   let function = self.schema.functions[functionName] else {
                                 Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallName, on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallName
                             }
 
@@ -148,6 +152,7 @@ extension LLMOpenAISession {
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Invalid function call arguments - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallArguments(error), on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallArguments(error)
                             }
 
@@ -160,12 +165,14 @@ extension LLMOpenAISession {
                             } catch is CancellationError {
                                 if await self.checkCancellation(on: continuation) {
                                     Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
+                                    self.decrementToolCallCounter()
                                     throw CancellationError()
                                 }
                                 return
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)
+                                self.decrementToolCallCounter()
                                 throw LLMOpenAIError.functionCallError(error)
                             }
                             
@@ -185,6 +192,8 @@ extension LLMOpenAISession {
                                     response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
                                 )
                             }
+
+                            self.decrementToolCallCounter()
                         }
                     }
 
@@ -195,10 +204,10 @@ extension LLMOpenAISession {
                 return
             }
         }
-        
+
         continuation.finish()
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
-        
+
         await MainActor.run {
             self.state = .ready
         }

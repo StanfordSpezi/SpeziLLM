@@ -11,7 +11,7 @@ only_rules:
   # All Images that provide context should have an accessibility label. Purely decorative images can be hidden from accessibility.
   - accessibility_label_for_image
   # Attributes should be on their own lines in functions and types, but on the same line as variables and imports.
-  - attributes
+  # attributes
   # Prefer using Array(seq) over seq.map { $0 } to convert a sequence into an Array.
   - array_init
   # Prefer the new block based KVO API with keypaths when using Swift 3.2 or later.

@@ -26,9 +26,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         static let description: String = "This is a test array LLM function."
         
         let someInitArg: String
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Int Array Parameter", minItems: 1, maxItems: 9, uniqueItems: true)
         var intArrayParameter: [Int]
         @Parameter(description: "Double Array Parameter", minimum: 12.3, maximum: 45.6)
@@ -37,9 +35,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         var boolArrayParameter: [Bool]
         @Parameter(description: "String Array Parameter", pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringArrayParameter: [String]
-        
-        // swiftlint:enable attributes
-        
+
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg
