@@ -74,7 +74,6 @@ public protocol LLMSession: AnyObject, Sendable {
     /// Starts the inference of the ``LLMSession`` based on the ``LLMSession/context``.
     ///
     /// - Returns: An `AsyncThrowingStream` that yields the generated `String` pieces from the LLM.
-    @discardableResult
     func generate() async throws -> AsyncThrowingStream<String, any Error>
     
     /// Cancels the current inference of the ``LLMSession``.

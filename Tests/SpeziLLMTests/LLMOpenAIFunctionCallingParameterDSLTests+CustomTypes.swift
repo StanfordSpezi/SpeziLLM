@@ -127,9 +127,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect((properties?["propertyB"] as? [String: Any])?["description"] as? String == "Second parameter")
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersCustom.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersCustom.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()

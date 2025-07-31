@@ -58,7 +58,7 @@ public enum LLMDefaultError: LLMError {
 ///     public var failureReason: String? { "Some example failure reason" }
 /// }
 /// ```
-public protocol LLMError: LocalizedError, Equatable {}
+public protocol LLMError: LocalizedError, Equatable {}      // `LocalizedError` conforms to `Sendable`
 
 
 /// Ensure the conformance of the Swift `CancellationError` to ``LLMError``.

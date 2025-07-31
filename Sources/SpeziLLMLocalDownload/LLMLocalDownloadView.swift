@@ -60,7 +60,7 @@ public struct LLMLocalDownloadView: View {
     
     public var body: some View {
         OnboardingView(
-            contentView: {
+            content: {
                 VStack {
                     informationView
                     
@@ -79,17 +79,17 @@ public struct LLMLocalDownloadView: View {
                                 Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
                             }
                         }
-                            .multilineTextAlignment(.center)
-                            .padding(.vertical, 16)
-                            .bold()
-                            .italic()
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 16)
+                        .bold()
+                        .italic()
                     }
                     
                     Spacer()
                 }
-                    .transition(.opacity)
-                    .animation(.easeInOut, value: isDownloading || modelExist)
-            }, actionView: {
+                .transition(.opacity)
+                .animation(.easeInOut, value: isDownloading || modelExist)
+            }, footer: {
                 OnboardingActionsView(.init("LLM_DOWNLOAD_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }

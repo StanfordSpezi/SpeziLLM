@@ -78,7 +78,7 @@ extension LLMLocalSession {
             
             await MainActor.run {
                 continuation.finish()
-                state = .ready
+                self.state = .ready
             }
         } catch {
             await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuation)
@@ -117,8 +117,13 @@ extension LLMLocalSession {
             let text = modelContext.tokenizer.decode(tokens: lastTokens)
             
             Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-            continuation.yield(text)
-            
+            if case .terminated = continuation.yield(text) {
+                Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
+
+                // indicate that no further tokens should be generated, no other cleanup needed
+                return .stop
+            }
+
             if schema.injectIntoContext {
                 Task { @MainActor in
                     context.append(assistantOutput: text)
@@ -166,7 +171,11 @@ extension LLMLocalSession {
             if await checkCancellation(on: continuation) {
                 return
             }
-            continuation.yield(token)
+
+            if case .terminated = continuation.yield(token) {
+                Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
+                break
+            }
         }
         
         continuation.finish()

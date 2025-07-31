@@ -135,7 +135,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--showOnboarding"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--mockMode"

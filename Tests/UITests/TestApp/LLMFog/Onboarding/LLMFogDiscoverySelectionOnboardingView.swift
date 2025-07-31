@@ -7,14 +7,13 @@
 //
 
 import SpeziLLMFog
-import SpeziOnboarding
 import SpeziViews
 import SwiftUI
 
 
 /// Onboarding view for selecting a specific fog node to dispatch inference requests to
 struct LLMFogDiscoverySelectionOnboardingView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 
 
     var body: some View {
@@ -27,7 +26,7 @@ struct LLMFogDiscoverySelectionOnboardingView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMFogDiscoverySelectionOnboardingView()
     }
         .previewWith {
