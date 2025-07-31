@@ -69,6 +69,9 @@ public final class LLMLocalSession: LLMSession, Sendable {
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema
 
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     /// Overrides the `context` with a custom highly customizable context in the `swift-transformers` format.
@@ -78,7 +81,7 @@ public final class LLMLocalSession: LLMSession, Sendable {
     @MainActor public var numParameters: Int?
     @MainActor public var modelConfiguration: LLMRegistry?
     @MainActor public var modelContainer: ModelContainer?
-    
+
     
     /// Creates an instance of a ``LLMLocalSession`` responsible for LLM inference.
     ///
@@ -128,6 +131,9 @@ public final class LLMLocalSession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
+            // store the continuation so that we can cancel it later
+            let id = self.continuationHolder.add(continuation)
+            
             if await self.state == .uninitialized {
                 guard await self._setup(continuation: continuation) else {
                     await MainActor.run {
@@ -148,12 +154,16 @@ public final class LLMLocalSession: LLMSession, Sendable {
 
             // Execute the output generation of the LLM
             await self._generate(continuation: continuation)
+
+            // remove continuation from holder (does not cancel it)
+            self.continuationHolder.remove(id: id)
         }
     }
     
     
     public func cancel() {
-        // TODO: Cancel task in the inference queue
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
     deinit {

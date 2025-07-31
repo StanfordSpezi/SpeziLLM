@@ -139,6 +139,8 @@ package final class LLMInferenceQueue<Element>: Sendable {
     ///
     /// - Parameters:
     ///   - work: An async-producing LLM inference closure that yields the individual tokens in an `AsyncThrowingStream.
+    ///   
+    /// - Returns: The `AsyncStream` yielding the generated inference tokens.
     /// - Throws:
     ///   - `QueueError.notStarted` if the queue has not been started.
     ///   - `QueueError.submissionFailed` if the queue is full or has been terminated.
@@ -162,6 +164,8 @@ package final class LLMInferenceQueue<Element>: Sendable {
                 throw QueueError.alreadyShutdown
             }
         }
+
+        continuation.finish(throwing: CancellationError())
 
         // If processing has begun, yield immediately
         if let queueContinuation {

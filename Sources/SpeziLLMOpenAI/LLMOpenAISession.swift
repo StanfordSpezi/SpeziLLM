@@ -81,6 +81,8 @@ public final class LLMOpenAISession: LLMSession, Sendable {
     private let clientLock = NSLock()
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
@@ -133,6 +135,9 @@ public final class LLMOpenAISession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
+            // store the continuation so that we can cancel it later
+            let id = self.continuationHolder.add(continuation)
+
             // Setup the model, if not already done
             if self.wrappedClient == nil {
                 guard await self.setup(continuation: continuation) else {
@@ -146,11 +151,15 @@ public final class LLMOpenAISession: LLMSession, Sendable {
 
             // Execute the inference
             await self._generate(continuation: continuation)
+
+            // remove continuation from holder (does not cancel it)
+            self.continuationHolder.remove(id: id)
         }
     }
     
     public func cancel() {
-        // TODO: Cancel task in the inference queue
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
     

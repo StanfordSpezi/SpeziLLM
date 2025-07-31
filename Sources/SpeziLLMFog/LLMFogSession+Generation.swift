@@ -17,7 +17,7 @@ extension LLMFogSession {
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name function_body_length
+    func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
         continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
@@ -73,7 +73,12 @@ extension LLMFogSession {
                     }
                 }
 
-                continuation.yield(content)
+                if case .terminated = continuation.yield(content) {
+                    Self.logger.error("SpeziLLMFog: Generation cancelled by the user.")
+
+                    // break the loop, no other cleanup needed
+                    break
+                }
             }
 
             continuation.finish()

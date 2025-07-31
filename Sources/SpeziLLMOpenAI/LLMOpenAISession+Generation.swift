@@ -80,8 +80,15 @@ extension LLMOpenAISession {
                             context.append(assistantOutput: content)
                         }
                     }
-                    
-                    continuation.yield(content)
+
+                    if case .terminated = continuation.yield(content) {
+                        Self.logger.error("SpeziLLMOpenAI: Generation cancelled by the user.")
+
+                        // cleanup, discard any results so that we don't perform function calls
+                        llmStreamResults = [:]
+
+                        break
+                    }
                 }
                 
                 if schema.injectIntoContext {

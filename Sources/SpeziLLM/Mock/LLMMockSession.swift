@@ -22,6 +22,9 @@ public final class LLMMockSession: LLMSession, Sendable {
     let platform: LLMMockPlatform
     let schema: LLMMockSchema
 
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     
@@ -40,6 +43,9 @@ public final class LLMMockSession: LLMSession, Sendable {
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try self.platform.queue.submit { continuation in
+            // store the continuation so that we can cancel it later
+            let id = self.continuationHolder.add(continuation)
+
             await MainActor.run {
                 self.state = .loading
             }
@@ -60,7 +66,11 @@ public final class LLMMockSession: LLMSession, Sendable {
                     return
                 }
 
-                continuation.yield(token)
+                if case .terminated = continuation.yield(token) {
+                    // no cleanup necessary as we're breaking the loop
+                    break
+                }
+
                 if self.schema.injectIntoContext {
                     await MainActor.run {
                         self.context.append(assistantOutput: token)
@@ -73,11 +83,15 @@ public final class LLMMockSession: LLMSession, Sendable {
                 self.context.completeAssistantStreaming()
                 self.state = .ready
             }
+
+            // remove continuation from holder (does not cancel it)
+            self.continuationHolder.remove(id: id)
         }
     }
     
     public func cancel() {
-        // TODO: Cancel task in the inference queue
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
     

@@ -77,6 +77,8 @@ public final class LLMFogSession: LLMSession, Sendable {
     private let clientLock = NSLock()
     /// The wrapped client instance communicating with the Fog LLM.
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
@@ -131,6 +133,9 @@ public final class LLMFogSession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
+            // store the continuation so that we can cancel it later
+            let id = self.continuationHolder.add(continuation)
+            
             // Setup the fog LLM, if not already done
             guard await self.setup(continuation: continuation),
                   await !self.checkCancellation(on: continuation) else {
@@ -139,6 +144,9 @@ public final class LLMFogSession: LLMSession, Sendable {
 
             // Execute the inference
             await self._generate(continuation: continuation)
+
+            // remove continuation from holder (does not cancel it)
+            self.continuationHolder.remove(id: id)
         }
     }
     
@@ -156,7 +164,8 @@ public final class LLMFogSession: LLMSession, Sendable {
     }
     
     public func cancel() {
-        // TODO: Cancel task in the inference queue
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
     
