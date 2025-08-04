@@ -165,8 +165,6 @@ package final class LLMInferenceQueue<Element>: Sendable {
             }
         }
 
-        continuation.finish(throwing: CancellationError())
-
         // If processing has begun, yield immediately
         if let queueContinuation {
             switch queueContinuation.yield(task) {

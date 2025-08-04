@@ -50,10 +50,6 @@ extension LLMLocalSession {
         
         MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
-        if await checkCancellation(on: continuation) {
-            return
-        }
-        
         do {
             let result = try await modelContainer.perform { modelContext in
                 let result = try MLXLMCommon.generate(
@@ -168,9 +164,6 @@ extension LLMLocalSession {
         
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))
-            if await checkCancellation(on: continuation) {
-                return
-            }
 
             if case .terminated = continuation.yield(token) {
                 Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")

@@ -21,12 +21,27 @@ extension LLMOpenAISession {
     func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
         continuation: AsyncThrowingStream<String, any Error>.Continuation
     ) async {
+        let contTracker = TrackedContinuation()
+        contTracker.track(continuation)
+
+        // Check if the generation has been cancelled
+        if contTracker.isCancelled {
+            Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+            return
+        }
+
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {
             self.state = .generating
         }
-        
+
         while true {
+            // Check if the generation has been cancelled
+            if contTracker.isCancelled {
+                Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+                break
+            }
+
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             do {
@@ -46,6 +61,15 @@ extension LLMOpenAISession {
                     )
 
                 for try await chatStreamResult in chatStream {
+                    // Check if the generation has been cancelled
+                    if contTracker.isCancelled {
+                        Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+
+                        // cleanup, discard any results so that we don't perform function calls
+                        llmStreamResults = [:]
+                        break
+                    }
+
                     guard let choices = chatStreamResult.data?.choices else {
                         Self.logger.error("SpeziLLMOpenAI: Couldn't obtain choices from stream response.")
                         return
@@ -68,12 +92,7 @@ extension LLMOpenAISession {
                     guard let content = assistantResults.first?.deltaContent else {
                         continue
                     }
-                    
-                    if await checkCancellation(on: continuation) {
-                        Self.logger.debug("SpeziLLMOpenAI: LLM inference cancelled because of Task cancellation.")
-                        return
-                    }
-                    
+
                     // Automatically inject the yielded string piece into the `LLMLocal/context`
                     if schema.injectIntoContext {
                         await MainActor.run {
@@ -81,14 +100,8 @@ extension LLMOpenAISession {
                         }
                     }
 
-                    if case .terminated = continuation.yield(content) {
-                        Self.logger.error("SpeziLLMOpenAI: Generation cancelled by the user.")
-
-                        // cleanup, discard any results so that we don't perform function calls
-                        llmStreamResults = [:]
-
-                        break
-                    }
+                    // Yield string piece into continuation
+                    continuation.yield(content)
                 }
                 
                 if schema.injectIntoContext {
@@ -140,6 +153,12 @@ extension LLMOpenAISession {
                             Arguments: \(functionCall.arguments ?? "")
                             """)
 
+                            // Check if the function call execution has been cancelled
+                            if contTracker.isCancelled {
+                                Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
+                                return
+                            }
+
                             guard let functionName = functionCall.name,
                                   let functionID = functionCall.id,
                                   let functionArgument = functionCall.arguments?.data(using: .utf8),
@@ -164,12 +183,6 @@ extension LLMOpenAISession {
                                 // Execute function
                                 // Errors thrown by the functions are surfaced to the user as an LLM generation error
                                 functionCallResponse = try await function.execute()
-                            } catch is CancellationError {
-                                if await self.checkCancellation(on: continuation) {
-                                    Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
-                                    throw CancellationError()
-                                }
-                                return
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)

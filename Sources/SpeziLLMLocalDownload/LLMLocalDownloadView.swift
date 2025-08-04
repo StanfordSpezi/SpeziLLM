@@ -120,9 +120,7 @@ public struct LLMLocalDownloadView: View {
     /// Button which starts the download of the model.
     @MainActor private var downloadButton: some View {
         Button {
-            Task {
-                await downloadManager.startDownload()
-            }
+            downloadManager.startDownload()
         } label: {
             Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
                 .padding(.horizontal)

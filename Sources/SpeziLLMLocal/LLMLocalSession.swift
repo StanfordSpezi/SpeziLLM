@@ -144,10 +144,6 @@ public final class LLMLocalSession: LLMSession, Sendable {
                 }
             }
 
-            if await self.checkCancellation(on: continuation) {
-                return
-            }
-
             await MainActor.run {
                 self.state = .generating
             }

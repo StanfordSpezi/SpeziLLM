@@ -137,8 +137,7 @@ public final class LLMFogSession: LLMSession, Sendable {
             let id = self.continuationHolder.add(continuation)
             
             // Setup the fog LLM, if not already done
-            guard await self.setup(continuation: continuation),
-                  await !self.checkCancellation(on: continuation) else {
+            guard await self.setup(continuation: continuation) else {
                 return
             }
 

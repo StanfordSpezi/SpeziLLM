@@ -93,19 +93,4 @@ extension LLMSession {
             self.state = .error(error: error)
         }
     }
-    
-    /// Checks for cancellation of the current `Task` and sets the `CancellationError` error on the continuation as well as the ``LLMSession/state``.
-    ///
-    /// - Parameters:
-    ///   - continuation: The `AsyncThrowingStream` that streams the generated output.
-    ///
-    /// - Returns: Boolean flag indicating if the `Task` has been cancelled, `true` if has been cancelled, `false` otherwise.
-    public func checkCancellation(on continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
-        if Task.isCancelled {
-            await finishGenerationWithError(CancellationError(), on: continuation)
-            return true
-        }
-        
-        return false
-    }
 }

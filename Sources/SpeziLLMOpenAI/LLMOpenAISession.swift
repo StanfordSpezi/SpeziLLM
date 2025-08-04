@@ -145,10 +145,6 @@ public final class LLMOpenAISession: LLMSession, Sendable {
                 }
             }
 
-            if await self.checkCancellation(on: continuation) {
-                return
-            }
-
             // Execute the inference
             await self._generate(continuation: continuation)
 

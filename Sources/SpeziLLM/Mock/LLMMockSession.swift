@@ -50,9 +50,6 @@ public final class LLMMockSession: LLMSession, Sendable {
                 self.state = .loading
             }
             try? await Task.sleep(for: .seconds(1))
-            if await self.checkCancellation(on: continuation) {
-                return
-            }
 
             await MainActor.run {
                 self.state = .generating
@@ -62,9 +59,6 @@ public final class LLMMockSession: LLMSession, Sendable {
             let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
             for token in tokens {
                 try? await Task.sleep(for: .milliseconds(500))
-                if await self.checkCancellation(on: continuation) {
-                    return
-                }
 
                 if case .terminated = continuation.yield(token) {
                     // no cleanup necessary as we're breaking the loop
