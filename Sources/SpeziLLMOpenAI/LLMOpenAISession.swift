@@ -12,6 +12,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
@@ -82,6 +83,10 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
     /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
     @ObservationIgnored private var lock = NSLock()
+    /// Counter for tracking nested tool calls
+    @ObservationIgnored private var toolCallCounter = 0
+    /// Ensuring thread-safe access to the `LLMOpenAISession/toolCallCounter`.
+    @ObservationIgnored private var toolCallCounterLock = RecursiveRWLock()
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored var wrappedClient: Client?
 
@@ -164,7 +169,47 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             }
         }
     }
+
+    /// Safely increments the tool call counter and updates the state if needed.
+    func incrementToolCallCounter(by value: Int = 1) {
+        toolCallCounterLock.withWriteLock {
+            let isFirstToolCall = toolCallCounter == 0
+            toolCallCounter += value
+            
+            if isFirstToolCall {
+                Task { @MainActor in
+                    self.state = .callingTools
+                }
+            }
+        }
+    }
+
+    /// Safely decrements the tool call counter and updates the state if needed.
+    func decrementToolCallCounter() {
+        toolCallCounterLock.withWriteLock {
+            guard toolCallCounter > 0 else {
+                return
+            }
+            
+            toolCallCounter -= 1
+            if toolCallCounter == 0 {
+                Task { @MainActor in
+                    self.state = .generating
+                }
+            }
+        }
+    }
     
+    /// Checks if there are active tool calls and updates the state if needed.
+    func checkForActiveToolCalls() {
+        toolCallCounterLock.withReadLock {
+            if toolCallCounter == 0 {
+                Task { @MainActor in
+                    self.state = .generating
+                }
+            }
+        }
+    }
     
     deinit {
         cancel()

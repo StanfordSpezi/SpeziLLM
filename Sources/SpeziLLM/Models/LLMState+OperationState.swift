@@ -17,7 +17,7 @@ extension LLMState: OperationState {
         switch self {
         case .uninitialized, .ready:
             .idle
-        case .generating, .loading:
+        case .generating, .loading, .callingTools:
             .processing
         case .error(let error):
             .error(error)
