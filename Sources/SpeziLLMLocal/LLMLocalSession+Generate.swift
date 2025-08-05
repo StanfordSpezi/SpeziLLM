@@ -26,14 +26,26 @@ extension LLMLocalSession {
         )
     }
     
-    // swiftlint:disable:next identifier_name
-    internal func _generate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    // swiftlint:disable:next identifier_name function_body_length
+    func _generate(
+        with continuationObserver: ContinuationObserver<String, any Error>
+    ) async {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            return
+        }
+
+        await MainActor.run {
+            self.state = .generating
+        }
+
 #if targetEnvironment(simulator)
-        await _mockGenerate(continuation: continuation)
+        await _mockGenerate(continuationObserver: continuationObserver)
         return
 #else
         guard let modelContainer = await self.modelContainer else {
-            await handleError("Failed to load `modelContainer`", error: .modelNotFound, continuation: continuation)
+            await handleError("Failed to load `modelContainer`", error: .modelNotFound, continuation: continuationObserver.continuation)
             return
         }
         
@@ -44,10 +56,18 @@ extension LLMLocalSession {
         }
         
         guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
-            await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuation)
+            await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuationObserver.continuation)
             return
         }
-        
+
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .ready
+            }
+            return
+        }
+
         MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
         do {
@@ -57,10 +77,18 @@ extension LLMLocalSession {
                     parameters: generationParameters,
                     context: modelContext
                 ) { tokens in
-                    processTokens(tokens, modelContext: modelContext, continuation: continuation)
+                    self.processTokens(
+                        tokens,
+                        modelContext: modelContext,
+                        continuationObserver: continuationObserver
+                    )
                 }
                 
-                processRemainingTokens(result: result, modelContext: modelContext, continuation: continuation)
+                self.processRemainingTokens(
+                    result: result,
+                    modelContext: modelContext,
+                    continuation: continuationObserver.continuation
+                )
                 return result
             }
             
@@ -73,17 +101,20 @@ extension LLMLocalSession {
             )
             
             await MainActor.run {
-                continuation.finish()
+                continuationObserver.continuation.finish()
                 self.state = .ready
             }
         } catch {
-            await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuation)
+            await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuationObserver.continuation)
             return
         }
 #endif
     }
     
-    private func prepareModelInput(messages: [[String: String]], modelContainer: ModelContainer) async throws -> LMInput {
+    private func prepareModelInput(
+        messages: [[String: String]],
+        modelContainer: ModelContainer
+    ) async throws -> LMInput {
         try await modelContainer.perform { modelContext in
             if let chatTemplate = self.schema.parameters.chatTemplate {
                 let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTemplate)
@@ -97,12 +128,14 @@ extension LLMLocalSession {
     private func processTokens(
         _ tokens: [Int],
         modelContext: ModelContext,
-        continuation: AsyncThrowingStream<String, any Error>.Continuation
+        continuationObserver: ContinuationObserver<String, any Error>
     ) -> GenerateDisposition {
-        if Task.isCancelled {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
             return .stop
         }
-        
+
         if tokens.count >= self.schema.parameters.maxOutputLength {
             Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
             return .stop
@@ -113,12 +146,7 @@ extension LLMLocalSession {
             let text = modelContext.tokenizer.decode(tokens: lastTokens)
             
             Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-            if case .terminated = continuation.yield(text) {
-                Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
-
-                // indicate that no further tokens should be generated, no other cleanup needed
-                return .stop
-            }
+            continuationObserver.continuation.yield(text)
 
             if schema.injectIntoContext {
                 Task { @MainActor in
@@ -154,7 +182,7 @@ extension LLMLocalSession {
         await finishGenerationWithError(error, on: continuation)
     }
     
-    private func _mockGenerate(continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+    private func _mockGenerate(continuationObserver: ContinuationObserver<String, any Error>) async {
         let tokens = [
             "Mock ", "Message ", "from ", "SpeziLLM! ",
             "**Using SpeziLLMLocal only works on physical devices.**",
@@ -164,16 +192,17 @@ extension LLMLocalSession {
         
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))
-
-            if case .terminated = continuation.yield(token) {
+            if continuationObserver.isCancelled {
                 Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
                 break
             }
+
+            continuationObserver.continuation.yield(token)
         }
         
-        continuation.finish()
+        continuationObserver.continuation.finish()
         await MainActor.run {
-            context.completeAssistantStreaming()
+            self.context.completeAssistantStreaming()
             self.state = .ready
         }
     }

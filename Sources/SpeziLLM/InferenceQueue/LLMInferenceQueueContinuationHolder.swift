@@ -20,6 +20,26 @@ package final class LLMInferenceQueueContinuationHolder: Sendable {
 
     package init() {}
 
+    /// Temporarily retains a stream continuation while executing an asynchronous block.
+    ///
+    /// - Parameters:
+    ///   - continuation: The `AsyncThrowingStream<String, Error>.Continuation` to hold.
+    ///   - handle: An asynchronous closure during which the continuation remains stored.
+    ///
+    /// - Note: The continuation is added to the holder before `handle` runs and removed afterward. Removal does not cancel the continuation.
+    package func withContinuationHold(
+        continuation: AsyncThrowingStream<String, any Error>.Continuation,
+        handle: () async -> Void
+    ) async {
+        // store the continuation so that we can cancel it later
+        let id = self.add(continuation)
+
+        await handle()
+
+        // remove continuation from holder (does not cancel it)
+        self.remove(id: id)
+    }
+
     /// Adds a new continuation to the holder.
     /// - Parameter continuation: The stream continuation to add.
     /// - Returns: The unique ID associated with this continuation.

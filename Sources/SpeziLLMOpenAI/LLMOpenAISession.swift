@@ -135,21 +135,30 @@ public final class LLMOpenAISession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
-            // store the continuation so that we can cancel it later
-            let id = self.continuationHolder.add(continuation)
-
-            // Setup the model, if not already done
-            if self.wrappedClient == nil {
-                guard await self.setup(continuation: continuation) else {
-                    return
-                }
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
+            defer {
+                // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
+                continuationObserver.continuation.finish()
             }
 
-            // Execute the inference
-            await self._generate(continuation: continuation)
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                if continuationObserver.isCancelled {
+                    Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+                    return
+                }
 
-            // remove continuation from holder (does not cancel it)
-            self.continuationHolder.remove(id: id)
+                // Setup the model, if not already done
+                if self.wrappedClient == nil {
+                    guard await self.setup(with: continuationObserver) else {
+                        return
+                    }
+                }
+
+                // Execute the inference
+                await self._generate(with: continuationObserver)
+            }
         }
     }
     

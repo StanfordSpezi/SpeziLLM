@@ -51,12 +51,6 @@ struct LLMOpenAIChatTestView: View {
                     }
                 }
             }
-            // TODO: Remove
-            .task {
-                try? await Task.sleep(for: .seconds(10))
-                print("123123: canceling")
-                llm.cancel()
-            }
             .sheet(isPresented: $showOnboarding) {
                 LLMOpenAIOnboardingView()
                     #if os(macOS)

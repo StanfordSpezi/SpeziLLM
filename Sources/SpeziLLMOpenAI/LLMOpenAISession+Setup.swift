@@ -11,15 +11,16 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 import SpeziKeychainStorage
+import SpeziLLM
 
 
 extension LLMOpenAISession {
     /// Set up the OpenAI LLM execution client.
     ///
     /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    ///   - continuationObserver: A `ContinuationObserver` that tracks a Swift `AsyncThrowingStream` continuation for cancellation.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    func setup(with continuationObserver: ContinuationObserver<String, any Error>) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
@@ -29,9 +30,17 @@ extension LLMOpenAISession {
             return false
         }
 
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .ready     // as the session is set up
+            }
+            return false
+        }
+
         // Check access to the specified OpenAI model
-        if schema.parameters.modelAccessTest,
-           await !modelAccessTest(continuation: continuation) {
+        if self.schema.parameters.modelAccessTest,
+           await !self.modelAccessTest(continuation: continuationObserver.continuation) {
             return false
         }
         

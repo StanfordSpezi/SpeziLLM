@@ -24,7 +24,7 @@ import SpeziLLM
 /// As the to-be-used models are running on a Fog node within the local network, the respective LLM computing resource (so the fog node) is discovered upon setup of the ``LLMFogSession``, meaning a ``LLMFogSession`` is bound to a specific fog node after initialization.
 ///
 /// The inference is started by ``LLMFogSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMFogSession/cancel()``.
-/// Additionally, one is able to force the setup of the ``LLMFogSession`` (so discovering the respective fog LLM service) via ``LLMFogSession/setup(continuation:)``.
+/// Additionally, one is able to force the setup of the ``LLMFogSession`` (so discovering the respective fog LLM service) via ``LLMFogSession/setup(with:)``.
 /// The ``LLMFogSession`` exposes its current state via the ``LLMFogSession/context`` property, containing all the conversational history with the LLM.
 ///
 /// - Warning: The ``LLMFogSession`` shouldn't be created manually but always through the ``LLMFogPlatform`` via the `LLMRunner`.
@@ -133,28 +133,40 @@ public final class LLMFogSession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
-            // store the continuation so that we can cancel it later
-            let id = self.continuationHolder.add(continuation)
-            
-            // Setup the fog LLM, if not already done
-            guard await self.setup(continuation: continuation) else {
-                return
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
+            defer {
+                // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
+                continuationObserver.continuation.finish()
             }
 
-            // Execute the inference
-            await self._generate(continuation: continuation)
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                if continuationObserver.isCancelled {
+                    Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+                    return
+                }
 
-            // remove continuation from holder (does not cancel it)
-            self.continuationHolder.remove(id: id)
+                // Setup the fog LLM, if not already done
+                guard await self.setup(with: continuationObserver.continuation) else {
+                    return
+                }
+
+                // Execute the inference
+                await self._generate(with: continuationObserver)
+            }
         }
     }
-    
+
+    @discardableResult
     public func setup(
-        continuation: AsyncThrowingStream<String, any Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
+        with continuation: AsyncThrowingStream<String, any Error>.Continuation = AsyncThrowingStream.makeStream(of: String.self).continuation
     ) async -> Bool {
+        let continuationObserver = ContinuationObserver(track: continuation)
+
         // Setup the model, if not already done
         if self.wrappedClient == nil {
-            guard await self._setup(continuation: continuation) else {
+            guard await self._setup(with: continuationObserver) else {
                 return false
             }
         }

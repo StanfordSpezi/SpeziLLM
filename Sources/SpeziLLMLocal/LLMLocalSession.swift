@@ -131,28 +131,33 @@ public final class LLMLocalSession: LLMSession, Sendable {
         }
 
         return try self.platform.queue.submit { continuation in
-            // store the continuation so that we can cancel it later
-            let id = self.continuationHolder.add(continuation)
-            
-            if await self.state == .uninitialized {
-                guard await self._setup(continuation: continuation) else {
-                    await MainActor.run {
-                        self.state = .error(error: LLMLocalError.modelNotReadyYet)
-                    }
-                    await self.finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
+            defer {
+                // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
+                continuationObserver.continuation.finish()
+            }
+
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                if continuationObserver.isCancelled {
+                    Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
                     return
                 }
+
+                if await self.state == .uninitialized {
+                    guard await self._setup(continuation: continuation) else {
+                        await MainActor.run {
+                            self.state = .error(error: LLMLocalError.modelNotReadyYet)
+                        }
+                        await self.finishGenerationWithError(LLMLocalError.modelNotReadyYet, on: continuation)
+                        return
+                    }
+                }
+
+                // Execute the output generation of the LLM
+                await self._generate(with: continuationObserver)
             }
-
-            await MainActor.run {
-                self.state = .generating
-            }
-
-            // Execute the output generation of the LLM
-            await self._generate(continuation: continuation)
-
-            // remove continuation from holder (does not cancel it)
-            self.continuationHolder.remove(id: id)
         }
     }
     

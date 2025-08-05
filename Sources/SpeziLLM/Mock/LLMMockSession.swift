@@ -43,43 +43,51 @@ public final class LLMMockSession: LLMSession, Sendable {
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
         try self.platform.queue.submit { continuation in
-            // store the continuation so that we can cancel it later
-            let id = self.continuationHolder.add(continuation)
-
-            await MainActor.run {
-                self.state = .loading
-            }
-            try? await Task.sleep(for: .seconds(1))
-
-            await MainActor.run {
-                self.state = .generating
-            }
-
-            // Generate mock messages
-            let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
-            for token in tokens {
-                try? await Task.sleep(for: .milliseconds(500))
-
-                if case .terminated = continuation.yield(token) {
-                    // no cleanup necessary as we're breaking the loop
-                    break
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
+            
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                await MainActor.run {
+                    self.state = .loading
                 }
-
-                if self.schema.injectIntoContext {
+                try? await Task.sleep(for: .seconds(1))
+                // Check for cancellation
+                if continuationObserver.isCancelled {
                     await MainActor.run {
-                        self.context.append(assistantOutput: token)
+                        self.state = .uninitialized
+                        return
                     }
                 }
-            }
 
-            continuation.finish()
-            await MainActor.run {
-                self.context.completeAssistantStreaming()
-                self.state = .ready
-            }
+                await MainActor.run {
+                    self.state = .generating
+                }
 
-            // remove continuation from holder (does not cancel it)
-            self.continuationHolder.remove(id: id)
+                // Generate mock messages
+                let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
+                for token in tokens {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    // Check for cancellation
+                    if continuationObserver.isCancelled {
+                        break
+                    }
+
+                    continuationObserver.continuation.yield(token)
+
+                    if self.schema.injectIntoContext {
+                        await MainActor.run {
+                            self.context.append(assistantOutput: token)
+                        }
+                    }
+                }
+
+                continuationObserver.continuation.finish()
+                await MainActor.run {
+                    self.context.completeAssistantStreaming()
+                    self.state = .ready
+                }
+            }
         }
     }
     
