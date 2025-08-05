@@ -7,13 +7,14 @@
 //
 
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 /// Onboarding Welcome view for the Local LLM example application.
 struct LLMLocalOnboardingWelcomeView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
-    
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
+
     
     var body: some View {
         OnboardingView(
@@ -57,7 +58,7 @@ struct LLMLocalOnboardingWelcomeView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMLocalOnboardingWelcomeView()
         LLMLocalOnboardingDownloadView()
     }

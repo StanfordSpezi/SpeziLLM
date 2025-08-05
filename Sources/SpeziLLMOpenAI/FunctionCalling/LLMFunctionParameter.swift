@@ -29,7 +29,7 @@ import Foundation
 /// extension Data: LLMFunctionParameter {
 ///     public static var schema: LLMFunctionParameterPropertySchema = {
 ///         guard let schema = try? LLMFunctionParameterPropertySchema(type: .string) else {
-///             preconditionFailure("Couldn't create function calling schema definition.")
+///             fatalError("Couldn't create function calling schema definition.")
 ///         }
 ///
 ///         return schema

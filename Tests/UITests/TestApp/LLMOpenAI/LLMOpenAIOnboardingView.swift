@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
@@ -17,7 +17,7 @@ struct LLMOpenAIOnboardingView: View {
     
     
     var body: some View {
-        OnboardingStack {
+        ManagedNavigationStack {
             LLMOpenAITokenOnboarding()
             LLMOpenAIModelOnboarding()
         }

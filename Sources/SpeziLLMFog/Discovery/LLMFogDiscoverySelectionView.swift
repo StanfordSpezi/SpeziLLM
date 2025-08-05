@@ -53,20 +53,20 @@ public struct LLMFogDiscoverySelectionView: View {
 
     public var body: some View {
         OnboardingView(
-            titleView: {
+            header: {
                 OnboardingTitleView(
                     title: .init("FOG_DISCOVERY_SELECT_TITLE", bundle: .atURL(from: .module)),
                     subtitle: .init("FOG_DISCOVERY_SELECT_SUBTITLE", bundle: .atURL(from: .module))
                 )
             },
-            contentView: {
+            content: {
                 List {
                     Section(
                         header: HStack {
                             Text("Available fog nodes")
                                 .font(.callout)
                                 .foregroundColor(.secondary)
-
+                            
                             // As long as View is shown, continuously discover fog nodes
                             ProgressView()
                                 .progressViewStyle(.circular)
@@ -89,7 +89,7 @@ public struct LLMFogDiscoverySelectionView: View {
                         .id(service.endpoint.debugDescription)
                 }
             },
-            actionView: {
+            footer: {
                 OnboardingActionsView(.init("FOG_DISCOVERY_SELECT_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     guard let service = selectedService else {
                         return

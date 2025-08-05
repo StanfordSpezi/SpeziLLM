@@ -17,7 +17,7 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
         /// Default server `URL` that the inference tasks are dispatched to.
         public static let defaultServerUrl: URL = {
             guard let url = try? Servers.Server1.url() else {
-                preconditionFailure("The default OpenAI API endpoint couldn't be extracted from the OpenAI OpenAPI document.")
+                fatalError("The default OpenAI API endpoint couldn't be extracted from the OpenAI OpenAPI document.")
             }
 
             return url

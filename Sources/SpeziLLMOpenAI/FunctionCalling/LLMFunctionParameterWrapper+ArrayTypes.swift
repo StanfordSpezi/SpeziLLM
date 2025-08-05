@@ -48,7 +48,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
                 "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -88,7 +88,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
                 "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -122,7 +122,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
                 "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
@@ -162,7 +162,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProto
                 "uniqueItems": uniqueItems as (any Sendable)?
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
         }
     }
 }
