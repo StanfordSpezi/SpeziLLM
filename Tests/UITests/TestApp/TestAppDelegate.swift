@@ -26,7 +26,7 @@ class TestAppDelegate: SpeziAppDelegate {
     // Used for production-ready setup including TLS traffic to the fog node
     private nonisolated static var caCertificateUrl: URL? {
         guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
-            preconditionFailure("CA Certificate not found!")
+            fatalError("CA Certificate not found!")
         }
         
         return url

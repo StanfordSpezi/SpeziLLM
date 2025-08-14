@@ -34,13 +34,13 @@ public struct LLMOpenAIModelOnboardingStep: View {
     
     public var body: some View {
         OnboardingView(
-            titleView: {
+            header: {
                 OnboardingTitleView(
                     title: LocalizedStringResource("OPENAI_MODEL_SELECTION_TITLE", bundle: .atURL(from: .module)),
                     subtitle: LocalizedStringResource("OPENAI_MODEL_SELECTION_SUBTITLE", bundle: .atURL(from: .module))
                 )
             },
-            contentView: {
+            content: {
                 Picker(
                     String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module),
                     selection: $modelSelection
@@ -50,14 +50,14 @@ public struct LLMOpenAIModelOnboardingStep: View {
                             .tag(model)
                     }
                 }
-                    #if !os(macOS)
-                    .pickerStyle(.wheel)
-                    #else
-                    .pickerStyle(PopUpButtonPickerStyle())
-                    #endif
-                    .accessibilityIdentifier("modelPicker")
+#if !os(macOS)
+                .pickerStyle(.wheel)
+#else
+                .pickerStyle(PopUpButtonPickerStyle())
+#endif
+                .accessibilityIdentifier("modelPicker")
             },
-            actionView: {
+            footer: {
                 OnboardingActionsView(
                     verbatim: actionText,
                     action: {

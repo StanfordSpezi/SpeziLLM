@@ -18,12 +18,13 @@ import SpeziChat
 /// The ``LLMMockSession`` generates an example output String ("Mock Message from SpeziLLM!") with a 1 second startup time
 /// as well as 0.5 seconds between each `String` piece generation.
 @Observable
-public final class LLMMockSession: LLMSession, @unchecked Sendable {
+public final class LLMMockSession: LLMSession, Sendable {
     let platform: LLMMockPlatform
     let schema: LLMMockSchema
-    
-    @ObservationIgnored private var task: Task<(), Never>?
-    
+
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     
@@ -41,56 +42,62 @@ public final class LLMMockSession: LLMSession, @unchecked Sendable {
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        
-        task = Task {
-            await MainActor.run {
-                self.state = .loading
-            }
-            try? await Task.sleep(for: .seconds(1))
-            if await checkCancellation(on: continuation) {
-                return
-            }
+        try self.platform.queue.submit { continuation in
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
             
-            await MainActor.run {
-                self.state = .generating
-            }
-            
-            /// Generate mock messages
-            let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
-            for token in tokens {
-                try? await Task.sleep(for: .milliseconds(500))
-                if await checkCancellation(on: continuation) {
-                    return
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                await MainActor.run {
+                    self.state = .loading
                 }
-                await injectAndYield(token, on: continuation)
-            }
-            
-            continuation.finish()
-            await MainActor.run {
-                context.completeAssistantStreaming()
-                self.state = .ready
+                try? await Task.sleep(for: .seconds(1))
+                // Check for cancellation
+                if continuationObserver.isCancelled {
+                    await MainActor.run {
+                        self.state = .uninitialized
+                        return
+                    }
+                }
+
+                await MainActor.run {
+                    self.state = .generating
+                }
+
+                // Generate mock messages
+                let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
+                for token in tokens {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    // Check for cancellation
+                    if continuationObserver.isCancelled {
+                        break
+                    }
+
+                    continuationObserver.continuation.yield(token)
+
+                    if self.schema.injectIntoContext {
+                        await MainActor.run {
+                            self.context.append(assistantOutput: token)
+                        }
+                    }
+                }
+
+                continuationObserver.continuation.finish()
+                await MainActor.run {
+                    self.context.completeAssistantStreaming()
+                    self.state = .ready
+                }
             }
         }
-        
-        return stream
     }
     
     public func cancel() {
-        task?.cancel()
-    }
-    
-    private func injectAndYield(_ piece: String, on continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
-        continuation.yield(piece)
-        if schema.injectIntoContext {
-            await MainActor.run {
-                context.append(assistantOutput: piece)
-            }
-        }
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
     
     deinit {
-        cancel()
+        self.cancel()
     }
 }

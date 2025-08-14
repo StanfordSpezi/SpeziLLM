@@ -28,7 +28,7 @@ extension _LLMFunctionParameterWrapper {
                 "additionalProperties": ["type": valueType.rawValue]
             ].compactMapValues { $0 }))
         } catch {
-            preconditionFailure(
+            fatalError(
               "SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)"
             )
         }

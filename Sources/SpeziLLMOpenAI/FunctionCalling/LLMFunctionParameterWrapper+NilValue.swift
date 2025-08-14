@@ -17,7 +17,7 @@ protocol NilValueProtocol {
 extension _LLMFunctionParameterWrapper: NilValueProtocol where T: AnyOptional {
     func nilValue<Value>(_ value: Value.Type) -> Value {
         guard let nilLiteral = T(nilLiteral: ()) as? Value else {
-            preconditionFailure(
+            fatalError(
             """
             Inconsistent code: Could not cast T to passed Value (which has to be T)
             """

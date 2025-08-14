@@ -7,12 +7,12 @@
 //
 
 import SpeziLLMOpenAI
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct LLMOpenAIModelOnboarding: View {
-    @Environment(OnboardingNavigationPath.self) private var path
+    @Environment(ManagedNavigationStack.Path.self) private var path
     @State private var showingAlert = false
     @State private var modelSelection: LLMOpenAIParameters.ModelType?
 

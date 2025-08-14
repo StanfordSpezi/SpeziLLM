@@ -115,9 +115,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect(items?["enum"] as? [String] == CustomEnumType.allCases.map { $0.rawValue })
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersEnum.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersEnum.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()

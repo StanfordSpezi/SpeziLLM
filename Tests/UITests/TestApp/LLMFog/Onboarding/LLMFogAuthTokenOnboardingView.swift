@@ -7,7 +7,6 @@
 //
 
 import SpeziLLMFog
-import SpeziOnboarding
 import SpeziViews
 import SwiftUI
 
@@ -16,7 +15,7 @@ import SwiftUI
 ///
 /// - Important: Only use this view if the auth token on the `LLMFogPlatform` is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 struct LLMFogAuthTokenOnboardingView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 
 
     var body: some View {
@@ -29,7 +28,7 @@ struct LLMFogAuthTokenOnboardingView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMFogAuthTokenOnboardingView()
     }
         .previewWith {
