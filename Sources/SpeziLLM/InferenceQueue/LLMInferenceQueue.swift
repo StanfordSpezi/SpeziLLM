@@ -48,19 +48,19 @@ package final class LLMInferenceQueue<Element>: Sendable {
         case shutdown
     }
 
-    private let stateLock = NSLock()
-    /// The current state of the task queue, protected against concurrent access by the `NSLock` above.
+    private let stateLock = RWLock()
+    /// The current state of the task queue, protected against concurrent access by the `RWLock` above.
     private nonisolated(unsafe) var state: State = .initialized(buffer: [])
     /// Maximum number of concurrent tasks
     private let semaphore: AsyncSemaphore
     /// Priority of the dispatched LLM inference tasks in the queue.
     private let taskPriority: TaskPriority?
 
-    private let platformStateLock = NSLock()
+    private let platformStateLock = RWLock()
     private nonisolated(unsafe) var _platformState: LLMPlatformState = .idle    // swiftlint_disable_this identifier_name
-    /// The `LLMPlatformState` state indicating if inference jobs are currently processed, protected against concurrent access by the `NSLock` above.
+    /// The `LLMPlatformState` state indicating if inference jobs are currently processed, protected against concurrent access by the `RWLock` above.
     package var platformState: LLMPlatformState {
-        self.platformStateLock.withLock {
+        self.platformStateLock.withReadLock {
             self._platformState
         }
     }
@@ -83,7 +83,7 @@ package final class LLMInferenceQueue<Element>: Sendable {
     /// The task queue, and by extension this function, can only be run once. If the task queue is already
     /// running or has already been closed then a `LLMInferenceQueue/QueueError` is thrown.
     package func runQueue() async throws {
-        let stream = try self.stateLock.withLock {
+        let stream = try self.stateLock.withWriteLock {
             switch self.state {
             case .processing:
                 throw QueueError.alreadyRunning
@@ -112,7 +112,7 @@ package final class LLMInferenceQueue<Element>: Sendable {
                 try await self.semaphore.waitCheckingCancellation()
                 
                 group.addTask(priority: self.taskPriority) {
-                    self.platformStateLock.withLock {
+                    self.platformStateLock.withWriteLock {
                         if self._platformState != .processing {
                             self._platformState = .processing
                         }
@@ -121,7 +121,7 @@ package final class LLMInferenceQueue<Element>: Sendable {
                     await job(continuation)
 
                     if !self.semaphore.signal() {       // indicates if other tasks are waiting
-                        self.platformStateLock.withLock {
+                        self.platformStateLock.withWriteLock {
                             self._platformState = .idle
                         }
                     }
@@ -152,7 +152,7 @@ package final class LLMInferenceQueue<Element>: Sendable {
         let task: InferenceQueueElement = (work, continuation)
 
         // Either append to buffer in idle state or obtain continuation in processing state
-        let queueContinuation: AsyncStream<InferenceQueueElement>.Continuation? = try self.stateLock.withLock {
+        let queueContinuation: AsyncStream<InferenceQueueElement>.Continuation? = try self.stateLock.withWriteLock {
             switch self.state {
             case .processing(_, let continuation):
                 return continuation
@@ -189,7 +189,7 @@ package final class LLMInferenceQueue<Element>: Sendable {
     /// - Note: Calling `shutdown()` when the queue isn’t running or has already
     ///   been shut down results in a runtime error.
     package func shutdown() {
-        self.stateLock.withLock {
+        self.stateLock.withWriteLock {
             switch self.state {
             case .processing(_, let continuation):
                 continuation.finish()  // also cancels the processing task group

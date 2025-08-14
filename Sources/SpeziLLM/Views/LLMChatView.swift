@@ -52,7 +52,7 @@ public struct LLMChatView<Session: LLMSession>: View {
     /// The LLM in execution, as defined by the ``LLMSchema``.
     @Binding private var llm: Session
     /// Tracks the latest message id.
-    @State private var latestMessageId: Int = 0
+    @State private var messageTaskIdentifier: Int = 0
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
         llm.state.representation == .processing
@@ -70,15 +70,15 @@ public struct LLMChatView<Session: LLMSession>: View {
         )
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
-                // Once the user enters a message in the chat, increase `latestMessageId` that triggers LLM inference
+                // Once the user enters a message in the chat, increase `messageTaskIdentifier` that triggers LLM inference
                 if oldValue.count != newValue.count,
                    let lastChat = newValue.last, lastChat.role == .user {
-                    self.latestMessageId += 1
+                    self.messageTaskIdentifier += 1
                 }
             }
-            // Triggered on every new user message in the chat via `latestMessageId`
+            // Triggered on every new user message in the chat via `messageTaskIdentifier`
             // Automatically cancels the LLM inference once view disappears
-            .task(id: self.latestMessageId) {
+            .task(id: self.messageTaskIdentifier) {
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()

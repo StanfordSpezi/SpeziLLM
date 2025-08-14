@@ -9,6 +9,7 @@
 import Foundation
 import Spezi
 import SpeziChat
+import SpeziFoundation
 
 /// Manages the execution of LLMs in the Spezi ecosystem.
 ///
@@ -85,7 +86,7 @@ public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializabl
 
     /// Holds all configured ``LLMPlatform``s of the ``LLMRunner`` as expressed by all stated ``LLMPlatform``'s in the ``LLMRunner/init(_:)``.
     @Dependency @ObservationIgnored private var llmPlatformModules: [any Module]
-    private let lock = NSLock()
+    private let lock = RWLock()
     /// Maps the ``LLMSchema`` (identified by the `ObjectIdentifier`) towards the respective ``LLMPlatform``.
     private var llmPlatforms: [ObjectIdentifier: any LLMPlatform] = [:]     // still protect this property as `LLMRunner` is @unchecked `Sendable`.
 
@@ -93,7 +94,7 @@ public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializabl
     @MainActor public var state: State {
         var state: State = .idle
 
-        self.lock.withLock {
+        self.lock.withReadLock {
             for platform in self.llmPlatforms.values where platform.state == .processing {
                 state = .processing
             }
@@ -120,7 +121,7 @@ public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     public func configure() {
-        self.lock.withLock {
+        self.lock.withWriteLock {
             // Sadly we are only able to access the dependencies in here after they have been activated
             self.llmPlatforms = self._llmPlatformModules.wrappedValue.compactMap { platform in
                 platform as? (any LLMPlatform)
@@ -140,7 +141,7 @@ public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializabl
     ///
     /// - Returns: The ready to use ``LLMSession``.
     public func callAsFunction<L: LLMSchema>(with llmSchema: L) -> L.Platform.Session {
-        let platform = self.lock.withLock {
+        let platform = self.lock.withReadLock {
             self.llmPlatforms[ObjectIdentifier(L.self)]
         }
 

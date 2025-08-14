@@ -11,10 +11,11 @@ import FoundationEssentials
 #else
 import Foundation
 #endif
+import SpeziFoundation
 
 /// Holds the continuations of the inference tasks of a certain ``LLMPlatform`` with the ability to finish/cancel them.
 package final class LLMInferenceQueueContinuationHolder: Sendable {
-    private let lock: NSLock = .init()
+    private let lock: RWLock = .init()
     // protected by the lock above
     nonisolated(unsafe) private var continuations: [UUID: AsyncThrowingStream<String, any Error>.Continuation] = [:]
 
@@ -44,7 +45,7 @@ package final class LLMInferenceQueueContinuationHolder: Sendable {
     /// - Parameter continuation: The stream continuation to add.
     /// - Returns: The unique ID associated with this continuation.
     package func add(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) -> UUID {
-        self.lock.withLock {
+        self.lock.withWriteLock {
             let uuid = UUID()
             self.continuations[uuid] = continuation
             return uuid
@@ -56,7 +57,7 @@ package final class LLMInferenceQueueContinuationHolder: Sendable {
     /// - Returns: `true` if a continuation was found and cancelled; otherwise `false`.
     @discardableResult
     package func remove(id: UUID) -> Bool {
-        guard self.lock.withLock({ self.continuations.removeValue(forKey: id) }) != nil else {
+        guard self.lock.withWriteLock(body: { self.continuations.removeValue(forKey: id) }) != nil else {
             return false
         }
 
@@ -66,7 +67,7 @@ package final class LLMInferenceQueueContinuationHolder: Sendable {
     /// Cancels all stored continuations by finishing them with a `CancellationError`.
     /// After this call, the holder is emptied.
     package func cancelAll() {
-        self.lock.withLock {
+        self.lock.withWriteLock {
             self.continuations.forEach { continuation in
                 continuation.value.finish(throwing: CancellationError())
             }

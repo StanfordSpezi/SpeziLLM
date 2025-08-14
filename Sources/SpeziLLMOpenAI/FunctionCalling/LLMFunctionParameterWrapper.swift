@@ -8,6 +8,7 @@
 
 import OpenAPIRuntime
 import OSLog
+import SpeziFoundation
 import Synchronization
 
 
@@ -28,10 +29,10 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
     let schema: LLMFunctionParameterItemSchema
 
     private nonisolated(unsafe) var injectedValue: T?
-    private let lock = NSLock()
+    private let lock = RWLock()
 
     public var wrappedValue: T {
-        self.lock.withLock {
+        self.lock.withReadLock {
             // If the unwrapped injectedValue is not nil, return the non-nil value
             if let injectedValue {
                 return injectedValue
@@ -41,10 +42,10 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
             // Fail if not injected yet
             } else {
                 fatalError("""
-                                    Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
-                                    Are you sure that you declared the function call within the respective SpeziLLM functions and
-                                    only access the @Parameter within the `LLMFunction/execute()` method?
-                                    """)
+                Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
+                Are you sure that you declared the function call within the respective SpeziLLM functions and
+                only access the @Parameter within the `LLMFunction/execute()` method?
+                """)
             }
         }
     }
@@ -70,7 +71,7 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
 
 
     func inject(_ value: T) where T: Decodable {
-        self.lock.withLock {
+        self.lock.withWriteLock {
             self.injectedValue = value
         }
     }

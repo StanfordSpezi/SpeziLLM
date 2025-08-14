@@ -164,7 +164,9 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.buttons["Record Message"].waitForExistence(timeout: 2))
         
         XCTAssertFalse(app.staticTexts["You're a helpful assistant that answers questions from users."].waitForExistence(timeout: 2))
-        
+
+        sleep(1)
+
         XCTAssert(app.buttons["Record Message"].isEnabled)
         
         try app.textFields["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])

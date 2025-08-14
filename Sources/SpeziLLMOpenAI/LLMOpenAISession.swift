@@ -12,6 +12,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
@@ -78,7 +79,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
     let schema: LLMOpenAISchema
     let keychainStorage: KeychainStorage
 
-    private let clientLock = NSLock()
+    private let clientLock = RWLock()
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
     /// Holds the currently generating continuations so that we can cancel them if required.
@@ -89,7 +90,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
 
     var openAiClient: Client {
         get {
-            let client = self.clientLock.withLock { self.wrappedClient }
+            let client = self.clientLock.withReadLock { self.wrappedClient }
 
             guard let client else {
                 fatalError("""
@@ -101,7 +102,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
         }
 
         set {
-            self.clientLock.withLock {
+            self.clientLock.withWriteLock {
                 self.wrappedClient = newValue
             }
         }
