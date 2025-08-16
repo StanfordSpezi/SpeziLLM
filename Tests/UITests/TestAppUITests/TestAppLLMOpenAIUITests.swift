@@ -134,7 +134,8 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
-        
+
+        XCTAssert(app.buttons["Onboarding"].waitForExistence(timeout: 2))
         app.buttons["Onboarding"].firstMatch.tap()
         
         XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
