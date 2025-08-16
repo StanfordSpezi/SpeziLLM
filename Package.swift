@@ -14,9 +14,9 @@ let package = Package(
     name: "SpeziLLM",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v18),
-        .visionOS(.v2),
-        .macOS(.v15)
+        .iOS(.v17),
+        .visionOS(.v1),
+        .macOS(.v14)
     ],
     products: [
         .library(name: "SpeziLLM", targets: ["SpeziLLM"]),
@@ -32,7 +32,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.9.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.2.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", exact: "2.0.0-alpha.8"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "2.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.4")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.0"),
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
