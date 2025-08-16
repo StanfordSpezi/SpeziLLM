@@ -15,7 +15,7 @@ import SwiftUI
 
 /// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
 /// 
-/// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
+/// It can be combined with the SpeziViews `ManagedNavigationStack` to create an easy onboarding flow within the application.
 ///
 /// The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
 ///
@@ -25,17 +25,15 @@ import SwiftUI
 ///
 /// ```swift
 /// struct LLMLocalDownloadApp: View {
-///     @State private var path = NavigationPath()
-///
 ///     var body: some View {
-///         NavigationStack(path: $path) {
+///         ManaagedNavigationStack {
 ///             LLMLocalOnboardingDownloadView()
 ///         }
 ///     }
 /// }
 ///
 /// struct LLMLocalOnboardingDownloadView: View {
-///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///     @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(

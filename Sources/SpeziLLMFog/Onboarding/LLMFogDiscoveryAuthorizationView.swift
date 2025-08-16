@@ -34,7 +34,7 @@ import SwiftUI
 ///
 ///
 ///     var body: some View {
-///         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+///         ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
 ///             // Request authorization for local network access
 ///             LLMFogOnboardingDiscoveryAuthorizationView()
 ///         }
@@ -44,7 +44,7 @@ import SwiftUI
 ///
 /// // Onboarding view for authorizing local network access
 /// struct LLMFogOnboardingDiscoveryAuthorizationView: View {
-///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///     @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 ///
 ///
 ///     var body: some View {
