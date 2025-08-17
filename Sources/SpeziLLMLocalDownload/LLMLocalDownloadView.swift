@@ -15,7 +15,7 @@ import SwiftUI
 
 /// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
 /// 
-/// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
+/// It can be combined with the SpeziViews `ManagedNavigationStack` to create an easy onboarding flow within the application.
 ///
 /// The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
 ///
@@ -25,17 +25,15 @@ import SwiftUI
 ///
 /// ```swift
 /// struct LLMLocalDownloadApp: View {
-///     @State private var path = NavigationPath()
-///
 ///     var body: some View {
-///         NavigationStack(path: $path) {
+///         ManaagedNavigationStack {
 ///             LLMLocalOnboardingDownloadView()
 ///         }
 ///     }
 /// }
 ///
 /// struct LLMLocalOnboardingDownloadView: View {
-///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///     @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(
@@ -60,7 +58,7 @@ public struct LLMLocalDownloadView: View {
     
     public var body: some View {
         OnboardingView(
-            contentView: {
+            content: {
                 VStack {
                     informationView
                     
@@ -79,17 +77,17 @@ public struct LLMLocalDownloadView: View {
                                 Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
                             }
                         }
-                            .multilineTextAlignment(.center)
-                            .padding(.vertical, 16)
-                            .bold()
-                            .italic()
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 16)
+                        .bold()
+                        .italic()
                     }
                     
                     Spacer()
                 }
-                    .transition(.opacity)
-                    .animation(.easeInOut, value: isDownloading || modelExist)
-            }, actionView: {
+                .transition(.opacity)
+                .animation(.easeInOut, value: isDownloading || modelExist)
+            }, footer: {
                 OnboardingActionsView(.init("LLM_DOWNLOAD_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }
@@ -120,9 +118,7 @@ public struct LLMLocalDownloadView: View {
     /// Button which starts the download of the model.
     @MainActor private var downloadButton: some View {
         Button {
-            Task {
-                await downloadManager.startDownload()
-            }
+            downloadManager.startDownload()
         } label: {
             Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
                 .padding(.horizontal)

@@ -40,26 +40,36 @@ import OSLog
 ///     }
 /// }
 /// ```
-public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
+public final class LLMLocalPlatform: LLMPlatform, DefaultInitializable {
     /// Configuration of the platform.
     public let configuration: LLMLocalPlatformConfiguration
+    /// Queue that processed the LLM inference tasks in a structured concurrency manner.
+    let queue: LLMInferenceQueue<String>
 
-    @MainActor public var state: LLMPlatformState = .idle
-    
+
+    @MainActor public var state: LLMPlatformState {
+        self.queue.platformState
+    }
+
+
     /// Creates an instance of the ``LLMLocalPlatform``.
     ///
     /// - Parameters:
     ///     - configuration: The configuration of the platform.
     public init(configuration: LLMLocalPlatformConfiguration) {
         self.configuration = configuration
+        self.queue = LLMInferenceQueue(
+            maxConcurrentTasks: 1,      // only one task at a time for local inference
+            taskPriority: configuration.taskPriority
+        )
     }
     
     /// Convenience initializer for the ``LLMLocalPlatform``.
-    public init() {
+    public convenience init() {
         self.init(configuration: .init())
     }
     
-    public nonisolated func configure() {
+    public func configure() {
 #if targetEnvironment(simulator)
         Logger(
             subsystem: "Spezi",
@@ -79,12 +89,24 @@ public actor LLMLocalPlatform: LLMPlatform, DefaultInitializable {
         }
 #endif
     }
-    
-    public nonisolated func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
+
+    public func run() async {
+        do {
+            // Run the LLM task queue
+            try await self.queue.runQueue()
+        } catch is CancellationError {
+            // No-op, shutdown
+        } catch {
+            fatalError("Inconsistent state of the LLMLocalPlatform: \(error)")
+        }
+    }
+
+    public func callAsFunction(with llmSchema: LLMLocalSchema) -> LLMLocalSession {
         LLMLocalSession(self, schema: llmSchema)
     }
     
     deinit {
         MLX.GPU.clearCache()
+        self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
     }
 }

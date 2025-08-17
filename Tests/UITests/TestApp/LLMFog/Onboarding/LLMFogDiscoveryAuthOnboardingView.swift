@@ -7,14 +7,13 @@
 //
 
 import SpeziLLMFog
-import SpeziOnboarding
 import SpeziViews
 import SwiftUI
 
 
 /// Onboarding view for authorizing local network access.
 struct LLMFogDiscoveryAuthOnboardingView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 
 
     var body: some View {
@@ -27,7 +26,7 @@ struct LLMFogDiscoveryAuthOnboardingView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMFogDiscoveryAuthOnboardingView()
     }
         .previewWith {

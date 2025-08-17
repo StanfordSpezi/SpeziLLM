@@ -155,14 +155,14 @@ struct OpenAIAPIKey: View {
 This view can then be added to the `OnboardingFlow` within the Spezi Template Application:
 
 ```swift
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
     
     var body: some View {
-        OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+        ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
             // ... other steps
             OpenAIAPIKey()
             // ... other steps

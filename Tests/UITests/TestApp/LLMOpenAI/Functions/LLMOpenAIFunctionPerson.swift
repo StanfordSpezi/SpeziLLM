@@ -16,7 +16,7 @@ struct LLMOpenAIFunctionPerson: LLMFunction {
                 .init(name: "firstName", type: .string, description: "The first name of the person"),
                 .init(name: "lastName", type: .string, description: "The last name of the person")
             ) else {
-                preconditionFailure("Couldn't create function calling schema definition for testing")
+                fatalError("Couldn't create function calling schema definition for testing")
             }
 
             return schema

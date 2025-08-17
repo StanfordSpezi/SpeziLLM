@@ -16,7 +16,7 @@ import OSLog
 ///
 /// Conformance of ``LLMFunction/Parameter`` to `LLMFunctionParameterSchemaCollector` can be found in the declaration of
 /// the ``LLMFunction/Parameter``.
-protocol LLMFunctionParameterSchemaCollector {
+protocol LLMFunctionParameterSchemaCollector: Sendable {
     var schema: LLMFunctionParameterItemSchema { get }
 }
 

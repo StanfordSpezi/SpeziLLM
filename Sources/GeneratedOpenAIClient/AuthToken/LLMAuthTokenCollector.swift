@@ -41,36 +41,36 @@ public struct LLMAuthTokenCollector: View {
 
     public var body: some View {
         OnboardingView(
-            titleView: {
+            header: {
                 OnboardingTitleView(
                     title: self.titleResource
                 )
             },
-            contentView: {
+            content: {
                 ScrollView {
                     VStack(spacing: 0) {
                         Text(self.subtitleResource)
                             .multilineTextAlignment(.center)
-
+                        
                         TextField(
                             self.promptResource.localizedString(),
                             text: $token
                         )
-                            .frame(height: 50)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.vertical, 16)
-
+                        .frame(height: 50)
+                        .textFieldStyle(.roundedBorder)
+                        .padding(.vertical, 16)
+                        
                         Text(
                             (try? AttributedString(
                                 markdown: self.hintResource.localizedString()
                             )) ?? ""
                         )
-                            .multilineTextAlignment(.center)
-                            .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
                     }
                 }
             },
-            actionView: {
+            footer: {
                 OnboardingActionsView(
                     self.actionTextResource,
                     action: {

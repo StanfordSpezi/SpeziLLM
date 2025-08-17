@@ -10,7 +10,7 @@
 @_spi(TestingSupport) import SpeziAccount
 #endif
 import SpeziLLMFog
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
@@ -20,7 +20,7 @@ struct LLMFogOnboardingFlow: View {
 
 
     var body: some View {
-        OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+        ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
 #if os(iOS)
             // Log into Firebase, required for fog node auth
             AccountOnboardingView()

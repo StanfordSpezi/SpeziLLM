@@ -34,7 +34,7 @@ import SwiftUI
 ///
 ///
 ///     var body: some View {
-///         OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+///         ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
 ///             // Request authorization for local network access
 ///             LLMFogOnboardingDiscoveryAuthorizationView()
 ///         }
@@ -44,7 +44,7 @@ import SwiftUI
 ///
 /// // Onboarding view for authorizing local network access
 /// struct LLMFogOnboardingDiscoveryAuthorizationView: View {
-///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///     @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 ///
 ///
 ///     var body: some View {
@@ -69,16 +69,16 @@ public struct LLMFogDiscoveryAuthorizationView: View {
 
     public var body: some View {
         OnboardingView(
-            titleView: {
+            header: {
                 OnboardingTitleView(
                     title: .init("FOG_DISCOVERY_AUTH_TITLE", bundle: .atURL(from: .module)),
                     subtitle: .init("FOG_DISCOVERY_AUTH_SUBTITLE", bundle: .atURL(from: .module))
                 )
             },
-            contentView: {
+            content: {
                 VStack {
                     informationView
-
+                    
                     if !authorizationGranted {
                         requestAuthButton
                     } else {
@@ -88,12 +88,12 @@ public struct LLMFogDiscoveryAuthorizationView: View {
                             .bold()
                             .italic()
                     }
-
+                    
                     Spacer()
                 }
-                    .transition(.opacity)
-                    .animation(.easeInOut, value: self.viewState == .processing)
-            }, actionView: {
+                .transition(.opacity)
+                .animation(.easeInOut, value: self.viewState == .processing)
+            }, footer: {
                 OnboardingActionsView(.init("FOG_DISCOVERY_AUTH_GRANTED_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }
