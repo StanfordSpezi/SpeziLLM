@@ -59,7 +59,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
             },
             footer: {
                 OnboardingActionsView(
-                    verbatim: actionText,
+                    actionText,
                     action: {
                         action(modelSelection)
                     }

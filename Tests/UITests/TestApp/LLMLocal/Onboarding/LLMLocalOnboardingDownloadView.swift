@@ -20,7 +20,9 @@ struct LLMLocalOnboardingDownloadView: View {
         LLMLocalDownloadView(
             model: .llama3_8B_4bit,
             downloadDescription: "LLM_DOWNLOAD_DESCRIPTION",
-            action: onboardingNavigationPath.nextStep
+            action: {
+                self.onboardingNavigationPath.nextStep()
+            }
         )
     }
 }
