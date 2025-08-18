@@ -51,47 +51,59 @@ import SwiftUI
 public struct LLMChatView<Session: LLMSession>: View {
     /// The LLM in execution, as defined by the ``LLMSchema``.
     @Binding private var llm: Session
+    /// Tracks the latest message id.
+    @State private var messageTaskIdentifier: Int?
     /// Indicates if the input field is disabled.
     @MainActor private var inputDisabled: Bool {
         llm.state.representation == .processing
     }
     /// Defines the export format of the to-be-exported `SpeziChat/Chat`
     private let exportFormat: ChatView.ChatExportFormat?
-    
-    
+
+
     public var body: some View {
         ChatView(
-            $llm.context.chat,
-            disableInput: inputDisabled,
-            exportFormat: exportFormat,
+            self.$llm.context.chat,
+            disableInput: self.inputDisabled,
+            exportFormat: self.exportFormat,
             messagePendingAnimation: .automatic
         )
-            .viewStateAlert(state: llm.state)
-            .onChange(of: llm.context) { oldValue, newValue in
-                // Once the user enters a message in the chat, send a generation request to the LLM.
+            .viewStateAlert(state: self.llm.state)
+            .onChange(of: self.llm.context) { oldValue, newValue in
+                // Once the user enters a message in the chat, increase `messageTaskIdentifier` that triggers LLM inference
                 if oldValue.count != newValue.count,
                    let lastChat = newValue.last, lastChat.role == .user {
-                    Task {
-                        do {
-                            // Trigger an output generation based on the `LLMSession/context`.
-                            let stream = try await llm.generate()
-                            
-                            for try await token in stream {
-                                llm.context.append(assistantOutput: token)
-                            }
-                            
-                            llm.context.completeAssistantStreaming()
-                        } catch let error as any LLMError {
-                            llm.state = .error(error: error)
-                        } catch {
-                            llm.state = .error(error: LLMDefaultError.unknown(error))
-                        }
+                    self.messageTaskIdentifier = (self.messageTaskIdentifier ?? 0) + 1
+                }
+            }
+            // Triggered on every new user message in the chat via `messageTaskIdentifier`
+            // Automatically cancels the LLM inference once view disappears
+            .task(id: self.messageTaskIdentifier) {
+                // do not run on init of view
+                guard self.messageTaskIdentifier != nil else {
+                    return
+                }
+                
+                do {
+                    // Trigger an output generation based on the `LLMSession/context`.
+                    let stream = try await self.llm.generate()
+
+                    for try await token in stream {
+                        self.llm.context.append(assistantOutput: token)
                     }
+
+                    self.llm.context.completeAssistantStreaming()
+                } catch is CancellationError {
+                    // noop
+                } catch let error as any LLMError {
+                    self.llm.state = .error(error: error)
+                } catch {
+                    self.llm.state = .error(error: LLMDefaultError.unknown(error))
                 }
             }
     }
-    
-    
+
+
     /// Creates a ``LLMChatView`` with a `Binding` of a ``LLMSession`` that provides developers with a basic chat view to interact with a Spezi LLM.
     ///
     /// - Parameters:
@@ -110,8 +122,8 @@ public struct LLMChatView<Session: LLMSession>: View {
 #if DEBUG
 #Preview {
     @Previewable @State var llm = LLMMockSession(.init(), schema: .init())
-    
-    
+
+
     return NavigationStack {
         LLMChatView(session: $llm)
             .speak(llm.context.chat, muted: true)

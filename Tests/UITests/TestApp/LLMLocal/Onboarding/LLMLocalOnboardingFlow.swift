@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
@@ -16,7 +16,7 @@ struct LLMLocalOnboardingFlow: View {
     
     
     var body: some View {
-        OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+        ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
             LLMLocalOnboardingWelcomeView()
             
             if !FeatureFlags.mockMode {

@@ -54,7 +54,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     
     
     @Test("Test Array Parameters")
-    func testLLMFunctionArrayParameters() async throws { // swiftlint:disable:this function_body_length
+    func testLLMFunctionArrayParameters() async throws {
         let llm = LLMOpenAISchema(
             parameters: .init(modelType: "gpt-4o")
         ) {
@@ -110,9 +110,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect(items?["enum"] as? [String] == ["1234", "5678"])
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersArray.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersArray.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()

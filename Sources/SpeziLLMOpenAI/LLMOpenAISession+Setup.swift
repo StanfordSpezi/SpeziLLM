@@ -11,27 +11,36 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 import SpeziKeychainStorage
+import SpeziLLM
 
 
 extension LLMOpenAISession {
     /// Set up the OpenAI LLM execution client.
     ///
     /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    ///   - continuationObserver: A `ContinuationObserver` that tracks a Swift `AsyncThrowingStream` continuation for cancellation.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    func setup(with continuationObserver: ContinuationObserver<String, any Error>) async -> Bool {
         Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
         }
         
-        if await !self.initializeClient(continuation) {
+        if !self.initializeClient() {
+            return false
+        }
+
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .ready     // as the session is set up
+            }
             return false
         }
 
         // Check access to the specified OpenAI model
-        if schema.parameters.modelAccessTest,
-           await !modelAccessTest(continuation: continuation) {
+        if self.schema.parameters.modelAccessTest,
+           await !self.modelAccessTest(continuation: continuationObserver.continuation) {
             return false
         }
         
@@ -44,10 +53,8 @@ extension LLMOpenAISession {
 
     /// Initialize the OpenAI OpenAPI client.
     ///
-    /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initializeClient(_ continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    private func initializeClient() -> Bool {
         let bearerAuthMiddleware = BearerAuthMiddleware(
             authToken: {
                 if let overwritingToken = self.schema.parameters.overwritingAuthToken {
@@ -60,7 +67,7 @@ extension LLMOpenAISession {
         )
 
         // Initialize the OpenAI model
-        self.wrappedClient = Client(
+        self.openAiClient = Client(
             serverURL: self.platform.configuration.serverUrl,
             transport: {
                 let session = URLSession.shared

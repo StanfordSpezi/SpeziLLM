@@ -80,13 +80,13 @@ public final class LLMLocalDownloadManager: NSObject {
     
     /// Starts a `URLSessionDownloadTask` to download the specified model.
     @MainActor
-    public func startDownload() async {
+    public func startDownload() {
         if modelExist {
             state = .downloaded
             return
         }
         
-        await cancelDownload()
+        cancelDownload()
         downloadTask = Task(priority: .userInitiated) {
             do {
                 try await downloadWithHub()
@@ -107,7 +107,7 @@ public final class LLMLocalDownloadManager: NSObject {
     
     /// Cancels the download of a specified model via a `URLSessionDownloadTask`.
     @MainActor
-    public func cancelDownload() async {
+    public func cancelDownload() {
         downloadTask?.cancel()
         state = .idle
     }
@@ -116,7 +116,7 @@ public final class LLMLocalDownloadManager: NSObject {
         // Sadly, we need this workaround to make the Swift compiler (strict concurrency checking) happy
         @MainActor
         func mutate(progress: Progress) {
-              self.state = .downloading(progress: progress)
+            self.state = .downloading(progress: progress)
         }
 
         let repo = Hub.Repo(id: model.hubID)

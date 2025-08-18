@@ -12,15 +12,16 @@ import Network
 import OpenAPIRuntime
 import OpenAPIURLSession
 import SpeziKeychainStorage
+import SpeziLLM
 
 
 extension LLMFogSession {
     /// Set up the Fog LLM execution client.
     ///
     /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    ///   - continuationObserver: A `ContinuationObserver` that tracks a Swift `AsyncThrowingStream` continuation for cancellation.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func _setup(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
+    func _setup(with continuationObserver: ContinuationObserver<String, any Error>) async -> Bool {
         // swiftlint:disable:previous function_body_length identifier_name
         Self.logger.debug("SpeziLLMFog: Fog LLM is being initialized")
         await MainActor.run {
@@ -41,13 +42,21 @@ extension LLMFogSession {
                 SpeziLLMFog: The to-be-trusted CA certificate ensuring encrypted traffic to the fog LLM couldn't be read.
                 Please ensure that the certificate is in the `.crt` format and available under the specified URL.
                 """)
-                await finishGenerationWithError(LLMFogError.missingCaCertificate, on: continuation)
+                await finishGenerationWithError(LLMFogError.missingCaCertificate, on: continuationObserver.continuation)
                 return false
             }
             
             caCertificate = caCreatedCertificate
         }
-        
+
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .uninitialized
+            }
+            return false
+        }
+
         let fogServiceAddress: String
         
         do {
@@ -60,16 +69,22 @@ extension LLMFogSession {
                 fogServiceAddress = try await Self.resolveFogService(discoveredEndpoint: fogServiceEndpoint)
             }
 
-            self.discoveredServiceAddress = fogServiceAddress
-        } catch is CancellationError {
-            Self.logger.debug("SpeziLLMFog: mDNS task discovery has been aborted because of Task cancellation.")
-            continuation.finish()
-            return false
+            await MainActor.run {
+                self.discoveredServiceAddress = fogServiceAddress
+            }
         } catch let error as LLMFogError {
-            await finishGenerationWithError(error, on: continuation)
+            await finishGenerationWithError(error, on: continuationObserver.continuation)
             return false
         } catch {
-            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuation)
+            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuationObserver.continuation)
+            return false
+        }
+
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .uninitialized
+            }
             return false
         }
 
@@ -87,7 +102,7 @@ extension LLMFogSession {
         \((caCertificate != nil) ? "https" : "http")://\(host):\((caCertificate != nil) ? 443 : 80)/v1
         """
         guard let url = URL(string: urlString) else {
-            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuation)
+            await finishGenerationWithError(LLMFogError.mDnsServicesNotFound, on: continuationObserver.continuation)
             return false
         }
 
@@ -102,7 +117,7 @@ extension LLMFogSession {
             keychainStorage: self.keychainStorage
         )
 
-        wrappedClient = Client(
+        self.fogNodeClient = Client(
             serverURL: url,
             transport: {
                 let session = URLSession(

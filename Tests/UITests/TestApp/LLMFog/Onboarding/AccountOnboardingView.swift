@@ -9,20 +9,19 @@
 #if os(iOS)
 @_spi(TestingSupport) import SpeziAccount
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct AccountOnboardingView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 
 
     var body: some View {
         AccountSetup { _ in
-            Task {
-                // Placing the nextStep() call inside this task will ensure that the sheet dismiss animation is
-                // played till the end before we navigate to the next step.
-                onboardingNavigationPath.nextStep()
-            }
+            // Placing the nextStep() call inside this task will ensure that the sheet dismiss animation is
+            // played till the end before we navigate to the next step.
+            onboardingNavigationPath.nextStep()
         } header: {
             AccountSetupHeader()
         } continue: {
@@ -39,7 +38,7 @@ struct AccountOnboardingView: View {
 
 #if DEBUG
 #Preview("Account Onboarding SignIn") {
-    OnboardingStack {
+    ManagedNavigationStack {
         AccountOnboardingView()
     }
         .previewWith {

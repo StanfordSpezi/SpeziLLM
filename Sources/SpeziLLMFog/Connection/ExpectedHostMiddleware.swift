@@ -15,7 +15,7 @@ import OpenAPIRuntime
 struct ExpectedHostMiddleware: ClientMiddleware {
     private let hostHeaderKey: HTTPField.Name = {
         guard let hostHeader = HTTPField.Name("Host") else {
-            preconditionFailure("SpeziLLMFog: Failed to create HTTPField.Name for `Host`.")
+            fatalError("SpeziLLMFog: Failed to create HTTPField.Name for `Host`.")
         }
 
         return hostHeader

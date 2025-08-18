@@ -28,16 +28,16 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.25.6")),
         .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "2.25.5"),  // Pin MLX Swift Examples as it doesn't follow semantic versioning
-        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.14")),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.1.0"),
+        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.22")),
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.9.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.2.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "1.2.2"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.3")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.7.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "2.0.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.4")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.2")
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0")
     ],
     targets: [
         .target(

@@ -97,9 +97,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         #expect(schemaPrimitiveString.schema.value["enum"] as? [String] == ["1234", "5678"])
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersPrimitive.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersPrimitive.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
