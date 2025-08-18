@@ -20,6 +20,7 @@ import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
+import SpeziLLMOpenAIRealtime
 
 
 class TestAppDelegate: SpeziAppDelegate {
@@ -67,6 +68,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 )
                 LLMOpenAIPlatform(configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)))
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
+                LLMOpenAIRealtimePlatform(configuration: .init())
             }
         }
     }

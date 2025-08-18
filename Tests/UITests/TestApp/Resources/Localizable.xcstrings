@@ -51,6 +51,9 @@
         }
       }
     },
+    "Hello, World!" : {
+
+    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -140,6 +143,12 @@
           }
         }
       }
+    },
+    "Start" : {
+
+    },
+    "Stop" : {
+
     },
     "WELCOME_AREA1_DESCRIPTION" : {
       "localizations" : {
