@@ -171,21 +171,23 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
     }
 
     /// Safely increments the tool call counter and updates the state if needed.
-    func incrementToolCallCounter(by value: Int = 1) {
+    func incrementToolCallCounter(by value: Int = 1) async {
+        var shouldSetState = false
         toolCallCounterLock.withWriteLock {
-            let isFirstToolCall = toolCallCounter == 0
+            shouldSetState = toolCallCounter == 0
             toolCallCounter += value
-            
-            if isFirstToolCall {
-                Task { @MainActor in
-                    self.state = .callingTools
-                }
+        }
+        
+        if shouldSetState {
+            await MainActor.run {
+                self.state = .callingTools
             }
         }
     }
 
     /// Safely decrements the tool call counter and updates the state if needed.
-    func decrementToolCallCounter() {
+    func decrementToolCallCounter() async {
+        var shouldSetState = false
         toolCallCounterLock.withWriteLock {
             guard toolCallCounter > 0 else {
                 return
@@ -193,20 +195,29 @@ public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
             
             toolCallCounter -= 1
             if toolCallCounter == 0 {
-                Task { @MainActor in
-                    self.state = .generating
-                }
+                shouldSetState = true
+            }
+        }
+        
+        if shouldSetState {
+            await MainActor.run {
+                self.state = .generating
             }
         }
     }
     
     /// Checks if there are active tool calls and updates the state if needed.
-    func checkForActiveToolCalls() {
+    func checkForActiveToolCalls() async {
+        var shouldSetState = false
         toolCallCounterLock.withReadLock {
             if toolCallCounter == 0 {
-                Task { @MainActor in
-                    self.state = .generating
-                }
+                shouldSetState = true
+            }
+        }
+        
+        if shouldSetState {
+            await MainActor.run {
+                self.state = .generating
             }
         }
     }

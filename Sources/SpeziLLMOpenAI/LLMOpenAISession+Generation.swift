@@ -107,7 +107,7 @@ extension LLMOpenAISession {
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
-                checkForActiveToolCalls()
+                await checkForActiveToolCalls()
                 break
             }
             
@@ -124,7 +124,7 @@ extension LLMOpenAISession {
                 context.append(functionCalls: functionCallContext)
             }
 
-            self.incrementToolCallCounter(by: functionCalls.count)
+            await self.incrementToolCallCounter(by: functionCalls.count)
 
             // Parallelize function call execution
             do {
@@ -142,7 +142,7 @@ extension LLMOpenAISession {
                                   let function = self.schema.functions[functionName] else {
                                 Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallName, on: continuation)
-                                self.decrementToolCallCounter()
+                                await self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallName
                             }
 
@@ -152,7 +152,7 @@ extension LLMOpenAISession {
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Invalid function call arguments - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallArguments(error), on: continuation)
-                                self.decrementToolCallCounter()
+                                await self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallArguments(error)
                             }
 
@@ -165,14 +165,14 @@ extension LLMOpenAISession {
                             } catch is CancellationError {
                                 if await self.checkCancellation(on: continuation) {
                                     Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
-                                    self.decrementToolCallCounter()
+                                    await self.decrementToolCallCounter()
                                     throw CancellationError()
                                 }
                                 return
                             } catch {
                                 Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
                                 await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)
-                                self.decrementToolCallCounter()
+                                await self.decrementToolCallCounter()
                                 throw LLMOpenAIError.functionCallError(error)
                             }
                             
@@ -193,7 +193,7 @@ extension LLMOpenAISession {
                                 )
                             }
 
-                            self.decrementToolCallCounter()
+                            await self.decrementToolCallCounter()
                         }
                     }
 
