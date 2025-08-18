@@ -40,8 +40,6 @@ class PCMPlayer {
 
         // Check if conversion is necessary.
         if inputFormat.sampleRate != outputFormat.sampleRate {
-            print("Conversion needed: InputFormat SampleRate: \(inputFormat.sampleRate) != Output Sample Rate \(outputFormat.sampleRate), Frame Length: \(inputFrameCount), data.count \(data.count), inputformat.mBytesPerFrame \(inputFormat.streamDescription.pointee.mBytesPerFrame)")
-
             // Conversion is needed.
             guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
                 print("Failed to initialize audio converter")
@@ -63,7 +61,7 @@ class PCMPlayer {
             // Calculate the number of output frames expected.
             let ratio = outputFormat.sampleRate / inputFormat.sampleRate
             let outputFrameCapacity = UInt32(Double(inputFrameCount) * ratio)
-            print("outputFrameCapacity: \(outputFrameCapacity)")
+
             guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: outputFrameCapacity) else {
                 print("Failed to create output PCM buffer")
                 return
@@ -87,7 +85,6 @@ class PCMPlayer {
                 print("Failed to create PCM buffer")
                 return
             }
-            print("No conversion needed: Frame Length: \(inputFrameCount)")
             buffer.frameLength = inputFrameCount
             data.withUnsafeBytes { rawBuffer in
                 if let baseAddress = rawBuffer.baseAddress {
@@ -104,7 +101,7 @@ class PCMPlayer {
 
         // Schedule the (converted) buffer and play.
         playerNode.scheduleBuffer(bufferToPlay) { // at: nil, options: .interrupts
-            print("Finished playing PCM data")
+//            print("Finished playing PCM data")
         }
         playerNode.play()
     }

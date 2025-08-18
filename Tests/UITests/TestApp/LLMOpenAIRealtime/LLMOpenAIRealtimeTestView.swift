@@ -17,8 +17,8 @@ struct LLMOpenAIRealtimeTestView: View {
     }
     
     @LLMSessionProvider(schema: Self.schema) var llm: LLMOpenAIRealtimeSession
-    
-    @State var audio = AudioVM()
+
+    @State var audio = AudioViewModel()
     
     var body: some View {
         VStack {
@@ -26,12 +26,8 @@ struct LLMOpenAIRealtimeTestView: View {
             Button {
                 print("Start...")
                 Task {
-                    await audio.start()
+                    await audio.start(with: llm)
                 }
-//                llm.appendAu
-//                Task {
-//                    try await llm.appendUserAudio(Data())
-//                }
             } label: {
                 Text("Start")
             }
@@ -46,27 +42,45 @@ struct LLMOpenAIRealtimeTestView: View {
             } label: {
                 Text("Stop")
             }
+        }.task {
+            print("Init of LLM")
+            let _ = try? await llm.generate()
         }
     }
 }
 
 @Observable
 @MainActor
-final class AudioVM {
+final class AudioViewModel {
+    private let replayUserAudio: Bool = true
+    
     private let streamingService = AudioRecorder()
-    private let pcmPlayer = PCMPlayer()
+    // Used to play pcm from user's microphone (playback & debugging)
+    private let pcmUserAudioPlayer = PCMPlayer()
+    // Used to play pcm from OpenAI's result
+    private let pcmOpenAiPlayer = PCMPlayer()
 
-    func start() async {
+    init() { }
+    
+    func start(with llm: LLMOpenAIRealtimeSession) async {
         streamingService.start()
-        
+        // TODO: Cancel this task correctly, otherwise llm doesn't get cancelled...
         Task {
             guard let audioBufferStream = streamingService.audioBufferStream else {
                 print("No audiobuffer stream..;")
                 return
             }
             for try await pcm in audioBufferStream {
-                print("PCM: ", pcm.count, " bytes")
-                pcmPlayer.play(rawPCMData: pcm)
+                Task {
+                    do {
+                        try await llm.appendUserAudio(pcm)
+                    } catch {
+                        print("err", error)
+                    }
+                }
+                if replayUserAudio {
+                    pcmUserAudioPlayer.play(rawPCMData: pcm)
+                }
             }
         }
     }

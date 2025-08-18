@@ -23,6 +23,7 @@ public final class LLMOpenAIRealtimePlatform: LLMPlatform {
     /// Queue that processed the LLM inference tasks in a structured concurrency manner.
     let queue: LLMInferenceQueue<String>
 
+    @Dependency(KeychainStorage.self) private var keychainStorage
     @MainActor public var state: LLMPlatformState {
         self.queue.platformState
     }
@@ -48,7 +49,12 @@ public final class LLMOpenAIRealtimePlatform: LLMPlatform {
     }
     
     public func callAsFunction(with llmSchema: LLMOpenAIRealtimeSchema) -> LLMOpenAIRealtimeSession {
-        LLMOpenAIRealtimeSession()
+        LLMOpenAIRealtimeSession(self, schema: llmSchema, keychainStorage: keychainStorage)
     }
-
+    
+    deinit {
+        self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
+    }
 }
+
+extension LLMOpenAIRealtimePlatform: @unchecked Sendable {}     // unchecked because of the `Dependency` property wrapper storage

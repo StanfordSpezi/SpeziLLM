@@ -15,76 +15,216 @@ import SpeziChat
 import SpeziKeychainStorage
 import SpeziLLM
 
-
-/// TODO
 @Observable
 public final class LLMOpenAIRealtimeSession: AudioCapableLLMSession, Sendable {
-    /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
+    /// A Swift Logger that logs important information from the ``LLMOpenAIRealtimeSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
     
-//    let platform: LLMOpenAIPlatform
-//    let schema: LLMOpenAISchema
-//    let keychainStorage: KeychainStorage
+    let platform: LLMOpenAIRealtimePlatform
+    let schema: LLMOpenAIRealtimeSchema
+    let keychainStorage: KeychainStorage
     
+    @MainActor @ObservationIgnored var webSocketTask: URLSessionWebSocketTask?
+
+    /// `Task`s managing the ``LLMOpenAIRealtimeSession`` event loop: (`receiveLoop()` function).
+    @MainActor @ObservationIgnored var eventLoopTask: Task<(), Never>?
+    
+    // One supervisor that owns all child loops
+    @MainActor var supervisorTask: Task<Void, Never>?
+    
+    // Connection is isolated; it owns socket + loops + routing
+    let connection = RealtimeConnection()
+
+
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
     
-    init() { }
-    
-    public func cancel() {
-        // cancel all currently generating continuations
-        self.continuationHolder.cancelAll()
+    /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
+    ///
+    /// - Parameters:
+    ///   - platform: Reference to the ``LLMOpenAIRealtimePlatform`` where the ``LLMOpenAIRealtimeSession`` is running on.
+    ///   - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAIRealtimeSchema``.
+    ///   - keychainStorage: Reference to the `KeychainStorage` from `SpeziStorage` in order to securely persist the token.
+    ///
+    /// - Important: Only the ``LLMOpenAIRealtimePlatform`` should create an instance of ``LLMOpenAIRealtimeSession``.
+    init(_ platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema, keychainStorage: KeychainStorage) {
+        self.platform = platform
+        self.schema = schema
+        self.keychainStorage = keychainStorage
     }
-    
+
+    /// Generates the text results that get appended to the context, based on the text. And if you're listening to the stream via `listen()` then you'll also get the audio output
+    /// Note that if you were speaking into the microphone until that point and sending that with appendUserAudio(), this also gets included when calling generate() here
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
+        // 1. Send the relevant context as text to OpenAI
+        // 2. Probably here we generate and return a new stream, which is active until the next response.done. The stream returns content += string deltas
+        //    like LLMOpenAISession, so that it can be used inside ChatView.
+        //
+        // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
         let (stream, _) = AsyncThrowingStream.makeStream(of: String.self)
+        let res = await setup()
+        print("Setup succesfull: \(res)")
         
         return stream
     }
     
+    /// Returns an audio stream (pcm16)  from chatGPT that you can listen to
     func listen() -> AsyncThrowingStream<Data, any Error> {
+        // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
+        // Always the same stream gets returned: no new stream gets created here
         let (stream, _) = AsyncThrowingStream.makeStream(of: Data.self)
         
         return stream
     }
     
+    /// Used to append audio from the user's mic, directly sends it to OpenAI
     public func appendUserAudio(_ buffer: Data) async throws {
         Self.logger.debug("appendUserAudio")
+        let eventData = Components.Schemas.RealtimeClientEventInputAudioBufferAppend(
+            _type: .input_audio_buffer_period_append,
+            audio: buffer.base64EncodedString()
+        )
+        
+        let encoder = JSONEncoder()
+        let eventDataJson = try encoder.encode(eventData)
+        try await connection.socket?.send(.string(String(decoding: eventDataJson, as: UTF8.self)))
     }
     
+    /// Only used when having manual VAD: asks OpenAI to generate response event to obtain audio / transcripts
     func endUserTurn() async throws {
     }
     
+    /// For very custom UIs: you can use `events()` which returns a stream with the actual OpenAI Realtime events
     func events() -> AsyncThrowingStream<LLMEvent, any Error> {
         let (stream, _) = AsyncThrowingStream.makeStream(of: LLMEvent.self)
         
         return stream
     }
     
+    public func cancel() {
+        print("Cancelling happens!")
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
+        
+        Task.detached { [connection] in await connection.cancel() }
+    }
+
     deinit {
         self.cancel()
     }
 }
 
+actor RealtimeConnection {
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
 
-protocol AudioCapableLLMSession: LLMSession {
-    func listen() -> AsyncThrowingStream<Data, any Error>
+    private var eventLoopTask: Task<Void, any Error>?
+
+    // Connection stuff
+    internal var socket: URLSessionWebSocketTask?
+    private lazy var urlSession = URLSession(configuration: .default)
+
+    // The important stream: event stream which gets sent in session.events()
+//    var eventStream
+
+    // Handling of the setup: only finish whenever the connection to API has been succesful
+    private var readyContinuation: CheckedContinuation<Void, any Error>?
+    private var didSignalReady = false
+
     
-    func appendUserAudio(_ buffer: Data) async throws
+    func cancel() {
+        print("ℹ️ RealtimeConnection: is getting cancelled")
+        eventLoopTask?.cancel()
+        eventLoopTask = nil
+
+        socket?.cancel()
+    }
     
-    func endUserTurn() async throws
+    /// Opens socket connection to OpenAI's Realtime API
+    func open(token: String, model: String) async throws {
+        guard let realtimeApiUrl = URL(string: "wss://api.openai.com/v1/realtime?model=\(model)") else {
+            throw RealtimeError.malformedUrlError
+        }
+        
+        var req = URLRequest(url: realtimeApiUrl)
+        req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.addValue("realtime=v1", forHTTPHeaderField: "OpenAI-Beta")
+        let webSocketTask = urlSession.webSocketTask(with: req)
+        webSocketTask.resume()
+        socket = webSocketTask
+    }
     
-    func events() -> AsyncThrowingStream<LLMEvent, any Error>
+    /// Starts the event loop, which runs until calling `cancel()`
+    func startEventLoop() async throws {
+        eventLoopTask = Task { [weak self] in
+            do {
+                try await self?.eventLoop()
+            } catch is CancellationError {
+                // expected on cancel: ignore
+                print("✅ runForever: Cancellation error")
+            } catch {
+                print("‼️ receiveLoop failed:", error)
+            }
+        }
+        // Await until we obtain session.created from OpenAI
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            readyContinuation = continuation
+        }
+    }
+    
+    /// Contains the whole event loop
+    private func eventLoop() async throws {
+        guard let socket = socket else {
+            throw RealtimeError.socketNotFoundError
+        }
+        while !Task.isCancelled {
+            let message = try await socket.receive()
+
+            if case let .string(text) = message {
+                guard let messageJsonData = text.data(using: .utf8),
+                      let messageDict = try? JSONSerialization.jsonObject(with: messageJsonData, options: [])  as? [String: Any]
+                else {
+                    Self.logger.warning("Invalid message format: \(text)")
+                    continue
+                }
+                
+                if let type = messageDict["type"] as? String {
+                    switch type {
+                    case "session.created":
+                        eventSessionCreated(messageDict)
+                    case "response.audio_transcript.done":
+                        print(messageDict["transcript"] as? String ?? "")
+                    case "error":
+                        eventError(messageDict)
+                    default:
+//                        print(type)
+                        break
+                    }
+                }
+            }
+        }
+        
+        func eventSessionCreated(_ content: [String: Any]) {
+            print("Session created!")
+            print(content)
+            readyContinuation?.resume(with: .success(()))
+            readyContinuation = nil
+        }
+        
+        func eventError(_ content: [String: Any]) {
+            print("Oh fuck, error...")
+            readyContinuation?.resume(with: .failure(RealtimeError.openAIError))
+            readyContinuation = nil
+
+        }
+    }
 }
 
-enum LLMEvent {
-    case textDelta(String)
-    case toolCall(Data)
-    case audioDelta(Data)
-    case userTranscript(String)
-    case assistantTranscript(String)
+enum RealtimeError: Error {
+    case malformedUrlError
+    case socketNotFoundError
+    case openAIError
 }
