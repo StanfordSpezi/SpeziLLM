@@ -15,7 +15,7 @@ import SpeziChat
 import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
-
+import Atomics
 
 /// Represents an ``LLMOpenAISchema`` in execution.
 ///
@@ -81,9 +81,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
  
     private let clientLock = RWLock()
     /// Counter for tracking nested tool calls
-    @ObservationIgnored private var toolCallCounter = 0
-    /// Ensuring thread-safe access to the `LLMOpenAISession/toolCallCounter`.
-    @ObservationIgnored private var toolCallCounterLock = RecursiveRWLock()
+    @ObservationIgnored private let toolCallCounter = ManagedAtomic<Int>(0)
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
     /// Holds the currently generating continuations so that we can cancel them if required.
@@ -174,13 +172,8 @@ public final class LLMOpenAISession: LLMSession, Sendable {
 
     /// Safely increments the tool call counter and updates the state if needed.
     func incrementToolCallCounter(by value: Int = 1) async {
-        var shouldSetState = false
-        toolCallCounterLock.withWriteLock {
-            shouldSetState = toolCallCounter == 0
-            toolCallCounter += value
-        }
-        
-        if shouldSetState {
+        let previous = toolCallCounter.loadThenWrappingIncrement(by: value, ordering: .sequentiallyConsistent)
+        if previous == 0 {
             await MainActor.run {
                 self.state = .callingTools
             }
@@ -189,35 +182,17 @@ public final class LLMOpenAISession: LLMSession, Sendable {
 
     /// Safely decrements the tool call counter and updates the state if needed.
     func decrementToolCallCounter() async {
-        var shouldSetState = false
-        toolCallCounterLock.withWriteLock {
-            guard toolCallCounter > 0 else {
-                return
-            }
-            
-            toolCallCounter -= 1
-            if toolCallCounter == 0 {
-                shouldSetState = true
-            }
-        }
-        
-        if shouldSetState {
+        if toolCallCounter.loadThenWrappingDecrement(by: 1, ordering: .sequentiallyConsistent) == 1 {
             await MainActor.run {
                 self.state = .generating
             }
         }
     }
-    
+  
     /// Checks if there are active tool calls and updates the state if needed.
     func checkForActiveToolCalls() async {
-        var shouldSetState = false
-        toolCallCounterLock.withReadLock {
-            if toolCallCounter == 0 {
-                shouldSetState = true
-            }
-        }
-        
-        if shouldSetState {
+        let current = toolCallCounter.load(ordering: .sequentiallyConsistent)
+        if current == 0 {
             await MainActor.run {
                 self.state = .generating
             }
