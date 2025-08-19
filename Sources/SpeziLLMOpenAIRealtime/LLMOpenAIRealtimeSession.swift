@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import AsyncAlgorithms
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
@@ -29,12 +30,10 @@ public final class LLMOpenAIRealtimeSession: AudioCapableLLMSession, Sendable {
     // Connection is isolated; it owns socket + loops + routing
     let connection = RealtimeConnection()
 
-
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-    /// Holds the currently generating continuations so that we can cancel them if required.
-    let continuationHolder = LLMInferenceQueueContinuationHolder()
+    nonisolated(unsafe) var setupDone = false
     
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
     ///
@@ -54,18 +53,53 @@ public final class LLMOpenAIRealtimeSession: AudioCapableLLMSession, Sendable {
     /// Note that if you were speaking into the microphone until that point and sending that with appendUserAudio(), this also gets included when calling generate() here
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
+        if setupDone {
+            let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
+            continuation.finish()
+            return stream
+        }
+
         // 1. Send the relevant context as text to OpenAI
         // 2. Probably here we generate and return a new stream, which is active until the next response.done. The stream returns content += string deltas
         //    like LLMOpenAISession, so that it can be used inside ChatView.
         //
         // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
-        let (stream, _) = AsyncThrowingStream.makeStream(of: String.self)
-        // TODO: Trigger setup only once
+        // TODO: Trigger setup (& listenToEvents) only once, correctly (and not just by using setupDone = true)
         let res = await setup()
+        self.listenToLLMEvents()
+        setupDone = true
         print("Setup succesfull: \(res)")
         
+        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
+        continuation.finish()
         return stream
     }
+    
+    private func listenToLLMEvents() {
+        Task { @MainActor [weak self] in
+            guard let eventStream = await self?.connection.event() else {
+                print("No self in listenToLLMEvents...")
+                return
+            }
+            
+            for try await event in eventStream {
+                switch event {
+                case .assistantTranscriptDelta(let content):
+                    print("Got assistant transcript: \(content)")
+                    self?.context.append(assistantOutput: content)
+                case .assistantTranscriptDone(let content):
+                    print("Got assistant transcript: \(content)")
+                    self?.context.completeAssistantStreaming()
+                case .userTranscriptDone(let content):
+                    print("Got user transcript: \(content)")
+                    self?.context.append(userInput: content)
+                default:
+                    break
+                }
+            }
+        }
+    }
+
     
     /// Returns an audio stream (pcm16)  from chatGPT that you can listen to
     public func listen() -> AsyncThrowingStream<Data, any Error> {
@@ -75,7 +109,7 @@ public final class LLMOpenAIRealtimeSession: AudioCapableLLMSession, Sendable {
             // Keep the task alive for the lifetime of the stream.
             let task = Task {
                 do {
-                    for try await event in connection.eventStream {
+                    for try await event in await connection.event() {
                         if case .audioDelta(let delta) = event {
                             continuation.yield(delta) // emit pcm16 chunk
                         }
@@ -109,14 +143,13 @@ public final class LLMOpenAIRealtimeSession: AudioCapableLLMSession, Sendable {
     }
     
     /// For very custom UIs: you can use `events()` which returns a stream with the actual OpenAI Realtime events
-    func events() -> AsyncThrowingStream<RealtimeLLMEvent, any Error> {
-        connection.eventStream
+    func events() async -> AsyncThrowingStream<RealtimeLLMEvent, any Error> {
+        await connection.event()
     }
     
     public func cancel() {
         print("Cancelling happens!")
         // cancel all currently generating continuations
-        self.continuationHolder.cancelAll()
         
         Task.detached { [connection] in await connection.cancel() }
     }
@@ -144,17 +177,18 @@ actor RealtimeConnection {
     private lazy var urlSession = URLSession(configuration: .default)
 
     // The important stream: event stream which gets sent in session.events()
-    let eventStream: AsyncThrowingStream<RealtimeLLMEvent, any Error>
-    let eventStreamContinuation: AsyncThrowingStream<RealtimeLLMEvent, any Error>.Continuation
+//    private let eventStream: AsyncThrowingStream<RealtimeLLMEvent, any Error>
+//    private let eventStreamContinuation: AsyncThrowingStream<RealtimeLLMEvent, any Error>.Continuation
+    private let broadcaster = EventBroadcaster<RealtimeLLMEvent>()
 
     // Handling of the setup: only finish whenever the connection to API has been succesful
     private var readyContinuation: CheckedContinuation<Void, any Error>?
     private var didSignalReady = false
 
     init() {
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: RealtimeLLMEvent.self)
-        eventStream = stream
-        eventStreamContinuation = continuation
+//        let (stream, continuation) = AsyncThrowingStream.makeStream(of: RealtimeLLMEvent.self)
+//        eventStream = stream
+//        eventStreamContinuation = continuation
     }
         
     func cancel() {
@@ -163,6 +197,11 @@ actor RealtimeConnection {
         eventLoopTask = nil
 
         socket?.cancel()
+    }
+    
+    func event() async -> AsyncThrowingStream<RealtimeLLMEvent, any Error> {
+        // Creates an AsyncThrowingStream to listen to (so that there can be multiple listeners)
+        await broadcaster.stream()
     }
     
     /// Opens socket connection to OpenAI's Realtime API
@@ -218,68 +257,59 @@ actor RealtimeConnection {
                 if let type = messageDict["type"] as? String {
                     switch type {
                     case "session.created":
-                        eventSessionCreated(messageDict)
+                        print("Session created!")
+                        Task {
+                            try await sendSessionUpdate()
+                        }
+                        readyContinuation?.resume(with: .success(()))
+                        readyContinuation = nil
                     case "response.audio.delta":
                         guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
                             continue
                         }
                         let llmEvent = RealtimeLLMEvent.audioDelta(deltaPcmData)
-                        eventStreamContinuation.yield(llmEvent)
+                        await broadcaster.yield(llmEvent)
                     case "response.audio.done":
-//                        guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
-//                            continue
-//                        }
-//                        let llmEvent = RealtimeLLMEvent.audioDelta(deltaPcmData)
-//                        eventStreamContinuation.yield(llmEvent)
-                        print("audio.done: ", messageDict)
+                        guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
+                            continue
+                        }
+                        let llmEvent = RealtimeLLMEvent.audioDelta(deltaPcmData)
+                        await broadcaster.yield(llmEvent)
+//                        print("audio.done: ", messageDict)
                     case "response.audio_transcript.delta":
                         let transcript = messageDict["delta"] as? String ?? ""
                         let llmEvent = RealtimeLLMEvent.assistantTranscriptDelta(transcript)
-                        eventStreamContinuation.yield(llmEvent)
+                        await broadcaster.yield(llmEvent)
                     case "response.audio_transcript.done":
                         let transcript = messageDict["transcript"] as? String ?? ""
                         let llmEvent = RealtimeLLMEvent.assistantTranscriptDone(transcript)
-                        eventStreamContinuation.yield(llmEvent)
+                        await broadcaster.yield(llmEvent)
                     case "conversation.item.input_audio_transcription.delta":
                         let transcript = messageDict["delta"] as? String ?? ""
                         let llmEvent = RealtimeLLMEvent.userTranscriptDelta(transcript)
-                        eventStreamContinuation.yield(llmEvent)
+                        await broadcaster.yield(llmEvent)
                     case "conversation.item.input_audio_transcription.completed":
                         let transcript = messageDict["transcript"] as? String ?? ""
                         let llmEvent = RealtimeLLMEvent.userTranscriptDone(transcript)
-                        eventStreamContinuation.yield(llmEvent)
+                        await broadcaster.yield(llmEvent)
                     case "input_audio_buffer.speech_started":
-                        eventStreamContinuation.yield(RealtimeLLMEvent.speechStarted)
+                        await broadcaster.yield(RealtimeLLMEvent.speechStarted)
                     case "input_audio_buffer.speech_stopped":
-                        eventStreamContinuation.yield(RealtimeLLMEvent.speechStopped)
-                    case "response.content_part.added", "response.output_item.done", "response.done":
-                        print(type)
-                        print(messageDict)
-                        print("------")
+                        await broadcaster.yield(RealtimeLLMEvent.speechStopped)
+//                    case "response.content_part.added", "response.output_item.done", "response.done":
+//                        print(type)
+//                        print(messageDict)
+//                        print("------")
                     case "error":
-                        eventError(messageDict)
+                        readyContinuation?.resume(with: .failure(RealtimeError.openAIError))
+                        readyContinuation = nil
+                        await broadcaster.finish(throwing: RealtimeError.openAIError)
                     default:
 //                        print(type)
                         break
                     }
                 }
             }
-        }
-        
-        func eventSessionCreated(_ content: [String: Any]) {
-            print("Session created!")
-            print(content)
-            Task {
-                try await sendSessionUpdate()
-            }
-            readyContinuation?.resume(with: .success(()))
-            readyContinuation = nil
-        }
-        
-        func eventError(_ content: [String: Any]) {
-            readyContinuation?.resume(with: .failure(RealtimeError.openAIError))
-            readyContinuation = nil
-            eventStreamContinuation.finish(throwing: RealtimeError.openAIError)
         }
     }
 
@@ -290,7 +320,7 @@ actor RealtimeConnection {
 //                turn_detection: turnDetection,
 //                tools: tools
                 input_audio_transcription: Components.Schemas.RealtimeSessionCreateRequest
-                    .input_audio_transcriptionPayload(model: "whisper-1")
+                    .input_audio_transcriptionPayload(model: "gpt-4o-mini-transcribe")
             )
         )
 
@@ -299,5 +329,51 @@ actor RealtimeConnection {
         try await socket?.send(.string(String(decoding: eventSessionUpdateJson, as: UTF8.self)))
         Self.logger.debug("Sent session update:\n\(String(decoding: eventSessionUpdateJson, as: UTF8.self))")
     }
+}
+
+actor EventBroadcaster<Element: Sendable> {
+    typealias Stream = AsyncThrowingStream<Element, any Error>
+
+    private var listeners: [UUID: Stream.Continuation] = [:]
+
+    /// Register and return a new stream for a listener
+    func stream(
+        bufferingPolicy: Stream.Continuation.BufferingPolicy = .unbounded
+    ) -> Stream {
+        let id = UUID()
+
+        return Stream(bufferingPolicy: bufferingPolicy) { continuation in
+            listeners[id] = continuation
+
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.removeValue(forKey: id)
+                }
+            }
+        }
+    }
+
+    /// Broadcast an element to everyone
+    func yield(_ value: sending Element) {
+        for continuation in listeners.values {
+            continuation.yield(value)
+        }
+    }
+
+    /// Finish stream, optionally with an error
+    func finish(throwing error: (any Error)? = nil) {
+        for continuation in listeners.values {
+            if let error {
+                continuation.finish(throwing: error)
+            } else {
+                continuation.finish()
+            }
+        }
+        listeners.removeAll()
+    }
     
+    private func removeValue(forKey: UUID) {
+        self.listeners.removeValue(forKey: forKey)
+    }
+
 }

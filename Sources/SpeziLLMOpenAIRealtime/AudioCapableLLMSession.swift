@@ -16,7 +16,7 @@ protocol AudioCapableLLMSession: LLMSession {
     
     func endUserTurn() async throws
     
-    func events() -> AsyncThrowingStream<RealtimeLLMEvent, any Error>
+    func events() async -> AsyncThrowingStream<RealtimeLLMEvent, any Error>
 }
 
 enum RealtimeLLMEvent {

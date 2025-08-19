@@ -1,11 +1,9 @@
 import AVFoundation
 import SwiftUI
 
-
-//@MainActor
-@Observable
+// TODO: Fix AudioRecorder seems to be blocking main thread on .init()
 class AudioRecorder {
-    @ObservationIgnored private let audioEngine = AVAudioEngine()
+    private let audioEngine = AVAudioEngine()
 
     var isRecording = false
 

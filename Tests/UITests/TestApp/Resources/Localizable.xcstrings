@@ -51,9 +51,6 @@
         }
       }
     },
-    "Hello, World!" : {
-
-    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {

@@ -22,29 +22,27 @@ struct LLMOpenAIRealtimeTestView: View {
     
     var body: some View {
         VStack {
-            Text("Hello, World!")
-            Button {
-                print("Start...")
-                Task {
-                    await audio.start()
+            LLMChatView(session: $llm)
+            HStack {
+                Button {
+                    print("Start...")
+                    Task {
+                        await audio.start()
+                    }
+                } label: {
+                    Text("Start")
                 }
-            } label: {
-                Text("Start")
-            }
-            Spacer().frame(height: 40)
-            Button {
-                print("Stop...")
-                audio.stop()
-//                llm.appendAu
-//                Task {
-//                    try await llm.appendUserAudio(Data())
-//                }
-            } label: {
-                Text("Stop")
+                Spacer().frame(width: 40)
+                Button {
+                    print("Stop...")
+                    audio.stop()
+                } label: {
+                    Text("Stop")
+                }
             }
         }.task {
             print("Init of LLM")
-            let _ = try? await llm.generate()
+            _ = try? await llm.generate()
             audio.setup(llm: llm)
         }
     }
