@@ -26,7 +26,7 @@ struct LLMOpenAIRealtimeTestView: View {
             Button {
                 print("Start...")
                 Task {
-                    await audio.start(with: llm)
+                    await audio.start()
                 }
             } label: {
                 Text("Start")
@@ -45,6 +45,7 @@ struct LLMOpenAIRealtimeTestView: View {
         }.task {
             print("Init of LLM")
             let _ = try? await llm.generate()
+            audio.setup(llm: llm)
         }
     }
 }
@@ -60,32 +61,68 @@ final class AudioViewModel {
     // Used to play pcm from OpenAI's result
     private let pcmOpenAiPlayer = PCMPlayer()
 
-    init() { }
+    // The microphone --> LLM task
+    private var micTask: Task<Void, any Error>?
+    // The LLM --> PCMPlayer (audio) task
+    private var llmTask: Task<Void, any Error>?
     
-    func start(with llm: LLMOpenAIRealtimeSession) async {
-        streamingService.start()
-        // TODO: Cancel this task correctly, otherwise llm doesn't get cancelled...
-        Task {
-            guard let audioBufferStream = streamingService.audioBufferStream else {
+    func setup(llm: LLMOpenAIRealtimeSession) {
+        micTask = listenToMicrophone(with: llm)
+        llmTask = playAssistantResponses(with: llm)
+    }
+
+    func listenToMicrophone(with llm: LLMOpenAIRealtimeSession) -> Task<Void, any Error> {
+        Task { [weak self] in
+            guard let audioBufferStream = self?.streamingService.audioBufferStream else {
                 print("No audiobuffer stream..;")
                 return
             }
             for try await pcm in audioBufferStream {
-                Task {
-                    do {
-                        try await llm.appendUserAudio(pcm)
-                    } catch {
-                        print("err", error)
-                    }
+                do {
+                    try await llm.appendUserAudio(pcm)
+                } catch {
+                    print("err", error)
                 }
-                if replayUserAudio {
-                    pcmUserAudioPlayer.play(rawPCMData: pcm)
+
+                if self?.replayUserAudio == true {
+                    self?.pcmUserAudioPlayer.play(rawPCMData: pcm)
                 }
             }
         }
     }
+    
+    func playAssistantResponses(with llm: LLMOpenAIRealtimeSession) -> Task<Void, any Error> {
+        Task { [weak self] in
+            let audioBufferStream = llm.listen()
+            for try await pcm in audioBufferStream {
+                self?.pcmOpenAiPlayer.play(rawPCMData: pcm)
+            }
+        }
+    }
+
+    func start() async {
+        streamingService.start()
+    }
 
     func stop() {
         streamingService.stop()
+    }
+    
+    private func cancelTasks() {
+        micTask?.cancel()
+        micTask = nil
+        llmTask?.cancel()
+        llmTask = nil
+    }
+    
+    deinit {
+        print("Deinit of viewModel")
+        if Thread.isMainThread {
+            MainActor.assumeIsolated {
+                cancelTasks()
+            }
+        } else {
+            assertionFailure("could not do cleanup, the action block is leaked")
+        }
     }
 }

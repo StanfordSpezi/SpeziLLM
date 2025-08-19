@@ -16,14 +16,17 @@ protocol AudioCapableLLMSession: LLMSession {
     
     func endUserTurn() async throws
     
-    func events() -> AsyncThrowingStream<LLMEvent, any Error>
+    func events() -> AsyncThrowingStream<RealtimeLLMEvent, any Error>
 }
 
-enum LLMEvent {
-    case textDelta(String)
-    case toolCall(Data)
+enum RealtimeLLMEvent {
     case audioDelta(Data)
-    case userTranscript(String)
-    case assistantTranscript(String)
+    case audioDone(Data)
+    case userTranscriptDelta(String)
+    case userTranscriptDone(String)
+    case assistantTranscriptDelta(String)
+    case assistantTranscriptDone(String)
+    case toolCall(Data)
+    case speechStarted
+    case speechStopped
 }
-
