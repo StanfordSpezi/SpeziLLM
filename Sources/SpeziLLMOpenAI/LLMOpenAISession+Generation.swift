@@ -177,7 +177,7 @@ extension LLMOpenAISession {
                                 await self.finishGenerationWithError(
                                     LLMOpenAIError.invalidFunctionCallArguments(error),
                                     on: continuationObserver.continuation
-                                )                                
+                                )
                                 await self.decrementToolCallCounter()
                                 throw LLMOpenAIError.invalidFunctionCallArguments(error)
                             }
