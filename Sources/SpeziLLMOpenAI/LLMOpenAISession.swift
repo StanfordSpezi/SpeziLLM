@@ -172,8 +172,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
 
     /// Safely increments the tool call counter and updates the state if needed.
     func incrementToolCallCounter(by value: Int = 1) async {
-        let previous = toolCallCounter.loadThenWrappingIncrement(by: value, ordering: .sequentiallyConsistent)
-        if previous == 0 {
+        if toolCallCounter.loadThenWrappingIncrement(by: value, ordering: .sequentiallyConsistent) == 0 {
             await MainActor.run {
                 self.state = .callingTools
             }
@@ -191,8 +190,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
   
     /// Checks if there are active tool calls and updates the state if needed.
     func checkForActiveToolCalls() async {
-        let current = toolCallCounter.load(ordering: .sequentiallyConsistent)
-        if current == 0 {
+        if toolCallCounter.load(ordering: .sequentiallyConsistent) == 0 {
             await MainActor.run {
                 self.state = .generating
             }
