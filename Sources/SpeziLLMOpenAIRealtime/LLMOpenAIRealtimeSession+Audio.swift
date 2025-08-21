@@ -10,12 +10,18 @@ import Foundation
 import GeneratedOpenAIClient
 
 extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
-    /// Returns an audio stream (pcm16)  from chatGPT that you can listen to
+    /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the OpenAI Realtime API.
+    ///
+    /// Each `Data` element in the stream represents a chunk of 16-bit PCM audio that can be
+    /// decoded or directly played by an audio engine. The stream will throw if a connection
+    /// error occurs, and it automatically completes when the session ends or is cancelled.
+    ///
+    /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
+    /// - Throws: Errors related to the underlying Realtime API connection.
     public func listen() -> AsyncThrowingStream<Data, any Error> {
-        // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
-        // Always the same stream gets returned: no new stream gets created here
+        // Filters the events from `apiConnection.events()` to only keep the `RealtimeLLMEvent.audioDelta(delta)` ones.
+        // Then emits the `delta: Data` value onto the stream.
         AsyncThrowingStream { [apiConnection] continuation in
-            // Keep the task alive for the lifetime of the stream.
             let task = Task {
                 do {
                     for try await event in await apiConnection.events() {

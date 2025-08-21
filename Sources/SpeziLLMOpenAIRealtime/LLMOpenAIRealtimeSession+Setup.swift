@@ -7,12 +7,12 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
+import OpenAPIURLSession
 import os
 import SpeziKeychainStorage
 import SpeziLLM
 import SpeziLLMOpenAI
-import GeneratedOpenAIClient
-import OpenAPIURLSession
 
 extension LLMOpenAIRealtimeSession {
     /// Set up the OpenAI Realtime API client.
@@ -59,5 +59,5 @@ extension LLMOpenAIRealtimeSession {
         }
         
         return true
-    }    
+    }
 }

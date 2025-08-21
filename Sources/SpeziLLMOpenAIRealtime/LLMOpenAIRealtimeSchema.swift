@@ -33,5 +33,4 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
         self.injectIntoContext = injectIntoContext
         self.functions = functionsCollection().functions
     }
-
 }

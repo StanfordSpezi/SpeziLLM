@@ -101,7 +101,7 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
-                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),

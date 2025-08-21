@@ -47,6 +47,7 @@
 		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
 		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
 		97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */; };
+		A3222B9D2E57CE250090C8A0 /* AudioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */; };
 		A32FF4DF2E4A124500DBA37B /* SpeziLLMOpenAIRealtime in Frameworks */ = {isa = PBXBuildFile; productRef = A32FF4DE2E4A124500DBA37B /* SpeziLLMOpenAIRealtime */; };
 		A36A7B2C2E4A32CB00D94B2F /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */; };
 		A36A7B2E2E4A36AA00D94B2F /* PCMPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */; };
@@ -102,6 +103,7 @@
 		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
 		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
 		97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogChatTestView.swift; sourceTree = "<group>"; };
+		A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioViewModel.swift; sourceTree = "<group>"; };
 		A35639222E46556400E815EC /* RealityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityFoundation.framework; path = System/Library/Frameworks/RealityFoundation.framework; sourceTree = SDKROOT; };
 		A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMPlayer.swift; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 		A37466172E4A052B008FB415 /* LLMOpenAIRealtime */ = {
 			isa = PBXGroup;
 			children = (
+				A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */,
 				A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */,
 				A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */,
 				A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */,
@@ -454,6 +457,7 @@
 				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
 				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
 				976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */,
+				A3222B9D2E57CE250090C8A0 /* AudioViewModel.swift in Sources */,
 				97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */,
 				63EF9CF02BA7398C001D92D7 /* TestAppTestingSetup.swift in Sources */,
 				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
