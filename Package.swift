@@ -102,7 +102,6 @@ let package = Package(
                 .product(name: "SpeziChat", package: "SpeziChat"),
                 .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
-                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),

@@ -49,12 +49,12 @@ extension LLMOpenAIRealtimeSession {
         }
         
         do {
-            try await connection.open(token: openAPIKey, model: "gpt-4o-mini-realtime-preview")
+            try await apiConnection.open(token: openAPIKey, model: "gpt-4o-mini-realtime-preview")
             
-            try await connection.startEventLoop()
+            try await apiConnection.startEventLoop()
         } catch {
             Self.logger.error("OpenAI Realtime init failed: \(error.localizedDescription)")
-            await connection.cancel()
+            await apiConnection.cancel()
             return false
         }
         

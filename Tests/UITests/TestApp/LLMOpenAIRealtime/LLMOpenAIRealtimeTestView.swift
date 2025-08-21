@@ -114,13 +114,12 @@ final class AudioViewModel {
     }
     
     deinit {
-        print("Deinit of viewModel")
         if Thread.isMainThread {
             MainActor.assumeIsolated {
                 cancelTasks()
             }
         } else {
-            assertionFailure("could not do cleanup, the action block is leaked")
+            assertionFailure("Could not do cleanup: is not running on MainThread...")
         }
     }
 }
