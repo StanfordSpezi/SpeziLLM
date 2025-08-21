@@ -14,14 +14,12 @@ struct LLMOpenAIFunctionHealthData: LLMFunction {
     static let description: String = "Get the health data of a patient based on health data types."
     
     
-    // swiftlint:disable attributes
     @Parameter(
         description: "The types of health data that are requested",
         enum: ["allergies", "medications", "preconditions"]
     )
     var healthDataTypes: [String]
-    // swiftlint:enable attributes
-    
+
     
     func execute() async throws -> String? {
         var healthData = ""

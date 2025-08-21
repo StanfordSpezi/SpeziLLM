@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Atomics
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
@@ -15,7 +16,6 @@ import SpeziChat
 import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
-
 
 /// Represents an ``LLMOpenAISchema`` in execution.
 ///
@@ -78,8 +78,10 @@ public final class LLMOpenAISession: LLMSession, Sendable {
     let platform: LLMOpenAIPlatform
     let schema: LLMOpenAISchema
     let keychainStorage: KeychainStorage
-
+ 
     private let clientLock = RWLock()
+    /// Counter for tracking nested tool calls
+    private let toolCallCounter = ManagedAtomic<Int>(0)
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
     /// Holds the currently generating continuations so that we can cancel them if required.
@@ -167,7 +169,33 @@ public final class LLMOpenAISession: LLMSession, Sendable {
         // cancel all currently generating continuations
         self.continuationHolder.cancelAll()
     }
-    
+
+    /// Safely increments the tool call counter and updates the state if needed.
+    func incrementToolCallCounter(by value: Int = 1) async {
+        if toolCallCounter.loadThenWrappingIncrement(by: value, ordering: .sequentiallyConsistent) == 0 {
+            await MainActor.run {
+                self.state = .callingTools
+            }
+        }
+    }
+
+    /// Safely decrements the tool call counter and updates the state if needed.
+    func decrementToolCallCounter() async {
+        if toolCallCounter.loadThenWrappingDecrement(by: 1, ordering: .sequentiallyConsistent) == 1 {
+            await MainActor.run {
+                self.state = .generating
+            }
+        }
+    }
+  
+    /// Checks if there are active tool calls and updates the state if needed.
+    func checkForActiveToolCalls() async {
+        if toolCallCounter.load(ordering: .sequentiallyConsistent) == 0 {
+            await MainActor.run {
+                self.state = .generating
+            }
+        }
+    }
     
     deinit {
         self.cancel()
