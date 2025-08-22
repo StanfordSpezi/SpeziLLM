@@ -25,6 +25,8 @@ final class AudioViewModel {
     // The LLM --> PCMPlayer (audio) task
     private var llmTask: Task<Void, any Error>?
     
+    var isRecording: Bool = false
+    
     func setup(llm: LLMOpenAIRealtimeSession) {
         micTask = listenToMicrophone(with: llm)
         llmTask = playAssistantResponses(with: llm)
@@ -52,7 +54,7 @@ final class AudioViewModel {
     
     func playAssistantResponses(with llm: LLMOpenAIRealtimeSession) -> Task<Void, any Error> {
         Task { [weak self] in
-            let audioBufferStream = llm.listen()
+            let audioBufferStream = await llm.listen()
             for try await pcm in audioBufferStream {
                 self?.pcmOpenAiPlayer.play(rawPCMData: pcm)
             }
@@ -61,10 +63,12 @@ final class AudioViewModel {
 
     func start() async {
         streamingService.start()
+        isRecording = true
     }
 
     func stop() {
         streamingService.stop()
+        isRecording = false
     }
     
     private func cancelTasks() {

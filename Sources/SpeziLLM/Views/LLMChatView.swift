@@ -71,8 +71,11 @@ public struct LLMChatView<Session: LLMSession>: View {
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
                 // Once the user enters a message in the chat, increase `messageTaskIdentifier` that triggers LLM inference
+                //
+                // Checking `lastChat.complete == true` is a hack to differentiate user initiated messages (complete == true, default)
+                // with user transcripts (when first appended: complete == false).
                 if oldValue.count != newValue.count,
-                   let lastChat = newValue.last, lastChat.role == .user {
+                   let lastChat = newValue.last, lastChat.role == .user, lastChat.complete == true {
                     self.messageTaskIdentifier = (self.messageTaskIdentifier ?? 0) + 1
                 }
             }

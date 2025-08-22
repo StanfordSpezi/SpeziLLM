@@ -10,7 +10,7 @@ import Foundation
 import SpeziLLM
 
 protocol AudioCapableLLMSession: LLMSession {
-    func listen() -> AsyncThrowingStream<Data, any Error>
+    func listen() async -> AsyncThrowingStream<Data, any Error>
     
     func appendUserAudio(_ buffer: Data) async throws
     

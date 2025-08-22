@@ -18,10 +18,12 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     ///
     /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
     /// - Throws: Errors related to the underlying Realtime API connection.
-    public func listen() -> AsyncThrowingStream<Data, any Error> {
+    public func listen() async -> AsyncThrowingStream<Data, any Error> {
+        _ = try? await ensureSetup()
+
         // Filters the events from `apiConnection.events()` to only keep the `RealtimeLLMEvent.audioDelta(delta)` ones.
         // Then emits the `delta: Data` value onto the stream.
-        AsyncThrowingStream { [apiConnection] continuation in
+        return AsyncThrowingStream { [apiConnection] continuation in
             let task = Task {
                 do {
                     for try await event in await apiConnection.events() {
@@ -63,8 +65,9 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         await apiConnection.events()
     }
     
+    // swiftlint:disable closure_body_length cyclomatic_complexity function_body_length
     @MainActor
-    internal func listenToLLMEvents() {
+    func listenToLLMEvents() {
         Task { [weak self] in
             guard let eventStream = await self?.apiConnection.events() else {
                 Self.logger.error("SpeziLLMOpenAIRealtime: No self in listenToLLMEvents...")
@@ -74,13 +77,57 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
             do {
                 for try await event in eventStream {
                     switch event {
-                        // TODO: Fix order of context appends (user & assistant)
                     case .assistantTranscriptDelta(let content):
                         await MainActor.run { self?.context.append(assistantOutput: content) }
                     case .assistantTranscriptDone:
                         await MainActor.run { self?.context.completeAssistantStreaming() }
+                    case .userTranscriptDelta(let content):
+                        await MainActor.run {
+                            let contentUUID = UUID.deterministic(from: content.itemId)
+                            let existingTranscriptIdx = self?.context
+                                .firstIndex { $0.id == contentUUID }
+                            if let existingTranscriptIdx = existingTranscriptIdx,
+                                let existingMessage = self?.context[existingTranscriptIdx] {
+                                self?.context[existingTranscriptIdx] = .init(
+                                    role: .user,
+                                    content: existingMessage.content + content.delta,
+                                    complete: false,
+                                    id: contentUUID,
+                                    date: existingMessage.date
+                                )
+                            }
+                        }
                     case .userTranscriptDone(let content):
-                        await MainActor.run { self?.context.append(userInput: content) }
+                        await MainActor.run {
+                            let contentUUID = UUID.deterministic(from: content.itemId)
+                            let existingTranscriptIdx = self?.context
+                                .firstIndex { $0.id == contentUUID }
+                            if let existingTranscriptIdx = existingTranscriptIdx,
+                                let existingMessage = self?.context[existingTranscriptIdx] {
+                                self?.context[existingTranscriptIdx] = .init(
+                                    role: .user,
+                                    content: existingMessage.content,
+                                    complete: true,
+                                    id: contentUUID,
+                                    date: existingMessage.date
+                                )
+                            }
+                        }
+
+                    case .speechStarted(let content):
+                        // When speech starts, add a context message at the correct spot (to retain order)
+                        // This message then gets completed using the .userTranscriptDelta event
+                        let contentUUID = UUID.deterministic(from: content.itemId)
+                        self?.context
+                            .append(
+                                .init(
+                                    role: .user,
+                                    content: "",
+                                    complete: false,
+                                    id: contentUUID,
+                                    date: Date.now
+                                )
+                            )
                     default:
                         break
                     }

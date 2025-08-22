@@ -17,7 +17,7 @@ import SpeziLLMOpenAI
 extension LLMOpenAIRealtimeSession {
     /// Set up the OpenAI Realtime API client.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
-    func setup() async -> Bool {
+    private func setup() async -> Bool {
         Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API is being initialized")
         await MainActor.run {
             self.state = .loading
@@ -27,11 +27,37 @@ extension LLMOpenAIRealtimeSession {
             return false
         }
 
+        await self.listenToLLMEvents()
+
         await MainActor.run {
             self.state = .ready
         }
         Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API finished initializing, now ready to use")
         return true
+    }
+
+    func ensureSetup() async throws -> Bool {
+        let currentState = await self.state
+        
+        guard currentState != .ready && currentState != .generating else {
+            print("ensureSetup: Returning true: no need for semaphore!")
+            return true
+        }
+
+        try await setupSemaphore.waitCheckingCancellation()
+        print("ensureSetup: Inside Semaphore")
+        let stateAfterSemaphore = await self.state
+        if stateAfterSemaphore == .ready || stateAfterSemaphore == .generating {
+            setupSemaphore.signal()
+            print("ensureSetup: Done: was already setup!")
+            return true
+        }
+        
+        let setupResult = await self.setup()
+        setupSemaphore.signal()
+        print("ensureSetup: Done: setup was \(setupResult ? "successful" : "unsuccessful")!")
+
+        return setupResult
     }
     
     /// Initialize the OpenAI Realtime API client.

@@ -81,7 +81,7 @@ actor LLMOpenAIRealtimeConnection {
     }
     
     // swiftlint:disable function_body_length cyclomatic_complexity closure_body_length
-    /// Contains the whole event loop
+    /// Event loop function
     private func eventLoop() async throws {
         guard let socket = socket else {
             throw RealtimeError.socketNotFoundError
@@ -129,15 +129,17 @@ actor LLMOpenAIRealtimeConnection {
                             let llmEvent = RealtimeLLMEvent.assistantTranscriptDone(transcript)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.delta":
-                            let transcript = messageDict["delta"] as? String ?? ""
-                            let llmEvent = RealtimeLLMEvent.userTranscriptDelta(transcript)
+                            let event = try JSONDecoder().decode(TranscriptDeltaEvent.self, from: messageJsonData)
+                            let llmEvent = RealtimeLLMEvent.userTranscriptDelta(event)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.completed":
-                            let transcript = messageDict["transcript"] as? String ?? ""
-                            let llmEvent = RealtimeLLMEvent.userTranscriptDone(transcript)
+                            let event = try JSONDecoder().decode(TranscriptDoneEvent.self, from: messageJsonData)
+                            let llmEvent = RealtimeLLMEvent.userTranscriptDone(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_started":
-                            await eventStream.yield(RealtimeLLMEvent.speechStarted)
+                            let event = try JSONDecoder().decode(SpeechStartedEvent.self, from: messageJsonData)
+                            let llmEvent = RealtimeLLMEvent.speechStarted(event)
+                            await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_stopped":
                             await eventStream.yield(RealtimeLLMEvent.speechStopped)
                         case "error":
@@ -158,6 +160,7 @@ actor LLMOpenAIRealtimeConnection {
     }
 
     func sendSessionUpdate() async throws {
+        // TODO: Add tools and turn detection settings!
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
             session: .init(

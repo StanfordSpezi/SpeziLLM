@@ -12,6 +12,7 @@ import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
@@ -29,6 +30,7 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
+    let setupSemaphore = AsyncSemaphore(value: 1) // Max 1 task setting up
 
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
     ///
@@ -48,6 +50,7 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     /// Note that if you were speaking into the microphone until that point and sending that with appendUserAudio(), this also gets included when calling generate() here
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
+        print("Generate() got called ")
         let currentState = await state
         if currentState == .ready || currentState == .loading {
             let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
@@ -60,21 +63,16 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
         //    like LLMOpenAISession, so that it can be used inside ChatView.
         //
         // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
-        // TODO: Trigger setup (& listenToEvents) only once, correctly (and not just by using setupDone = true)
-        let res = await setup()
-        if res {
-            await self.listenToLLMEvents()
-        }
-        
+        _ = try await ensureSetup()
+
         // TODO: Handle text messages (appends to context) correctly by sending the transcript of the response back here in generate()
-        
         let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
         continuation.finish()
         return stream
     }
-
     
     public func cancel() {
+        print("LLMOpenAIRealtimeSession: Cancelling!")
         Task { [apiConnection] in await apiConnection.cancel() }
     }
 

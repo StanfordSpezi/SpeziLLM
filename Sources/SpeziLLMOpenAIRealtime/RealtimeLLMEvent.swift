@@ -10,11 +10,43 @@ import Foundation
 public enum RealtimeLLMEvent: Sendable {
     case audioDelta(Data)
     case audioDone(Data)
-    case userTranscriptDelta(String)
-    case userTranscriptDone(String)
+    case userTranscriptDelta(TranscriptDeltaEvent)
+    case userTranscriptDone(TranscriptDoneEvent)
     case assistantTranscriptDelta(String)
     case assistantTranscriptDone(String)
     case toolCall(Data)
-    case speechStarted
+    case speechStarted(SpeechStartedEvent)
     case speechStopped
+}
+
+public struct TranscriptDoneEvent: Sendable, Codable {
+    enum CodingKeys: String, CodingKey {
+        case transcript
+        case itemId = "item_id"
+    }
+
+    let transcript: String
+    let itemId: String
+    // Non-exhaustive yet...
+}
+
+public struct TranscriptDeltaEvent: Sendable, Codable {
+    enum CodingKeys: String, CodingKey {
+        case delta
+        case itemId = "item_id"
+    }
+
+    let delta: String
+    let itemId: String
+    // Non-exhaustive yet...
+}
+
+public struct SpeechStartedEvent: Sendable, Codable {
+    enum CodingKeys: String, CodingKey {
+        case itemId = "item_id"
+        case audioStartMs = "audio_start_ms"
+    }
+
+    let itemId: String
+    let audioStartMs: Int
 }

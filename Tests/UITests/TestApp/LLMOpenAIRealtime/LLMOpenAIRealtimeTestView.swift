@@ -14,8 +14,6 @@ import SwiftUI
 struct LLMOpenAIRealtimeTestView: View {
     static let schema = LLMOpenAIRealtimeSchema {
         LLMOpenAIFunctionWeather()
-        LLMOpenAIFunctionHealthData()
-        LLMOpenAIFunctionPerson()
     }
     
     @LLMSessionProvider(schema: Self.schema) var llm: LLMOpenAIRealtimeSession
@@ -25,26 +23,19 @@ struct LLMOpenAIRealtimeTestView: View {
     var body: some View {
         VStack {
             LLMChatView(session: $llm)
-            HStack {
-                Button {
-                    print("Start...")
-                    Task {
+
+            Button {
+                Task {
+                    if audio.isRecording {
+                        audio.stop()
+                    } else {
                         await audio.start()
                     }
-                } label: {
-                    Text("Start")
                 }
-                Spacer().frame(width: 40)
-                Button {
-                    print("Stop...")
-                    audio.stop()
-                } label: {
-                    Text("Stop")
-                }
-            }
+            } label: {
+                Text(audio.isRecording ? "Stop Recording" : "Start Recording")
+            }.buttonStyle(.automatic)
         }.task {
-            print("Init of LLM")
-            _ = try? await llm.generate()
             audio.setup(llm: llm)
         }
     }
