@@ -21,13 +21,13 @@ protocol LLMFunctionParameterSchemaCollector: Sendable {
 }
 
 extension LLMFunction {
-    typealias LLMFunctionParameterSchema = Components.Schemas.FunctionParameters
+    package typealias LLMFunctionParameterSchema = Components.Schemas.FunctionParameters
     var schemaValueCollectors: [String: any LLMFunctionParameterSchemaCollector] {
         retrieveProperties(ofType: (any LLMFunctionParameterSchemaCollector).self)
     }
     
     /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines them into the complete parameter schema of the ``LLMFunction``.
-    var schema: LLMFunctionParameterSchema {
+    package var schema: LLMFunctionParameterSchema {
         get throws {
             let requiredPropertyNames = Array(
                 parameterValueCollectors

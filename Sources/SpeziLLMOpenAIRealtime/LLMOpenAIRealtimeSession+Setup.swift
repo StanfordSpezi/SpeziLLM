@@ -77,7 +77,7 @@ extension LLMOpenAIRealtimeSession {
         do {
             try await apiConnection.open(token: openAPIKey, model: "gpt-4o-mini-realtime-preview")
             
-            try await apiConnection.startEventLoop()
+            try await apiConnection.startEventLoop(platform: platform, schema: schema)
         } catch {
             Self.logger.error("OpenAI Realtime init failed: \(error.localizedDescription)")
             await apiConnection.cancel()

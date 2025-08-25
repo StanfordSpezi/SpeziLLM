@@ -10,8 +10,6 @@ import GeneratedOpenAIClient
 import os
 
 actor LLMOpenAIRealtimeConnection {
-    typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
-
     enum RealtimeError: Error {
         case malformedUrlError
         case socketNotFoundError
@@ -60,10 +58,10 @@ actor LLMOpenAIRealtimeConnection {
     
     /// Starts the event loop, which runs until calling `cancel()`
     /// Waits until the event loop has succesfully been initialized: only continues once session.created event is successfully received from socket
-    func startEventLoop() async throws {
+    func startEventLoop(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
         eventLoopTask = Task {
             do {
-                try await self.eventLoop()
+                try await self.eventLoop(platform: platform, schema: schema)
             } catch is CancellationError {
             } catch let error as NSError where
                         error.domain == NSPOSIXErrorDomain &&
@@ -82,7 +80,7 @@ actor LLMOpenAIRealtimeConnection {
     
     // swiftlint:disable function_body_length cyclomatic_complexity closure_body_length
     /// Event loop function
-    private func eventLoop() async throws {
+    private func eventLoop(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
         guard let socket = socket else {
             throw RealtimeError.socketNotFoundError
         }
@@ -104,7 +102,7 @@ actor LLMOpenAIRealtimeConnection {
                         case "session.created":
                             print("Session created!")
                             Task {
-                                try await sendSessionUpdate()
+                                try await sendSessionUpdate(platform: platform, schema: schema)
                                 readyContinuation?.resume()
                                 readyContinuation = nil
                             }
@@ -129,19 +127,28 @@ actor LLMOpenAIRealtimeConnection {
                             let llmEvent = RealtimeLLMEvent.assistantTranscriptDone(transcript)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.delta":
-                            let event = try JSONDecoder().decode(TranscriptDeltaEvent.self, from: messageJsonData)
+                            let event = try JSONDecoder().decode(RealtimeLLMEvent.TranscriptDelta.self, from: messageJsonData)
                             let llmEvent = RealtimeLLMEvent.userTranscriptDelta(event)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.completed":
-                            let event = try JSONDecoder().decode(TranscriptDoneEvent.self, from: messageJsonData)
+                            let event = try JSONDecoder().decode(RealtimeLLMEvent.TranscriptDone.self, from: messageJsonData)
                             let llmEvent = RealtimeLLMEvent.userTranscriptDone(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_started":
-                            let event = try JSONDecoder().decode(SpeechStartedEvent.self, from: messageJsonData)
+                            let event = try JSONDecoder().decode(RealtimeLLMEvent.SpeechStarted.self, from: messageJsonData)
                             let llmEvent = RealtimeLLMEvent.speechStarted(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_stopped":
                             await eventStream.yield(RealtimeLLMEvent.speechStopped)
+                        case "response.function_call_arguments.done":
+                            let event = try JSONDecoder().decode(RealtimeLLMEvent.FunctionCall.self, from: messageJsonData)
+                            Task {
+                                do {
+                                    try await handleFunctionCall(schema: schema, event: event)
+                                } catch {
+                                    Self.logger.error("SpeziLLMOpenAIRealtime: Function call handler failed: \(error)")
+                                }
+                            }
                         case "error":
                             readyContinuation?.resume(with: .failure(RealtimeError.openAIError))
                             readyContinuation = nil
@@ -158,16 +165,74 @@ actor LLMOpenAIRealtimeConnection {
             }
         }
     }
+    
+    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: RealtimeLLMEvent.FunctionCall) async throws {
+        typealias ConversationItemCreateEvent = Components.Schemas.RealtimeClientEventConversationItemCreate
+        typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
 
-    func sendSessionUpdate() async throws {
-        // TODO: Add tools and turn detection settings!
+        let argumentData = event.arguments.data(using: .utf8) ?? Data()
+
+        try schema.functions[event.name]?.injectParameters(from: argumentData)
+        let output = try await schema.functions[event.name]?.execute()
+
+        let conversationItem = ConversationItemCreateEvent(
+            _type: .conversation_period_item_period_create,
+            item: .init(
+                _type: .function_call_output,
+                call_id: event.callId,
+                output: output
+            )
+        )
+        
+        let conversationItemJson = try JSONEncoder().encode(conversationItem)
+        try await socket?.send(.string(String(decoding: conversationItemJson, as: UTF8.self)))
+        Self.logger.debug("Sent function call result: \(String(decoding: conversationItemJson, as: UTF8.self))")
+        
+        // Send a "response.create" event to reply something after the function call
+        let responseData = RealtimeClientEventResponseCreate(_type: .response_period_create)
+        let responseDataJson = try JSONEncoder().encode(responseData)
+        try await socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
+    }
+
+    func sendSessionUpdate(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
+        typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
+        typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
+        typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
+
+        let tools: [ToolsPayload] = try schema.functions.values.compactMap { function in
+            let functionType = Swift.type(of: function)
+            let encodedSchema = try JSONEncoder().encode(try function.schema)
+            let jsonObject = try JSONSerialization.jsonObject(with: encodedSchema) as? [String: any Sendable] ?? [:]
+
+            return ToolsPayload(
+                _type: .function,
+                name: functionType.name,
+                description: functionType.description,
+                parameters: try .init(unvalidatedValue: jsonObject)
+            )
+        }
+        
+        let turnDetection: TurnDetectionPayload? = platform.configuration.turnDetectionSettings.map {
+            TurnDetectionPayload(
+                _type: $0.type?.rawValue,
+                threshold: $0.threshold,
+                prefix_padding_ms: $0.prefixPaddingMs,
+                silence_duration_ms: $0.silenceDurationMs,
+                create_response: $0.createResponse
+            )
+        }
+        
+        print("--- Turn Detection ---")
+        print(turnDetection)
+        print(platform.configuration.turnDetectionSettings)
+
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
             session: .init(
-//                turn_detection: turnDetection,
-//                tools: tools
                 input_audio_transcription: Components.Schemas.RealtimeSessionCreateRequest
-                    .input_audio_transcriptionPayload(model: "gpt-4o-mini-transcribe")
+                    .input_audio_transcriptionPayload(model: "gpt-4o-mini-transcribe"),
+                turn_detection: turnDetection,
+                tools: tools,
             )
         )
 
