@@ -10,10 +10,6 @@ public struct LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
     public enum VADMode: String, Encodable, Sendable {
         /// Automatically chunks the audio based on detected periods of silence.
         case server = "server_vad"
-        
-        /// More advanced VAD that uses a turn detection model (in conjunction with VAD) to semantically
-        /// estimate whether the user has finished speaking, then dynamically sets a timeout based on this probability
-        case semantic = "semantic_vad"
     }
 
     /// Specifies the Voice Activity Detection (VAD) mode for audio processing.
