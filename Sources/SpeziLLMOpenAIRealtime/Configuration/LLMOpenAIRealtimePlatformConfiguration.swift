@@ -23,7 +23,7 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
 
     public init(
         apiToken: String? = nil,
-        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .init(),
+        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .server(),
         concurrentStreams: Int = 10,
         taskPriority: TaskPriority = .userInitiated
     ) {

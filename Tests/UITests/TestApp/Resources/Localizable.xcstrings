@@ -51,6 +51,9 @@
         }
       }
     },
+    "End Turn (no VAD only)" : {
+
+    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {

@@ -13,7 +13,8 @@ actor LLMOpenAIRealtimeConnection {
     enum RealtimeError: Error {
         case malformedUrlError
         case socketNotFoundError
-        case openAIError
+        case openAIError(error: [String: any Sendable])
+        case eventSessionUpdateSerialisationError
     }
 
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
@@ -100,12 +101,12 @@ actor LLMOpenAIRealtimeConnection {
                     if let type = messageDict["type"] as? String {
                         switch type {
                         case "session.created":
-                            print("Session created!")
                             Task {
                                 try await sendSessionUpdate(platform: platform, schema: schema)
-                                readyContinuation?.resume()
-                                readyContinuation = nil
                             }
+                        case "session.updated":
+                            readyContinuation?.resume()
+                            readyContinuation = nil
                         case "response.audio.delta":
                             guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
                                 continue
@@ -150,9 +151,10 @@ actor LLMOpenAIRealtimeConnection {
                                 }
                             }
                         case "error":
-                            readyContinuation?.resume(with: .failure(RealtimeError.openAIError))
+                            let error = RealtimeError.openAIError(error: messageDict["error"] as? [String: any Sendable] ?? [:])
+                            readyContinuation?.resume(with: .failure(error))
                             readyContinuation = nil
-                            await eventStream.finish(throwing: RealtimeError.openAIError)
+                            await eventStream.finish(throwing: error)
                         default:
                             break
                         }
@@ -186,7 +188,6 @@ actor LLMOpenAIRealtimeConnection {
         
         let conversationItemJson = try JSONEncoder().encode(conversationItem)
         try await socket?.send(.string(String(decoding: conversationItemJson, as: UTF8.self)))
-        Self.logger.debug("Sent function call result: \(String(decoding: conversationItemJson, as: UTF8.self))")
         
         // Send a "response.create" event to reply something after the function call
         let responseData = RealtimeClientEventResponseCreate(_type: .response_period_create)
@@ -212,33 +213,39 @@ actor LLMOpenAIRealtimeConnection {
             )
         }
         
-        let turnDetection: TurnDetectionPayload? = platform.configuration.turnDetectionSettings.map {
-            TurnDetectionPayload(
-                _type: $0.type?.rawValue,
-                threshold: $0.threshold,
-                prefix_padding_ms: $0.prefixPaddingMs,
-                silence_duration_ms: $0.silenceDurationMs,
-                create_response: $0.createResponse
-            )
-        }
-        
-        print("--- Turn Detection ---")
-        print(turnDetection)
-        print(platform.configuration.turnDetectionSettings)
-
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
             session: .init(
                 input_audio_transcription: Components.Schemas.RealtimeSessionCreateRequest
                     .input_audio_transcriptionPayload(model: "gpt-4o-mini-transcribe"),
-                turn_detection: turnDetection,
                 tools: tools,
             )
         )
 
-        
-        let eventSessionUpdateJson = try JSONEncoder().encode(eventSessionUpdate)
-        try await socket?.send(.string(String(decoding: eventSessionUpdateJson, as: UTF8.self)))
-        Self.logger.debug("Sent session update:\n\(String(decoding: eventSessionUpdateJson, as: UTF8.self))")
+        let eventSessionUpdateData = try JSONEncoder().encode(eventSessionUpdate)
+        guard var eventSessionUpdateJson = try JSONSerialization.jsonObject(with: eventSessionUpdateData) as? [String: Any],
+              var session = eventSessionUpdateJson["session"] as? [String: Any] else {
+            throw RealtimeError.eventSessionUpdateSerialisationError
+        }
+
+        // Handle turn_detection directly on the JSON object, as the GeneratedOpenAIClient isn't up-to-date
+        // and JSONEncoder() is ommiting `nil` values instead of returning as "null"
+        if let turnDetectionSettings = platform.configuration.turnDetectionSettings {
+            let jSONEncoder = JSONEncoder()
+            let turnDetectionData = try jSONEncoder.encode(turnDetectionSettings)
+            let turnDetectionObj = try JSONSerialization.jsonObject(with: turnDetectionData, options: [])
+            session["turn_detection"] = turnDetectionObj
+            eventSessionUpdateJson["session"] = session
+        } else {
+            // turnDetectionSettings set to nil: Explicitely set turn_detection to "null"
+            session["turn_detection"] = NSNull()
+            eventSessionUpdateJson["session"] = session
+        }
+
+        let finalData = try JSONSerialization.data(withJSONObject: eventSessionUpdateJson)
+
+
+        try await socket?.send(.string(String(decoding: finalData, as: UTF8.self)))
+        Self.logger.debug("Sent session update:\n\(String(decoding: finalData, as: UTF8.self))")
     }
 }

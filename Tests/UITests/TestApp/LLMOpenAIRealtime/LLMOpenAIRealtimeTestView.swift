@@ -24,17 +24,31 @@ struct LLMOpenAIRealtimeTestView: View {
         VStack {
             LLMChatView(session: $llm)
 
-            Button {
-                Task {
-                    if audio.isRecording {
-                        audio.stop()
-                    } else {
-                        await audio.start()
+            HStack {
+                Button {
+                    Task {
+                        if audio.isRecording {
+                            audio.stop()
+                        } else {
+                            await audio.start()
+                        }
                     }
-                }
-            } label: {
-                Text(audio.isRecording ? "Stop Recording" : "Start Recording")
-            }.buttonStyle(.automatic)
+                } label: {
+                    Text(audio.isRecording ? "Stop Recording" : "Start Recording")
+                }.buttonStyle(.bordered)
+                
+                Button {
+                    Task {
+                        do {
+                            try await llm.endUserTurn()
+                        } catch {
+                            print("llm.endUserTurn() threw \(error)")
+                        }
+                    }
+                } label: {
+                    Text("End Turn (no VAD only)")
+                }.buttonStyle(.bordered)
+            }
         }.task {
             audio.setup(llm: llm)
         }

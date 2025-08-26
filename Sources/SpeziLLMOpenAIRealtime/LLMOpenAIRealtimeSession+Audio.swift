@@ -55,9 +55,19 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         try await apiConnection.socket?.send(.string(String(decoding: eventDataJson, as: UTF8.self)))
     }
     
-    /// Only used when having manual VAD: asks OpenAI to generate response event to obtain audio / transcripts
+    /// Only used when having no VAD: ask OpenAI to generate response event to obtain audio / transcripts
     public func endUserTurn() async throws {
-        // TODO: Handle manual mode
+        typealias InputAudioBufferCommitEvent = Components.Schemas.RealtimeClientEventInputAudioBufferCommit
+        typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
+
+        let eventInputAudioBufferCommit = InputAudioBufferCommitEvent(_type: .input_audio_buffer_period_commit)
+        let eventInputAudioBufferCommitJson = try JSONEncoder().encode(eventInputAudioBufferCommit)
+        try await apiConnection.socket?.send(.string(String(decoding: eventInputAudioBufferCommitJson, as: UTF8.self)))
+        
+        // Send a "response.create" event to reply something after the audio buffer has been commited
+        let responseData = RealtimeClientEventResponseCreate(_type: .response_period_create)
+        let responseDataJson = try JSONEncoder().encode(responseData)
+        try await apiConnection.socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
     }
     
     /// For very custom UIs: you can use `events()` which returns a stream with the actual OpenAI Realtime events
@@ -134,6 +144,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                 }
             } catch {
                 Self.logger.error("SpeziLLMOpenAIRealtime: Listening to LLM Event threw error: \(error)")
+                print(error)
             }
         }
     }

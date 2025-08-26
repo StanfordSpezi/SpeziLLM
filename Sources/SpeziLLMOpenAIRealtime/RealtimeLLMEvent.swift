@@ -64,4 +64,3 @@ public enum RealtimeLLMEvent: Sendable {
         let arguments: String
     }
 }
-
