@@ -20,6 +20,8 @@ public enum LLMState: CustomStringConvertible, Equatable, Sendable {
     case ready
     /// The Spezi ``LLMSession`` is currently in the process of generating an output.
     case generating
+    /// The Spezi ``LLMSession`` is currently executing function calls requested by the LLM.
+    case callingTools
     /// The Spezi ``LLMSession`` is in an error state as described by the associated value ``LLMError``.
     case error(error: any LLMError)
     
@@ -31,6 +33,7 @@ public enum LLMState: CustomStringConvertible, Equatable, Sendable {
         case .loading: String(localized: LocalizedStringResource("LLM_STATE_LOADING", bundle: .atURL(from: .module)))
         case .ready: String(localized: LocalizedStringResource("LLM_STATE_READY", bundle: .atURL(from: .module)))
         case .generating: String(localized: LocalizedStringResource("LLM_STATE_GENERATING", bundle: .atURL(from: .module)))
+        case .callingTools: String(localized: LocalizedStringResource("LLM_STATE_CALLING_TOOLS", bundle: .atURL(from: .module)))
         case .error: String(localized: LocalizedStringResource("LLM_STATE_ERROR", bundle: .atURL(from: .module)))
         }
     }
@@ -43,6 +46,7 @@ public enum LLMState: CustomStringConvertible, Equatable, Sendable {
         case (.loading, .loading): true
         case (.ready, .ready): true
         case (.generating, .generating): true
+        case (.callingTools, .callingTools): true
         case (.error, .error): true
         default: false
         }

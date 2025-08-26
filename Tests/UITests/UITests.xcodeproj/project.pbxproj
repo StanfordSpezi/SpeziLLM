@@ -52,6 +52,7 @@
 		A36A7B2C2E4A32CB00D94B2F /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */; };
 		A36A7B2E2E4A36AA00D94B2F /* PCMPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */; };
 		A37466182E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */; };
+		BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +109,7 @@
 		A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMPlayer.swift; sourceTree = "<group>"; };
 		A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIRealtimeTestView.swift; sourceTree = "<group>"; };
+		BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionRecursive.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 		9748DBEF2B5C813000B917EE /* Functions */ = {
 			isa = PBXGroup;
 			children = (
+				BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */,
 				9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */,
 				977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */,
 				9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */,
@@ -480,6 +483,7 @@
 				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
 				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
 				102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */,
+				BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

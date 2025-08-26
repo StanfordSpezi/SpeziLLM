@@ -24,9 +24,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     struct LLMFunctionTestDictionary: LLMFunction {
         static let name: String = "test_dictionary_function"
         static let description: String = "This is a test dictionary LLM function."
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Int Dictionary Parameter")
         var intDictionaryParameter: [String: Int]
         @Parameter(description: "Double Dictionary Parameter")
@@ -35,9 +33,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         var boolDictionaryParameter: [String: Bool]
         @Parameter(description: "String Dictionary Parameter")
         var stringDictionaryParameter: [String: String]
-        
-        // swiftlint:enable attributes
-        
+
         
         init() {}
         
