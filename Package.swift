@@ -38,8 +38,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.0"),
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0"),
-        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.0.4")
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0")
     ],
     targets: [
         .target(

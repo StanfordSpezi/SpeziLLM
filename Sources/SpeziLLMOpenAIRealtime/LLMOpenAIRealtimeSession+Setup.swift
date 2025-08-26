@@ -75,7 +75,7 @@ extension LLMOpenAIRealtimeSession {
         }
         
         do {
-            try await apiConnection.open(token: openAPIKey, model: "gpt-4o-mini-realtime-preview")
+            try await apiConnection.open(token: openAPIKey, model: platform.configuration.model.rawValue)
             
             try await apiConnection.startEventLoop(platform: platform, schema: schema)
         } catch LLMOpenAIRealtimeConnection.RealtimeError.openAIError(let openAIError) {

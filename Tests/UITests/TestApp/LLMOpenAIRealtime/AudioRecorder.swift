@@ -1,11 +1,11 @@
 import AVFoundation
 import SwiftUI
 
-// TODO: Fix AudioRecorder seems to be blocking main thread on .init()
+// This class still has quite some issues to be fixed
+// Such as performance on init, change of audio device etc...
+// Reference used for AudioRecorder: https://developer.apple.com/documentation/avfaudio/audio_engine/audio_units/using_voice_processing
 class AudioRecorder {
     private let audioEngine = AVAudioEngine()
-
-    var isRecording = false
 
     private(set) var audioBufferContinuation: AsyncStream<Data>.Continuation?
     private(set) var audioBufferStream: AsyncStream<Data>?
@@ -27,22 +27,6 @@ class AudioRecorder {
 
         setupAudioSession()
         setupAudioEngine()
-
-        
-//        self.audioConfigChangeObserver = NotificationCenter.default.addObserver(
-//            forName: .AVAudioEngineConfigurationChange, object: audioEngine, queue: .main
-//        ) { [weak self] _ in
-////            Task { @MainActor in
-//                print("Audio change!")
-////
-//                guard let inputFormat = self?.audioEngine.inputNode.outputFormat(forBus: 0),
-//                      let targetFormat = self?.targetFormat else {
-//                    return
-//                }
-//                
-//                self?.converter = AVAudioConverter(from: inputFormat, to: targetFormat)
-////            }
-//        }
         
         audioEngine.prepare()
     }
@@ -53,8 +37,6 @@ class AudioRecorder {
             return
         }
 
-        isRecording = true
-
         do {
             try audioEngine.start()
         } catch {
@@ -63,8 +45,12 @@ class AudioRecorder {
     }
 
     func stop() {
-        isRecording = false
         audioEngine.stop()
+    }
+    
+    func cancel() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
     }
 
     private func setupAudioSession(sampleRate: Double = 24000) {
@@ -151,7 +137,6 @@ class AudioRecorder {
     }
     
     private func monoPcmToInt16Data(from buffer: AVAudioPCMBuffer) -> Data? {
-        // Expecting interleaved Int16
         guard buffer.format.commonFormat == .pcmFormatInt16,
               buffer.format.channelCount == 1,
               let ch0 = buffer.int16ChannelData?.pointee else {

@@ -36,20 +36,8 @@ struct LLMOpenAIRealtimeTestView: View {
                 } label: {
                     Text(audio.isRecording ? "Stop Recording" : "Start Recording")
                 }.buttonStyle(.bordered)
-                
-                Button {
-                    Task {
-                        do {
-                            try await llm.endUserTurn()
-                        } catch {
-                            print("llm.endUserTurn() threw \(error)")
-                        }
-                    }
-                } label: {
-                    Text("End Turn (no VAD only)")
-                }.buttonStyle(.bordered)
             }
-        }.task {
+        }.onAppear {
             audio.setup(llm: llm)
         }
     }

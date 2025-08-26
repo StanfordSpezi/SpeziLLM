@@ -12,9 +12,9 @@ import SwiftUI
 @Observable
 @MainActor
 final class AudioViewModel {
-    private let replayUserAudio: Bool = true
+    private let replayUserAudio: Bool = false
     
-    private let streamingService = AudioRecorder()
+    private var streamingService: AudioRecorder?
     // Used to play pcm from user's microphone (playback & debugging)
     private let pcmUserAudioPlayer = PCMPlayer()
     // Used to play pcm from OpenAI's result
@@ -28,13 +28,16 @@ final class AudioViewModel {
     var isRecording: Bool = false
     
     func setup(llm: LLMOpenAIRealtimeSession) {
-        micTask = listenToMicrophone(with: llm)
-        llmTask = playAssistantResponses(with: llm)
+        Task {
+            self.streamingService = AudioRecorder()
+            micTask = listenToMicrophone(with: llm)
+            llmTask = playAssistantResponses(with: llm)
+        }
     }
 
     func listenToMicrophone(with llm: LLMOpenAIRealtimeSession) -> Task<Void, any Error> {
         Task { [weak self] in
-            guard let audioBufferStream = self?.streamingService.audioBufferStream else {
+            guard let audioBufferStream = self?.streamingService?.audioBufferStream else {
                 print("No audiobuffer stream..;")
                 return
             }
@@ -62,12 +65,12 @@ final class AudioViewModel {
     }
 
     func start() async {
-        streamingService.start()
+        streamingService?.start()
         isRecording = true
     }
 
     func stop() {
-        streamingService.stop()
+        streamingService?.stop()
         isRecording = false
     }
     
@@ -76,6 +79,8 @@ final class AudioViewModel {
         micTask = nil
         llmTask?.cancel()
         llmTask = nil
+        streamingService?.cancel()
+        streamingService = nil
     }
     
     deinit {
