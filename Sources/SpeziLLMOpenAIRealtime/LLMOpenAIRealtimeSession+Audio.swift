@@ -154,7 +154,6 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                 }
             } catch {
                 Self.logger.error("SpeziLLMOpenAIRealtime: Listening to LLM Event threw error: \(error)")
-                print(error)
             }
         }
     }

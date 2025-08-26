@@ -100,9 +100,7 @@ class PCMPlayer {
         }
 
         // Schedule the (converted) buffer and play.
-        playerNode.scheduleBuffer(bufferToPlay) { // at: nil, options: .interrupts
-//            print("Finished playing PCM data")
-        }
+        playerNode.scheduleBuffer(bufferToPlay)
         playerNode.play()
     }
 }

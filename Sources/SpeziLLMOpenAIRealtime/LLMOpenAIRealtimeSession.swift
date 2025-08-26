@@ -108,7 +108,6 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     }
     
     public func cancel() {
-        print("LLMOpenAIRealtimeSession: Cancelling!")
         Task { [apiConnection] in await apiConnection.cancel() }
     }
 
