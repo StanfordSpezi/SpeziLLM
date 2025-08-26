@@ -8,6 +8,7 @@
 import Foundation
 import GeneratedOpenAIClient
 import os
+import SpeziLLM
 
 actor LLMOpenAIRealtimeConnection {
     package enum RealtimeError: Error {
@@ -26,7 +27,7 @@ actor LLMOpenAIRealtimeConnection {
     private lazy var urlSession = URLSession(configuration: .default)
 
     // The event stream which gets sent in session.events()
-    private let eventStream = EventBroadcaster<RealtimeLLMEvent>()
+    private let eventStream = EventBroadcaster<LLMRealtimeAudioEvent>()
 
     // Handling of the setup: only finish whenever the connection to API has been succesful
     private var readyContinuation: CheckedContinuation<Void, any Error>?
@@ -38,7 +39,7 @@ actor LLMOpenAIRealtimeConnection {
         socket = nil
     }
     
-    func events() async -> AsyncThrowingStream<RealtimeLLMEvent, any Error> {
+    func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         // Creates an AsyncThrowingStream to listen to (so that there can be multiple listeners)
         await eventStream.stream()
     }
@@ -111,38 +112,38 @@ actor LLMOpenAIRealtimeConnection {
                             guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
                                 continue
                             }
-                            let llmEvent = RealtimeLLMEvent.audioDelta(deltaPcmData)
+                            let llmEvent = LLMRealtimeAudioEvent.audioDelta(deltaPcmData)
                             await eventStream.yield(llmEvent)
                         case "response.audio.done":
                             guard let deltaPcmData = Data(base64Encoded: messageDict["delta"] as? String ?? "") else {
                                 continue
                             }
-                            let llmEvent = RealtimeLLMEvent.audioDelta(deltaPcmData)
+                            let llmEvent = LLMRealtimeAudioEvent.audioDelta(deltaPcmData)
                             await eventStream.yield(llmEvent)
                         case "response.audio_transcript.delta":
                             let transcript = messageDict["delta"] as? String ?? ""
-                            let llmEvent = RealtimeLLMEvent.assistantTranscriptDelta(transcript)
+                            let llmEvent = LLMRealtimeAudioEvent.assistantTranscriptDelta(transcript)
                             await eventStream.yield(llmEvent)
                         case "response.audio_transcript.done":
                             let transcript = messageDict["transcript"] as? String ?? ""
-                            let llmEvent = RealtimeLLMEvent.assistantTranscriptDone(transcript)
+                            let llmEvent = LLMRealtimeAudioEvent.assistantTranscriptDone(transcript)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.delta":
-                            let event = try JSONDecoder().decode(RealtimeLLMEvent.TranscriptDelta.self, from: messageJsonData)
-                            let llmEvent = RealtimeLLMEvent.userTranscriptDelta(event)
+                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.TranscriptDelta.self, from: messageJsonData)
+                            let llmEvent = LLMRealtimeAudioEvent.userTranscriptDelta(event)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.completed":
-                            let event = try JSONDecoder().decode(RealtimeLLMEvent.TranscriptDone.self, from: messageJsonData)
-                            let llmEvent = RealtimeLLMEvent.userTranscriptDone(event)
+                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.TranscriptDone.self, from: messageJsonData)
+                            let llmEvent = LLMRealtimeAudioEvent.userTranscriptDone(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_started":
-                            let event = try JSONDecoder().decode(RealtimeLLMEvent.SpeechStarted.self, from: messageJsonData)
-                            let llmEvent = RealtimeLLMEvent.speechStarted(event)
+                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.SpeechStarted.self, from: messageJsonData)
+                            let llmEvent = LLMRealtimeAudioEvent.speechStarted(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_stopped":
-                            await eventStream.yield(RealtimeLLMEvent.speechStopped)
+                            await eventStream.yield(LLMRealtimeAudioEvent.speechStopped)
                         case "response.function_call_arguments.done":
-                            let event = try JSONDecoder().decode(RealtimeLLMEvent.FunctionCall.self, from: messageJsonData)
+                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.FunctionCall.self, from: messageJsonData)
                             Task {
                                 do {
                                     try await handleFunctionCall(schema: schema, event: event)
@@ -168,7 +169,7 @@ actor LLMOpenAIRealtimeConnection {
         }
     }
     
-    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: RealtimeLLMEvent.FunctionCall) async throws {
+    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: LLMRealtimeAudioEvent.FunctionCall) async throws {
         typealias ConversationItemCreateEvent = Components.Schemas.RealtimeClientEventConversationItemCreate
         typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
 

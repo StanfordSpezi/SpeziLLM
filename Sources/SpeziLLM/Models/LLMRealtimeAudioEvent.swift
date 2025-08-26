@@ -7,7 +7,7 @@
 //
 import Foundation
 
-public enum RealtimeLLMEvent: Sendable {
+public enum LLMRealtimeAudioEvent: Sendable {
     case audioDelta(Data)
     case audioDone(Data)
     case userTranscriptDelta(TranscriptDelta)
@@ -24,8 +24,8 @@ public enum RealtimeLLMEvent: Sendable {
             case itemId = "item_id"
         }
 
-        let transcript: String
-        let itemId: String
+        public let transcript: String
+        public let itemId: String
         // Non-exhaustive yet...
     }
     
@@ -35,8 +35,8 @@ public enum RealtimeLLMEvent: Sendable {
             case itemId = "item_id"
         }
 
-        let delta: String
-        let itemId: String
+        public let delta: String
+        public let itemId: String
         // Non-exhaustive yet...
     }
     
@@ -46,8 +46,8 @@ public enum RealtimeLLMEvent: Sendable {
             case audioStartMs = "audio_start_ms"
         }
 
-        let itemId: String
-        let audioStartMs: Int
+        public let itemId: String
+        public let audioStartMs: Int
     }
     
     public struct FunctionCall: Sendable, Codable {
@@ -58,9 +58,9 @@ public enum RealtimeLLMEvent: Sendable {
             case arguments
         }
         
-        let itemId: String
-        let callId: String
-        let name: String
-        let arguments: String
+        public let itemId: String
+        public let callId: String
+        public let name: String
+        public let arguments: String
     }
 }

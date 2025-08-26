@@ -90,6 +90,11 @@ public struct LLMChatView<Session: LLMSession>: View {
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()
+                    
+                    if llm is any AudioCapableLLMSession {
+                        // Return as AudioCapableLLMSessions append the result of `generate()` automatically to the `LLMContext`
+                        return
+                    }
 
                     for try await token in stream {
                         self.llm.context.append(assistantOutput: token)

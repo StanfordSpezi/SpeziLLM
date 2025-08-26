@@ -50,25 +50,61 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     /// Note that if you were speaking into the microphone until that point and sending that with appendUserAudio(), this also gets included when calling generate() here
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        print("Generate() got called ")
-        let currentState = await state
-        if currentState == .ready || currentState == .loading {
-            let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-            continuation.finish()
-            return stream
+        typealias ResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
+        typealias ConversationItemCreate = Components.Schemas.RealtimeClientEventConversationItemCreate
+
+        guard try await ensureSetup() else {
+            return AsyncThrowingStream { continuation in
+                continuation.finish()
+            }
         }
+        
+        // Get the relevant part of the context
+        let lastContext = await self.context.last { $0.role == .user && $0.complete }
+        
+        // Send the conversation.item.create event with the message
+        let eventData = ConversationItemCreate(
+            _type: .conversation_period_item_period_create,
+            item: .init(_type: .message, role: .user, content: [.init(_type: .input_text, text: lastContext?.content ?? "")])
+        )
+        
+        let encoder = JSONEncoder()
+        let eventDataJson = try encoder.encode(eventData)
+        try await apiConnection.socket?.send(.string(String(decoding: eventDataJson, as: UTF8.self)))
 
-        // 1. Send the relevant context as text to OpenAI
-        // 2. Probably here we generate and return a new stream, which is active until the next response.done. The stream returns content += string deltas
-        //    like LLMOpenAISession, so that it can be used inside ChatView.
-        //
-        // Listening to `self.event()` would probably be smart here, to avoid re-inventing the wheel.
-        _ = try await ensureSetup()
+        // Trigger a response
+        let responseData = ResponseCreate(_type: .response_period_create)
+        let responseDataJson = try JSONEncoder().encode(responseData)
+        try await apiConnection.socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
 
-        // TODO: Handle text messages (appends to context) correctly by sending the transcript of the response back here in generate()
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        continuation.finish()
-        return stream
+        
+        // Stream the text response back to the `generate()` caller.
+        // Is done by filtering assistant transcript events in `events()`.
+        // Assumes that all events up to `.assistantTranscriptDone`
+        // contain content belonging to the current `generate()` call.
+        return AsyncThrowingStream { [apiConnection] continuation in
+            let task = Task {
+                do {
+                    for try await event in await apiConnection.events() {
+                        if case .assistantTranscriptDone = event {
+                            // Finish as soon as the next transcript done event occurs
+                            continuation.finish()
+                        }
+
+                        if case .assistantTranscriptDelta(let delta) = event {
+                            continuation.yield(delta)
+                        }
+                    }
+                    continuation.finish() // in case `events()` stream finished
+                } catch {
+                    continuation.finish(throwing: error) // propagate upstream error
+                }
+            }
+            
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
     }
     
     public func cancel() {

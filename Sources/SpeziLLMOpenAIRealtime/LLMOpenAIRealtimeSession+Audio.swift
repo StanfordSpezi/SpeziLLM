@@ -8,6 +8,7 @@
 
 import Foundation
 import GeneratedOpenAIClient
+import SpeziLLM
 
 extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the OpenAI Realtime API.
@@ -19,9 +20,13 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
     /// - Throws: Errors related to the underlying Realtime API connection.
     public func listen() async -> AsyncThrowingStream<Data, any Error> {
-        _ = try? await ensureSetup()
+        guard let wasSetupSuccessful = try? await ensureSetup(), wasSetupSuccessful else {
+            return AsyncThrowingStream { continuation in
+                continuation.finish()
+            }
+        }
 
-        // Filters the events from `apiConnection.events()` to only keep the `RealtimeLLMEvent.audioDelta(delta)` ones.
+        // Filters the events from `apiConnection.events()` to only keep the `LLMRealtimeAudioEvent.audioDelta(delta)` ones.
         // Then emits the `delta: Data` value onto the stream.
         return AsyncThrowingStream { [apiConnection] continuation in
             let task = Task {
@@ -71,7 +76,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     }
     
     /// For very custom UIs: you can use `events()` which returns a stream with the actual OpenAI Realtime events
-    public func events() async -> AsyncThrowingStream<RealtimeLLMEvent, any Error> {
+    public func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         await apiConnection.events()
     }
     
