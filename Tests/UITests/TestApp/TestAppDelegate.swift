@@ -68,7 +68,9 @@ class TestAppDelegate: SpeziAppDelegate {
                 )
                 LLMOpenAIPlatform(configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)))
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
-                LLMOpenAIRealtimePlatform(configuration: .init(turnDetectionSettings: .server()))
+                LLMOpenAIRealtimePlatform(
+                    configuration: .init(turnDetectionSettings: .server())
+                )
             }
         }
     }

@@ -125,6 +125,11 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                         }
 
                     case .speechStarted(let content):
+                        guard self?.platform.configuration.transcriptionSettings != nil else {
+                            // No transcription is happening if no transcription settings are specified
+                            break
+                        }
+
                         // When speech starts, add a context message at the correct spot (to retain order)
                         // This message then gets completed using the .userTranscriptDelta event
                         let contentUUID = UUID.deterministic(from: content.itemId)

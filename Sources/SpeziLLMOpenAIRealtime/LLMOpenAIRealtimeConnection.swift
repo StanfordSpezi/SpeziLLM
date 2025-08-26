@@ -10,7 +10,7 @@ import GeneratedOpenAIClient
 import os
 
 actor LLMOpenAIRealtimeConnection {
-    enum RealtimeError: Error {
+    package enum RealtimeError: Error {
         case malformedUrlError
         case socketNotFoundError
         case openAIError(error: [String: any Sendable])
@@ -199,6 +199,7 @@ actor LLMOpenAIRealtimeConnection {
         typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
         typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
         typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
+        typealias RealtimeSessionCreateRequest = Components.Schemas.RealtimeSessionCreateRequest
 
         let tools: [ToolsPayload] = try schema.functions.values.compactMap { function in
             let functionType = Swift.type(of: function)
@@ -213,11 +214,17 @@ actor LLMOpenAIRealtimeConnection {
             )
         }
         
+        let transcriptionSettings = platform.configuration.transcriptionSettings
+        
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
             session: .init(
-                input_audio_transcription: Components.Schemas.RealtimeSessionCreateRequest
-                    .input_audio_transcriptionPayload(model: "gpt-4o-mini-transcribe"),
+                input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
+                    .input_audio_transcriptionPayload(
+                        model: transcriptionSettings?.model?.rawValue,
+                        language: transcriptionSettings?.language,
+                        prompt: transcriptionSettings?.prompt,
+                    ),
                 tools: tools,
             )
         )
@@ -237,7 +244,7 @@ actor LLMOpenAIRealtimeConnection {
             session["turn_detection"] = turnDetectionObj
             eventSessionUpdateJson["session"] = session
         } else {
-            // turnDetectionSettings set to nil: Explicitely set turn_detection to "null"
+            // turnDetectionSettings set to nil: Explicitely set turn_detection to "null" to disable turn detection entirely
             session["turn_detection"] = NSNull()
             eventSessionUpdateJson["session"] = session
         }

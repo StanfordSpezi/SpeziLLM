@@ -16,6 +16,8 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
     let apiToken: String?
     /// Contains the LLMRealtimeTurnDetectionSettings. If set to nil, turn detection is disabled and requires explicit generation calls.
     let turnDetectionSettings: LLMRealtimeTurnDetectionSettings?
+    /// Transcription settings to transcribe user audio input into text. If set, these automatically get appended to the LLMSession's `LLMContext`
+    let transcriptionSettings: LLMRealtimeTranscriptionSettings?
     /// Indicates the maximum number of concurrent streams to the OpenAI API.
     public let concurrentStreams: Int
     /// The task priority of the initiated LLM inference tasks.
@@ -24,11 +26,13 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
     public init(
         apiToken: String? = nil,
         turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .server(),
+        transcriptionSettings: LLMRealtimeTranscriptionSettings? = .init(),
         concurrentStreams: Int = 10,
-        taskPriority: TaskPriority = .userInitiated
+        taskPriority: TaskPriority = .userInitiated,
     ) {
         self.apiToken = apiToken
         self.turnDetectionSettings = turnDetectionSettings
+        self.transcriptionSettings = transcriptionSettings
         self.concurrentStreams = concurrentStreams
         self.taskPriority = taskPriority
     }
