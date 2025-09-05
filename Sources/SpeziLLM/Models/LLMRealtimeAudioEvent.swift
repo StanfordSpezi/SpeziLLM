@@ -5,6 +5,7 @@
 //
 // SPDX-License-Identifier: MIT
 //
+
 import Foundation
 
 public enum LLMRealtimeAudioEvent: Sendable {
