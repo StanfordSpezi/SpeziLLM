@@ -14,6 +14,7 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
     /// estimate whether the user has finished speaking, then dynamically sets a timeout based on this probability
     case semantic(SemanticVAD = .init())
 
+
     public struct ServerVAD: Encodable, Sendable {
         /// Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5.
         ///

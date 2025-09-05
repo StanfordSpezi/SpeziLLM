@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 public enum LLMRealtimeAudioEvent: Sendable {
     case audioDelta(Data)
     case audioDone(Data)
@@ -19,6 +20,7 @@ public enum LLMRealtimeAudioEvent: Sendable {
     case speechStarted(SpeechStarted)
     case speechStopped
     
+
     public struct TranscriptDone: Sendable, Codable {
         enum CodingKeys: String, CodingKey {
             case transcript
@@ -51,17 +53,4 @@ public enum LLMRealtimeAudioEvent: Sendable {
         public let audioStartMs: Int
     }
     
-    public struct FunctionCall: Sendable, Codable {
-        enum CodingKeys: String, CodingKey {
-            case itemId = "item_id"
-            case callId = "call_id"
-            case name
-            case arguments
-        }
-        
-        public let itemId: String
-        public let callId: String
-        public let name: String
-        public let arguments: String
-    }
 }
