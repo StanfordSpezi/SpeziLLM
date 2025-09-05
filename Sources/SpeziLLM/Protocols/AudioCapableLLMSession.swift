@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 public protocol AudioCapableLLMSession: LLMSession {
     func listen() async -> AsyncThrowingStream<Data, any Error>
     
