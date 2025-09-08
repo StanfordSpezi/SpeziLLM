@@ -19,17 +19,17 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         /// Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5.
         ///
         /// A higher threshold will require louder audio to activate the model, and thus might perform better in noisy environments.
-        var threshold: Double
+        let threshold: Double
         /// Amount of audio to include before the VAD detected speech (in milliseconds). Defaults to 300ms.
-        var prefixPaddingMs: Int = 300
+        let prefixPaddingMs: Int
         /// Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms.
         ///
         /// With shorter values the model will respond more quickly, but may jump in on short pauses from the user.
-        var silenceDurationMs: Int
+        let silenceDurationMs: Int
         /// Whether or not to automatically generate a response when a VAD stop event occurs.
-        var createResponse: Bool
+        let createResponse: Bool
         /// Allow new speech to interrupt and stop the model’s current response (conversation mode only).
-        var interruptResponse: Bool
+        let interruptResponse: Bool
         
         public init(
             threshold: Double = 0.5,
@@ -50,6 +50,7 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         public enum Eagerness: String, Encodable, Sendable {
             /// `low` will let the user take their time to speak.
             case low
+            /// `medium` represents the default behavior, sitting between `low` and `high`.
             case medium
             /// `high` will chunk the audio as soon as possible.
             case high
@@ -58,11 +59,11 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         }
         
         /// Controls how eager the model is to interrupt the user
-        var eagerness: Eagerness?
+        let eagerness: Eagerness?
         /// Whether or not to automatically generate a response when a VAD stop event occurs (conversation mode only).
-        var createResponse: Bool
+        let createResponse: Bool
         /// Allow new speech to interrupt and stop the model’s current response (conversation mode only).
-        var interruptResponse: Bool
+        let interruptResponse: Bool
         
         public init(eagerness: Eagerness? = .auto, createResponse: Bool = true, interruptResponse: Bool = true) {
             self.eagerness = eagerness

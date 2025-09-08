@@ -15,7 +15,7 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIRealtimePlatform
     
     
-    /// Default values of ``LLMOpenAISchema``.
+    /// Default values of ``LLMOpenAIRealtimeSchema``.
     public enum Defaults {
         /// Empty default of passed function calls (`_LLMFunctionCollection`).
         /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.

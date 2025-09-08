@@ -20,6 +20,13 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
 
         // swiftlint:enable identifier_name
     }
+    
+    /// Defaults of possible LLMs Realtime parameter settings.
+    public enum Defaults {
+        public static let turnDetectionSettings: LLMRealtimeTurnDetectionSettings = .semantic()
+        public static let transcriptionSettings: LLMRealtimeTranscriptionSettings = .init()
+    }
+
 
     /// The to-be-used OpenAI model.
     let modelType: String
@@ -31,8 +38,8 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
 
     public init(
         modelType: ModelType,
-        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .semantic(),
-        transcriptionSettings: LLMRealtimeTranscriptionSettings? = .init(),
+        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = Defaults.turnDetectionSettings,
+        transcriptionSettings: LLMRealtimeTranscriptionSettings? = Defaults.transcriptionSettings,
     ) {
         self.modelType = modelType.rawValue
         self.turnDetectionSettings = turnDetectionSettings
