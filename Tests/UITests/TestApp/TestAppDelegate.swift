@@ -34,7 +34,7 @@ class TestAppDelegate: SpeziAppDelegate {
     }
     
     override var configuration: Configuration {
-        Configuration { // swiftlint:disable:this closure_body_length
+        Configuration {
             // As SpeziAccount, SpeziFirebase and the firebase-ios-sdk currently don't support visionOS and macOS, perform fog node token authentication only on iOS
             #if os(iOS)
             AccountConfiguration(
@@ -71,7 +71,6 @@ class TestAppDelegate: SpeziAppDelegate {
                 LLMOpenAIRealtimePlatform(
                     configuration: .init(
                         authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername),
-                        model: .gpt4o_realtime_mini
                     )
                 )
             }

@@ -215,7 +215,7 @@ actor LLMOpenAIRealtimeConnection {
             )
         }
         
-        let transcriptionSettings = platform.configuration.transcriptionSettings
+        let transcriptionSettings = schema.parameters.transcriptionSettings
         
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
@@ -238,7 +238,7 @@ actor LLMOpenAIRealtimeConnection {
 
         // Handle turn_detection directly on the JSON object, as the GeneratedOpenAIClient isn't up-to-date
         // and JSONEncoder() is ommiting `nil` values instead of returning as "null"
-        if let turnDetectionSettings = platform.configuration.turnDetectionSettings {
+        if let turnDetectionSettings = schema.parameters.turnDetectionSettings {
             let jSONEncoder = JSONEncoder()
             let turnDetectionData = try jSONEncoder.encode(turnDetectionSettings)
             let turnDetectionObj = try JSONSerialization.jsonObject(with: turnDetectionData, options: [])

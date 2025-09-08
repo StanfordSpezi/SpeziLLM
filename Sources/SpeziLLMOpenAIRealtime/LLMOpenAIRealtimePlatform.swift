@@ -12,6 +12,7 @@ import Spezi
 import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
+import SpeziLLMOpenAI
 
 
 public final class LLMOpenAIRealtimePlatform: LLMPlatform {
@@ -19,7 +20,7 @@ public final class LLMOpenAIRealtimePlatform: LLMPlatform {
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
     
     /// Configuration of the platform.
-    public let configuration: LLMOpenAIRealtimePlatformConfiguration
+    public let configuration: LLMOpenAIPlatformConfiguration
     /// Queue that processed the LLM inference tasks in a structured concurrency manner.
     let queue: LLMInferenceQueue<String>
 
@@ -28,8 +29,11 @@ public final class LLMOpenAIRealtimePlatform: LLMPlatform {
         self.queue.platformState
     }
 
-
-    public init(configuration: LLMOpenAIRealtimePlatformConfiguration) {
+    /// Creates an instance of the ``LLMOpenAIRealtimePlatform``.
+    ///
+    /// - Parameters:
+    ///     - configuration: The configuration of the platform.
+    public init(configuration: LLMOpenAIPlatformConfiguration) {
         self.configuration = configuration
         self.queue = LLMInferenceQueue(
             maxConcurrentTasks: configuration.concurrentStreams,

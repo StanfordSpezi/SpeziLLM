@@ -9,9 +9,8 @@
 import Foundation
 import GeneratedOpenAIClient
 
-
-/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
-public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
+/// Represents the parameters of OpenAIs Realtime LLMs.
+public struct LLMOpenAIRealtimeParameters: Sendable {
     public enum ModelType: String, Sendable {
         // swiftlint:disable identifier_name
 
@@ -22,31 +21,21 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
         // swiftlint:enable identifier_name
     }
 
-    /// The OpenAI API token on a global basis.
-    public let authToken: RemoteLLMInferenceAuthToken
+    /// The to-be-used OpenAI model.
+    let modelType: String
+    
     /// Contains the LLMRealtimeTurnDetectionSettings. If set to nil, turn detection is disabled and requires explicit generation calls.
     let turnDetectionSettings: LLMRealtimeTurnDetectionSettings?
     /// Transcription settings to transcribe user audio input into text. If set, these automatically get appended to the LLMSession's `LLMContext`
     let transcriptionSettings: LLMRealtimeTranscriptionSettings?
-    let model: ModelType
-    /// Indicates the maximum number of concurrent streams to the OpenAI API.
-    public let concurrentStreams: Int
-    /// The task priority of the initiated LLM inference tasks.
-    public let taskPriority: TaskPriority
 
     public init(
-        authToken: RemoteLLMInferenceAuthToken,
+        modelType: ModelType,
         turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .semantic(),
         transcriptionSettings: LLMRealtimeTranscriptionSettings? = .init(),
-        model: ModelType = .gpt4o_realtime_mini,
-        concurrentStreams: Int = 10,
-        taskPriority: TaskPriority = .userInitiated,
     ) {
-        self.authToken = authToken
+        self.modelType = modelType.rawValue
         self.turnDetectionSettings = turnDetectionSettings
         self.transcriptionSettings = transcriptionSettings
-        self.model = model
-        self.concurrentStreams = concurrentStreams
-        self.taskPriority = taskPriority
     }
 }

@@ -78,7 +78,7 @@ extension LLMOpenAIRealtimeSession {
         }
 
         do {
-            try await apiConnection.open(token: authToken, model: platform.configuration.model.rawValue)
+            try await apiConnection.open(token: authToken, model: schema.parameters.modelType)
             
             try await apiConnection.startEventLoop(platform: platform, schema: schema)
         } catch LLMOpenAIRealtimeConnection.RealtimeError.openAIError(let openAIError) {

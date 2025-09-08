@@ -22,14 +22,16 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
         nonisolated(unsafe) public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
     }
 
-    
+    let parameters: LLMOpenAIRealtimeParameters
     let functions: [String: any LLMFunction]
     public var injectIntoContext: Bool
     
     public init(
+        parameters: LLMOpenAIRealtimeParameters,
         injectIntoContext: Bool = false,
         @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
+        self.parameters = parameters
         self.injectIntoContext = injectIntoContext
         self.functions = functionsCollection().functions
     }

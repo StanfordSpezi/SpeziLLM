@@ -12,7 +12,7 @@ import SpeziLLMOpenAIRealtime
 import SwiftUI
 
 struct LLMOpenAIRealtimeTestView: View {
-    static let schema = LLMOpenAIRealtimeSchema {
+    static let schema = LLMOpenAIRealtimeSchema(parameters: .init(modelType: .gpt4o_realtime)) {
         LLMOpenAIFunctionWeather()
     }
     

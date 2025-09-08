@@ -130,7 +130,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                         }
 
                     case .speechStarted(let content):
-                        guard self?.platform.configuration.transcriptionSettings != nil else {
+                        guard self?.schema.parameters.transcriptionSettings != nil else {
                             // No transcription is happening if no transcription settings are specified
                             break
                         }
