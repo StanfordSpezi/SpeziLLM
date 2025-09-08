@@ -17,12 +17,13 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
 
         case gpt4o_realtime = "gpt-4o-realtime-preview"
         case gpt4o_realtime_mini = "gpt-4o-mini-realtime-preview"
+        case gpt_realtime = "gpt-realtime"
 
         // swiftlint:enable identifier_name
     }
 
     /// The OpenAI API token on a global basis.
-    let apiToken: String?
+    public let authToken: RemoteLLMInferenceAuthToken
     /// Contains the LLMRealtimeTurnDetectionSettings. If set to nil, turn detection is disabled and requires explicit generation calls.
     let turnDetectionSettings: LLMRealtimeTurnDetectionSettings?
     /// Transcription settings to transcribe user audio input into text. If set, these automatically get appended to the LLMSession's `LLMContext`
@@ -34,14 +35,14 @@ public struct LLMOpenAIRealtimePlatformConfiguration: Sendable {
     public let taskPriority: TaskPriority
 
     public init(
-        apiToken: String? = nil,
-        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .server(),
+        authToken: RemoteLLMInferenceAuthToken,
+        turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = .semantic(),
         transcriptionSettings: LLMRealtimeTranscriptionSettings? = .init(),
         model: ModelType = .gpt4o_realtime_mini,
         concurrentStreams: Int = 10,
         taskPriority: TaskPriority = .userInitiated,
     ) {
-        self.apiToken = apiToken
+        self.authToken = authToken
         self.turnDetectionSettings = turnDetectionSettings
         self.transcriptionSettings = transcriptionSettings
         self.model = model

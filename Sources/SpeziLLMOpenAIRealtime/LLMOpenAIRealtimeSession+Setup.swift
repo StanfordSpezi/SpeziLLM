@@ -64,18 +64,21 @@ extension LLMOpenAIRealtimeSession {
     ///
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initializeClient() async -> Bool {
-        let credentials = try? keychainStorage.retrieveCredentials(
-            withUsername: LLMOpenAIConstants.credentialsUsername,
-            for: .openAIKey
-        )
-        
-        guard let openAPIKey = credentials?.password ?? platform.configuration.apiToken else {
-            Self.logger.warning("Missing OpenAI key credentials or apiToken variable")
+        let authToken: String?
+        do {
+            authToken = try await self.platform.configuration.authToken.getToken(keychainStorage: keychainStorage)
+        } catch {
+            Self.logger.error("LLMOpenAIRealtimeSession: Failed to retrieve auth token: \(error.localizedDescription)")
             return false
         }
         
+        guard let authToken = authToken else {
+            Self.logger.error("LLMOpenAIRealtimeSession: Auth Token is nil")
+            return false
+        }
+
         do {
-            try await apiConnection.open(token: openAPIKey, model: platform.configuration.model.rawValue)
+            try await apiConnection.open(token: authToken, model: platform.configuration.model.rawValue)
             
             try await apiConnection.startEventLoop(platform: platform, schema: schema)
         } catch LLMOpenAIRealtimeConnection.RealtimeError.openAIError(let openAIError) {
