@@ -17,7 +17,7 @@ import SpeziLLMOpenAI
 
 public final class LLMOpenAIRealtimePlatform: LLMPlatform {
     /// A `Logger` that logs important information from the ``LLMOpenAIPlatform``.
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
     
     /// Configuration of the platform.
     public let configuration: LLMOpenAIPlatformConfiguration

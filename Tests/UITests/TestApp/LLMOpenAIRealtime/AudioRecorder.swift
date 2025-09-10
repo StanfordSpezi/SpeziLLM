@@ -9,6 +9,7 @@
 import AVFoundation
 import SwiftUI
 
+
 // This class still has quite some issues to be fixed
 // Such as performance on init, change of audio device etc...
 // Reference used for AudioRecorder: https://developer.apple.com/documentation/avfaudio/audio_engine/audio_units/using_voice_processing

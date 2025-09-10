@@ -9,6 +9,7 @@
 import CryptoKit
 import Foundation
 
+
 extension UUID {
     // Hack to avoid changing the LLMContext's message's IDs from UUIDs to something else
     /// Generates a deterministic UUID from a string using SHA256

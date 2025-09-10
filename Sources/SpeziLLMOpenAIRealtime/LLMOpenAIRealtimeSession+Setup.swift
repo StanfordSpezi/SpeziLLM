@@ -14,6 +14,7 @@ import SpeziKeychainStorage
 import SpeziLLM
 import SpeziLLMOpenAI
 
+
 extension LLMOpenAIRealtimeSession {
     /// Set up the OpenAI Realtime API client.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
@@ -37,27 +38,26 @@ extension LLMOpenAIRealtimeSession {
     }
 
     @discardableResult
+    @MainActor
     func ensureSetup() async throws -> Bool {
-        let currentState = await self.state
-        
-        guard currentState != .ready && currentState != .generating else {
+        guard self.state != .ready && self.state != .generating else {
             return true
         }
 
-        try await setupSemaphore.waitCheckingCancellation()
+        do {
+            try await setupSemaphore.waitCheckingCancellation()
+        } catch {
+            // Cancellation Error
+            return false
+        }
+        defer { setupSemaphore.signal() }
 
-        let stateAfterSemaphore = await self.state
-        if stateAfterSemaphore == .ready || stateAfterSemaphore == .generating {
+        if self.state == .ready || self.state == .generating {
             setupSemaphore.signal()
             return true
         }
         
-        let setupResult = await self.setup()
-        setupSemaphore.signal()
-        
-        print("ensureSetup: Done: setup was \(setupResult ? "successful" : "unsuccessful")!")
-
-        return setupResult
+        return await self.setup()
     }
     
     /// Initialize the OpenAI Realtime API client.
@@ -78,9 +78,7 @@ extension LLMOpenAIRealtimeSession {
         }
 
         do {
-            try await apiConnection.open(token: authToken, model: schema.parameters.modelType)
-            
-            try await apiConnection.startEventLoop(platform: platform, schema: schema)
+            try await apiConnection.open(token: authToken, schema: schema)
         } catch LLMOpenAIRealtimeConnection.RealtimeError.openAIError(let openAIError) {
             Self.logger.error("OpenAI Realtime init failed: \(openAIError)")
             await apiConnection.cancel()

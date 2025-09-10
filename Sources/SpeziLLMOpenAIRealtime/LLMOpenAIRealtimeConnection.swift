@@ -5,20 +5,22 @@
 //
 // SPDX-License-Identifier: MIT
 //
+
 import Foundation
 import GeneratedOpenAIClient
 import os
 import SpeziLLM
 
+
 actor LLMOpenAIRealtimeConnection {
-    package enum RealtimeError: Error {
+    enum RealtimeError: Error {
         case malformedUrlError
         case socketNotFoundError
         case openAIError(error: [String: any Sendable])
         case eventSessionUpdateSerialisationError
     }
 
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
 
     private var eventLoopTask: Task<Void, any Error>?
 
@@ -44,9 +46,10 @@ actor LLMOpenAIRealtimeConnection {
         await eventStream.stream()
     }
     
-    /// Opens socket connection to OpenAI's Realtime API
-    func open(token: String, model: String) async throws {
-        guard let realtimeApiUrl = URL(string: "wss://api.openai.com/v1/realtime?model=\(model)") else {
+    /// Opens socket connection to OpenAI's Realtime API and starts the event loop, which runs until calling `cancel()`
+    /// Waits until the event loop has succesfully been initialized: only continues once session.created event is successfully received from socket
+    func open(token: String, schema: LLMOpenAIRealtimeSchema) async throws {
+        guard let realtimeApiUrl = URL(string: "wss://api.openai.com/v1/realtime?model=\(schema.parameters.modelType)") else {
             throw RealtimeError.malformedUrlError
         }
         
@@ -56,14 +59,16 @@ actor LLMOpenAIRealtimeConnection {
         let webSocketTask = urlSession.webSocketTask(with: req)
         webSocketTask.resume()
         socket = webSocketTask
+        
+        try await startEventLoop(schema: schema)
     }
     
     /// Starts the event loop, which runs until calling `cancel()`
     /// Waits until the event loop has succesfully been initialized: only continues once session.created event is successfully received from socket
-    func startEventLoop(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
+    private func startEventLoop(schema: LLMOpenAIRealtimeSchema) async throws {
         eventLoopTask = Task {
             do {
-                try await self.eventLoop(platform: platform, schema: schema)
+                try await self.eventLoop(schema: schema)
             } catch is CancellationError {
             } catch let error as NSError where
                         error.domain == NSPOSIXErrorDomain &&
@@ -82,7 +87,7 @@ actor LLMOpenAIRealtimeConnection {
     
     // swiftlint:disable function_body_length cyclomatic_complexity closure_body_length
     /// Event loop function
-    private func eventLoop(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
+    private func eventLoop(schema: LLMOpenAIRealtimeSchema) async throws {
         guard let socket = socket else {
             throw RealtimeError.socketNotFoundError
         }
@@ -103,7 +108,7 @@ actor LLMOpenAIRealtimeConnection {
                         switch type {
                         case "session.created":
                             Task {
-                                try await sendSessionUpdate(platform: platform, schema: schema)
+                                try await sendSessionUpdate(schema: schema)
                             }
                         case "session.updated":
                             readyContinuation?.resume()
@@ -196,7 +201,7 @@ actor LLMOpenAIRealtimeConnection {
         try await socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
     }
 
-    func sendSessionUpdate(platform: LLMOpenAIRealtimePlatform, schema: LLMOpenAIRealtimeSchema) async throws {
+    func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
         typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
         typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
         typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate

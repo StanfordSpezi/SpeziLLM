@@ -11,6 +11,7 @@ import SpeziLLMOpenAI
 import SpeziLLMOpenAIRealtime
 import SwiftUI
 
+
 struct LLMOpenAIRealtimeTestView: View {
     static let schema = LLMOpenAIRealtimeSchema(parameters: .init(modelType: .gpt4o_realtime)) {
         LLMOpenAIFunctionWeather()
@@ -37,7 +38,7 @@ struct LLMOpenAIRealtimeTestView: View {
                     Text(audio.isRecording ? "Stop Recording" : "Start Recording")
                 }.buttonStyle(.bordered)
             }
-        }.onAppear {
+        }.task {
             audio.setup(llm: llm)
         }
     }

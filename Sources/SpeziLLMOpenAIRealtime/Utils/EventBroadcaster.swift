@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 actor EventBroadcaster<Element: Sendable> {
     typealias Stream = AsyncThrowingStream<Element, any Error>
 

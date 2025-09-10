@@ -10,6 +10,7 @@ import Foundation
 import GeneratedOpenAIClient
 import SpeziLLM
 
+
 extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the OpenAI Realtime API.
     ///

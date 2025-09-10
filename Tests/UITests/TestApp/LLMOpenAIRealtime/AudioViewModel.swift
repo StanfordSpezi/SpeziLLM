@@ -9,6 +9,7 @@
 import SpeziLLMOpenAIRealtime
 import SwiftUI
 
+
 @Observable
 @MainActor
 final class AudioViewModel {
@@ -28,11 +29,9 @@ final class AudioViewModel {
     var isRecording: Bool = false
     
     func setup(llm: LLMOpenAIRealtimeSession) {
-        Task {
-            self.streamingService = AudioRecorder()
-            micTask = listenToMicrophone(with: llm)
-            llmTask = playAssistantResponses(with: llm)
-        }
+        self.streamingService = AudioRecorder()
+        micTask = listenToMicrophone(with: llm)
+        llmTask = playAssistantResponses(with: llm)
     }
 
     func listenToMicrophone(with llm: LLMOpenAIRealtimeSession) -> Task<Void, any Error> {

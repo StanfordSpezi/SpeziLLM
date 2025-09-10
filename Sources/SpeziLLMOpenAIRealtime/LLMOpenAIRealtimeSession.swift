@@ -16,6 +16,7 @@ import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
+
 @Observable
 public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAIRealtimeSession``.

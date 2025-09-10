@@ -11,6 +11,7 @@ import SpeziChat
 import SpeziLLM
 import SpeziLLMOpenAI
 
+
 public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIRealtimePlatform
     
