@@ -21,11 +21,11 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         /// A higher threshold will require louder audio to activate the model, and thus might perform better in noisy environments.
         let threshold: Double
         /// Amount of audio to include before the VAD detected speech (in milliseconds). Defaults to 300ms.
-        let prefixPaddingMs: Int
+        let prefixPadding: Duration
         /// Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms.
         ///
         /// With shorter values the model will respond more quickly, but may jump in on short pauses from the user.
-        let silenceDurationMs: Int
+        let silenceDuration: Duration
         /// Whether or not to automatically generate a response when a VAD stop event occurs.
         let createResponse: Bool
         /// Allow new speech to interrupt and stop the model’s current response (conversation mode only).
@@ -33,14 +33,14 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         
         public init(
             threshold: Double = 0.5,
-            prefixPaddingMs: Int = 300,
-            silenceDurationMs: Int = 500,
+            prefixPadding: Duration = .milliseconds(300),
+            silenceDuration: Duration = .milliseconds(500),
             createResponse: Bool = true,
             interruptResponse: Bool = true
         ) {
             self.threshold = threshold
-            self.prefixPaddingMs = prefixPaddingMs
-            self.silenceDurationMs = silenceDurationMs
+            self.prefixPadding = prefixPadding
+            self.silenceDuration = silenceDuration
             self.createResponse = createResponse
             self.interruptResponse = interruptResponse
         }
@@ -87,10 +87,18 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case .server(let config):
+            let prefixPaddingComponents = config.prefixPadding.components
+            let prefixPaddingMs: Int = Int(prefixPaddingComponents.seconds) * 1000
+                                     + Int(prefixPaddingComponents.attoseconds / 1_000_000_000_000_000)
+
+            let silenceDurationComponents = config.silenceDuration.components
+            let silenceDurationMs: Int = Int(silenceDurationComponents.seconds) * 1000
+                                       + Int(silenceDurationComponents.attoseconds / 1_000_000_000_000_000)
+
             try container.encode("server_vad", forKey: .type)
             try container.encode(config.threshold, forKey: .threshold)
-            try container.encode(config.prefixPaddingMs, forKey: .prefixPaddingMs)
-            try container.encode(config.silenceDurationMs, forKey: .silenceDurationMs)
+            try container.encode(prefixPaddingMs, forKey: .prefixPaddingMs)
+            try container.encode(silenceDurationMs, forKey: .silenceDurationMs)
             try container.encodeIfPresent(config.createResponse, forKey: .createResponse)
             try container.encodeIfPresent(config.interruptResponse, forKey: .interruptResponse)
             
