@@ -227,7 +227,7 @@ actor LLMOpenAIRealtimeConnection {
             session: .init(
                 input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
                     .input_audio_transcriptionPayload(
-                        model: transcriptionSettings?.model?.rawValue,
+                        model: transcriptionSettings?.model.rawValue,
                         language: transcriptionSettings?.language,
                         prompt: transcriptionSettings?.prompt,
                     ),

@@ -59,13 +59,13 @@ public enum LLMRealtimeTurnDetectionSettings: Encodable, Sendable {
         }
         
         /// Controls how eager the model is to interrupt the user
-        let eagerness: Eagerness?
+        let eagerness: Eagerness
         /// Whether or not to automatically generate a response when a VAD stop event occurs (conversation mode only).
         let createResponse: Bool
         /// Allow new speech to interrupt and stop the model’s current response (conversation mode only).
         let interruptResponse: Bool
         
-        public init(eagerness: Eagerness? = .auto, createResponse: Bool = true, interruptResponse: Bool = true) {
+        public init(eagerness: Eagerness = .auto, createResponse: Bool = true, interruptResponse: Bool = true) {
             self.eagerness = eagerness
             self.createResponse = createResponse
             self.interruptResponse = interruptResponse
