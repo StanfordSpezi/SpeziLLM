@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import SpeziFoundation
 
 
@@ -19,11 +20,11 @@ public struct LLMRealtimeTranscriptionSettings: Sendable {
     /// The transcription model to use
     let model: TranscriptionModel
     /// The language to use for the transcription, ideally in ISO-639-1 format (e.g. "en", "fr"...) to improve accuracy and latency
-    let language: String?
+    let language: Locale.LanguageCode?
     /// The prompt to use for the transcription, to guide the model (e.g. "Expect words related to technology")
     let prompt: String?
     
-    public init(model: TranscriptionModel = .gpt4oMiniTranscribe, language: String? = nil, prompt: String? = nil) {
+    public init(model: TranscriptionModel = .gpt4oMiniTranscribe, language: Locale.LanguageCode? = nil, prompt: String? = nil) {
         self.model = model
         self.language = language
         self.prompt = prompt

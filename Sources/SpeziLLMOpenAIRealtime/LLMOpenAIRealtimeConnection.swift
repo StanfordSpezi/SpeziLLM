@@ -228,13 +228,13 @@ actor LLMOpenAIRealtimeConnection {
                 input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
                     .input_audio_transcriptionPayload(
                         model: transcriptionSettings?.model.rawValue,
-                        language: transcriptionSettings?.language,
+                        language: transcriptionSettings?.language?.identifier,
                         prompt: transcriptionSettings?.prompt,
                     ),
                 tools: tools,
             )
         )
-
+        
         let eventSessionUpdateData = try JSONEncoder().encode(eventSessionUpdate)
         guard var eventSessionUpdateJson = try JSONSerialization.jsonObject(with: eventSessionUpdateData) as? [String: Any],
               var session = eventSessionUpdateJson["session"] as? [String: Any] else {
