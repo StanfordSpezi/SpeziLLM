@@ -8,6 +8,7 @@
 
 import SpeziLLM
 
+
 extension LLMContext {
     /// Formats the current ``LLMContext`` for compatibility with Transformers-based chat models.
     ///

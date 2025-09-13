@@ -58,6 +58,8 @@ only_rules:
   - control_statement
   # Types used for hosting only static members should be implemented as a caseless enum to avoid instantiation.
   - convenience_type
+  # Custom rules: 1 blank line before imports, 2 blank lines after imports
+  - custom_rules
   # Complexity of function bodies should be limited.
   - cyclomatic_complexity
   # Availability checks or attributes shouldn’t be using older versions that are satisfied by the deployment target.
@@ -450,3 +452,17 @@ unused_optional_binding:
 
 vertical_whitespace: # Limit vertical whitespace to a single empty line.
   max_empty_lines: 2 # warning - default: 1
+
+custom_rules:
+  blank_line_before_imports:
+    included: ".*\\.swift"
+    name: "Blank Line Before Imports"
+    regex: '\/\/(\n|\n{2}\n+)import'
+    message: "Insert exactly one blank line between the copyright header and the first import statement"
+    severity: warning
+  blank_line_after_imports:
+    included: ".*\\.swift"
+    name: "Blank Line After Imports"
+    regex: '\n(import|@[^\n]+ import) [^\n]+\n(?!import|@[^\n]+ import|\n\/\/[^\n]+\n|#[^\n]+\n|\n\n)'
+    message: "Insert two blank lines after the last import, or one followed by comments"
+    severity: warning

@@ -10,6 +10,7 @@ import Foundation
 @testable import SpeziLLMOpenAI
 import Testing
 
+
 @Suite("LLM OpenAI Function Calling Parameter DSL Tests")
 struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this type_name
     struct ParametersPrimitive: Encodable {

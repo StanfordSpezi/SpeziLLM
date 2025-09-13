@@ -51,5 +51,5 @@ public enum LLMRealtimeAudioEvent: Sendable {
 
         public let itemId: String
         public let audioStartMs: Int
-    }    
+    }
 }

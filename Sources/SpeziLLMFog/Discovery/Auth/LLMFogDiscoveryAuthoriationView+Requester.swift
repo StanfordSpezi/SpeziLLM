@@ -11,6 +11,7 @@ import Foundation
 import Network
 import OSLog
 
+
 extension LLMFogDiscoveryAuthorizationView {
     /// Checks whether Local Network permission has been granted.
     /// If the authorization state is undetermined, it will request the user for permission.
