@@ -13,11 +13,14 @@ import SpeziLLM
 
 
 actor LLMOpenAIRealtimeConnection {
+    typealias FunctionCallArgs = Components.Schemas.RealtimeServerEventResponseFunctionCallArgumentsDone
+
     enum RealtimeError: Error {
         case malformedUrlError
         case socketNotFoundError
         case openAIError(error: [String: any Sendable])
         case eventSessionUpdateSerialisationError
+        case functionCallArgsNamelessError
     }
 
     private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
@@ -76,7 +79,7 @@ actor LLMOpenAIRealtimeConnection {
                         Task.isCancelled {
                 // When Task got cancelled & Socket is not connected error: ignore
             } catch {
-                Self.logger.error("SpeziLLMOpenAiRealtime: LLMOpenAIRealtimeConnection eventLoop() failed with error: \(error.localizedDescription)")
+                Self.logger.error("SpeziLLMOpenAiRealtime: LLMOpenAIRealtimeConnection eventLoop() failed with error: \(error)")
             }
         }
         // Await until we obtain session.created from OpenAI
@@ -148,7 +151,7 @@ actor LLMOpenAIRealtimeConnection {
                         case "input_audio_buffer.speech_stopped":
                             await eventStream.yield(LLMRealtimeAudioEvent.speechStopped)
                         case "response.function_call_arguments.done":
-                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.FunctionCall.self, from: messageJsonData)
+                            let event = try JSONDecoder().decode(FunctionCallArgs.self, from: messageJsonData)
                             Task {
                                 do {
                                     try await handleFunctionCall(schema: schema, event: event)
@@ -174,7 +177,7 @@ actor LLMOpenAIRealtimeConnection {
         }
     }
     
-    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: LLMRealtimeAudioEvent.FunctionCall) async throws {
+    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: FunctionCallArgs) async throws {
         typealias ConversationItemCreateEvent = Components.Schemas.RealtimeClientEventConversationItemCreate
         typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
 
@@ -187,7 +190,7 @@ actor LLMOpenAIRealtimeConnection {
             _type: .conversation_period_item_period_create,
             item: .init(
                 _type: .function_call_output,
-                call_id: event.callId,
+                call_id: event.call_id,
                 output: output
             )
         )

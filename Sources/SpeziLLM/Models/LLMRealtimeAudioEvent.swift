@@ -51,20 +51,5 @@ public enum LLMRealtimeAudioEvent: Sendable {
 
         public let itemId: String
         public let audioStartMs: Int
-    }
-    
-    /// DTO for decoding the `function_call_arguments.done` event payload from the OpenAI Realtime API.
-    package struct FunctionCall: Sendable, Codable {
-        enum CodingKeys: String, CodingKey {
-            case itemId = "item_id"
-            case callId = "call_id"
-            case name
-            case arguments
-        }
-        
-        package let itemId: String
-        package let callId: String
-        package let name: String
-        package let arguments: String
-    }
+    }    
 }

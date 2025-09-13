@@ -118,6 +118,32 @@ function removeInvalidRefs(obj) {
   return obj;
 }
 
+/**
+ * Ensures that the `name` property is present in the OpenAPI spec, as it is
+ * missing in the official docs for `components.schemas.RealtimeServerEventResponseFunctionCallArgumentsDone`.
+ *
+ * See https://community.openai.com/t/realtime-api-docs-missing-name-property-for-the-response-function-call-arguments-done-server-event
+ */
+function fixMissingNameProperty(obj) {
+    if (obj == null || typeof obj !== "object") return undefined
+
+    const clone = structuredClone(obj)
+    const schema = clone?.components?.schemas?.RealtimeServerEventResponseFunctionCallArgumentsDone
+
+    if (schema?.properties && !("name" in schema.properties)) {
+        schema.properties.name = {
+            type: 'string',
+            description: 'The name of the function to call.'
+        }
+    }
+
+    if (Array.isArray(schema?.required) && !schema.required.includes("name")) {
+      schema.required.push("name")
+    }
+
+    return clone
+}
+
 
 /**
  * Start applying transformations.
@@ -149,6 +175,7 @@ openapiDoc = removeSpecificOneOf(openapiDoc);
 openapiDoc = removeInvalidRefs(openapiDoc);
 openapiDoc = fixRequiredSessions(openapiDoc);
 openapiDoc = fixRequiredStatus(openapiDoc);
+openapiDoc = fixMissingNameProperty(openapiDoc);
 
 // Convert OpenAPI spec back to YAML, preserving multi-line formatting
 const cleanedYaml = yaml.dump(openapiDoc, {
