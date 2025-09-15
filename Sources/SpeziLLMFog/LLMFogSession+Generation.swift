@@ -60,7 +60,9 @@ extension LLMFogSession {
                 .asDecodedServerSentEventsWithJSONData(
                     of: Components.Schemas.CreateChatCompletionStreamResponse.self,
                     decoder: .init(),
-                    while: { incomingData in incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8)) }
+                    while: { incomingData in
+                        incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8))
+                    }
                 )
 
             for try await chatStreamResult in chatStream {

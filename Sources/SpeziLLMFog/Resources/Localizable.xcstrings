@@ -174,6 +174,16 @@
         }
       }
     },
+    "FOG_DISCOVERY_SELECT_NEXT_BUTTON_ALLOW_EMPTY_SELECTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip fog node selection (auto-discover)"
+          }
+        }
+      }
+    },
     "FOG_DISCOVERY_SELECT_SUBTITLE" : {
       "localizations" : {
         "en" : {
@@ -190,6 +200,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fog Node Selection"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Model"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the model that you want to use on the fog node. Make sure that the fog node has the specified model!"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose LLM on Fog Node"
           }
         }
       }

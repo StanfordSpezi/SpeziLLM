@@ -8,6 +8,7 @@
 
 
 import Foundation
+import Hub
 import MLX
 import MLXLLM
 import MLXLMCommon
@@ -65,7 +66,9 @@ import SpeziLLM
 public final class LLMLocalSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMLocalSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMLocal")
-    
+    /// The HuggingFace Hub API client.
+    package static let hubApi = HubApi(downloadBase: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first)
+
     let platform: LLMLocalPlatform
     let schema: LLMLocalSchema
 
