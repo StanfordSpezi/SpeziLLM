@@ -6,9 +6,17 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SpeziKeychainStorage
+
 
 /// Constants used throughout the `SpeziLLMOpenAI` target.
-enum LLMOpenAIConstants {
-    static let credentialsServer = "openai.com"
-    static let credentialsUsername = "OpenAIGPT"
+public enum LLMOpenAIConstants {
+    /// Default credentials username of `SpeziLLMOpenAI` .
+    public static let credentialsUsername = "OpenAI_Token"
+}
+
+/// The credentials tag of the OpenAI API key in the secure enclave.
+extension CredentialsTag {
+    /// Default `CredentialsTag` of the SpeziLLMOpenAI OpenAI API key.
+    public static let openAIKey = CredentialsTag.genericPassword(forService: "openai.com")
 }

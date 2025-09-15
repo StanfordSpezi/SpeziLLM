@@ -9,7 +9,7 @@
 import Foundation
 import MLX
 import MLXLLM
-import MLXLMCommon
+@preconcurrency import MLXLMCommon
 import MLXRandom
 import os
 import SpeziChat
@@ -17,16 +17,35 @@ import SpeziLLM
 
 
 extension LLMLocalSession {
+    private var generationParameters: GenerateParameters {
+        .init(
+            temperature: schema.samplingParameters.temperature,
+            topP: schema.samplingParameters.topP,
+            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
+            repetitionContextSize: schema.samplingParameters.repetitionContextSize
+        )
+    }
+    
     // swiftlint:disable:next identifier_name function_body_length
-    internal func _generate(continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
+    func _generate(
+        with continuationObserver: ContinuationObserver<String, any Error>
+    ) async {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            return
+        }
+
+        await MainActor.run {
+            self.state = .generating
+        }
+
 #if targetEnvironment(simulator)
-        // swiftlint:disable:next return_value_from_void_function
-        return await _mockGenerate(continuation: continuation)
-#endif
-        
+        await _mockGenerate(continuationObserver: continuationObserver)
+        return
+#else
         guard let modelContainer = await self.modelContainer else {
-            Self.logger.error("SpeziLLMLocal: Failed to load `modelContainer`")
-            await finishGenerationWithError(LLMLocalError.modelNotFound, on: continuation)
+            await handleError("Failed to load `modelContainer`", error: .modelNotFound, continuation: continuationObserver.continuation)
             return
         }
         
@@ -36,78 +55,40 @@ extension LLMLocalSession {
             await self.context.formattedChat
         }
         
-        guard let modelInput: LMInput = try? await modelContainer.perform({ modelContext in
-            if let chatTempalte = self.schema.parameters.chatTemplate {
-                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTempalte)
-                return LMInput(text: .init(tokens: MLXArray(tokens)))
-            } else {
-                return try await modelContext.processor.prepare(input: .init(messages: messages))
-            }
-        }) else {
-            Self.logger.error("SpeziLLMLocal: Failed to format chat with given context")
-            await finishGenerationWithError(LLMLocalError.illegalContext, on: continuation)
+        guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
+            await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuationObserver.continuation)
             return
         }
-        
+
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .ready
+            }
+            return
+        }
+
         MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
-        guard await !checkCancellation(on: continuation) else {
-            return
-        }
-        
-        let parameters: GenerateParameters = .init(
-            temperature: schema.samplingParameters.temperature,
-            topP: schema.samplingParameters.topP,
-            repetitionPenalty: schema.samplingParameters.penaltyRepeat,
-            repetitionContextSize: schema.samplingParameters.repetitionContextSize
-        )
-        
         do {
-            // swiftlint:disable:next closure_body_length
             let result = try await modelContainer.perform { modelContext in
                 let result = try MLXLMCommon.generate(
                     input: modelInput,
-                    parameters: parameters,
-                    context: modelContext) { tokens in
-                        if Task.isCancelled {
-                            return .stop
-                        }
-                        
-                        if tokens.count >= self.schema.parameters.maxOutputLength {
-                            Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
-                            return .stop
-                        }
-                        
-                        if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
-                            let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
-                            let text = modelContext.tokenizer.decode(tokens: lastTokens)
-                            
-                            Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
-                            continuation.yield(.intermediate(text))
-                            
-                            if schema.injectIntoContext {
-                                Task { @MainActor in
-                                    context.append(assistantOutput: text)
-                                }
-                            }
-                        }
-                        
-                        return .more
-                    }
-                
-                // Yielding every Nth token may result in missing the final tokens.
-                let reaminingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
-                let lastTokens = Array(result.tokens.suffix(reaminingTokens))
-                let text = modelContext.tokenizer.decode(tokens: lastTokens)
-                continuation.yield(.intermediate(text))
-                
-                if schema.injectIntoContext {
-                    Task { @MainActor in
-                        context.append(assistantOutput: text)
-                        context.completeAssistantStreaming()
-                    }
+                    parameters: generationParameters,
+                    context: modelContext
+                ) { tokens in
+                    self.processTokens(
+                        tokens,
+                        modelContext: modelContext,
+                        continuationObserver: continuationObserver
+                    )
                 }
                 
+                self.processRemainingTokens(
+                    result: result,
+                    modelContext: modelContext,
+                    continuation: continuationObserver.continuation
+                )
                 return result
             }
             
@@ -119,30 +100,89 @@ extension LLMLocalSession {
                 """
             )
             
-            continuation.yield(
-                .final(
-                    LLMLocalGenerationResult(
-                        inputTokens: result.inputText.tokens.asArray(Int.self),
-                        outputTokens: result.tokens,
-                        output: result.output,
-                        promptTime: result.promptTime,
-                        generateTime: result.generateTime
-                    )
-                )
-            )
-            
             await MainActor.run {
-                continuation.finish()
-                state = .ready
+                continuationObserver.continuation.finish()
+                self.state = .ready
             }
         } catch {
-            Self.logger.error("SpeziLLMLocal: Generation endet with error: \(error)")
-            await finishGenerationWithError(LLMLocalError.generationError, on: continuation)
+            await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuationObserver.continuation)
             return
+        }
+#endif
+    }
+    
+    private func prepareModelInput(
+        messages: [[String: String]],
+        modelContainer: ModelContainer
+    ) async throws -> LMInput {
+        try await modelContainer.perform { modelContext in
+            if let chatTemplate = self.schema.parameters.chatTemplate {
+                let tokens = try modelContext.tokenizer.applyChatTemplate(messages: messages, chatTemplate: chatTemplate)
+                return LMInput(text: .init(tokens: MLXArray(tokens)))
+            } else {
+                return try await modelContext.processor.prepare(input: .init(messages: messages))
+            }
         }
     }
     
-    private func _mockGenerate(continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
+    private func processTokens(
+        _ tokens: [Int],
+        modelContext: ModelContext,
+        continuationObserver: ContinuationObserver<String, any Error>
+    ) -> GenerateDisposition {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            return .stop
+        }
+
+        if tokens.count >= self.schema.parameters.maxOutputLength {
+            Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
+            return .stop
+        }
+        
+        if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
+            let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
+            let text = modelContext.tokenizer.decode(tokens: lastTokens)
+            
+            Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
+            continuationObserver.continuation.yield(text)
+
+            if schema.injectIntoContext {
+                Task { @MainActor in
+                    context.append(assistantOutput: text)
+                }
+            }
+        }
+        
+        return .more
+    }
+    
+    private func processRemainingTokens(
+        result: GenerateResult,
+        modelContext: ModelContext,
+        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) {
+        // Yielding every Nth token may result in missing the final tokens.
+        let remainingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
+        let lastTokens = Array(result.tokens.suffix(remainingTokens))
+        let text = modelContext.tokenizer.decode(tokens: lastTokens)
+        continuation.yield(text)
+        
+        if schema.injectIntoContext {
+            Task { @MainActor in
+                context.append(assistantOutput: text)
+                context.completeAssistantStreaming()
+            }
+        }
+    }
+    
+    private func handleError(_ message: String, error: LLMLocalError, continuation: AsyncThrowingStream<String, any Error>.Continuation) async {
+        Self.logger.error("SpeziLLMLocal: \(message)")
+        await finishGenerationWithError(error, on: continuation)
+    }
+    
+    private func _mockGenerate(continuationObserver: ContinuationObserver<String, any Error>) async {
         let tokens = [
             "Mock ", "Message ", "from ", "SpeziLLM! ",
             "**Using SpeziLLMLocal only works on physical devices.**",
@@ -152,27 +192,17 @@ extension LLMLocalSession {
         
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))
-            guard await !checkCancellation(on: continuation) else {
-                return
+            if continuationObserver.isCancelled {
+                Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
+                break
             }
-            continuation.yield(.intermediate(token))
+
+            continuationObserver.continuation.yield(token)
         }
         
-        continuation.yield(
-            .final(
-                LLMLocalGenerationResult(
-                    inputTokens: [83, 112, 101, 122, 105],
-                    outputTokens: tokens.compactMap { Int($0.first?.asciiValue ?? 69) },
-                    output: String(tokens.joined()),
-                    promptTime: 1.337,
-                    generateTime: Double(tokens.count)
-                )
-            )
-        )
-        
-        continuation.finish()
+        continuationObserver.continuation.finish()
         await MainActor.run {
-            context.completeAssistantStreaming()
+            self.context.completeAssistantStreaming()
             self.state = .ready
         }
     }

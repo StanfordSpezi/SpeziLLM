@@ -19,21 +19,25 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
     ///    - multipleOf: Defines that the LLM parameter needs to be a multiple of the init argument.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Wrapped? = nil,
         maximum: T.Wrapped? = nil
     ) {
-        self.init(schema: .init(
-            type: .integer,
-            description: String(description),
-            const: const.map { String($0) },
-            multipleOf: multipleOf,
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "integer",
+                "description": String(description),
+                "const": const.map { String($0) } as (any Sendable)?,
+                "multipleOf": multipleOf as (any Sendable)?,
+                "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                "maximum": maximum.map { Double($0) } as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
@@ -45,19 +49,23 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - minimum: The minimum value of the parameter.
     ///    - maximum: The maximum value of the parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped? = nil,
         maximum: T.Wrapped? = nil
     ) {
-        self.init(schema: .init(
-            type: .number,
-            description: String(description),
-            const: const.map { String($0) },
-            minimum: minimum.map { Double($0) },
-            maximum: maximum.map { Double($0) }
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "number",
+                "description": String(description),
+                "const": const.map { String($0) } as (any Sendable)?,
+                "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                "maximum": maximum.map { Double($0) } as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
@@ -67,15 +75,19 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil
     ) {
-        self.init(schema: .init(
-            type: .boolean,
-            description: String(description),
-            const: const.map { String($0) }
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "boolean",
+                "description": String(description),
+                "const": const.map { String($0) } as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
@@ -88,25 +100,30 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
     ///    - pattern: A Regular Expression that the parameter needs to conform to.
     ///    - const: Specifies the constant `String`-based value of a certain parameter.
     ///    - enum: Defines all cases of the `String` parameter.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         format: _LLMFunctionParameterWrapper.Format? = nil,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil
     ) {
-        self.init(schema: .init(
-            type: .string,
-            description: String(description),
-            format: format?.rawValue,
-            pattern: pattern.map { String($0) },
-            const: const.map { String($0) },
-            enum: `enum`.map { $0.map { String($0) } }
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "string",
+                "description": String(description),
+                "format": format?.rawValue as (any Sendable)?,
+                "pattern": pattern.map { String($0) } as (any Sendable)?,
+                "const": const.map { String($0) } as (any Sendable)?,
+                "enum": `enum`.map { $0.map { String($0) as (any Sendable)? } }
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryInteger {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: BinaryInteger {
     /// Declares an optional `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -118,8 +135,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
         minimum: T.Wrapped.Element? = nil,
@@ -128,24 +145,29 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .integer,
-                const: const.map { String($0) },
-                multipleOf: multipleOf.map { Int($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "integer",
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "multipleOf": multipleOf.map { Int($0) } as (any Sendable)?,
+                    "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                    "maximum": maximum.map { Double($0) } as (any Sendable)?
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: BinaryFloatingPoint {
     /// Declares an optional `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -156,8 +178,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minimum: T.Wrapped.Element? = nil,
         maximum: T.Wrapped.Element? = nil,
@@ -165,19 +187,23 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .number,
-                const: const.map { String($0) },
-                minimum: minimum.map { Double($0) },
-                maximum: maximum.map { Double($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "number",
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "minimum": minimum.map { Double($0) } as (any Sendable)?,
+                    "maximum": maximum.map { Double($0) } as (any Sendable)?
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
@@ -190,28 +216,33 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .boolean,
-                const: const.map { String($0) }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "boolean",
+                    "const": const.map { String($0) } as (any Sendable)?
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: StringProtocol {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+    T.Wrapped.Element: StringProtocol {
     /// Declares an optional `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -222,8 +253,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         pattern: (any StringProtocol)? = nil,
         const: (any StringProtocol)? = nil,
         enum: [any StringProtocol]? = nil,
@@ -231,19 +262,23 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: .string,
-                pattern: pattern.map { String($0) },
-                const: const.map { String($0) },
-                enum: `enum`.map { $0.map { String($0) } }
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": "string",
+                    "pattern": pattern.map { String($0) } as (any Sendable)?,
+                    "const": const.map { String($0) } as (any Sendable)?,
+                    "enum": `enum`.map { $0.map { String($0) } } as (any Sendable)?
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 

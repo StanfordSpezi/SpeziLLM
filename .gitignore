@@ -38,3 +38,6 @@ docs/
 *.key
 *.srl
 *.csr
+
+# npm dependencies
+node_modules/

@@ -19,7 +19,7 @@ import SpeziLLM
 /// - Tip: ``LLMOpenAISchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
-public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
+public struct LLMOpenAISchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIPlatform
     
     
@@ -27,13 +27,13 @@ public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
     public enum Defaults {
         /// Empty default of passed function calls (`_LLMFunctionCollection`).
         /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.
-        public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
+        nonisolated(unsafe) public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
     }
     
     
     let parameters: LLMOpenAIParameters
     let modelParameters: LLMOpenAIModelParameters
-    let functions: [String: LLMFunction]
+    let functions: [String: any LLMFunction]
     public let injectIntoContext: Bool
     
     

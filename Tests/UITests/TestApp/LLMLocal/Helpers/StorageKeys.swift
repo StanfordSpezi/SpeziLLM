@@ -6,8 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-/// Constants shared across the local LLM execution demo application to access storage information including the `AppStorage`.
+/// Constants shared across the LLM execution demo application to access storage information including the `AppStorage`.
 enum StorageKeys {
-    /// A `Bool` flag indicating of the onboarding was completed.
-    static let onboardingFlowComplete = "onboardingFlow.complete"
+    /// A `Bool` flag indicating of the local onboarding was completed.
+    static let localOnboardingFlowComplete = "localOnboardingFlow.complete"
+    /// A `Bool` flag indicating of the fog onboarding was completed.
+    static let fogOnboardingFlowComplete = "fogOnboardingFlow.complete"
 }

@@ -1,45 +1,22 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "LLM_SETUP_ERROR_DESCRIPTION" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "LLM Setup Error."
-          }
-        }
-      }
-    },
-    "LLM_SETUP_ERROR_FAILURE_REASON" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An error has occurred during the setup of the LLM environment or model."
-          }
-        }
-      }
-    },
-    "LLM_SETUP_ERROR_RECOVERY_SUGGESTION" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please restart the application and try again."
-          }
-        }
-      }
-    },
     "LLM_STATE_ERROR" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "LLM state error."
+          }
+        }
+      }
+    },
+    "LLM_STATE_CALLING_TOOLS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM state calling tools."
           }
         }
       }
@@ -85,13 +62,34 @@
       }
     },
     "LLM_UNKNOWN_ERROR_DESCRIPTION" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown LLM generation error."
+          }
+        }
+      }
     },
     "LLM_UNKNOWN_ERROR_FAILURE_REASON" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error has occurred during LLM inference."
+          }
+        }
+      }
     },
     "LLM_UNKNOWN_ERROR_RECOVERY_SUGGESTION" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please retry the inference and restart the application."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

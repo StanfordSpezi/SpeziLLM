@@ -18,33 +18,39 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: T.Element.itemSchema.type,
-                properties: T.Element.itemSchema.properties,
-                pattern: T.Element.itemSchema.pattern,
-                const: T.Element.itemSchema.const,
-                enum: T.Element.itemSchema.enum,
-                multipleOf: T.Element.itemSchema.multipleOf,
-                minimum: T.Element.itemSchema.minimum,
-                maximum: T.Element.itemSchema.maximum
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            let itemSchema = T.Element.itemSchema.value
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": itemSchema["type"],
+                    "properties": itemSchema["properties"],
+                    "pattern": itemSchema["pattern"],
+                    "const": itemSchema["const"],
+                    "enum": itemSchema["enum"],
+                    "multipleOf": itemSchema["multipleOf"],
+                    "minimum": itemSchema["minimum"],
+                    "maximum": itemSchema["maximum"]
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element: LLMFunctionParameterArrayElement {
+extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
+                                             T.Wrapped.Element: LLMFunctionParameterArrayElement {
     /// Declares an optional ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -52,29 +58,34 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     ///    - minItems: Defines the minimum amount of values in the `array`.
     ///    - maxItems: Defines the maximum amount of values in the `array`.
     ///    - uniqueItems: Specifies if all `array` elements need to be unique.
-    public convenience init<D: StringProtocol>(
-        description: D,
+    public convenience init(
+        description: some StringProtocol,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
     ) {
-        self.init(schema: .init(
-            type: .array,
-            description: String(description),
-            items: .init(
-                type: T.Wrapped.Element.itemSchema.type,
-                properties: T.Wrapped.Element.itemSchema.properties,
-                pattern: T.Wrapped.Element.itemSchema.pattern,
-                const: T.Wrapped.Element.itemSchema.const,
-                enum: T.Wrapped.Element.itemSchema.enum,
-                multipleOf: T.Wrapped.Element.itemSchema.multipleOf,
-                minimum: T.Wrapped.Element.itemSchema.minimum,
-                maximum: T.Wrapped.Element.itemSchema.maximum
-            ),
-            minItems: minItems,
-            maxItems: maxItems,
-            uniqueItems: uniqueItems
-        ))
+        do {
+            let itemSchema = T.Wrapped.Element.itemSchema.value
+            try self.init(schema: .init(unvalidatedValue: [
+                "type": "array",
+                "description": String(description),
+                "items": [
+                    "type": itemSchema["type"],
+                    "properties": itemSchema["properties"],
+                    "pattern": itemSchema["pattern"],
+                    "const": itemSchema["const"],
+                    "enum": itemSchema["enum"],
+                    "multipleOf": itemSchema["multipleOf"],
+                    "minimum": itemSchema["minimum"],
+                    "maximum": itemSchema["maximum"]
+                ].compactMapValues { $0 },
+                "minItems": minItems as (any Sendable)?,
+                "maxItems": maxItems as (any Sendable)?,
+                "uniqueItems": uniqueItems as (any Sendable)?
+            ].compactMapValues { $0 }))
+        } catch {
+            fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
+        }
     }
 }
 

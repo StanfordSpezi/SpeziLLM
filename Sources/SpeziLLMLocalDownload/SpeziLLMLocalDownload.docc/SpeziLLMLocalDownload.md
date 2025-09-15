@@ -33,37 +33,35 @@ The two main components of ``SpeziLLMLocalDownload`` are the ``LLMLocalDownloadV
 ### Download View
 
 The ``LLMLocalDownloadView`` provides an out-of-the-box onboarding view for downloading locally executed [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) LLMs to the device.
-It can be combined with the [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation) [`OnboardingStack`](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation/spezionboarding/onboardingstack) to create an easy onboarding flow within the application.
+It can be combined with the [SpeziViews](https://swiftpackageindex.com/stanfordspezi/speziviews/documentation) [`ManagedNavigationStack`](https://swiftpackageindex.com/stanfordspezi/speziviews/documentation/speziviews/managednavigationstack) to create an easy onboarding flow within the application.
 The ``LLMLocalDownloadView`` automatically checks if the model already exists on disk, and if not, offers the start of the download via a button click. The download process itself includes the presentation of a percentage progress view in order to give the user a better feeling for the download progress.
 
-The ``LLMLocalDownloadView/init(downloadDescription:llmDownloadUrl:llmStorageUrl:action:)-9hraf`` initializer accepts a download description displayed in the view, the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
+The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the remote download `URL` of the LLM, the local storage `URL` of the downloaded model, as well as an action closure to move onto the next (onboarding) step.
 
 The heavy lifting of downloading and storing the model is done by the ``LLMLocalDownloadManager`` which exposes the current downloading state view the ``LLMLocalDownloadManager/state`` property of type ``LLMLocalDownloadManager/DownloadState``.
 
 #### Usage
 
-The code example below creates an onboarding flow via the [SpeziOnboarding](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation) [`OnboardingStack`](https://swiftpackageindex.com/stanfordspezi/spezionboarding/documentation/spezionboarding/onboardingstack) that downloads and stores an Language Model on the local device via the use of the ``LLMLocalDownloadView``.
-Is downloads the LLama2 7B model via the ``LLMLocalDownloadManager/LLMUrlDefaults/llama2ChatModelUrl`` property and stores it within the cache application directory.
+The code example below creates an onboarding flow via the [SpeziViews](https://swiftpackageindex.com/stanfordspezi/speziviews/documentation) [`ManagedNavigationStack`](https://swiftpackageindex.com/stanfordspezi/speziviews/documentation/speziviews/managednavigationstack) that downloads and stores an Language Model on the local device via the use of the ``LLMLocalDownloadView``.
 
 ```swift
 struct LLMLocalDownloadApp: View {
-    @State private var path = NavigationPath()
-
     var body: some View {
-        NavigationStack(path: $path) {
+        ManagedNavigationStack {
             LLMLocalOnboardingDownloadView()
         }
     }
 }
+```
 
+```swift
 struct LLMLocalOnboardingDownloadView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 
     var body: some View {
         LLMLocalDownloadView(
-            downloadDescription: "The Llama2 7B model will be downloaded",
-            llmDownloadUrl: LLMLocalDownloadManager.LLMUrlDefaults.llama2ChatModelUrl, // Download the Llama2 7B model
-            llmStorageUrl: .cachesDirectory.appending(path: "llm.gguf") // Store the downloaded LLM in the caches directory
+            model: .llama3_8B_4bit,
+            downloadDescription: "The Llama3 8B model will be downloaded"
         ) {
             onboardingNavigationPath.nextStep()
         }
@@ -75,12 +73,12 @@ struct LLMLocalOnboardingDownloadView: View {
 
 The ``LLMLocalDownloadManager`` manages the download and storage of Large Language Models to the local device.
 
-One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(llmDownloadUrl:llmStorageUrl:)`` initializer,
+One configures the ``LLMLocalDownloadManager`` via the ``LLMLocalDownloadManager/init(model:)`` initializer,
 passing a download `URL` as well as a local storage `URL` to the ``LLMLocalDownloadManager``.
 The download of a model is started via ``LLMLocalDownloadManager/startDownload()`` and can be cancelled (early) via ``LLMLocalDownloadManager/cancelDownload()``.
 
 The current state of the ``LLMLocalDownloadManager`` is exposed via the ``LLMLocalDownloadManager/state`` property which
-is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)`` which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded(storageUrl:)`` which indicates that the download has finished.
+is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)`` which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded`` which indicates that the download has finished.
 
 ## Topics
 

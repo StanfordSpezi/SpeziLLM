@@ -9,6 +9,7 @@
 import Foundation
 import Spezi
 import SpeziChat
+import SpeziFoundation
 
 /// Manages the execution of LLMs in the Spezi ecosystem.
 ///
@@ -73,7 +74,8 @@ import SpeziChat
 ///    }
 /// }
 /// ```
-public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
+@Observable
+public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// The ``State`` describes the current state of the ``LLMRunner``.
     /// As of now, the ``State`` is quite minimal with only ``LLMRunner/State-swift.enum/idle`` and ``LLMRunner/State-swift.enum/processing`` states.
     public enum State {
@@ -83,16 +85,19 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     
 
     /// Holds all configured ``LLMPlatform``s of the ``LLMRunner`` as expressed by all stated ``LLMPlatform``'s in the ``LLMRunner/init(_:)``.
-    @Dependency private var llmPlatformModules: [any Module]
+    @Dependency @ObservationIgnored private var llmPlatformModules: [any Module]
+    private let lock = RWLock()
     /// Maps the ``LLMSchema`` (identified by the `ObjectIdentifier`) towards the respective ``LLMPlatform``.
-    var llmPlatforms: [ObjectIdentifier: any LLMPlatform] = [:]
+    private var llmPlatforms: [ObjectIdentifier: any LLMPlatform] = [:]     // still protect this property as `LLMRunner` is @unchecked `Sendable`.
 
     /// The ``State`` of the runner, derived from the individual ``LLMPlatform``'s.
     @MainActor public var state: State {
         var state: State = .idle
-        
-        for platform in self.llmPlatforms.values where platform.state == .processing {
-            state = .processing
+
+        self.lock.withReadLock {
+            for platform in self.llmPlatforms.values where platform.state == .processing {
+                state = .processing
+            }
         }
         
         return state
@@ -110,40 +115,47 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     
     /// Convenience initializer for the creation of an ``LLMRunner`` that doesn't support any ``LLMPlatform``s
     /// Helpful for stating a Spezi `Dependency` to the ``LLMRunner``.
-    public required convenience init() {
+    public convenience init() {
         self.init {}
     }
     
     
     public func configure() {
-        self.llmPlatforms = _llmPlatformModules.wrappedValue.compactMap { platform in
-            platform as? (any LLMPlatform)
-        }
-        .reduce(into: [:]) { partialResult, platform in
-            partialResult[platform.schemaId] = platform
+        self.lock.withWriteLock {
+            // Sadly we are only able to access the dependencies in here after they have been activated
+            self.llmPlatforms = self._llmPlatformModules.wrappedValue.compactMap { platform in
+                platform as? (any LLMPlatform)
+            }
+            .reduce(into: [:]) { partialResult, platform in
+                partialResult[platform.schemaId] = platform
+            }
         }
     }
-    
+
     /// Turns the received ``LLMSchema`` to an executable ``LLMSession``.
     ///
     /// The ``LLMRunner`` uses the configured ``LLMPlatform``s to create an executable ``LLMSession`` from the passed ``LLMSchema``
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///
     /// - Returns: The ready to use ``LLMSession``.
     public func callAsFunction<L: LLMSchema>(with llmSchema: L) -> L.Platform.Session {
+        let platform = self.lock.withReadLock {
+            self.llmPlatforms[ObjectIdentifier(L.self)]
+        }
+
         // Searches for the respective `LLMPlatform` associated with the `LLMSchema`.
-        guard let platform = llmPlatforms[ObjectIdentifier(L.self)] else {
-            preconditionFailure("""
+        guard let platform  else {
+            fatalError("""
             The designated `LLMPlatform` \(String(describing: L.Platform.Session.self)) to run the `LLMSchema` \(String(describing: L.self)) was not configured within the Spezi `Configuration`.
             Ensure that the `LLMRunner` is set up with all required `LLMPlatform`s.
             """)
         }
         
         // Checks the conformance of the related `LLMSession` to `Observable`.
-        guard L.Platform.Session.self is Observable.Type else {
-            preconditionFailure("""
+        guard L.Platform.Session.self is any Observable.Type else {
+            fatalError("""
             The passed `LLMSchema` \(String(describing: L.self)) corresponds to a not observable `LLMSession` type (found session was \(String(describing: L.Platform.Session.self))).
             Ensure that the used `LLMSession` type (\(String(describing: L.Platform.Session.self))) conforms to the `Observable` protocol via the `@Observable` macro.
             """)
@@ -158,12 +170,12 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// Directly returns an `AsyncThrowingStream` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
     ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The ready to use `AsyncThrowingStream`.
-    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, Error> {
-        let llmSession = callAsFunction(with: llmSchema)
+    public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> AsyncThrowingStream<String, any Error> {
+        let llmSession = self.callAsFunction(with: llmSchema)
         await MainActor.run {
             llmSession.context = context
         }
@@ -176,14 +188,14 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     /// Directly returns the finished output `String` based on the defined ``LLMSchema`` as well as the passed `Chat` (context of the LLM).
     ///
     /// - Parameters:
-    ///   - with: The ``LLMSchema`` that should be turned into an ``LLMSession``.
-    ///   - chat: The context of the LLM used for the inference.
+    ///   - llmSchema: The ``LLMSchema`` that should be turned into an ``LLMSession``.
+    ///   - context: The context of the LLM used for the inference.
     ///
     /// - Returns: The completed output `String`.
     public func oneShot<L: LLMSchema>(with llmSchema: L, context: LLMContext) async throws -> String {
         var output = ""
         
-        for try await stringPiece in try await oneShot(with: llmSchema, context: context) {
+        for try await stringPiece in try await self.oneShot(with: llmSchema, context: context) {
             output.append(stringPiece)
         }
         
@@ -191,17 +203,20 @@ public class LLMRunner: Module, EnvironmentAccessible, DefaultInitializable {
     }
 }
 
+extension LLMRunner: @unchecked Sendable {} // unchecked because of the `Dependency` property wrapper storage
+
+
 extension LLMPlatform {
     /// Determine the correct ``LLMPlatform`` for the passed ``LLMSchema``.
     fileprivate func determinePlatform<L: LLMSchema>(for schema: L) -> L.Platform.Session {
         guard let schema = schema as? Schema else {
-            preconditionFailure("""
+            fatalError("""
             Reached inconsistent state. Ensure that the specified LLMSchema matches the schema defined within the LLMPlatform.
             """)
         }
         
         guard let session = self(with: schema) as? L.Platform.Session else {
-            preconditionFailure("""
+            fatalError("""
             Reached inconsistent state. Ensure that the specified LLMSession matches the session defined within the LLMPlatform.
             """)
         }

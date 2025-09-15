@@ -12,7 +12,7 @@ import Foundation
 /// Defines universally occurring `Error`s while handling LLMs with SpeziLLM.
 public enum LLMDefaultError: LLMError {
     /// Indicates an unknown error during LLM execution.
-    case unknown(Error)
+    case unknown(any Error)
     
     
     public var errorDescription: String? {
@@ -58,14 +58,4 @@ public enum LLMDefaultError: LLMError {
 ///     public var failureReason: String? { "Some example failure reason" }
 /// }
 /// ```
-public protocol LLMError: LocalizedError, Equatable {}
-
-
-/// Ensure the conformance of the Swift `CancellationError` to ``LLMError``.
-extension CancellationError: @retroactive Equatable {}
-extension CancellationError: @retroactive LocalizedError {}
-extension CancellationError: LLMError {
-    public static func == (lhs: CancellationError, rhs: CancellationError) -> Bool {
-        true
-    }
-}
+public protocol LLMError: LocalizedError, Equatable {}      // `LocalizedError` conforms to `Sendable`

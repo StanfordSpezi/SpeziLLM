@@ -6,14 +6,15 @@
 // SPDX-License-Identifier: MIT
 //
 
-import struct OpenAI.ChatQuery
+import GeneratedOpenAIClient
+import OpenAPIRuntime
 import SpeziLLM
 
 
 extension LLMContextEntity.Role {
-    typealias Role = ChatQuery.ChatCompletionMessageParam.Role
-    
-    
+    typealias Role = Components.Schemas.ChatCompletionRole
+
+
     /// Maps the `LLMContextEntity/Role`s to the `OpenAI/Chat/Role`s.
     var openAIRepresentation: Role {
         switch self {

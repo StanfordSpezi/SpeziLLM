@@ -21,7 +21,7 @@ public struct LLMLocalSamplingParameters: Sendable {
     let repetitionContextSize: Int
 
 
-    /// Creates the ``LLMLocalContextParameters``
+    /// Creates the ``LLMLocalSamplingParameters``
     ///
     /// - Parameters:
     ///   - topP: Top-p Sampling: Smallest possible set of words whose cumulative probability exceeds the probability p (1.0 = disabled).

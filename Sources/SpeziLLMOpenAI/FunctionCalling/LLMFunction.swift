@@ -51,7 +51,7 @@
 /// struct LLMOpenAIChatTestView: View {
 ///     private let schema = LLMOpenAISchema(
 ///         parameters: .init(
-///             modelType: .gpt4_turbo,
+///             modelType: .gpt4o,
 ///             systemPrompt: "You're a helpful assistant that answers questions from users."
 ///         )
 ///     ) {
@@ -65,7 +65,7 @@
 ///     }
 /// }
 /// ```
-public protocol LLMFunction {
+public protocol LLMFunction: Sendable {
     /// The name of the LLM function that is called, serves as the main identifier of the function.
     static var name: String { get }
     /// The description of the LLM function, enabling the LLM to understand the purpose of the function.

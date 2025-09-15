@@ -24,7 +24,7 @@ import Foundation
 ///
 /// ```swift
 /// struct LLMOpenAIFunctionWeather: LLMFunction {
-///     /// Manual conformance to `LLMFunctionParameterArrayElement` of a custom array item type.
+///     /// Manual conformance to `LLMFunctionParameterEnum`.
 ///     enum TemperatureUnit: String, LLMFunctionParameterEnum {
 ///         case celsius
 ///         case fahrenheit

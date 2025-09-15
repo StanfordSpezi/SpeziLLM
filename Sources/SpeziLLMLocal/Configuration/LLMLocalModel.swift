@@ -18,6 +18,10 @@ public enum LLMLocalModel {
     case llama3_2_1B_4bit
     /// Llama 3.2, 3 Billion Parameters, Instruction-Tuned, 4-bit Version
     case llama3_2_3B_4bit
+    /// Llama 3.1 Aloe, Beta 8 Billion Parameters, 4-bit Version
+    case llama3_1_aloe_8B_4bit
+    /// Llama 3.0 Med42, 8 Billion Parameters, 4-bit Version
+    case llama3_med42_8B_4bit
     /// Mistral Nemo, Instruction-Tuned, Model 2407, 4-bit Version
     case mistralNeMo4bit
     /// SmolLM, 135 Million Parameters, Instruction-Tuned, 4-bit Version
@@ -39,9 +43,17 @@ public enum LLMLocalModel {
     /// Gemma 2, 2 Billion Parameters, Instruction-Tuned, 4-bit Version
     case gemma_2_2b_it_4bit
     /// Qwen 1.5, 0.5 Billion Parameters, Chat-Tuned, 4-bit Version
-    case qwen205b4bit
+    case qwen1_5_0_5b_4bit
+    /// Qwen 2, 7 Billion Parameters, 4-bit version
+    case qwen2_7b_4bit
     /// OpenELM, 270 Million Parameters, Instruction-Tuned
     case openelm270m4bit
+    /// DeepSeek R1 Distill Qwen 1.5 Billion Parameters, 8-bit Version
+    case deepseek_r1_distill_qwen_1_5b_8bit
+    /// DeepSeek R1 Distill Qwen 7 Billion Parameters,  4-bit Version
+    case deepseek_r1_distill_qwen_7b_4bit
+    /// DeepSeek R1 Distill Llama 8 Billion Parameters, 4-bit Version
+    case deepseek_r1_distill_llama_8b_4bit
     /// Set the Huggingface ID of the model. e.g. "\<USER\>/\<MODEL\>"
     case custom(id: String)
     
@@ -56,6 +68,10 @@ public enum LLMLocalModel {
             return "mlx-community/Llama-3.2-1B-Instruct-4bit"
         case .llama3_2_3B_4bit:
             return "mlx-community/Llama-3.2-3B-Instruct-4bit"
+        case .llama3_1_aloe_8B_4bit:
+            return "mlx-community/Llama3.1-Aloe-Beta-8B"
+        case .llama3_med42_8B_4bit:
+            return "mlx-community/Llama3-Med42-8B"
         case .mistralNeMo4bit:
             return "mlx-community/Mistral-Nemo-Instruct-2407-4bit"
         case .smolLM_135M_4bit:
@@ -76,10 +92,18 @@ public enum LLMLocalModel {
             return "mlx-community/gemma-2-9b-it-4bit"
         case .gemma_2_2b_it_4bit:
             return "mlx-community/gemma-2-2b-it-4bit"
-        case .qwen205b4bit:
+        case .qwen1_5_0_5b_4bit:
             return "mlx-community/Qwen1.5-0.5B-Chat-4bit"
+        case .qwen2_7b_4bit:
+            return "mlx-community/Qwen2-7B-4bit"
         case .openelm270m4bit:
             return "mlx-community/OpenELM-270M-Instruct"
+        case .deepseek_r1_distill_qwen_1_5b_8bit:
+            return "mlx-community/DeepSeek-R1-Distill-Qwen-1.5B-8bit"
+        case .deepseek_r1_distill_qwen_7b_4bit:
+            return "mlx-community/DeepSeek-R1-Distill-Qwen-7B-4bit"
+        case .deepseek_r1_distill_llama_8b_4bit:
+            return "mlx-community/DeepSeek-R1-Distill-Llama-8B-4bit-mlx"
         case .custom(let id):
             return id
         }
