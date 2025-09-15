@@ -26,6 +26,79 @@ extension LLMLocalSession {
         )
     }
     
+    func _generateForBenchmark(
+        with continuation: AsyncThrowingStream<String, any Error>.Continuation
+    ) async -> GenerateResult? {
+        if Task.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            return nil
+        }
+        
+        await MainActor.run {
+            self.state = .generating
+        }
+        
+        guard let modelContainer = await self.modelContainer else {
+            return nil
+        }
+        
+        let messages = if await !self.customContext.isEmpty {
+            await self.customContext
+        } else {
+            await self.context.formattedChat
+        }
+        
+        guard let modelInput: LMInput = try? await prepareModelInput(messages: messages, modelContainer: modelContainer) else {
+            await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuation)
+            return nil
+        }
+        
+        if Task.isCancelled {
+            Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+            await MainActor.run {
+                self.state = .ready
+            }
+            return nil
+        }
+        
+        MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+        
+        do {
+            let result = try await modelContainer.perform { modelContext in
+                let result = try MLXLMCommon.generate(
+                    input: modelInput,
+                    parameters: generationParameters,
+                    context: modelContext
+                ) { tokens in
+                    if Task.isCancelled {
+                        Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
+                        return .stop
+                    }
+                    
+                    if tokens.count >= self.schema.parameters.maxOutputLength {
+                        Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
+                        return .stop
+                    }
+                    
+                    return .more
+                }
+                return result
+            }
+            
+            await MainActor.run {
+                continuation.finish()
+                self.state = .ready
+            }
+            
+            return result
+        } catch {
+            await handleError("Generation ended with error: \(error)", error: .generationError, continuation: continuation)
+            return nil
+        }
+    }
+    
+    
+    
     // swiftlint:disable:next identifier_name function_body_length
     func _generate(
         with continuationObserver: ContinuationObserver<String, any Error>
@@ -35,11 +108,11 @@ extension LLMLocalSession {
             Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
             return
         }
-
+        
         await MainActor.run {
             self.state = .generating
         }
-
+        
 #if targetEnvironment(simulator)
         await _mockGenerate(continuationObserver: continuationObserver)
         return
@@ -59,7 +132,7 @@ extension LLMLocalSession {
             await handleError("Failed to format chat with given context", error: .illegalContext, continuation: continuationObserver.continuation)
             return
         }
-
+        
         if continuationObserver.isCancelled {
             Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
             await MainActor.run {
@@ -67,7 +140,7 @@ extension LLMLocalSession {
             }
             return
         }
-
+        
         MLXRandom.seed(self.schema.parameters.seed ?? UInt64(Date.timeIntervalSinceReferenceDate * 1000))
         
         do {
@@ -135,7 +208,7 @@ extension LLMLocalSession {
             Self.logger.warning("SpeziLLMLocal: Generation cancelled by the user.")
             return .stop
         }
-
+        
         if tokens.count >= self.schema.parameters.maxOutputLength {
             Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
             return .stop
@@ -147,7 +220,7 @@ extension LLMLocalSession {
             
             Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
             continuationObserver.continuation.yield(text)
-
+            
             if schema.injectIntoContext {
                 Task { @MainActor in
                     context.append(assistantOutput: text)
@@ -196,7 +269,7 @@ extension LLMLocalSession {
                 Self.logger.error("SpeziLLMLocal: Generation cancelled by the user.")
                 break
             }
-
+            
             continuationObserver.continuation.yield(token)
         }
         

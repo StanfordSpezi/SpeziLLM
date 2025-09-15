@@ -23,6 +23,8 @@ public enum LLMLocalError: LLMError {
     /// Indicates a mismatch between training context tokens and configured tokens
     case contextSizeMismatch
     
+    case cancellationError
+    
     
     public var errorDescription: String? {
         switch self {
@@ -36,6 +38,8 @@ public enum LLMLocalError: LLMError {
             String(localized: LocalizedStringResource("LLM_ILLEGAL_CONTEXT_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .contextSizeMismatch:
             String(localized: LocalizedStringResource("LLM_CONTEXT_SIZE_MISMATCH_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
+        default:
+            nil
         }
     }
     
@@ -51,6 +55,8 @@ public enum LLMLocalError: LLMError {
             String(localized: LocalizedStringResource("LLM_ILLEGAL_CONTEXT_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .contextSizeMismatch:
             String(localized: LocalizedStringResource("LLM_CONTEXT_SIZE_MISMATCH_ERROR_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
+        default:
+            nil
         }
     }
 
@@ -66,6 +72,8 @@ public enum LLMLocalError: LLMError {
             String(localized: LocalizedStringResource("LLM_ILLEGAL_CONTEXT_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .contextSizeMismatch:
             String(localized: LocalizedStringResource("LLM_CONTEXT_SIZE_MISMATCH_ERROR_FAILURE_REASON", bundle: .atURL(from: .module)))
+        default:
+            nil
         }
     }
 }

@@ -116,6 +116,11 @@ public final class LLMLocalSession: LLMSession, Sendable {
         MLX.GPU.clearCache()
     }
     
+    public func generateForBenchmark() async throws -> GenerateResult? {
+        let (_, continuation) = AsyncThrowingStream.makeStream(of: String.self)
+        return await self._generateForBenchmark(with: continuation)
+    }
+    
     
     /// Based on the input prompt, generate the output.
     /// - Returns: A Swift `AsyncThrowingStream` that streams the generated output as `String`.
@@ -178,7 +183,7 @@ extension LLMLocalSession {
     /// - Parameters:
     ///   - error: The error that occurred.
     ///   - continuation: The `AsyncThrowingStream` that streams the generated output.
-    public func finishGenerationWithError<E: LLMError>(_ error: E, on continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation) async {
+    public func finishGenerationWithError<E: LLMError>(_ error: E, on continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async {
         continuation.finish(throwing: error)
         await MainActor.run {
             self.state = .error(error: error)
@@ -191,9 +196,9 @@ extension LLMLocalSession {
     ///   - continuation: The `AsyncThrowingStream` that streams the generated output.
     ///
     /// - Returns: Boolean flag indicating if the `Task` has been cancelled, `true` if has been cancelled, `false` otherwise.
-    public func checkCancellation(on continuation: AsyncThrowingStream<LLMLocalGenerateState, Error>.Continuation) async -> Bool {
+    public func checkCancellation(on continuation: AsyncThrowingStream<LLMLocalGenerateState, any Error>.Continuation) async -> Bool {
         if Task.isCancelled {
-            await finishGenerationWithError(CancellationError(), on: continuation)
+            await finishGenerationWithError(LLMLocalError.cancellationError, on: continuation)
             return true
         }
         
