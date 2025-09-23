@@ -6,14 +6,17 @@
 // SPDX-License-Identifier: MIT
 //
 
-import AVFoundation
+import Atomics
+@preconcurrency import AVFoundation
+import OSLog
 import SwiftUI
-
 
 // This class still has quite some issues to be fixed
 // Such as performance on init, change of audio device etc...
 // Reference used for AudioRecorder: https://developer.apple.com/documentation/avfaudio/audio_engine/audio_units/using_voice_processing
 class AudioRecorder {
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMUITests")
+
     private let audioEngine = AVAudioEngine()
 
     private(set) var audioBufferContinuation: AsyncStream<Data>.Continuation?
@@ -42,14 +45,14 @@ class AudioRecorder {
     
     func start() {
         guard !audioEngine.isRunning else {
-            print("Audio engine already running")
+            Self.logger.warning("Audio engine already running")
             return
         }
 
         do {
             try audioEngine.start()
         } catch {
-            print("Couldn't start audio engine")
+            Self.logger.error("Couldn't start audio engine: \(error.localizedDescription)")
         }
     }
 
@@ -68,19 +71,19 @@ class AudioRecorder {
         do {
             try session.setCategory(.playAndRecord, options: .defaultToSpeaker)
         } catch {
-            print("Could not set the audio category: \(error.localizedDescription)")
+            Self.logger.error("Could not set the audio category: \(error.localizedDescription)")
         }
 
         do {
             try session.setPreferredSampleRate(sampleRate)
         } catch {
-            print("Could not set the preferred sample rate: \(error.localizedDescription)")
+            Self.logger.error("Could not set the preferred sample rate: \(error.localizedDescription)")
         }
 
         do {
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print("Could not set the audio session to active: \(error.localizedDescription)")
+            Self.logger.error("Could not set the audio session to active: \(error.localizedDescription)")
         }
     }
 
@@ -89,7 +92,7 @@ class AudioRecorder {
         do {
             try inputNode.setVoiceProcessingEnabled(true)
         } catch {
-            print("Could not enable voice processing \(error)")
+            Self.logger.error("Could not enable voice processing \(error)")
             return
         }
 
@@ -116,16 +119,16 @@ class AudioRecorder {
                     return
                 }
 
-                var hasSetStatus = false
+                let hasSetStatus = ManagedAtomic(false)
                 var error: NSError?
 
                 let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
                     // Provide the input buffer once
-                    if hasSetStatus {
+                    let alreadySet = hasSetStatus.exchange(true, ordering: .relaxed)
+                    if alreadySet {
                         outStatus.pointee = .noDataNow
                         return nil
                     } else {
-                        hasSetStatus = true
                         outStatus.pointee = .haveData
                         return buffer
                     }
@@ -133,7 +136,7 @@ class AudioRecorder {
 
                 let status = converter.convert(to: outBuffer, error: &error, withInputFrom: inputBlock)
                 if status == .error || error != nil {
-                    print("Conversion error: \(error?.localizedDescription ?? "Unknown")")
+                    Self.logger.error("Conversion error: \(error?.localizedDescription ?? "Unknown")")
                     return
                 }
 

@@ -6,11 +6,14 @@
 // SPDX-License-Identifier: MIT
 //
 
-import AVFAudio
+@preconcurrency import AVFAudio
 import Foundation
+import OSLog
 
 
 class PCMPlayer {
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMUITests")
+
     private let audioEngine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
     private let inputFormat: AVAudioFormat // raw PCM16 data format from OpenAI
@@ -35,7 +38,7 @@ class PCMPlayer {
         do {
             try audioEngine.start()
         } catch {
-            print("Error starting audio engine: \(error)")
+            Self.logger.error("Error starting audio engine: \(error)")
         }
     }
 
@@ -51,12 +54,12 @@ class PCMPlayer {
         if inputFormat.sampleRate != outputFormat.sampleRate {
             // Conversion is needed.
             guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
-                print("Failed to initialize audio converter")
+                Self.logger.error("Failed to initialize audio converter")
                 return
             }
 
             guard let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: inputFrameCount) else {
-                print("Failed to create input PCM buffer")
+                Self.logger.error("Failed to create input PCM buffer")
                 return
             }
             inputBuffer.frameLength = inputFrameCount
@@ -72,7 +75,7 @@ class PCMPlayer {
             let outputFrameCapacity = UInt32(Double(inputFrameCount) * ratio)
 
             guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: outputFrameCapacity) else {
-                print("Failed to create output PCM buffer")
+                Self.logger.error("Failed to create output PCM buffer")
                 return
             }
 
@@ -84,14 +87,14 @@ class PCMPlayer {
 
             let status = converter.convert(to: outputBuffer, error: &error, withInputFrom: inputBlock)
             if status != .haveData && status != .inputRanDry {
-                print("Conversion error: \(error?.localizedDescription ?? "Unknown error")")
+                Self.logger.error("Conversion error: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
             finalBuffer = outputBuffer
         } else {
             // No conversion needed between input and output audio format
             guard let buffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: inputFrameCount) else {
-                print("Failed to create PCM buffer")
+                Self.logger.error("Failed to create PCM buffer")
                 return
             }
             buffer.frameLength = inputFrameCount
@@ -104,7 +107,7 @@ class PCMPlayer {
         }
 
         guard let bufferToPlay = finalBuffer else {
-            print("No valid buffer to play")
+            Self.logger.error("No valid buffer to play")
             return
         }
 
