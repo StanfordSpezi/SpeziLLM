@@ -16,20 +16,18 @@ public enum LLMRealtimeAudioEvent: Sendable {
     case userTranscriptDone(TranscriptDone)
     case assistantTranscriptDelta(String)
     case assistantTranscriptDone(String)
-    case toolCall(Data)
     case speechStarted(SpeechStarted)
-    case speechStopped
+    case speechStopped(SpeechStopped)
     
-
+    
     public struct TranscriptDone: Sendable, Codable {
         enum CodingKeys: String, CodingKey {
             case transcript
             case itemId = "item_id"
         }
-
+        
         public let transcript: String
         public let itemId: String
-        // Non-exhaustive yet...
     }
     
     public struct TranscriptDelta: Sendable, Codable {
@@ -37,19 +35,44 @@ public enum LLMRealtimeAudioEvent: Sendable {
             case delta
             case itemId = "item_id"
         }
-
+        
         public let delta: String
         public let itemId: String
-        // Non-exhaustive yet...
     }
     
-    public struct SpeechStarted: Sendable, Codable {
+    public struct SpeechStarted: Sendable, Decodable {
         enum CodingKeys: String, CodingKey {
             case itemId = "item_id"
             case audioStartMs = "audio_start_ms"
         }
+        
+        public let itemId: String
+        public let audioStart: Duration
+        
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            itemId = try container.decode(String.self, forKey: .itemId)
+            
+            let audioStartMs = try container.decode(Int.self, forKey: .audioStartMs)
+            audioStart = .milliseconds(audioStartMs)
+        }
+    }
+    
+    public struct SpeechStopped: Sendable, Decodable {
+        enum CodingKeys: String, CodingKey {
+            case itemId = "item_id"
+            case audioEndMs = "audio_end_ms"
+        }
 
         public let itemId: String
-        public let audioStartMs: Int
+        public let audioEnd: Duration
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            itemId = try container.decode(String.self, forKey: .itemId)
+
+            let audioEndMs = try container.decode(Int.self, forKey: .audioEndMs)
+            audioEnd = .milliseconds(audioEndMs)
+        }
     }
 }
