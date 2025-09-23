@@ -21,7 +21,7 @@ import SpeziLLM
 public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAIRealtimeSession``.
     static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
-    
+
     let platform: LLMOpenAIRealtimePlatform
     let schema: LLMOpenAIRealtimeSchema
     let keychainStorage: KeychainStorage
@@ -64,19 +64,19 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
         let lastContext = await self.context.last { $0.role == .user && $0.complete }
         
         // Send the conversation.item.create event with the message
-        let eventData = ConversationItemCreate(
-            _type: .conversation_period_item_period_create,
-            item: .init(_type: .message, role: .user, content: [.init(_type: .input_text, text: lastContext?.content ?? "")])
+        try await apiConnection.sendMessage(
+            ConversationItemCreate(
+                _type: .conversation_period_item_period_create,
+                item: .init(
+                    _type: .message,
+                    role: .user,
+                    content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
+                )
+            )
         )
         
-        let encoder = JSONEncoder()
-        let eventDataJson = try encoder.encode(eventData)
-        try await apiConnection.socket?.send(.string(String(decoding: eventDataJson, as: UTF8.self)))
-
         // Trigger a response
-        let responseData = ResponseCreate(_type: .response_period_create)
-        let responseDataJson = try JSONEncoder().encode(responseData)
-        try await apiConnection.socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
+        try await apiConnection.sendMessage(ResponseCreate(_type: .response_period_create))
 
         
         // Stream the text response back to the `generate()` caller.

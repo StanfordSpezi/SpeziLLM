@@ -24,17 +24,19 @@ actor LLMOpenAIRealtimeConnection {
     }
 
     private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
+    private static let encoder = JSONEncoder()
+    private static let decoder = JSONDecoder()
 
     private var eventLoopTask: Task<Void, any Error>?
 
     // Websocket Connection
-    internal var socket: URLSessionWebSocketTask?
+    private var socket: URLSessionWebSocketTask?
     private lazy var urlSession = URLSession(configuration: .default)
 
     // The event stream which gets sent in session.events()
     private let eventStream = EventBroadcaster<LLMRealtimeAudioEvent>()
 
-    // Handling of the setup: only finish whenever the connection to API has been succesful
+    // Handling of the setup: only finish whenever the connection to API has been successful
     private var readyContinuation: CheckedContinuation<Void, any Error>?
 
     func cancel() {
@@ -64,6 +66,11 @@ actor LLMOpenAIRealtimeConnection {
         socket = webSocketTask
         
         try await startEventLoop(schema: schema)
+    }
+    
+    func sendMessage(_ object: some Encodable) async throws {
+        let objectJson = try Self.encoder.encode(object)
+        try await socket?.send(.string(String(decoding: objectJson, as: UTF8.self)))
     }
     
     /// Starts the event loop, which runs until calling `cancel()`
@@ -137,21 +144,21 @@ actor LLMOpenAIRealtimeConnection {
                             let llmEvent = LLMRealtimeAudioEvent.assistantTranscriptDone(transcript)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.delta":
-                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.TranscriptDelta.self, from: messageJsonData)
+                            let event = try Self.decoder.decode(LLMRealtimeAudioEvent.TranscriptDelta.self, from: messageJsonData)
                             let llmEvent = LLMRealtimeAudioEvent.userTranscriptDelta(event)
                             await eventStream.yield(llmEvent)
                         case "conversation.item.input_audio_transcription.completed":
-                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.TranscriptDone.self, from: messageJsonData)
+                            let event = try Self.decoder.decode(LLMRealtimeAudioEvent.TranscriptDone.self, from: messageJsonData)
                             let llmEvent = LLMRealtimeAudioEvent.userTranscriptDone(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_started":
-                            let event = try JSONDecoder().decode(LLMRealtimeAudioEvent.SpeechStarted.self, from: messageJsonData)
+                            let event = try Self.decoder.decode(LLMRealtimeAudioEvent.SpeechStarted.self, from: messageJsonData)
                             let llmEvent = LLMRealtimeAudioEvent.speechStarted(event)
                             await eventStream.yield(llmEvent)
                         case "input_audio_buffer.speech_stopped":
                             await eventStream.yield(LLMRealtimeAudioEvent.speechStopped)
                         case "response.function_call_arguments.done":
-                            let event = try JSONDecoder().decode(FunctionCallArgs.self, from: messageJsonData)
+                            let event = try Self.decoder.decode(FunctionCallArgs.self, from: messageJsonData)
                             Task {
                                 do {
                                     try await handleFunctionCall(schema: schema, event: event)
@@ -195,16 +202,16 @@ actor LLMOpenAIRealtimeConnection {
             )
         )
         
-        let conversationItemJson = try JSONEncoder().encode(conversationItem)
+        let conversationItemJson = try Self.encoder.encode(conversationItem)
         try await socket?.send(.string(String(decoding: conversationItemJson, as: UTF8.self)))
         
         // Send a "response.create" event to reply something after the function call
         let responseData = RealtimeClientEventResponseCreate(_type: .response_period_create)
-        let responseDataJson = try JSONEncoder().encode(responseData)
+        let responseDataJson = try Self.encoder.encode(responseData)
         try await socket?.send(.string(String(decoding: responseDataJson, as: UTF8.self)))
     }
 
-    func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
+    private func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
         typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
         typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
         typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
@@ -212,7 +219,7 @@ actor LLMOpenAIRealtimeConnection {
 
         let tools: [ToolsPayload] = try schema.functions.values.compactMap { function in
             let functionType = Swift.type(of: function)
-            let encodedSchema = try JSONEncoder().encode(try function.schema)
+            let encodedSchema = try Self.encoder.encode(try function.schema)
             let jsonObject = try JSONSerialization.jsonObject(with: encodedSchema) as? [String: any Sendable] ?? [:]
 
             return ToolsPayload(
@@ -238,7 +245,7 @@ actor LLMOpenAIRealtimeConnection {
             )
         )
         
-        let eventSessionUpdateData = try JSONEncoder().encode(eventSessionUpdate)
+        let eventSessionUpdateData = try Self.encoder.encode(eventSessionUpdate)
         guard var eventSessionUpdateJson = try JSONSerialization.jsonObject(with: eventSessionUpdateData) as? [String: Any],
               var session = eventSessionUpdateJson["session"] as? [String: Any] else {
             throw RealtimeError.eventSessionUpdateSerialisationError
@@ -247,8 +254,7 @@ actor LLMOpenAIRealtimeConnection {
         // Handle turn_detection directly on the JSON object, as the GeneratedOpenAIClient isn't up-to-date
         // and JSONEncoder() is ommiting `nil` values instead of returning as "null"
         if let turnDetectionSettings = schema.parameters.turnDetectionSettings {
-            let jSONEncoder = JSONEncoder()
-            let turnDetectionData = try jSONEncoder.encode(turnDetectionSettings)
+            let turnDetectionData = try Self.encoder.encode(turnDetectionSettings)
             let turnDetectionObj = try JSONSerialization.jsonObject(with: turnDetectionData, options: [])
             session["turn_detection"] = turnDetectionObj
             eventSessionUpdateJson["session"] = session
