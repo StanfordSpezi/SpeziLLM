@@ -16,30 +16,56 @@ struct LLMOpenAIRealtimeTestView: View {
     static let schema = LLMOpenAIRealtimeSchema(parameters: .init(modelType: .gpt4o_realtime)) {
         LLMOpenAIFunctionWeather()
     }
-    
+
     @LLMSessionProvider(schema: Self.schema) var llm: LLMOpenAIRealtimeSession
 
     @State var audio = AudioViewModel()
-    
-    var body: some View {
-        VStack {
-            LLMChatView(session: $llm)
+    @State var showOnboarding = false
 
-            HStack {
+
+    var body: some View {
+        LLMChatView(session: $llm)
+        .toolbar {
+            ToolbarItem {
+                Button("LLM_OPENAI_CHAT_ONBOARDING_BUTTON") {
+                    showOnboarding.toggle()
+                }
+            }
+            ToolbarItemGroup(placement: .bottomBar) {
                 Button {
-                    Task {
-                        if audio.isRecording {
-                            audio.stop()
-                        } else {
-                            await audio.start()
-                        }
-                    }
+                    toggleAudioRecording()
                 } label: {
                     Text(audio.isRecording ? "Stop Recording" : "Start Recording")
-                }.buttonStyle(.bordered)
+                    Image(systemName: audio.isRecording ? "stop.circle.fill" : "record.circle")
+                        .foregroundStyle(audio.isRecording ? .red : .accentColor)
+                        .accessibilityHidden(true)
+                }
             }
-        }.task {
+        }
+        .sheet(isPresented: $showOnboarding) {
+            LLMOpenAIRealtimeOnboardingView(session: $llm)
+                #if os(macOS)
+                .frame(minWidth: 400, minHeight: 550)
+                #endif
+        }
+        .task {
             audio.setup(llm: llm)
+        }
+        .onChange(of: showOnboarding) { _, newValue in
+            if !newValue {
+                // When closing the onboarding sheet: Re-setup the realtime session
+                llm.cancel()
+                llm.state = .uninitialized
+                audio.setup(llm: llm)
+            }
+        }
+    }
+
+    private func toggleAudioRecording() {
+        if audio.isRecording {
+            audio.stop()
+        } else {
+            Task { await audio.start() }
         }
     }
 }
