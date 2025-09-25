@@ -77,9 +77,9 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         await apiConnection.events()
     }
     
-    // swiftlint:disable closure_body_length cyclomatic_complexity function_body_length
     @MainActor
     func listenToLLMEvents() {
+        // swiftlint:disable:next closure_body_length
         Task { [weak self] in
             guard let eventStream = await self?.apiConnection.events() else {
                 Self.logger.error("SpeziLLMOpenAIRealtime: No self in listenToLLMEvents...")
@@ -90,50 +90,22 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                 for try await event in eventStream {
                     switch event {
                     case .assistantTranscriptDelta(let content):
-                        await MainActor.run { self?.context.append(assistantOutput: content) }
+                        self?.context.append(assistantOutput: content)
                     case .assistantTranscriptDone:
-                        await MainActor.run { self?.context.completeAssistantStreaming() }
+                        self?.context.completeAssistantStreaming()
                     case .userTranscriptDelta(let content):
-                        await MainActor.run {
-                            let contentUUID = UUID.deterministic(from: content.itemId)
-                            let existingTranscriptIdx = self?.context
-                                .firstIndex { $0.id == contentUUID }
-                            if let existingTranscriptIdx = existingTranscriptIdx,
-                                let existingMessage = self?.context[existingTranscriptIdx] {
-                                self?.context[existingTranscriptIdx] = .init(
-                                    role: .user,
-                                    content: existingMessage.content + content.delta,
-                                    complete: false,
-                                    id: contentUUID,
-                                    date: existingMessage.date
-                                )
-                            }
-                        }
+                        self?.handleTranscript(itemId: content.itemId, content: content.delta, isComplete: false)
                     case .userTranscriptDone(let content):
-                        await MainActor.run {
-                            let contentUUID = UUID.deterministic(from: content.itemId)
-                            let existingTranscriptIdx = self?.context
-                                .firstIndex { $0.id == contentUUID }
-                            if let existingTranscriptIdx = existingTranscriptIdx,
-                                let existingMessage = self?.context[existingTranscriptIdx] {
-                                self?.context[existingTranscriptIdx] = .init(
-                                    role: .user,
-                                    content: existingMessage.content,
-                                    complete: true,
-                                    id: contentUUID,
-                                    date: existingMessage.date
-                                )
-                            }
-                        }
-
+                        self?.handleTranscript(itemId: content.itemId, content: "", isComplete: true)
                     case .speechStopped(let content):
                         guard self?.schema.parameters.transcriptionSettings != nil else {
                             // No transcription is happening if no transcription settings are specified
                             break
                         }
 
-                        // When speech starts, add a context message at the correct spot (to retain order)
-                        // This message then gets completed using the .userTranscriptDelta event
+                        // When speech stops, directly append an empty user message to ensure it
+                        // appears before any assistant messages in the context. This message then 
+                        // gets completed using the .userTranscriptDelta event
                         let contentUUID = UUID.deterministic(from: content.itemId)
                         self?.context
                             .append(
@@ -153,5 +125,31 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                 Self.logger.error("SpeziLLMOpenAIRealtime: Listening to LLM Event threw error: \(error)")
             }
         }
+    }
+    
+    /// Updates an existing context message by appending content, and optionally marking it as complete.
+    ///
+    /// If no message in the context has a UUID matching the deterministic UUID derived from `itemId`,
+    /// this function does nothing and the content is ignored.
+    @MainActor
+    private func handleTranscript(itemId: String, content: String, isComplete: Bool) {
+        let contentUUID = UUID.deterministic(from: itemId)
+        let existingTranscriptIdx = self.context.firstIndex {
+            $0.id == contentUUID
+        }
+
+        guard let existingTranscriptIdx = existingTranscriptIdx else {
+            return
+        }
+
+        let existingMessage = self.context[existingTranscriptIdx]
+
+        self.context[existingTranscriptIdx] = .init(
+            role: .user,
+            content: existingMessage.content + content,
+            complete: isComplete,
+            id: contentUUID,
+            date: existingMessage.date
+        )
     }
 }

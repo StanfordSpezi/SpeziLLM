@@ -12,7 +12,7 @@ import Foundation
 
 extension UUID {
     // Hack to avoid changing the LLMContext's message's IDs from UUIDs to something else
-    /// Generates a deterministic UUID from a string using SHA256
+    /// Generates a deterministic v4 UUID from a string using SHA256
     static func deterministic(from string: String) -> UUID {
         // Hash the input string
         let hash = SHA256.hash(data: Data(string.utf8))
