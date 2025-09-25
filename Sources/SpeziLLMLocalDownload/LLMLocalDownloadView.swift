@@ -211,8 +211,8 @@ public struct LLMLocalDownloadView: View {
 #if DEBUG
 #Preview {
     LLMLocalDownloadView(
-        model: .llama3_8B_4bit,
-        downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
+        model: .llama3_2_3B_4bit,
+        downloadDescription: LocalizedStringResource("LLM_DOWNLOAD_DESCRIPTION", bundle: .atURL(from: .module)),
         action: {}
     )
 }

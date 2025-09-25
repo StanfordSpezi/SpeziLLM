@@ -201,7 +201,7 @@ extension LLMFogSession {
                         let ipAddress: String? = switch host {
                         // No other way to get the current IP address from NWEndpoint
                         case .ipv4(let ipv4Address): ipv4Address.debugDescription.components(separatedBy: "%").first
-                        case .ipv6(let ipv6Address): ipv6Address.debugDescription.components(separatedBy: "%").first
+                        case .ipv6(let ipv6Address): ipv6Address.debugDescription
                         default: nil
                         }
 

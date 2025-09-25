@@ -257,7 +257,7 @@ only_rules:
   # Objective-C attribute (@objc) is redundant in declaration.
   - redundant_objc_attribute
   # Initializing an optional variable with nil is redundant.
-  - redundant_optional_initialization
+  - implicit_optional_initialization
   # Property setter access level shouldn't be explicit if it's the same as the variable access level.
   - redundant_set_access_control
   # String enum values can be omitted when they are equal to the enumcase name.
