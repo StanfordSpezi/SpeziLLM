@@ -234,6 +234,9 @@ actor LLMOpenAIRealtimeConnection {
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
             session: .init(
+                instructions: schema.parameters.systemPrompt,
+                voice: schema.parameters.voice
+                    .flatMap { val in .init(rawValue: val.rawValue) },
                 input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
                     .input_audio_transcriptionPayload(
                         model: transcriptionSettings?.model.rawValue,
