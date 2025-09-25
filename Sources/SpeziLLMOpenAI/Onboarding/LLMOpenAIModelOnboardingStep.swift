@@ -15,13 +15,15 @@ import SwiftUI
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
         public static let models: [LLMOpenAIParameters.ModelType] = [
-            .gpt3_5_turbo,
-            .gpt4_turbo,
+            .gpt5,
+            .gpt5_mini,
+            .gpt5_chat,
+            .gpt4_1,
             .gpt4o,
-            .o3_mini,
-            .o3_mini_high,
-            .o1,
-            .o1_mini
+            .o4_mini,
+            .o3_pro,
+            .o3,
+            .o3_mini
         ]
     }
     
