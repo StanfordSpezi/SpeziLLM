@@ -8,7 +8,7 @@
 
 
 import Foundation
-import Hub
+@preconcurrency import Hub
 import MLX
 import MLXLLM
 import MLXLMCommon

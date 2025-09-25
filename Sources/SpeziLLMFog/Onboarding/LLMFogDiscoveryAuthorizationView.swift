@@ -121,7 +121,7 @@ public struct LLMFogDiscoveryAuthorizationView: View {
             #if targetEnvironment(simulator)
             self.authorizationGranted = true
             return
-            #endif
+            #else
 
             let authGranted: Bool
 
@@ -136,6 +136,7 @@ public struct LLMFogDiscoveryAuthorizationView: View {
             } else {
                 throw LLMFogDiscoveryAuthorizationError.authorizationDenied
             }
+            #endif
         } label: {
             Text("FOG_DISCOVERY_REQUEST_AUTH_BUTTON", bundle: .module)
                 .padding(.horizontal)

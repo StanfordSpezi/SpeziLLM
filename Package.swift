@@ -95,14 +95,18 @@ let package = Package(
                 .target(name: "GeneratedOpenAIClient"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
-                .product(name: "Spezi", package: "Spezi")
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "GeneratedOpenAIClient",
             dependencies: [
-                .product(name: "SpeziKeychainStorage", package: "SpeziStorage")
+                .target(name: "SpeziLLM"),
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
