@@ -24,6 +24,13 @@ extension UUID {
             uuidBytes[4], uuidBytes[5], uuidBytes[6], uuidBytes[7],
             uuidBytes[8], uuidBytes[9], uuidBytes[10], uuidBytes[11],
             uuidBytes[12], uuidBytes[13], uuidBytes[14], uuidBytes[15]
-        ))
+        )).makeValidV4()
+    }
+    
+    func makeValidV4() -> UUID {
+        var uuid = self.uuid
+        uuid.6 = (uuid.6 & 0b00001111) | 0b01000000
+        uuid.8 = (uuid.8 & 0b00111111) | 0b10000000
+        return UUID(uuid: uuid)
     }
 }
