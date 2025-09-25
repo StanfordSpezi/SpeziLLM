@@ -18,7 +18,7 @@ import SwiftUI
 /// During the `View`s display, the local network is continuously browsed for mDNS services and the result list is displayed to the user.
 /// The user then selects a preferred fog resource to use. This resource is set on the ``LLMFogPlatform`` and provided as an action closure argument.
 ///
-/// Users can view details about the individually discovered resources via a detailed info botton.
+/// Users can view details about the individually discovered resources via a detailed info button.
 /// Once the `View` is discarded, the browsing of the local network finishes.
 ///
 /// ### Usage
@@ -37,10 +37,16 @@ import SwiftUI
 /// }
 /// ```
 public struct LLMFogDiscoverySelectionView: View {
+    private enum Completion {
+        case required((NWBrowser.Result) async throws -> Void)
+        case optional(((NWBrowser.Result?) async throws -> Void))
+    }
+
+
     @Environment(LLMFogPlatform.self) private var fogPlatform
 
-    /// Called when the user taps Next. Passed the selected service result.
-    private let action: (NWBrowser.Result) async throws -> Void
+    /// Called when the user taps Next. Passed the selected service result, or `nil`.
+    private let completion: Completion
 
     @State private var discoveredServices: [NWBrowser.Result] = []
     @State private var selectedService: NWBrowser.Result?
@@ -49,6 +55,14 @@ public struct LLMFogDiscoverySelectionView: View {
     // for showing the info sheet
     @State private var infoService: NWBrowser.Result?
     @State private var isShowingInfo = false
+
+    private var allowEmptySelection: Bool {
+        if case .optional = completion {
+            return true
+        } else {
+            return false
+        }
+    }
 
 
     public var body: some View {
@@ -90,23 +104,47 @@ public struct LLMFogDiscoverySelectionView: View {
                 }
             },
             footer: {
-                OnboardingActionsView(.init("FOG_DISCOVERY_SELECT_NEXT_BUTTON", bundle: .atURL(from: .module))) {
-                    guard let service = selectedService else {
-                        return
-                    }
+                OnboardingActionsView(
+                    (self.allowEmptySelection && self.selectedService == nil) ?
+                    .init("FOG_DISCOVERY_SELECT_NEXT_BUTTON_ALLOW_EMPTY_SELECTION", bundle: .atURL(from: .module))
+                    : .init("FOG_DISCOVERY_SELECT_NEXT_BUTTON", bundle: .atURL(from: .module))
+                ) {
+                    self.fogPlatform.preferredFogService = self.selectedService      // set preferred service on the `LLMFogPlatform`
 
-                    self.fogPlatform.preferredFogService = service      // set preferred service on the `LLMFogPlatform`
-                    try await action(service)
+                    switch self.completion {
+                    case .required(let action):
+                        guard let service = self.selectedService else {
+                            return
+                        }
+                        try await action(service)
+
+                    case .optional(let action):
+                        try await action(self.selectedService)
+                    }
                 }
-                    .disabled(self.selectedService == nil)
+                    .disabled(
+                        self.allowEmptySelection ?
+                        false
+                        : self.selectedService == nil
+                    )
             }
         )
         .viewStateAlert(state: $viewState)
     }
 
 
+    /// Initializes a discovery view where a service **must** be selected.
+    ///
+    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen ``NWBrowser/Result``.
     public init(action: @escaping (NWBrowser.Result) async throws -> Void) {
-        self.action = action
+        self.completion = .required(action)
+    }
+
+    /// Initializes a discovery view where selection is **optional**.
+    ///
+    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen ``NWBrowser/Result`` or `nil` if skipped.
+    public init(allowingEmptySelection action: @escaping (NWBrowser.Result?) async throws -> Void = { _ in }) {
+        self.completion = .optional(action)
     }
 
 
@@ -155,14 +193,14 @@ public struct LLMFogDiscoverySelectionView: View {
 
             Spacer(minLength: 0)
 
-            if selectedService == service {
+            if self.selectedService == service {
                 Image(systemName: "checkmark")
                     .foregroundColor(.accentColor)
                     .accessibilityLabel("Selected service")
             }
 
             Button {
-                infoService = service
+                self.infoService = service
             } label: {
                 Image(systemName: "info.circle")
                     .accessibilityLabel("More information about service")
@@ -173,10 +211,10 @@ public struct LLMFogDiscoverySelectionView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             // toggle selection
-            if selectedService == service {
-                selectedService = nil
+            if self.selectedService == service {
+                self.selectedService = nil
             } else {
-                selectedService = service
+                self.selectedService = service
             }
         }
     }
@@ -208,7 +246,7 @@ public struct LLMFogDiscoverySelectionView: View {
                 self.discoveredServices = sorted
             }
         } catch {
-            viewState = .error(AnyLocalizedError(error: error))     // only `LLMFogError` thrown here, mapped correctly
+            self.viewState = .error(AnyLocalizedError(error: error))     // only `LLMFogError` thrown here, mapped correctly
         }
     }
 }
