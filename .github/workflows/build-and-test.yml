@@ -50,8 +50,6 @@ jobs:
         platform:
           - name: iOS
             destination: 'platform=iOS Simulator,name=iPhone 17 Pro'
-          - name: iPad
-            destination: 'platform=iOS Simulator,name=iPad Air 11-inch (M3)'
           - name: visionOS
             destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
       fail-fast: false
