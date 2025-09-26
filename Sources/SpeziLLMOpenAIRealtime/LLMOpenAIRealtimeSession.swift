@@ -34,7 +34,7 @@ import SpeziLLM
 ///
 /// ## Streams
 /// - ``generate()``: Starts a text response and returns an `AsyncThrowingStream` of token deltas. Finishes when the response completes.
-/// - ``listen()``: Returns an `AsyncThrowingStream` of PCM16 audio (24 kHz) for the assistant's speech output. Lasts for the lifetime of the session.
+/// - ``listen()``: Returns an `AsyncThrowingStream` of PCM16 audio (24 kHz sample rate) for the assistant's speech output. Lasts for the lifetime of the session.
 /// - ``events()``: Returns an `AsyncThrowingStream` of realtime events (``LLMRealtimeAudioEvent``), providing the ability to reflect events precisely in the UI. Lasts for the lifetime of the session.
 ///
 /// ### Usage

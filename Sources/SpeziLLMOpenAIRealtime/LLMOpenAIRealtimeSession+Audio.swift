@@ -12,11 +12,11 @@ import SpeziLLM
 
 
 extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
-    /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the OpenAI Realtime API.
+    /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the Realtime API.
     ///
-    /// Each `Data` element in the stream represents a chunk of 16-bit PCM audio that can be
-    /// decoded or directly played by an audio engine. The stream will throw if a connection
-    /// error occurs, and it automatically completes when the session ends or is cancelled.
+    /// Each `Data` element in the stream represents a chunk of 16-bit PCM audio at a sample rate of 24khz, that can be
+    /// decoded or directly played by an audio engine. The stream will throw if a connection error occurs, and it automatically
+    /// completes when the session ends or is cancelled.
     ///
     /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
     /// - Throws: Errors related to the underlying Realtime API connection.
