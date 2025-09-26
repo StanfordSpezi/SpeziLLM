@@ -139,9 +139,15 @@ let package = Package(
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
             ],
+            resources: [
+                .process("Resources")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny")
+            ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
-            ]
+            ] + swiftLintPlugin()
         ),
         .testTarget(
             name: "SpeziLLMTests",
