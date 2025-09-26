@@ -221,6 +221,7 @@ extension LLMOpenAISession {
                 }
             } catch {
                 // Stop LLM inference in case of a function call error
+                // TODO: If OpenAI Error: add that error to the context
                 return
             }
         }

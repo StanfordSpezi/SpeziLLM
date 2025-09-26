@@ -19,7 +19,7 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     /// Default values of ``LLMOpenAIRealtimeSchema``.
     public enum Defaults {
         /// Empty default of passed function calls (`_LLMFunctionCollection`).
-        /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.
+        /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAIRealtimeSchema/init(parameters:injectIntoContext:_:)``.
         nonisolated(unsafe) public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
     }
 

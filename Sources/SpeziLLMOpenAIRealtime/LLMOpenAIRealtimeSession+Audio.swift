@@ -96,14 +96,14 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     
     /// Returns a stream of Realtime events for advanced integrations.
     ///
-    /// The returned stream yields ``LLMRealtimeAudioEvent`` values such as audio deltas, transcript
+    /// The returned stream yields `LLMRealtimeAudioEvent` values such as audio deltas, transcript
     /// updates, and lifecycle notifications. Use this if you need full control over rendering or state.
     /// For audio-only playback, prefer ``listen()`` which surfaces just the PCM16 audio chunks.
     ///
     /// The stream finishes when the session ends or the consuming task is cancelled. Errors from the
     /// underlying connection are surfaced via the stream.
     ///
-    /// - Returns: An `AsyncThrowingStream` emitting ``LLMRealtimeAudioEvent`` values.
+    /// - Returns: An `AsyncThrowingStream` emitting `LLMRealtimeAudioEvent` values.
     ///
     /// Example
     /// ```swift
@@ -118,6 +118,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     ///     }
     /// }
     /// ```
+    @_spi(Experimental)
     public func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         await apiConnection.events()
     }

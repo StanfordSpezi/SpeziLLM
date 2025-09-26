@@ -25,17 +25,17 @@ import SpeziLLM
 /// A text inference is started by ``LLMOpenAIRealtimeSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAIRealtimeSession/cancel()``.
 /// The ``LLMOpenAIRealtimeSession`` exposes the user and assistant's audio transcripts via the ``LLMOpenAIRealtimeSession/context`` property, containing all the transcript history with the Realtime API.
 ///
-/// - Warning: The ``LLMOpenAIRealtimeSession`` shouldn't be created manually but always through the ``LLMOpenAIPlatform`` via the `LLMRunner`.
+/// - Warning: The ``LLMOpenAIRealtimeSession`` shouldn't be created manually but always through the ``LLMOpenAIRealtimePlatform`` via the `LLMRunner`.
 ///
 /// - Tip: ``LLMOpenAIRealtimeSession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication
-///  between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
+///   between the OpenAI LLMs and external tools. For details, refer to `LLMFunction` and `LLMFunction/Parameter` from SpeziLLMOpenAI, or see SpeziLLMOpenAI's FunctionCalling documentation.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
 /// ## Streams
 /// - ``generate()``: Starts a text response and returns an `AsyncThrowingStream` of token deltas. Finishes when the response completes.
 /// - ``listen()``: Returns an `AsyncThrowingStream` of PCM16 audio (24 kHz sample rate) for the assistant's speech output. Lasts for the lifetime of the session.
-/// - ``events()``: Returns an `AsyncThrowingStream` of realtime events (``LLMRealtimeAudioEvent``), providing the ability to reflect events precisely in the UI. Lasts for the lifetime of the session.
+/// - `events()` **(Experimental)**: Returns an `AsyncThrowingStream` of realtime events (`LLMRealtimeAudioEvent`), providing the ability to reflect events precisely in the UI. Lasts for the lifetime of the session.
 ///
 /// ### Usage
 ///
@@ -186,7 +186,7 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     
     /// Closes the realtime connection.
     ///
-    /// Calling this function ends any active streams from ``generate()``, ``listen()``, or ``events()``.
+    /// Calling this function ends any active streams.
     public func cancel() {
         Task { [apiConnection] in await apiConnection.cancel() }
     }
@@ -195,3 +195,4 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
         self.cancel()
     }
 }
+
