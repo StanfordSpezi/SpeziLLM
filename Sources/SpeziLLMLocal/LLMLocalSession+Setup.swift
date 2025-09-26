@@ -15,7 +15,7 @@ import MLXLMCommon
 extension LLMLocalSession {
     private func verifyModelDownload() -> Bool {
         let repo = Hub.Repo(id: self.schema.configuration.name)
-        let url = HubApi.shared.localRepoLocation(repo)
+        let url = Self.hubApi.localRepoLocation(repo)
         let modelFileExtension = ".safetensors"
         
         do {

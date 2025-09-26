@@ -6,11 +6,18 @@
 # SPDX-License-Identifier: MIT
 #
 
-name: Pull Request
+name: Static Analysis
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: Static-Analysis-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   reuse_action:
@@ -22,3 +29,9 @@ jobs:
   markdown_link_check:
     name: Markdown Link Check
     uses: StanfordBDHG/.github/.github/workflows/markdown-link-check.yml@v2
+  breaking_changes:
+    name: Diagnose Breaking Changes
+    uses: StanfordSpezi/.github/.github/workflows/breaking-changes.yml@v2
+    if: ${{ github.ref_name != 'main' }}
+    with:
+      runsonlabels: '["macOS", "self-hosted"]'
