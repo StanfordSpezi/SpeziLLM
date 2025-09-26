@@ -49,7 +49,22 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         }
     }
     
-    /// Used to append audio from the user's mic, directly sends it to OpenAI
+    /// Appends a chunk of audio (user input) to the Realtime API's input buffer.
+    ///
+    /// This method is used to stream audio samples from the microphone to the OpenAI Realtime session as the user speaks.
+    ///
+    /// - Important: No resampling or format conversion is performed by this method: audio should be provided in 16-bit PCM (little-endian), mono, 24 kHz.
+    ///              Supplying a different format may result in degraded quality or server-side errors.
+    /// - Parameter buffer: A block of raw PCM16 samples to send to the Realtime API input audio buffer.
+    /// - Throws: Any error encountered while sending the event over the realtime connection.
+    /// - SeeAlso: ``endUserTurn()`` to commit the buffer and trigger a model response when not using VAD.
+    ///
+    /// Example
+    /// ```swift
+    /// while let pcmChunk = someRecorder.readPCM16Chunk() {
+    ///     try await llmSession.appendUserAudio(pcmChunk)
+    /// }
+    /// ```
     public func appendUserAudio(_ buffer: Data) async throws {
         typealias InputAudioBufferAppend = Components.Schemas.RealtimeClientEventInputAudioBufferAppend
 
@@ -61,7 +76,14 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         )
     }
     
-    /// Only used when having no VAD: ask OpenAI to generate response event to obtain audio / transcripts
+    /// Commits the current input audio buffer and triggers a model response. 
+    ///
+    /// This prompts the Realtime API to reply based on the audio previously appended via ``appendUserAudio(_:)``.
+    ///
+    /// This method is only required if the ``LLMRealtimeTurnDetectionSettings`` have been set to nil in the ``LLMOpenAIRealtimeSchema`` parameters.
+    ///
+    /// - Throws: Any error encountered while sending the commit or response request.
+    /// - SeeAlso: ``appendUserAudio(_:)``
     public func endUserTurn() async throws {
         typealias InputAudioBufferCommit = Components.Schemas.RealtimeClientEventInputAudioBufferCommit
         typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
@@ -72,7 +94,30 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
         try await apiConnection.sendMessage(RealtimeClientEventResponseCreate(_type: .response_period_create))
     }
     
-    /// For very custom UIs: you can use `events()` which returns a stream with the actual OpenAI Realtime events
+    /// Returns a stream of Realtime events for advanced integrations.
+    ///
+    /// The returned stream yields ``LLMRealtimeAudioEvent`` values such as audio deltas, transcript
+    /// updates, and lifecycle notifications. Use this if you need full control over rendering or state.
+    /// For audio-only playback, prefer ``listen()`` which surfaces just the PCM16 audio chunks.
+    ///
+    /// The stream finishes when the session ends or the consuming task is cancelled. Errors from the
+    /// underlying connection are surfaced via the stream.
+    ///
+    /// - Returns: An `AsyncThrowingStream` emitting ``LLMRealtimeAudioEvent`` values.
+    ///
+    /// Example
+    /// ```swift
+    /// for try await event in await session.events() {
+    ///     switch event {
+    ///     case .audioDelta(let pcm):
+    ///         audioPlayer.enqueue(pcm)
+    ///     case .assistantTranscriptDelta(let text):
+    ///         ui.update(text)
+    ///     default:
+    ///         break
+    ///     }
+    /// }
+    /// ```
     public func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         await apiConnection.events()
     }
