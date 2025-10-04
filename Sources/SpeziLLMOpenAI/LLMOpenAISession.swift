@@ -70,9 +70,9 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAISession: LLMSession, Sendable {
+public final class LLMOpenAISession: LLMSession, FunctionCallLLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    package static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
     
     let platform: LLMOpenAIPlatform
@@ -81,7 +81,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
  
     private let clientLock = RWLock()
     /// Counter for tracking nested tool calls
-    private let toolCallCounter = ManagedAtomic<Int>(0)
+    public let toolCallCounter = ManagedAtomic<Int>(0)
     /// The wrapped client instance communicating with the OpenAI API
     @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
     /// Holds the currently generating continuations so that we can cancel them if required.
@@ -168,33 +168,6 @@ public final class LLMOpenAISession: LLMSession, Sendable {
     public func cancel() {
         // cancel all currently generating continuations
         self.continuationHolder.cancelAll()
-    }
-
-    /// Safely increments the tool call counter and updates the state if needed.
-    func incrementToolCallCounter(by value: Int = 1) async {
-        if toolCallCounter.loadThenWrappingIncrement(by: value, ordering: .sequentiallyConsistent) == 0 {
-            await MainActor.run {
-                self.state = .callingTools
-            }
-        }
-    }
-
-    /// Safely decrements the tool call counter and updates the state if needed.
-    func decrementToolCallCounter() async {
-        if toolCallCounter.loadThenWrappingDecrement(by: 1, ordering: .sequentiallyConsistent) == 1 {
-            await MainActor.run {
-                self.state = .generating
-            }
-        }
-    }
-  
-    /// Checks if there are active tool calls and updates the state if needed.
-    func checkForActiveToolCalls() async {
-        if toolCallCounter.load(ordering: .sequentiallyConsistent) == 0 {
-            await MainActor.run {
-                self.state = .generating
-            }
-        }
     }
     
     deinit {

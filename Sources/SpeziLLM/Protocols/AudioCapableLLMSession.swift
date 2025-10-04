@@ -9,7 +9,7 @@
 import Foundation
 
 
-public protocol AudioCapableLLMSession: LLMSession {
+package protocol AudioCapableLLMSession: LLMSession {
     /// Returns a continuous stream of raw audio chunks (PCM16 format) produced by the underlying realtime LLM session.
     ///
     /// Each `Data` element in the stream represents a chunk of 16-bit PCM audio (mono, typically 24 kHz) that can be
@@ -72,6 +72,5 @@ public protocol AudioCapableLLMSession: LLMSession {
     ///     }
     /// }
     /// ```
-    @_spi(Experimental)
     func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error>
 }

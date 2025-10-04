@@ -195,4 +195,3 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
         self.cancel()
     }
 }
-
