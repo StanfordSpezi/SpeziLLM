@@ -15,7 +15,8 @@ import SpeziLLM
 package protocol FunctionCallLLMSession: LLMSession {
     // Logger is required for functions in the FunctionCallLLMSession extension
     static var logger: Logger { get }
-
+    /// The state the LLMSession should return to after completing a tool/function call.
+    var toolCallCompletionState: LLMState { get }
     /// Counter to track how many tool (function) calls are currently in progress.
     var toolCallCounter: ManagedAtomic<Int> { get }
 
@@ -52,7 +53,7 @@ extension FunctionCallLLMSession {
                     error,
                     on: continuationObserver.continuation
                 )
-            case .throwAndAppendToContext:
+            case .returnErrorInResponse:
                 let errorMessage: String
                 switch error {
                 case LLMOpenAIError.invalidFunctionCallName:
@@ -65,13 +66,12 @@ extension FunctionCallLLMSession {
                     errorMessage = "Error - unexpected: \(error.localizedDescription)"
                 }
 
-                await MainActor.run {
-                    self.context.append(
-                        forFunction: functionCallArgs.name ?? "",
-                        withID: functionCallArgs.id ?? "",
+                return FunctionCallLLMSessionTypes.FunctionCallResponse(
+                        functionID: functionCallArgs.id ?? "",
+                        functionName: functionCallArgs.name ?? "",
+                        functionArgument: functionCallArgs.arguments ?? "",
                         response: errorMessage
-                    )
-                }
+                )
             case .throwError:
                 break
             }
@@ -135,12 +135,17 @@ extension FunctionCallLLMSession {
         """)
         
         await self.decrementToolCallCounter()
-
+        
+        let defaultResponse = "Function call to \(functionName) succeeded, function intentionally didn't respond anything."
+        
+        // Return `defaultResponse` in case of `nil` or empty return of the function call
         return FunctionCallLLMSessionTypes.FunctionCallResponse(
             functionID: functionID,
             functionName: functionName,
             functionArgument: functionCallArgs.arguments ?? "",
-            response: functionCallResponseStr
+            response: (functionCallResponseStr?.isEmpty ?? true)
+                ? defaultResponse
+                : functionCallResponseStr ?? ""
         )
     }
     
@@ -148,7 +153,7 @@ extension FunctionCallLLMSession {
     func checkForActiveToolCalls() async {
         if toolCallCounter.load(ordering: .sequentiallyConsistent) == 0 {
             await MainActor.run {
-                self.state = .generating
+                self.state = toolCallCompletionState
             }
         }
     }
@@ -172,7 +177,7 @@ extension FunctionCallLLMSession {
             ordering: .sequentiallyConsistent
         ) == 1 {
             await MainActor.run {
-                self.state = .generating
+                self.state = toolCallCompletionState
             }
         }
     }

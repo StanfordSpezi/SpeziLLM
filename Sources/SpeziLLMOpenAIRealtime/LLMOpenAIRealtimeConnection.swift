@@ -10,6 +10,7 @@ import Foundation
 import GeneratedOpenAIClient
 import os
 import SpeziLLM
+import SpeziLLMOpenAI
 
 
 actor LLMOpenAIRealtimeConnection {
@@ -46,6 +47,15 @@ actor LLMOpenAIRealtimeConnection {
         socket = nil
     }
     
+    /// Returns a stream of Realtime events.
+    ///
+    /// The returned stream yields `LLMRealtimeAudioEvent` values such as audio deltas, transcript
+    /// updates, function call requests, and lifecycle notifications.
+    ///
+    /// The stream obtained by calling this method finishes when the connection ends or the consuming task is cancelled.
+    /// Errors are also emitted in this stream.
+    ///
+    /// - Returns: An `AsyncThrowingStream` emitting `LLMRealtimeAudioEvent` values.
     func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         // Creates an AsyncThrowingStream to listen to (so that there can be multiple listeners)
         await eventStream.stream()
@@ -161,13 +171,13 @@ actor LLMOpenAIRealtimeConnection {
                     await eventStream.yield(LLMRealtimeAudioEvent.speechStopped(event))
                 case "response.function_call_arguments.done":
                     let event = try Self.decoder.decode(FunctionCallArgs.self, from: messageJsonData)
-                    Task {
-                        do {
-                            try await handleFunctionCall(schema: schema, event: event)
-                        } catch {
-                            Self.logger.error("SpeziLLMOpenAIRealtime: Function call handler failed: \(error)")
-                        }
-                    }
+                    await eventStream.yield(LLMRealtimeAudioEvent.functionCallRequested(
+                        LLMOpenAIStreamResult.FunctionCall(
+                            name: event.name,
+                            id: event.call_id,
+                            arguments: event.arguments
+                        )
+                    ))
                 case "error":
                     let error = RealtimeError.openAIError(error: messageDict["error"] as? [String: any Sendable] ?? [:])
                     readyContinuation?.resume(with: .failure(error))
@@ -184,32 +194,6 @@ actor LLMOpenAIRealtimeConnection {
         }
     }
     
-    private func handleFunctionCall(schema: LLMOpenAIRealtimeSchema, event: FunctionCallArgs) async throws {
-        typealias ConversationItemCreateEvent = Components.Schemas.RealtimeClientEventConversationItemCreate
-        typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
-
-        let argumentData = event.arguments.data(using: .utf8) ?? Data()
-
-        try schema.functions[event.name]?.injectParameters(from: argumentData)
-        let output = try await schema.functions[event.name]?.execute()
-
-        try await sendMessage(
-            ConversationItemCreateEvent(
-                _type: .conversation_period_item_period_create,
-                item: .init(
-                    _type: .function_call_output,
-                    call_id: event.call_id,
-                    output: output
-                )
-            )
-        )
-        
-        // Send a "response.create" event to reply something after the function call
-        try await sendMessage(
-            RealtimeClientEventResponseCreate(_type: .response_period_create)
-        )
-    }
-
     private func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
         typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
         typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload

@@ -23,7 +23,7 @@ package struct LLMOpenAIStreamResult {
         var arguments: String?
         
         
-        init(name: String? = nil, id: String? = nil, arguments: String? = nil) {
+        package init(name: String? = nil, id: String? = nil, arguments: String? = nil) {
             self.name = name
             self.id = id
             self.arguments = arguments

@@ -157,28 +157,23 @@ extension LLMOpenAISession {
                                 return
                             }
                             
-                            // Ignore the thrown errors here, as failures are added to the LLMContext
                             let functionCallResponse = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
-                                failureHandling: .throwAndAppendToContext
+                                failureHandling: .returnErrorInResponse
                             )
 
-                            if let functionCallResponse = functionCallResponse {
-                                await MainActor.run {
-                                    let defaultResponse = "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
-                                    
-                                    // Return `defaultResponse` in case of `nil` or empty return of the function call
-                                    self.context.append(
-                                        forFunction: functionCallResponse.functionName,
-                                        withID: functionCallResponse.functionID,
-                                        response: functionCallResponse.response?.isEmpty != false
-                                        ? defaultResponse
-                                        : (
-                                            functionCallResponse.response ?? defaultResponse
-                                        )
-                                    )
-                                }
+                            guard let functionCallResponse = functionCallResponse else {
+                                Self.logger.warning("SpeziLLMOpenAI: callFunction() threw an error.")
+                                return
+                            }
+
+                            await MainActor.run {
+                                self.context.append(
+                                    forFunction: functionCallResponse.functionName,
+                                    withID: functionCallResponse.functionID,
+                                    response: functionCallResponse.response
+                                )
                             }
                         }
                     }

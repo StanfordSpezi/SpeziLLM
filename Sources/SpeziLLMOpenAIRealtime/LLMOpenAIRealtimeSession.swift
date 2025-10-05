@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Atomics
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
@@ -35,7 +36,6 @@ import SpeziLLM
 /// ## Streams
 /// - ``generate()``: Starts a text response and returns an `AsyncThrowingStream` of token deltas. Finishes when the response completes.
 /// - ``listen()``: Returns an `AsyncThrowingStream` of PCM16 audio (24 kHz sample rate) for the assistant's speech output. Lasts for the lifetime of the session.
-/// - `events()` **(Experimental)**: Returns an `AsyncThrowingStream` of realtime events (`LLMRealtimeAudioEvent`), providing the ability to reflect events precisely in the UI. Lasts for the lifetime of the session.
 ///
 /// ### Usage
 ///
@@ -90,7 +90,7 @@ import SpeziLLM
 @Observable
 public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAIRealtimeSession``.
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
+    package static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
 
     let platform: LLMOpenAIRealtimePlatform
     let schema: LLMOpenAIRealtimeSchema
@@ -102,6 +102,8 @@ public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
     let setupSemaphore = AsyncSemaphore(value: 1) // Max 1 task setting up
+    package let toolCallCounter = Atomics.ManagedAtomic<Int>(0)
+    package let toolCallCompletionState = LLMState.ready
 
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
     ///

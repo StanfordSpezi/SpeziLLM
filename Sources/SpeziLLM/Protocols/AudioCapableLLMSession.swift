@@ -47,30 +47,4 @@ package protocol AudioCapableLLMSession: LLMSession {
     /// - Throws: Any error encountered while sending the commit or response request.
     /// - SeeAlso: ``appendUserAudio(_:)``
     func endUserTurn() async throws
-    
-    /// Returns a stream of Realtime events for advanced integrations.
-    ///
-    /// The returned stream yields `LLMRealtimeAudioEvent` values such as audio deltas, transcript
-    /// updates, and lifecycle notifications. Use this if you need full control over rendering or state.
-    /// For audio-only playback, prefer ``listen()`` which surfaces just the PCM16 audio chunks.
-    ///
-    /// The stream finishes when the session ends or the consuming task is cancelled. Errors from the
-    /// underlying connection are surfaced via the stream.
-    ///
-    /// - Returns: An `AsyncThrowingStream` emitting `LLMRealtimeAudioEvent` values.
-    ///
-    /// Example
-    /// ```swift
-    /// for try await event in await session.events() {
-    ///     switch event {
-    ///     case .audioDelta(let pcm):
-    ///         audioPlayer.enqueue(pcm)
-    ///     case .assistantTranscriptDelta(let text):
-    ///         ui.update(text)
-    ///     default:
-    ///         break
-    ///     }
-    /// }
-    /// ```
-    func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error>
 }
