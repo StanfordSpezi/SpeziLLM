@@ -79,12 +79,13 @@ extension LLMOpenAIRealtimeSession {
 
         do {
             try await apiConnection.open(token: authToken, schema: schema)
-        } catch LLMOpenAIRealtimeConnection.RealtimeError.openAIError(let openAIError) {
-            Self.logger.error("OpenAI Realtime init failed: \(openAIError)")
+        } catch let error as any LLMError {
+            Self.logger.error("SpeziLLMOpenAIRealtime: Encountered LLMError during initialization: \(error)")
             await apiConnection.cancel()
+            await MainActor.run { self.state = .error(error: error) }
             return false
         } catch {
-            Self.logger.error("OpenAI Realtime init failed: \(error.localizedDescription)")
+            Self.logger.error("SpeziLLMOpenAIRealtime: Encountered unknown error during initialization: \(error)")
             await apiConnection.cancel()
             return false
         }

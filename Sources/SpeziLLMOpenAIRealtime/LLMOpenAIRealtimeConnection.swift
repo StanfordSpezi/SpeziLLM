@@ -14,16 +14,17 @@ import SpeziLLMOpenAI
 
 
 actor LLMOpenAIRealtimeConnection {
-    typealias FunctionCallArgs = Components.Schemas.RealtimeServerEventResponseFunctionCallArgumentsDone
+    private typealias FunctionCallArgs = Components.Schemas.RealtimeServerEventResponseFunctionCallArgumentsDone
+    private typealias RealtimeErrorEvent = Components.Schemas.RealtimeServerEventError
 
-    enum RealtimeError: Error {
+    enum RealtimeError: LLMError {
         case malformedUrlError
         case socketNotFoundError
-        case openAIError(error: [String: any Sendable])
+        case openAIError(error: Components.Schemas.RealtimeServerEventError.errorPayload)
         case eventSessionUpdateSerialisationError
         case functionCallArgsNamelessError
     }
-
+    
     private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
     private static let encoder = JSONEncoder()
     private static let decoder = JSONDecoder()
@@ -179,7 +180,8 @@ actor LLMOpenAIRealtimeConnection {
                         )
                     ))
                 case "error":
-                    let error = RealtimeError.openAIError(error: messageDict["error"] as? [String: any Sendable] ?? [:])
+                    let event = try Self.decoder.decode(RealtimeErrorEvent.self, from: messageJsonData)
+                    let error = RealtimeError.openAIError(error: event.error)
                     readyContinuation?.resume(with: .failure(error))
                     readyContinuation = nil
                     await eventStream.finish(throwing: error)

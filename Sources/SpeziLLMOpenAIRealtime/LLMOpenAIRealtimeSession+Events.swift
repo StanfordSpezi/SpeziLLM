@@ -14,7 +14,7 @@ import SpeziLLMOpenAI
 
 extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
     @MainActor
-    func listenToLLMEvents() {
+    func listenToLLMEvents() { // swiftlint:disable:this cyclomatic_complexity
         Task { [weak self] in
             guard let eventStream = await self?.apiConnection.events() else {
                 Self.logger.error("SpeziLLMOpenAIRealtime: No self in listenToLLMEvents...")
@@ -42,8 +42,11 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
                         break
                     }
                 }
+            } catch let error as any LLMError {
+                Self.logger.error("SpeziLLMOpenAIRealtime: Encountered LLM Error: \(error)")
+                self?.state = .error(error: error)
             } catch {
-                Self.logger.error("SpeziLLMOpenAIRealtime: Listening to LLM Event threw error: \(error)")
+                Self.logger.error("SpeziLLMOpenAIRealtime: Encountered unknown error: \(error)")
             }
         }
     }
