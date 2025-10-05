@@ -161,7 +161,7 @@ extension LLMOpenAISession {
                             let functionCallResponse = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
-                                failureHandling: .appendToContext
+                                failureHandling: .throwAndAppendToContext
                             )
 
                             if let functionCallResponse = functionCallResponse {
