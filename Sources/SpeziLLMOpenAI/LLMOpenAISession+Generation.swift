@@ -146,11 +146,6 @@ extension LLMOpenAISession {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for functionCall in functionCalls {
                         group.addTask {
-                            Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
-                            Arguments: \(functionCall.arguments ?? "")
-                            """)
-                            
                             // Check if the function call execution has been cancelled
                             if continuationObserver.isCancelled {
                                 Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")

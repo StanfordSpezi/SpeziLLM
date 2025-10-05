@@ -94,6 +94,11 @@ extension FunctionCallLLMSession {
         availableFunctions: [String: any LLMFunction],
         functionCallArgs: LLMOpenAIStreamResult.FunctionCall,
     ) async throws -> FunctionCallLLMSessionTypes.FunctionCallResponse {
+        Self.logger.debug("""
+        FunctionCallLLMSession: Function call \(functionCallArgs.name ?? "")
+        Arguments: \(functionCallArgs.arguments ?? "")
+        """)
+    
         await self.incrementToolCallCounter()
 
         guard let functionName = functionCallArgs.name,
