@@ -131,13 +131,10 @@ public struct LLMLocalDownloadView: View {
     
     /// A progress view indicating the state of the download
     @MainActor private var downloadProgressView: some View {
-        VStack {
-            ProgressView(value: downloadProgress, total: 100.0) {
-                Text("LLM_DOWNLOADING_PROGRESS_TEXT", bundle: .module)
-            }
+        VStack(alignment: .center) {
+            ProgressView(value: downloadProgress, total: 100.0)
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
-            
             Text("Downloaded \(String(format: "%.0f", downloadProgress))% of 100%.", bundle: .module)
                 .padding(.top, 5)
         }
@@ -211,8 +208,8 @@ public struct LLMLocalDownloadView: View {
 #if DEBUG
 #Preview {
     LLMLocalDownloadView(
-        model: .llama3_8B_4bit,
-        downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
+        model: .llama3_2_3B_4bit,
+        downloadDescription: LocalizedStringResource("LLM_DOWNLOAD_DESCRIPTION", bundle: .atURL(from: .module)),
         action: {}
     )
 }

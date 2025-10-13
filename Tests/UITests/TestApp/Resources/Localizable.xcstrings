@@ -56,7 +56,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "By default, the application downloads the Llama 3 8B model in its instruct variation. The size of the model is around 5GB."
+            "value" : "By default, the application downloads the Llama 3.2 3B model in its instruct variation. The size of the model is around 3GB."
           }
         }
       }

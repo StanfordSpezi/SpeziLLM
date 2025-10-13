@@ -57,7 +57,7 @@ package final class LLMInferenceQueueContinuationHolder: Sendable {
     /// - Returns: `true` if a continuation was found and cancelled; otherwise `false`.
     @discardableResult
     package func remove(id: UUID) -> Bool {
-        guard self.lock.withWriteLock(body: { self.continuations.removeValue(forKey: id) }) != nil else {
+        guard (self.lock.withWriteLock { self.continuations.removeValue(forKey: id) }) != nil else {
             return false
         }
 

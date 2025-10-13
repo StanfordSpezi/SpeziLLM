@@ -80,16 +80,6 @@
           }
         }
       }
-    },
-    "LLM_DOWNLOADING_PROGRESS_TEXT" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Downloading..."
-          }
-        }
-      }
     }
   },
   "version" : "1.0"

@@ -14,7 +14,7 @@ package enum RemoteLLMInferenceAuthTokenError: LLMError {
     /// The auth method indicated that a token should be in the keychain, however there is none
     case noTokenInKeychain
     /// Couldn't access the keychain
-    case keychainAccessError(Error? = nil)
+    case keychainAccessError((any Error)? = nil)
 
 
     package static func == (lhs: RemoteLLMInferenceAuthTokenError, rhs: RemoteLLMInferenceAuthTokenError) -> Bool {

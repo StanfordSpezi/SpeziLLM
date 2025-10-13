@@ -25,7 +25,7 @@ struct LLMLocalChatTestView: View {
             } else {
                 LLMChatViewSchema(
                     with: LLMLocalSchema(
-                        model: .llama3_8B_4bit
+                        model: .llama3_2_3B_4bit
                     )
                 )
             }
