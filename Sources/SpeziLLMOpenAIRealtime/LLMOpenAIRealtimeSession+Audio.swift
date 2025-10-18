@@ -19,7 +19,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     /// completes when the session ends or is cancelled.
     ///
     /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
-    /// - Throws: Errors related to the underlying Realtime API connection.
+    ///            The stream may throw errors related to the underlying Realtime API connection.
     public func listen() async -> AsyncThrowingStream<Data, any Error> {
         guard let wasSetupSuccessful = try? await ensureSetup(), wasSetupSuccessful else {
             return AsyncThrowingStream { continuation in

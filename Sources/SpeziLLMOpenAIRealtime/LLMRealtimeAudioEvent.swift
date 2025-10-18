@@ -49,14 +49,14 @@ package enum LLMRealtimeAudioEvent: Sendable {
         }
         
         public let itemId: String
-        public let audioStart: Duration
+        public let audioStartOffset: Duration
         
         public init(from decoder: any Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             itemId = try container.decode(String.self, forKey: .itemId)
             
             let audioStartMs = try container.decode(Int.self, forKey: .audioStartMs)
-            audioStart = .milliseconds(audioStartMs)
+            self.audioStartOffset = .milliseconds(audioStartMs)
         }
     }
     

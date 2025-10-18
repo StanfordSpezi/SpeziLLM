@@ -14,9 +14,9 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
     public enum ModelType: String, Sendable {
         // swiftlint:disable identifier_name
 
-        case gpt4o_realtime = "gpt-4o-realtime-preview"
-        case gpt4o_realtime_mini = "gpt-4o-mini-realtime-preview"
-        case gpt_realtime = "gpt-realtime"
+        case gpt4oRealtime = "gpt-4o-realtime-preview"
+        case gpt4oRealtime_mini = "gpt-4o-mini-realtime-preview"
+        case gptRealtime = "gpt-realtime"
 
         // swiftlint:enable identifier_name
     }

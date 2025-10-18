@@ -13,7 +13,7 @@ import SwiftUI
 
 
 struct LLMOpenAIRealtimeTestView: View {
-    static let schema = LLMOpenAIRealtimeSchema(parameters: .init(modelType: .gpt_realtime)) {
+    static let schema = LLMOpenAIRealtimeSchema(parameters: .init(modelType: .gptRealtime)) {
         LLMOpenAIFunctionWeather()
     }
 
@@ -31,7 +31,7 @@ struct LLMOpenAIRealtimeTestView: View {
                     showOnboarding.toggle()
                 }
             }
-            ToolbarItemGroup(placement: .bottomBar) {
+            ToolbarItemGroup(placement: .automatic) {
                 Button {
                     toggleAudioRecording()
                 } label: {

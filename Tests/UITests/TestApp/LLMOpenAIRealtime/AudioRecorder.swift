@@ -14,7 +14,7 @@ import SwiftUI
 // This class still has quite some issues to be fixed
 // Such as performance on init, change of audio device etc...
 // Reference used for AudioRecorder: https://developer.apple.com/documentation/avfaudio/audio_engine/audio_units/using_voice_processing
-class AudioRecorder {
+final class AudioRecorder {
     private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMUITests")
 
     private let audioEngine = AVAudioEngine()
@@ -37,7 +37,9 @@ class AudioRecorder {
         }
         self.targetFormat = targetFormat
 
+        #if !os(macOS)
         setupAudioSession()
+        #endif
         setupAudioEngine()
         
         audioEngine.prepare()
@@ -65,6 +67,7 @@ class AudioRecorder {
         audioEngine.inputNode.removeTap(onBus: 0)
     }
 
+    #if !os(macOS)
     private func setupAudioSession(sampleRate: Double = 24000) {
         let session = AVAudioSession.sharedInstance()
 
@@ -81,11 +84,12 @@ class AudioRecorder {
         }
 
         do {
-            try AVAudioSession.sharedInstance().setActive(true)
+            try session.setActive(true)
         } catch {
             Self.logger.error("Could not set the audio session to active: \(error.localizedDescription)")
         }
     }
+    #endif
 
     private func setupAudioEngine() {
         let inputNode = audioEngine.inputNode

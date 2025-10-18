@@ -82,13 +82,7 @@ final class AudioViewModel {
         streamingService = nil
     }
     
-    deinit {
-        if Thread.isMainThread {
-            MainActor.assumeIsolated {
-                cancelTasks()
-            }
-        } else {
-            assertionFailure("Could not do cleanup: is not running on MainThread...")
-        }
+    isolated deinit {
+        cancelTasks()
     }
 }

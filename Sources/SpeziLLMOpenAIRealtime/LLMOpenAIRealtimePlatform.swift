@@ -15,7 +15,7 @@ import SpeziLLM
 import SpeziLLMOpenAI
 
 
-public final class LLMOpenAIRealtimePlatform: LLMPlatform {
+public final class LLMOpenAIRealtimePlatform: LLMPlatform, @unchecked Sendable { // unchecked because of the `Dependency` property wrapper storage
     /// A `Logger` that logs important information from the ``LLMOpenAIPlatform``.
     private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
     
@@ -60,5 +60,3 @@ public final class LLMOpenAIRealtimePlatform: LLMPlatform {
         self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
     }
 }
-
-extension LLMOpenAIRealtimePlatform: @unchecked Sendable {}     // unchecked because of the `Dependency` property wrapper storage

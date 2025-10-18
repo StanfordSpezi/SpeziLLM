@@ -32,7 +32,7 @@ actor EventBroadcaster<Element: Sendable> {
     }
 
     /// Broadcast an element to everyone
-    func yield(_ value: sending Element) {
+    func broadcast(_ value: sending Element) {
         for continuation in listeners.values {
             continuation.yield(value)
         }

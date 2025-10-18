@@ -30,7 +30,7 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public init(
         parameters: LLMOpenAIRealtimeParameters,
         injectIntoContext: Bool = false,
-        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
+        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.injectIntoContext = injectIntoContext
