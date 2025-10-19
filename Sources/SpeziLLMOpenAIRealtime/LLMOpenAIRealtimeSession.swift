@@ -88,12 +88,12 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAIRealtimeSession: LLMSession, Sendable {
+public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAIRealtimeSession``.
     package static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAIRealtime")
 
     let platform: LLMOpenAIRealtimePlatform
-    let schema: LLMOpenAIRealtimeSchema
+    package let schema: LLMOpenAIRealtimeSchema
     let keychainStorage: KeychainStorage
     
     /// Handles websockets connection with OpenAI Realtime API

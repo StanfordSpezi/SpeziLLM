@@ -90,9 +90,12 @@ public struct LLMChatView<Session: LLMSession>: View {
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()
-                    
-                    if llm is any AudioCapableLLMSession {
-                        // Return as AudioCapableLLMSessions append the result of `generate()` automatically to the `LLMContext`
+
+                    // If injectIntoContext is true, the session manages context automatically.
+                    // We still need to consume the stream to allow the generation to complete.
+                    if let schemaProvider = llm as? any SchemaProvidingLLMSession,
+                       schemaProvider.schema.injectIntoContext {
+                        for try await _ in stream { }
                         return
                     }
 

@@ -23,16 +23,18 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
 
             do {
                 for try await event in eventStream {
+                    let shouldInject = self?.schema.injectIntoContext ?? true
+
                     switch event {
-                    case .assistantTranscriptDelta(let content):
+                    case .assistantTranscriptDelta(let content) where shouldInject:
                         self?.context.append(assistantOutput: content)
-                    case .assistantTranscriptDone:
+                    case .assistantTranscriptDone where shouldInject:
                         self?.context.completeAssistantStreaming()
-                    case .userTranscriptDelta(let content):
+                    case .userTranscriptDelta(let content) where shouldInject:
                         self?.handleTranscript(itemId: content.itemId, content: content.delta, isComplete: false)
-                    case .userTranscriptDone(let content):
+                    case .userTranscriptDone(let content) where shouldInject:
                         self?.handleTranscript(itemId: content.itemId, content: "", isComplete: true)
-                    case .speechStopped(let content):
+                    case .speechStopped(let content) where shouldInject:
                         self?.handleSpeechStopped(itemId: content.itemId)
                     case .functionCallRequested(let functionCall):
                         Task {

@@ -70,13 +70,13 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAISession: LLMSession, FunctionCallLLMSession, Sendable {
+public final class LLMOpenAISession: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     package static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
     
     let platform: LLMOpenAIPlatform
-    let schema: LLMOpenAISchema
+    package let schema: LLMOpenAISchema
     let keychainStorage: KeychainStorage
  
     private let clientLock = RWLock()
