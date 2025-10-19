@@ -59,7 +59,7 @@ actor LLMOpenAIRealtimeConnection {
     /// - Returns: An `AsyncThrowingStream` emitting `LLMRealtimeAudioEvent` values.
     func events() async -> AsyncThrowingStream<LLMRealtimeAudioEvent, any Error> {
         // Creates an AsyncThrowingStream to listen to (so that there can be multiple listeners)
-        await eventStream.stream()
+        await eventStream.observe()
     }
     
     func sendMessage(_ object: some Encodable) async throws {

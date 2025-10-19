@@ -15,7 +15,7 @@ actor EventBroadcaster<Element: Sendable> {
     private var listeners: [UUID: Stream.Continuation] = [:]
 
     /// Register and return a new stream for a listener
-    func stream(
+    func observe(
         bufferingPolicy: Stream.Continuation.BufferingPolicy = .unbounded
     ) -> Stream {
         let id = UUID()

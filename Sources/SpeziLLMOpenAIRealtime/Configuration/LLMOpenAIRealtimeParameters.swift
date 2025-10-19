@@ -38,6 +38,8 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
         case shimmer
         /// Versatile and expressive
         case verse
+        
+        public static let `default`: OpenAIVoice = .alloy
     }
     
     /// Defaults of possible LLMs Realtime parameter settings.
@@ -45,9 +47,9 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
         public static let defaultSystemPrompt: String = {
             String(localized: LocalizedStringResource("SPEZI_LLM_OPENAI_REALTIME_SYSTEM_PROMPT", bundle: .atURL(from: .module)))
         }()
-        public static let turnDetectionSettings: LLMRealtimeTurnDetectionSettings = .semantic()
-        public static let transcriptionSettings: LLMRealtimeTranscriptionSettings = .init()
-        public static let voice: OpenAIVoice = .alloy
+        public static let turnDetectionSettings: LLMRealtimeTurnDetectionSettings = .default
+        public static let transcriptionSettings: LLMRealtimeTranscriptionSettings = .default
+        public static let voice: OpenAIVoice = .default
     }
 
 
