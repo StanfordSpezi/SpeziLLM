@@ -10,6 +10,9 @@ import Foundation
 import SpeziFoundation
 
 
+/// Configures automatic transcription of user audio input into text.
+///
+/// Transcripts are automatically appended to the session's context when transcription is enabled.
 public struct LLMRealtimeTranscriptionSettings: Sendable {
     public enum TranscriptionModel: String, Sendable {
         case gpt4oTranscribe = "gpt-4o-transcribe"

@@ -38,7 +38,6 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     ///
     /// - Parameters:
     ///    - parameters: Parameters of the Realtime OpenAI LLM client.
-    ///    - modelParameters: Parameters of the used Realtime OpenAI LLM.
     ///    - injectIntoContext: Indicates if the ``LLMOpenAIRealtimeSession`` inference output (text and audio based inference), as well as user transcripts
     ///                         should automatically be inserted into the ``LLMOpenAIRealtimeSession/context``, defaults to `true`.
     ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
