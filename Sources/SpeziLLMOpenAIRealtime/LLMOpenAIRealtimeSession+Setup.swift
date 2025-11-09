@@ -16,17 +16,39 @@ import SpeziLLMOpenAI
 
 
 extension LLMOpenAIRealtimeSession {
-    /// Set up the OpenAI Realtime API client.
-    /// - Returns: `true` if the setup was successful, `false` otherwise.
-    private func setup() async -> Bool {
+    /// Ensures the Realtime API session is set up and ready to use.
+    ///
+    /// If the session is already ready, it returns immediately.
+    /// Otherwise, it initializes the connection and prepares the session for streaming.
+    ///
+    /// - Throws: An error if setup fails or if the operation is cancelled.
+    @MainActor
+    func ensureSetup() async throws {
+        guard self.state != .ready && self.state != .generating else {
+            return
+        }
+
+        try await setupSemaphore.waitCheckingCancellation()
+        defer { setupSemaphore.signal() }
+
+        if self.state == .ready || self.state == .generating {
+            setupSemaphore.signal()
+            return
+        }
+
+        try await self.setup()
+    }
+    
+    /// Performs the initial setup by initializing the client and starting event listeners.
+    ///
+    /// - Throws: An error if client initialization fails.
+    private func setup() async throws {
         Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API is being initialized")
         await MainActor.run {
             self.state = .loading
         }
 
-        if !(await self.initializeClient()) {
-            return false
-        }
+        try await self.initializeClient()
 
         await self.listenToLLMEvents()
 
@@ -34,47 +56,17 @@ extension LLMOpenAIRealtimeSession {
             self.state = .ready
         }
         Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API finished initializing, now ready to use")
-        return true
     }
 
-    @discardableResult
-    @MainActor
-    func ensureSetup() async throws -> Bool {
-        guard self.state != .ready && self.state != .generating else {
-            return true
-        }
-
-        do {
-            try await setupSemaphore.waitCheckingCancellation()
-        } catch {
-            // Cancellation Error
-            return false
-        }
-        defer { setupSemaphore.signal() }
-
-        if self.state == .ready || self.state == .generating {
-            setupSemaphore.signal()
-            return true
-        }
-        
-        return await self.setup()
-    }
-    
-    /// Initialize the OpenAI Realtime API client.
+    /// Retrieves the auth token and opens the WebSocket connection to the Realtime API.
     ///
-    /// - Returns: `true` if the client could be initialized, `false` otherwise.
-    private func initializeClient() async -> Bool {
-        let authToken: String?
-        do {
-            authToken = try await self.platform.configuration.authToken.getToken(keychainStorage: keychainStorage)
-        } catch {
-            Self.logger.error("LLMOpenAIRealtimeSession: Failed to retrieve auth token: \(error.localizedDescription)")
-            return false
-        }
-        
+    /// - Throws: An error if the auth token is missing or the connection fails.
+    private func initializeClient() async throws {
+        let authToken = try await self.platform.configuration.authToken.getToken(keychainStorage: keychainStorage)
+
         guard let authToken = authToken else {
             Self.logger.error("LLMOpenAIRealtimeSession: Auth Token is nil")
-            return false
+            throw LLMOpenAIError.missingAPITokenInKeychain
         }
 
         do {
@@ -83,13 +75,11 @@ extension LLMOpenAIRealtimeSession {
             Self.logger.error("SpeziLLMOpenAIRealtime: Encountered LLMError during initialization: \(error)")
             await apiConnection.cancel()
             await MainActor.run { self.state = .error(error: error) }
-            return false
+            throw error
         } catch {
             Self.logger.error("SpeziLLMOpenAIRealtime: Encountered unknown error during initialization: \(error)")
             await apiConnection.cancel()
-            return false
+            throw error
         }
-        
-        return true
     }
 }

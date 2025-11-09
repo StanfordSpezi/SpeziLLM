@@ -21,17 +21,13 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
     /// - Returns: An `AsyncThrowingStream` emitting `Data` objects containing PCM16 audio frames.
     ///            The stream may throw errors related to the underlying Realtime API connection.
     public func listen() async -> AsyncThrowingStream<Data, any Error> {
-        guard let wasSetupSuccessful = try? await ensureSetup(), wasSetupSuccessful else {
-            return AsyncThrowingStream { continuation in
-                continuation.finish()
-            }
-        }
-
         // Filters the events from `apiConnection.events()` to only keep the `LLMRealtimeAudioEvent.audioDelta(delta)` ones.
         // Then emits the `delta: Data` value onto the stream.
-        return AsyncThrowingStream { [apiConnection] continuation in
+        AsyncThrowingStream { [apiConnection] continuation in
             let task = Task {
                 do {
+                    try await self.ensureSetup()
+
                     for try await event in await apiConnection.events() {
                         if case .audioDelta(let delta) = event {
                             continuation.yield(delta) // emit pcm16 chunk
@@ -42,7 +38,7 @@ extension LLMOpenAIRealtimeSession: AudioCapableLLMSession {
                     continuation.finish(throwing: error) // propagate upstream error
                 }
             }
-            
+
             continuation.onTermination = { @Sendable _ in
                 task.cancel()
             }

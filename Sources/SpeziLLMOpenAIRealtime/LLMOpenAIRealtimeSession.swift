@@ -125,38 +125,12 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
     /// It returns an `AsyncThrowingStream` that yields partial text tokens as they arrive until the Realtime API indicates the end of that transcript.
     ///
     /// - Returns: An `AsyncThrowingStream` of `String` token deltas. The stream finishes when the assistant transcript
-    ///   completes or if the session is cancelled.
-    /// - Throws: An error if the session setup fails or if the underlying connection encounters an error.
+    ///   completes or if the session is cancelled. Errors during setup or generation are propagated through the stream.
     @discardableResult
-    public func generate() async throws -> AsyncThrowingStream<String, any Error> {
+    public func generate() async -> AsyncThrowingStream<String, any Error> {
         typealias ResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
         typealias ConversationItemCreate = Components.Schemas.RealtimeClientEventConversationItemCreate
 
-        guard try await ensureSetup() else {
-            return AsyncThrowingStream { continuation in
-                continuation.finish()
-            }
-        }
-        
-        // Get the relevant part of the context
-        let lastContext = await self.context.last { $0.role == .user && $0.complete }
-        
-        // Send the conversation.item.create event with the message
-        try await apiConnection.sendMessage(
-            ConversationItemCreate(
-                _type: .conversation_period_item_period_create,
-                item: .init(
-                    _type: .message,
-                    role: .user,
-                    content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
-                )
-            )
-        )
-        
-        // Trigger a response
-        try await apiConnection.sendMessage(ResponseCreate(_type: .response_period_create))
-
-        
         // Stream the text response back to the `generate()` caller.
         // Is done by filtering assistant transcript events in `events()`.
         // Assumes that all events up to `.assistantTranscriptDone`
@@ -164,6 +138,26 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
         return AsyncThrowingStream { [apiConnection] continuation in
             let task = Task {
                 do {
+                    try await self.ensureSetup()
+
+                    // Get the relevant part of the context
+                    let lastContext = await self.context.last { $0.role == .user && $0.complete }
+
+                    // Send the conversation.item.create event with the message
+                    try await apiConnection.sendMessage(
+                        ConversationItemCreate(
+                            _type: .conversation_period_item_period_create,
+                            item: .init(
+                                _type: .message,
+                                role: .user,
+                                content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
+                            )
+                        )
+                    )
+
+                    // Trigger a response
+                    try await apiConnection.sendMessage(ResponseCreate(_type: .response_period_create))
+
                     for try await event in await apiConnection.events() {
                         if case .assistantTranscriptDone = event {
                             // Finish as soon as the next transcript done event occurs
@@ -179,7 +173,7 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
                     continuation.finish(throwing: error) // propagate upstream error
                 }
             }
-            
+
             continuation.onTermination = { @Sendable _ in
                 task.cancel()
             }
