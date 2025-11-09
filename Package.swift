@@ -128,7 +128,11 @@ let package = Package(
                 .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
             ],
-            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
+            resources: [
+                .process("Resources")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            plugins: [] + swiftLintPlugin()
         ),
         .target(
             name: "SpeziLLMFog",

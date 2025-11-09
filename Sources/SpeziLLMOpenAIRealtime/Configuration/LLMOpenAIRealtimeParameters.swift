@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import GeneratedOpenAIClient
 
 /// Represents the parameters of OpenAIs Realtime LLMs.
 public struct LLMOpenAIRealtimeParameters: Sendable {
