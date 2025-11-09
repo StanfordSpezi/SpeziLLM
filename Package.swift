@@ -29,10 +29,9 @@ let package = Package(
         .library(name: "SpeziLLMOpenAIRealtime", targets: ["SpeziLLMOpenAIRealtime"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.25.6")),
-        // Pin MLX Swift Examples as it doesn't follow semantic versioning:
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", exact: "2.25.7"),
-        .package(url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.22")),
+        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.29.1")),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples", .upToNextMinor(from: "2.29.1")),
+        .package(url: "https://github.com/huggingface/swift-transformers", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.9.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.2.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
