@@ -261,6 +261,36 @@
         }
       }
     },
+    "LLM_INVALID_REQUEST_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request sent to the model was not valid."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_REQUEST_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request contained missing or unsupported fields, invalid parameters, or exceeded allowed limits."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_REQUEST_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please verify that all required fields are provided and that the request follows the expected format and model constraints."
+          }
+        }
+      }
+    },
     "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {

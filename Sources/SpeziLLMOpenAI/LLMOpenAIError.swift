@@ -12,6 +12,8 @@ import SpeziLLM
 
 /// Errors that can occur by interacting with the OpenAI API.
 public enum LLMOpenAIError: LLMError {
+    /// OpenAI API returned an invalid request error.
+    case invalidRequest
     /// OpenAI API token is missing.
     case missingAPITokenInKeychain
     /// OpenAI API token is invalid.
@@ -38,6 +40,8 @@ public enum LLMOpenAIError: LLMError {
 
     public var errorDescription: String? {
         switch self {
+        case .invalidRequest:
+            String(localized: LocalizedStringResource("LLM_INVALID_REQUEST_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_ERROR_DESCRIPTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
@@ -65,6 +69,8 @@ public enum LLMOpenAIError: LLMError {
     
     public var recoverySuggestion: String? {
         switch self {
+        case .invalidRequest:
+            String(localized: LocalizedStringResource("LLM_INVALID_REQUEST_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_RECOVERY_SUGGESTION", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
@@ -92,6 +98,8 @@ public enum LLMOpenAIError: LLMError {
 
     public var failureReason: String? {
         switch self {
+        case .invalidRequest:
+            String(localized: LocalizedStringResource("LLM_INVALID_REQUEST_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .missingAPITokenInKeychain:
             String(localized: LocalizedStringResource("LLM_MISSING_TOKEN_FAILURE_REASON", bundle: .atURL(from: .module)))
         case .invalidAPIToken:
@@ -120,6 +128,7 @@ public enum LLMOpenAIError: LLMError {
     
     public static func == (lhs: LLMOpenAIError, rhs: LLMOpenAIError) -> Bool {  // swiftlint:disable:this cyclomatic_complexity
         switch (lhs, rhs) {
+        case (.invalidRequest, .invalidRequest): true
         case (.missingAPITokenInKeychain, .missingAPITokenInKeychain): true
         case (.invalidAPIToken, .invalidAPIToken): true
         case (.connectivityIssues, .connectivityIssues): true
@@ -140,6 +149,9 @@ public enum LLMOpenAIError: LLMError {
 extension LLMOpenAISession {
     func handleErrorCode(_ statusCode: Int) -> LLMOpenAIError {
         switch statusCode {
+        case 400:
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Recieved an invalid request error from the OpenAI API")
+            return LLMOpenAIError.invalidRequest
         case 401:
             LLMOpenAISession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
             return LLMOpenAIError.invalidAPIToken

@@ -44,8 +44,13 @@ extension LLMOpenAISession {
             do {
                 let response = try await openAiClient.createChatCompletion(openAIChatQuery)
 
-                if case let .undocumented(statusCode: statusCode, _) = response {
+                if case let .undocumented(statusCode: statusCode, payload) = response {
                     let llmError = handleErrorCode(statusCode)
+                    if let body = payload.body, case let .known(length) = body.length {
+                        let buffer = try await Data(collecting: body, upTo: Int(length))
+                        let text = String(data: buffer, encoding: .utf8) ?? "<non-UTF8 body>"
+                        Self.logger.debug("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
+                    }
                     await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                     return
                 }
