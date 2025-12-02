@@ -150,7 +150,7 @@ extension LLMOpenAISession {
     func handleErrorCode(_ statusCode: Int) -> LLMOpenAIError {
         switch statusCode {
         case 400:
-            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Recieved an invalid request error from the OpenAI API")
+            LLMOpenAISession.logger.error("SpeziLLMOpenAI: Received an invalid request error from the OpenAI API")
             return LLMOpenAIError.invalidRequest
         case 401:
             LLMOpenAISession.logger.error("SpeziLLMOpenAI: Invalid OpenAI API token")
