@@ -83,7 +83,7 @@ public final class LLMOpenAISession: LLMSession, Sendable {
     /// Counter for tracking nested tool calls
     private let toolCallCounter = ManagedAtomic<Int>(0)
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored private nonisolated(unsafe) var wrappedClient: Client?
+    @ObservationIgnored nonisolated(unsafe) private var wrappedClient: Client?
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
 

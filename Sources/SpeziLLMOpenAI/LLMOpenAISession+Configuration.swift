@@ -35,6 +35,12 @@ extension LLMOpenAISession {
                     )
                 )
             }
+            
+            let stop: Components.Schemas.CreateChatCompletionRequest.stopPayload? = if schema.modelParameters.stopSequence.isEmpty {
+                nil
+            } else {
+                Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence)
+            }
 
             return await Operations.createChatCompletion
                 .Input(
@@ -51,7 +57,7 @@ extension LLMOpenAISession {
                             presence_penalty: schema.modelParameters.presencePenalty,
                             response_format: schema.modelParameters.responseFormat,
                             seed: schema.modelParameters.seed.map { Int64($0) },
-                            stop: Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence),
+                            stop: stop,
                             stream: true,
                             temperature: schema.modelParameters.temperature,
                             top_p: schema.modelParameters.topP,

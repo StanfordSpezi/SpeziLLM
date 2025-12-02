@@ -50,14 +50,14 @@ package final class LLMInferenceQueue<Element>: Sendable {
 
     private let stateLock = RWLock()
     /// The current state of the task queue, protected against concurrent access by the `RWLock` above.
-    private nonisolated(unsafe) var state: State = .initialized(buffer: [])
+    nonisolated(unsafe) private var state: State = .initialized(buffer: [])
     /// Maximum number of concurrent tasks
     private let semaphore: AsyncSemaphore
     /// Priority of the dispatched LLM inference tasks in the queue.
     private let taskPriority: TaskPriority?
 
     private let platformStateLock = RWLock()
-    private nonisolated(unsafe) var _platformState: LLMPlatformState = .idle    // swiftlint_disable_this identifier_name
+    nonisolated(unsafe) private var _platformState: LLMPlatformState = .idle    // swiftlint_disable_this identifier_name
     /// The `LLMPlatformState` state indicating if inference jobs are currently processed, protected against concurrent access by the `RWLock` above.
     package var platformState: LLMPlatformState {
         self.platformStateLock.withReadLock {
