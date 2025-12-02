@@ -28,7 +28,7 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
 
     let schema: LLMFunctionParameterItemSchema
 
-    private nonisolated(unsafe) var injectedValue: T?
+    nonisolated(unsafe) private var injectedValue: T?
     private let lock = RWLock()
 
     public var wrappedValue: T {

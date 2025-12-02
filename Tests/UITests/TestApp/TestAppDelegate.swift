@@ -24,7 +24,7 @@ import SpeziLLMOpenAI
 
 class TestAppDelegate: SpeziAppDelegate {
     // Used for production-ready setup including TLS traffic to the fog node
-    private nonisolated static var caCertificateUrl: URL? {
+    nonisolated private static var caCertificateUrl: URL? {
         guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
             fatalError("CA Certificate not found!")
         }
