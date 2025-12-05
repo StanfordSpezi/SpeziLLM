@@ -32,7 +32,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
             
             return builder.toChatOutput()
         }
-
+        
         let llmSession = try initTestLLMSession(schema)
         llmSession.context = context
         llmSession.wrappedClient = mockClient
@@ -41,7 +41,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         for try await stringPiece in try await llmSession.generate() {
             oneShot.append(stringPiece)
         }
-
+        
         #expect(oneShot == "Hello world!")
     }
     
@@ -57,15 +57,15 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         ) {
             LLMOpenAITestFunction()
         }
-
+        
         let llmSession = try initTestLLMSession(schema)
         llmSession.context = context
         llmSession.wrappedClient = mockClient
-
+        
         var chatCompletionCalls = 0
         mockClient.createChatCompletionHandler = { input in
             var builder = ChatResponseBuilder()
-
+            
             if chatCompletionCalls == 0 {
                 try builder.append(functionName: LLMOpenAITestFunction.name, arguments: "{}")
                 builder.done()
@@ -78,11 +78,11 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
                 } else {
                     Issue.record("Failed to parse JSON input body")
                 }
-
+                
                 try builder.append(text: "Function should have been called!")
                 builder.done()
             }
-
+            
             chatCompletionCalls += 1
             return builder.toChatOutput()
         }

@@ -19,18 +19,18 @@ extension LLMOpenAIMockedInferenceTests {
     final class MockChatClient: LLMOpenAIChatClientProtocol {
         var retrieveModelHandler: ((GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws ->
                                    GeneratedOpenAIClient.Operations.retrieveModel.Output)?
-
+        
         var createChatCompletionHandler: ((Operations.createChatCompletion.Input) async throws ->
                                           Operations.createChatCompletion.Output)?
         
         func retrieveModel(_ input: GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws ->
-            GeneratedOpenAIClient.Operations.retrieveModel.Output {
+        GeneratedOpenAIClient.Operations.retrieveModel.Output {
             guard let handler = retrieveModelHandler else {
                 fatalError("Mock handler not set!")
             }
             return try await handler(input)
         }
-
+        
         
         func createChatCompletion(_ input: Operations.createChatCompletion.Input) async throws -> Operations.createChatCompletion.Output {
             guard let handler = createChatCompletionHandler else {
@@ -106,7 +106,7 @@ extension LLMOpenAIMockedInferenceTests {
         mutating func done() {
             data.append("data: [DONE]\n\n")
         }
-
+        
         /// Converts the built response data into an `Operations.createChatCompletion.Output` object
         /// suitable for use as a mock API response.
         /// - Returns: An OpenAI API chat completion response.
@@ -119,7 +119,7 @@ extension LLMOpenAIMockedInferenceTests {
             }
             
             let body = HTTPBody(stream, length: .unknown)
-
+            
             return .ok(.init(body: .text_event_hyphen_stream(body)))
         }
     }

@@ -173,6 +173,9 @@ let package = Package(
         .testTarget(
             name: "SpeziLLMTests",
             dependencies: [
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziTesting", package: "Spezi"),
+                .target(name: "SpeziLLM"),
                 .target(name: "SpeziLLMOpenAI")
             ],
             swiftSettings: [
