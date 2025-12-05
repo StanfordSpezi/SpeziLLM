@@ -141,6 +141,12 @@
         }
       }
     },
+    "Start Recording" : {
+
+    },
+    "Stop Recording" : {
+
+    },
     "WELCOME_AREA1_DESCRIPTION" : {
       "localizations" : {
         "en" : {

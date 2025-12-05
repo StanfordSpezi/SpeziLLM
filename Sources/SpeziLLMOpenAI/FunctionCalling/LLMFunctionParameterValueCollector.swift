@@ -61,7 +61,7 @@ extension LLMFunction {
     ///
     /// - Parameters:
     ///    - parameterData: JSON-based parameter data of the ``LLMFunction``.
-    func injectParameters(from parameterData: Data) throws {
+    package func injectParameters(from parameterData: Data) throws {
         let topLayerParameterData = try JSONDecoder().decode(
             LLMFunctionParameterIntermediary.self,
             from: parameterData

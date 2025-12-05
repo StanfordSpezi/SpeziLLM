@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "SPEZI_LLM_OPENAI_REALTIME_SYSTEM_PROMPT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are ChatGPT, a large language model trained by OpenAI, based on the GPT architecture."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

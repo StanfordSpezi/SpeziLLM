@@ -71,8 +71,11 @@ public struct LLMChatView<Session: LLMSession>: View {
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
                 // Once the user enters a message in the chat, increase `messageTaskIdentifier` that triggers LLM inference
+                //
+                // Checking `lastChat.complete == true` to differentiate user initiated messages (complete == true, default)
+                // with user transcripts (when first appended: complete == false).
                 if oldValue.count != newValue.count,
-                   let lastChat = newValue.last, lastChat.role == .user {
+                   let lastChat = newValue.last, lastChat.role == .user, lastChat.complete == true {
                     self.messageTaskIdentifier = (self.messageTaskIdentifier ?? 0) + 1
                 }
             }
@@ -87,6 +90,14 @@ public struct LLMChatView<Session: LLMSession>: View {
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()
+
+                    // If injectIntoContext is true, the session manages context automatically.
+                    // We still need to consume the stream to allow the generation to complete.
+                    if let schemaProvider = llm as? any SchemaProvidingLLMSession,
+                       schemaProvider.schema.injectIntoContext {
+                        for try await _ in stream { }
+                        return
+                    }
 
                     for try await token in stream {
                         self.llm.context.append(assistantOutput: token)

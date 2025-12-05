@@ -11,6 +11,7 @@
 import class Foundation.ProcessInfo
 import PackageDescription
 
+
 let package = Package(
     name: "SpeziLLM",
     defaultLocalization: "en",
@@ -24,7 +25,8 @@ let package = Package(
         .library(name: "SpeziLLMLocal", targets: ["SpeziLLMLocal"]),
         .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"]),
-        .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"])
+        .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"]),
+        .library(name: "SpeziLLMOpenAIRealtime", targets: ["SpeziLLMOpenAIRealtime"])
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.29.1")),
@@ -110,6 +112,26 @@ let package = Package(
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny")
             ],
+            plugins: [] + swiftLintPlugin()
+        ),
+        .target(
+            name: "SpeziLLMOpenAIRealtime",
+            dependencies: [
+                .target(name: "SpeziLLM"),
+                .target(name: "SpeziLLMOpenAI"),
+                .target(name: "GeneratedOpenAIClient"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziChat", package: "SpeziChat"),
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage"),
+                .product(name: "SpeziOnboarding", package: "SpeziOnboarding")
+            ],
+            resources: [
+                .process("Resources")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         ),
         .target(

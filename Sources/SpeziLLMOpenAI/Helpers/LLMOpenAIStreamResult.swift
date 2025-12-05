@@ -11,19 +11,19 @@ import OpenAPIRuntime
 
 
 /// Helper to process the returned stream by the LLM output generation call, especially in regards to the function call and a possible stop reason
-struct LLMOpenAIStreamResult {
+package struct LLMOpenAIStreamResult {
     typealias Role = Components.Schemas.ChatCompletionStreamResponseDelta.rolePayload
     typealias FinishReason = Components.Schemas.CreateChatCompletionStreamResponse.choicesPayloadPayload
         .finish_reasonPayload
 
 
-    struct FunctionCall {
+    package struct FunctionCall {
         var id: String?
         var name: String?
         var arguments: String?
         
         
-        init(name: String? = nil, id: String? = nil, arguments: String? = nil) {
+        package init(name: String? = nil, id: String? = nil, arguments: String? = nil) {
             self.name = name
             self.id = id
             self.arguments = arguments

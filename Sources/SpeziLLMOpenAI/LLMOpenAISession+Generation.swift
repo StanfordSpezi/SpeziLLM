@@ -148,86 +148,42 @@ extension LLMOpenAISession {
                 context.append(functionCalls: functionCallContext)
             }
 
-            await self.incrementToolCallCounter(by: functionCalls.count)
-
             // Parallel function call execution
             do {
-                try await withThrowingTaskGroup(of: Void.self) { group in   // swiftlint:disable:this closure_body_length
+                try await withThrowingTaskGroup(of: Void.self) { group in
                     for functionCall in functionCalls {
-                        group.addTask {     // swiftlint:disable:this closure_body_length
-                            Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
-                            Arguments: \(functionCall.arguments ?? "")
-                            """)
-
+                        group.addTask {
                             // Check if the function call execution has been cancelled
                             if continuationObserver.isCancelled {
                                 Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
                                 return
                             }
+                            
+                            let functionCallResponse = try? await self.callFunction(
+                                availableFunctions: self.schema.functions,
+                                functionCallArgs: functionCall,
+                                failureHandling: .returnErrorInResponse
+                            )
 
-                            guard let functionName = functionCall.name,
-                                  let functionID = functionCall.id,
-                                  let functionArgument = functionCall.arguments?.data(using: .utf8),
-                                  let function = self.schema.functions[functionName] else {
-                                Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
-                                await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallName, on: continuationObserver.continuation)
-                                await self.decrementToolCallCounter()
-                                throw LLMOpenAIError.invalidFunctionCallName
+                            guard let functionCallResponse = functionCallResponse else {
+                                Self.logger.warning("SpeziLLMOpenAI: callFunction() threw an error.")
+                                return
                             }
 
-                            // Inject parameters into the @Parameters of the function call
-                            do {
-                                try function.injectParameters(from: functionArgument)
-                            } catch {
-                                Self.logger.error("SpeziLLMOpenAI: Invalid function call arguments - \(error)")
-                                await self.finishGenerationWithError(
-                                    LLMOpenAIError.invalidFunctionCallArguments(error),
-                                    on: continuationObserver.continuation
-                                )
-                                await self.decrementToolCallCounter()
-                                throw LLMOpenAIError.invalidFunctionCallArguments(error)
-                            }
-
-                            let functionCallResponse: String?
-                            
-                            do {
-                                // Execute function
-                                // Errors thrown by the functions are surfaced to the user as an LLM generation error
-                                functionCallResponse = try await function.execute()
-                            } catch {
-                                Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
-                                await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuationObserver.continuation)
-                                await self.decrementToolCallCounter()
-
-                                throw LLMOpenAIError.functionCallError(error)
-                            }
-                            
-                            Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
-                            Arguments: \(functionCall.arguments ?? "")
-                            Response: \(functionCallResponse ?? "<empty response>")
-                            """)
-                            
                             await MainActor.run {
-                                let defaultResponse = "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
-
-                                // Return `defaultResponse` in case of `nil` or empty return of the function call
                                 self.context.append(
-                                    forFunction: functionName,
-                                    withID: functionID,
-                                    response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
+                                    forFunction: functionCallResponse.functionName,
+                                    withID: functionCallResponse.functionID,
+                                    response: functionCallResponse.response
                                 )
                             }
-
-                            await self.decrementToolCallCounter()
                         }
                     }
-
+                    
                     try await group.waitForAll()
                 }
             } catch {
-                // Stop LLM inference in case of a function call error
+                // Stop LLM inference in case of an unexpected error during the function call
                 return
             }
         }

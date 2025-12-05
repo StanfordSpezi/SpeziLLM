@@ -50,36 +50,7 @@ package struct BearerAuthMiddleware: ClientMiddleware {
         operationID _: String,
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
-        let authToken: String?
-
-        switch self.authToken {
-        case .none:
-            authToken = nil
-
-        case .constant(let string):
-            authToken = string
-
-        case let .keychain(credentialsTag, username):  // extract the keychain token on every request
-            let credential: Credentials?
-
-            do {
-                credential = try keychainStorage?.retrieveCredentials(
-                    withUsername: username,
-                    for: credentialsTag
-                )
-            } catch {
-                throw RemoteLLMInferenceAuthTokenError.keychainAccessError(error)
-            }
-
-            guard let credentialToken = credential?.password else {
-                throw RemoteLLMInferenceAuthTokenError.noTokenInKeychain
-            }
-
-            authToken = credentialToken
-
-        case .closure(let tokenClosure):    // reevaluate the auth token closure on every request
-            authToken = await tokenClosure()
-        }
+        let authToken = try await self.authToken.getToken(keychainStorage: keychainStorage)
 
         var request = request
         if let authToken {

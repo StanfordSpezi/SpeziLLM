@@ -1,0 +1,167 @@
+//
+// This source file is part of the Stanford Spezi open source project
+//
+// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+//
+// SPDX-License-Identifier: MIT
+//
+
+import Atomics
+@preconcurrency import AVFoundation
+import OSLog
+import SwiftUI
+
+// This class still has quite some issues to be fixed
+// Such as performance on init, change of audio device etc...
+// Reference used for AudioRecorder: https://developer.apple.com/documentation/avfaudio/audio_engine/audio_units/using_voice_processing
+final class AudioRecorder {
+    private static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMUITests")
+
+    private let audioEngine = AVAudioEngine()
+
+    private(set) var audioBufferContinuation: AsyncStream<Data>.Continuation?
+    private(set) var audioBufferStream: AsyncStream<Data>?
+    
+    private var converter: AVAudioConverter?
+    private let targetFormat: AVAudioFormat
+    private var audioConfigChangeObserver: NSObjectProtocol?
+    
+    init(sampleRate: Double = 24000, channels: AVAudioChannelCount = 1) {
+        guard let targetFormat = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: sampleRate,
+            channels: channels,
+            interleaved: false
+        ) else {
+            fatalError("Failed to create PCM format")
+        }
+        self.targetFormat = targetFormat
+
+        #if !os(macOS)
+        setupAudioSession()
+        #endif
+        setupAudioEngine()
+        
+        audioEngine.prepare()
+    }
+    
+    func start() {
+        guard !audioEngine.isRunning else {
+            Self.logger.warning("Audio engine already running")
+            return
+        }
+
+        do {
+            try audioEngine.start()
+        } catch {
+            Self.logger.error("Couldn't start audio engine: \(error.localizedDescription)")
+        }
+    }
+
+    func stop() {
+        audioEngine.stop()
+    }
+    
+    func cancel() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+    }
+
+    #if !os(macOS)
+    private func setupAudioSession(sampleRate: Double = 24000) {
+        let session = AVAudioSession.sharedInstance()
+
+        do {
+            try session.setCategory(.playAndRecord, options: .defaultToSpeaker)
+        } catch {
+            Self.logger.error("Could not set the audio category: \(error.localizedDescription)")
+        }
+
+        do {
+            try session.setPreferredSampleRate(sampleRate)
+        } catch {
+            Self.logger.error("Could not set the preferred sample rate: \(error.localizedDescription)")
+        }
+
+        do {
+            try session.setActive(true)
+        } catch {
+            Self.logger.error("Could not set the audio session to active: \(error.localizedDescription)")
+        }
+    }
+    #endif
+
+    private func setupAudioEngine() {
+        let inputNode = audioEngine.inputNode
+        do {
+            try inputNode.setVoiceProcessingEnabled(true)
+        } catch {
+            Self.logger.error("Could not enable voice processing \(error)")
+            return
+        }
+
+        inputNode.reset()
+        inputNode.removeTap(onBus: 0)
+        
+        let inputFormat = inputNode.outputFormat(forBus: 0)
+        converter = AVAudioConverter(from: inputFormat, to: targetFormat)
+
+        audioBufferStream = AsyncStream<Data> { continuation in
+            self.audioBufferContinuation = continuation
+
+            inputNode.installTap(onBus: 0, bufferSize: 1024, format: nil) { buffer, _ in
+                guard let converter = self.converter else {
+                    return
+                }
+
+                // Prepare an output buffer big enough for the converted frames.
+                let inFrames = AVAudioFrameCount(buffer.frameLength)
+                let ratio = self.targetFormat.sampleRate / inputFormat.sampleRate
+                let outCapacity = AVAudioFrameCount(Double(inFrames) * ratio + 8) // +epsilon
+
+                guard let outBuffer = AVAudioPCMBuffer(pcmFormat: self.targetFormat, frameCapacity: outCapacity) else {
+                    return
+                }
+
+                let hasSetStatus = ManagedAtomic(false)
+                var error: NSError?
+
+                let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
+                    // Provide the input buffer once
+                    let alreadySet = hasSetStatus.exchange(true, ordering: .relaxed)
+                    if alreadySet {
+                        outStatus.pointee = .noDataNow
+                        return nil
+                    } else {
+                        outStatus.pointee = .haveData
+                        return buffer
+                    }
+                }
+
+                let status = converter.convert(to: outBuffer, error: &error, withInputFrom: inputBlock)
+                if status == .error || error != nil {
+                    Self.logger.error("Conversion error: \(error?.localizedDescription ?? "Unknown")")
+                    return
+                }
+
+                // Convert to Data
+                if let data = self.monoPcmToInt16Data(from: outBuffer) {
+                    continuation.yield(data)
+                }
+            }
+        }
+    }
+    
+    private func monoPcmToInt16Data(from buffer: AVAudioPCMBuffer) -> Data? {
+        guard buffer.format.commonFormat == .pcmFormatInt16,
+              buffer.format.channelCount == 1,
+              let ch0 = buffer.int16ChannelData?.pointee else {
+            return nil
+        }
+
+        let bytesPerFrame = Int(buffer.format.streamDescription.pointee.mBytesPerFrame)
+        let size = Int(buffer.frameLength) * bytesPerFrame
+        
+        return Data(bytes: ch0, count: size)
+    }
+}

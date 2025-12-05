@@ -14,10 +14,10 @@ import SwiftUI
 ///
 /// You can not create a `_LLMFunctionCollection` yourself. Please use the ``LLMOpenAISchema`` that internally creates a `_LLMFunctionCollection` with the passed ``LLMFunction``s.
 public struct _LLMFunctionCollection {  // swiftlint:disable:this type_name
-    var functions: [String: any LLMFunction] = [:]
+    package var functions: [String: any LLMFunction] = [:]
     
     
-    init(functions: [any LLMFunction]) {
+    package init(functions: [any LLMFunction]) {
         for function in functions {
             self.functions[Swift.type(of: function).name] = function
         }

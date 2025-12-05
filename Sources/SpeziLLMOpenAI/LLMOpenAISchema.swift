@@ -48,7 +48,7 @@ public struct LLMOpenAISchema: LLMSchema, Sendable {
         parameters: LLMOpenAIParameters,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
-        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
+        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters

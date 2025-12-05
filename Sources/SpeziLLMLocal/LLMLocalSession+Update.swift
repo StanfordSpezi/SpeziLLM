@@ -9,6 +9,7 @@
 import Foundation
 import SpeziLLM
 
+
 extension LLMLocalSession {
     /// Creates a new ``LLMLocalSession`` with updated ``LLMLocalParameters`` and ``LLMLocalSamplingParameters``.
     ///
