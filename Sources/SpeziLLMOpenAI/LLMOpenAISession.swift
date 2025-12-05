@@ -84,14 +84,14 @@ public final class LLMOpenAISession: LLMSession, FunctionCallLLMSession, SchemaP
     package let toolCallCounter = ManagedAtomic<Int>(0)
     package let toolCallCompletionState = LLMState.generating
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored nonisolated(unsafe) private var wrappedClient: Client?
+    @ObservationIgnored nonisolated(unsafe) var wrappedClient: (any LLMOpenAIChatClientProtocol)?
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-    var openAiClient: Client {
+    var openAiClient: any LLMOpenAIChatClientProtocol {
         get {
             let client = self.clientLock.withReadLock { self.wrappedClient }
 

@@ -29,7 +29,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
                     ]
                 ])
             } catch {
-                print("unable to initialse schema in LLMOpenAIParameterCustomTypesTets")
+                print("unable to initialse schema in LLMOpenAIFunctionCallingParameterDSLTests")
                 return .init()
             }
         }()
