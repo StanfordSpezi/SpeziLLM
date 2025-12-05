@@ -15,7 +15,7 @@ import MLXLMCommon
 extension LLMLocalSession {
     private func verifyModelDownload() -> Bool {
         let repo = Hub.Repo(id: self.schema.configuration.name)
-        let url = HubApi.shared.localRepoLocation(repo)
+        let url = Self.hubApi.localRepoLocation(repo)
         let modelFileExtension = ".safetensors"
         
         do {
@@ -30,8 +30,7 @@ extension LLMLocalSession {
     internal func _setup(continuation: AsyncThrowingStream<String, any Error>.Continuation?) async -> Bool {
 #if targetEnvironment(simulator)
         return await _mockSetup(continuation: continuation)
-#endif
-        
+#else
         Self.logger.debug("SpeziLLMLocal: Local LLM is being initialized")
         
         await MainActor.run {
@@ -66,6 +65,7 @@ extension LLMLocalSession {
         
         Self.logger.debug("SpeziLLMLocal: Local LLM has finished initializing")
         return true
+#endif
     }
     
     private func _mockSetup(continuation: AsyncThrowingStream<String, any Error>.Continuation?) async -> Bool {

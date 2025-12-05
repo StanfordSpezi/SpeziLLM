@@ -13,8 +13,9 @@ import SwiftUI
 
 private struct TestAppTestingSetup: ViewModifier {
     @Environment(KeychainStorage.self) var keychainStorage
-    @AppStorage(StorageKeys.onboardingFlowComplete) private var completedOnboardingFlow = false
-    
+    @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedLocalOnboardingFlow = false
+    @AppStorage(StorageKeys.fogOnboardingFlowComplete) private var completedFogOnboardingFlow = false
+
     
     func body(content: Content) -> some View {
         content
@@ -28,7 +29,8 @@ private struct TestAppTestingSetup: ViewModifier {
                     )
                 }
                 if FeatureFlags.showOnboarding {
-                    completedOnboardingFlow = false
+                    completedLocalOnboardingFlow = false
+                    completedFogOnboardingFlow = false
                 }
             }
     }

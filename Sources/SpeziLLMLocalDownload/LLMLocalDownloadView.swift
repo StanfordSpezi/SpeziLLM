@@ -15,7 +15,7 @@ import SwiftUI
 
 /// Provides an onboarding view for downloading locally executed Spezi LLMs to the device.
 /// 
-/// It can be combined with the SpeziOnboarding `OnboardingStack` to create an easy onboarding flow within the application.
+/// It can be combined with the SpeziViews `ManagedNavigationStack` to create an easy onboarding flow within the application.
 ///
 /// The ``LLMLocalDownloadView/init(model:downloadDescription:action:)-4a14v`` initializer accepts a download description displayed in the view, the `LLMLocalModel` representing the model to be downloaded, and an action closure to move onto the next (onboarding) step.
 ///
@@ -25,17 +25,15 @@ import SwiftUI
 ///
 /// ```swift
 /// struct LLMLocalDownloadApp: View {
-///     @State private var path = NavigationPath()
-///
 ///     var body: some View {
-///         NavigationStack(path: $path) {
+///         ManaagedNavigationStack {
 ///             LLMLocalOnboardingDownloadView()
 ///         }
 ///     }
 /// }
 ///
 /// struct LLMLocalOnboardingDownloadView: View {
-///     @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+///     @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
 ///
 ///     var body: some View {
 ///         LLMLocalDownloadView(
@@ -60,7 +58,7 @@ public struct LLMLocalDownloadView: View {
     
     public var body: some View {
         OnboardingView(
-            contentView: {
+            content: {
                 VStack {
                     informationView
                     
@@ -79,17 +77,17 @@ public struct LLMLocalDownloadView: View {
                                 Text("LLM_ALREADY_DOWNLOADED_DESCRIPTION", bundle: .module)
                             }
                         }
-                            .multilineTextAlignment(.center)
-                            .padding(.vertical, 16)
-                            .bold()
-                            .italic()
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, 16)
+                        .bold()
+                        .italic()
                     }
                     
                     Spacer()
                 }
-                    .transition(.opacity)
-                    .animation(.easeInOut, value: isDownloading || modelExist)
-            }, actionView: {
+                .transition(.opacity)
+                .animation(.easeInOut, value: isDownloading || modelExist)
+            }, footer: {
                 OnboardingActionsView(.init("LLM_DOWNLOAD_NEXT_BUTTON", bundle: .atURL(from: .module))) {
                     try await self.action()
                 }
@@ -120,9 +118,7 @@ public struct LLMLocalDownloadView: View {
     /// Button which starts the download of the model.
     @MainActor private var downloadButton: some View {
         Button {
-            Task {
-                await downloadManager.startDownload()
-            }
+            downloadManager.startDownload()
         } label: {
             Text("LLM_DOWNLOAD_BUTTON", bundle: .module)
                 .padding(.horizontal)
@@ -135,13 +131,10 @@ public struct LLMLocalDownloadView: View {
     
     /// A progress view indicating the state of the download
     @MainActor private var downloadProgressView: some View {
-        VStack {
-            ProgressView(value: downloadProgress, total: 100.0) {
-                Text("LLM_DOWNLOADING_PROGRESS_TEXT", bundle: .module)
-            }
+        VStack(alignment: .center) {
+            ProgressView(value: downloadProgress, total: 100.0)
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
-            
             Text("Downloaded \(String(format: "%.0f", downloadProgress))% of 100%.", bundle: .module)
                 .padding(.top, 5)
         }
@@ -215,8 +208,8 @@ public struct LLMLocalDownloadView: View {
 #if DEBUG
 #Preview {
     LLMLocalDownloadView(
-        model: .llama3_8B_4bit,
-        downloadDescription: "LLM_DOWNLOAD_DESCRIPTION".localized(.module),
+        model: .llama3_2_3B_4bit,
+        downloadDescription: LocalizedStringResource("LLM_DOWNLOAD_DESCRIPTION", bundle: .atURL(from: .module)),
         action: {}
     )
 }

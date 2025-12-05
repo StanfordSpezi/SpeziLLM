@@ -105,7 +105,7 @@ struct LLMOpenAIDemoView: View {
                 let llmSession: LLMOpenAISession = runner(
                     with: LLMOpenAISchema(
                         parameters: .init(
-                            modelType: .gpt3_5Turbo,
+                            modelType: .gpt4o,
                             systemPrompt: "You're a helpful assistant that answers questions from users.",
                             overwritingToken: "abc123"
                         )
@@ -155,14 +155,14 @@ struct OpenAIAPIKey: View {
 This view can then be added to the `OnboardingFlow` within the Spezi Template Application:
 
 ```swift
-import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 struct OnboardingFlow: View {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
     
     var body: some View {
-        OnboardingStack(onboardingFlowComplete: $completedOnboardingFlow) {
+        ManagedNavigationStack(didComplete: $completedOnboardingFlow) {
             // ... other steps
             OpenAIAPIKey()
             // ... other steps
@@ -189,7 +189,6 @@ Now the OpenAI API Key entry view will appear within your application's onboardi
 
 - ``LLMOpenAIAPITokenOnboardingStep``
 - ``LLMOpenAIModelOnboardingStep``
-- ``LLMOpenAITokenSaver``
 
 ### LLM Configuration
 

@@ -54,16 +54,12 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         static let description: String = "This is a test custom type LLM function."
         
         let someInitArg: String
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Custom Array Parameter", minItems: 1, maxItems: 5, uniqueItems: false)
         var customArrayParameter: [CustomType]
         @Parameter(description: "Custom Optional Array Parameter")
         var customOptionalArrayParameter: [CustomType]?     // swiftlint:disable:this discouraged_optional_collection
-        
-        // swiftlint:enable attributes
-        
+                
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg
@@ -127,9 +123,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect((properties?["propertyB"] as? [String: Any])?["description"] as? String == "Second parameter")
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersCustom.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersCustom.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()

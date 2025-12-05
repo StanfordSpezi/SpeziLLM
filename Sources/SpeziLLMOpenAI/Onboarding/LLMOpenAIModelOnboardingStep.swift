@@ -15,13 +15,15 @@ import SwiftUI
 public struct LLMOpenAIModelOnboardingStep: View {
     public enum Default {
         public static let models: [LLMOpenAIParameters.ModelType] = [
-            .gpt3_5_turbo,
-            .gpt4_turbo,
+            .gpt5,
+            .gpt5_mini,
+            .gpt5_chat,
+            .gpt4_1,
             .gpt4o,
-            .o3_mini,
-            .o3_mini_high,
-            .o1,
-            .o1_mini
+            .o4_mini,
+            .o3_pro,
+            .o3,
+            .o3_mini
         ]
     }
     
@@ -34,13 +36,13 @@ public struct LLMOpenAIModelOnboardingStep: View {
     
     public var body: some View {
         OnboardingView(
-            titleView: {
+            header: {
                 OnboardingTitleView(
                     title: LocalizedStringResource("OPENAI_MODEL_SELECTION_TITLE", bundle: .atURL(from: .module)),
                     subtitle: LocalizedStringResource("OPENAI_MODEL_SELECTION_SUBTITLE", bundle: .atURL(from: .module))
                 )
             },
-            contentView: {
+            content: {
                 Picker(
                     String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module),
                     selection: $modelSelection
@@ -50,16 +52,16 @@ public struct LLMOpenAIModelOnboardingStep: View {
                             .tag(model)
                     }
                 }
-                    #if !os(macOS)
-                    .pickerStyle(.wheel)
-                    #else
-                    .pickerStyle(PopUpButtonPickerStyle())
-                    #endif
-                    .accessibilityIdentifier("modelPicker")
+#if !os(macOS)
+                .pickerStyle(.wheel)
+#else
+                .pickerStyle(PopUpButtonPickerStyle())
+#endif
+                .accessibilityIdentifier("modelPicker")
             },
-            actionView: {
+            footer: {
                 OnboardingActionsView(
-                    verbatim: actionText,
+                    actionText,
                     action: {
                         action(modelSelection)
                     }

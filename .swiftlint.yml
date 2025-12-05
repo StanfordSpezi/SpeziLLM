@@ -10,8 +10,6 @@
 only_rules:
   # All Images that provide context should have an accessibility label. Purely decorative images can be hidden from accessibility.
   - accessibility_label_for_image
-  # Attributes should be on their own lines in functions and types, but on the same line as variables and imports.
-  - attributes
   # Prefer using Array(seq) over seq.map { $0 } to convert a sequence into an Array.
   - array_init
   # Prefer the new block based KVO API with keypaths when using Swift 3.2 or later.
@@ -58,6 +56,8 @@ only_rules:
   - control_statement
   # Types used for hosting only static members should be implemented as a caseless enum to avoid instantiation.
   - convenience_type
+  # Custom rules: 1 blank line before imports, 2 blank lines after imports
+  - custom_rules
   # Complexity of function bodies should be limited.
   - cyclomatic_complexity
   # Availability checks or attributes shouldn’t be using older versions that are satisfied by the deployment target.
@@ -215,7 +215,7 @@ only_rules:
   # Operators should be surrounded by a single whitespace when they are being used.
   - operator_usage_whitespace
   # Operators should be surrounded by a single whitespace when defining them.
-  - operator_whitespace
+  - function_name_whitespace
   # Matching an enum case against an optional enum without ‘?’ is supported on Swift 5.1 and above.
   - optional_enum_case_matching
   # A doc comment should be attached to a declaration.
@@ -257,7 +257,7 @@ only_rules:
   # Objective-C attribute (@objc) is redundant in declaration.
   - redundant_objc_attribute
   # Initializing an optional variable with nil is redundant.
-  - redundant_optional_initialization
+  - implicit_optional_initialization
   # Property setter access level shouldn't be explicit if it's the same as the variable access level.
   - redundant_set_access_control
   # String enum values can be omitted when they are equal to the enumcase name.
@@ -371,9 +371,6 @@ deployment_target: # Availability checks or attributes shouldn’t be using olde
   iOSApplicationExtension_deployment_target: 16.0
   iOS_deployment_target: 16.0
 
-attributes:
-  attributes_with_arguments_always_on_line_above: false
-
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - .build
   - .swiftpm
@@ -450,3 +447,17 @@ unused_optional_binding:
 
 vertical_whitespace: # Limit vertical whitespace to a single empty line.
   max_empty_lines: 2 # warning - default: 1
+
+custom_rules:
+  blank_line_before_imports:
+    included: ".*\\.swift"
+    name: "Blank Line Before Imports"
+    regex: '\/\/(\n|\n{2}\n+)import'
+    message: "Insert exactly one blank line between the copyright header and the first import statement"
+    severity: warning
+  blank_line_after_imports:
+    included: ".*\\.swift"
+    name: "Blank Line After Imports"
+    regex: '\n(import|@[^\n]+ import) [^\n]+\n(?!import|@[^\n]+ import|\n\/\/[^\n]+\n|#[^\n]+\n|\n\n)'
+    message: "Insert two blank lines after the last import, or one followed by comments"
+    severity: warning

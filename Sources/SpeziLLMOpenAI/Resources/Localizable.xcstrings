@@ -1,6 +1,56 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_HINT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can create and inspect your OpenAI API keys [in the API keys section of your OpenAI Account](https://platform.openai.com/account/api-keys)."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_PROMPT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter your OpenAI API key."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI API Key"
+          }
+        }
+      }
+    },
     "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -211,6 +261,36 @@
         }
       }
     },
+    "LLM_INVALID_REQUEST_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request sent to the model was not valid."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_REQUEST_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request contained missing or unsupported fields, invalid parameters, or exceeded allowed limits."
+          }
+        }
+      }
+    },
+    "LLM_INVALID_REQUEST_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please verify that all required fields are provided and that the request follows the expected format and model constraints."
+          }
+        }
+      }
+    },
     "LLM_INVALID_TOKEN_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -331,28 +411,6 @@
         }
       }
     },
-    "OPENAI_API_KEY_PROMPT" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OpenAI-API-Schlüssel"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OpenAI API Key"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clave API de OpenAI"
-          }
-        }
-      }
-    },
     "OPENAI_API_KEY_SAVE_BUTTON" : {
       "localizations" : {
         "de" : {
@@ -371,72 +429,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Siguiente"
-          }
-        }
-      }
-    },
-    "OPENAI_API_KEY_SUBTITLE" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bitte geben Sie Ihren OpenAI-API-Schlüssel ein."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please enter your OpenAI API key."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Por favor, introduzca su clave API de OpenAI."
-          }
-        }
-      }
-    },
-    "OPENAI_API_KEY_SUBTITLE_HINT" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sie können Ihre OpenAI-API-Schlüssel [im API-Schlüsselbereich Ihres OpenAI-Kontos erstellen und überprüfen.](https://platform.openai.com/account/api-keys)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You can create and inspect your OpenAI API keys [in the API keys section of your OpenAI Account](https://platform.openai.com/account/api-keys)."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puede crear e inspeccionar sus claves API de OpenAI [en la sección de claves API de su cuenta de OpenAI.](https://platform.openai.com/account/api-keys)"
-          }
-        }
-      }
-    },
-    "OPENAI_API_KEY_TITLE" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OpenAI-API-Schlüssel"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OpenAI API Key"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clave API de OpenAI"
           }
         }
       }

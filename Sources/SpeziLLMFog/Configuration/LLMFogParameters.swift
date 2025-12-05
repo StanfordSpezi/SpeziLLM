@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GeneratedOpenAIClient
 import SpeziLLM
 
 
@@ -82,40 +83,40 @@ public struct LLMFogParameters: Sendable {
     
     /// The to-be-used Fog LLM model.
     let modelType: String
+    /// Token to authenticate with the fog node (such as a Firebase Token). Overwrites the token defined on the ``LLMFogPlatform``.
+    let overwritingAuthToken: RemoteLLMInferenceAuthToken?
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
-    /// Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
-    let authToken: @Sendable () async -> String?
-    
+
     
     /// Creates the ``LLMFogParameters``.
     ///
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Meta's Llama models.
+    ///   - overwritingAuthToken: Token to authenticate with the fog node (such as a Firebase Token), defaults to `nil`. Overwrites the token defined on the ``LLMFogPlatform``.
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
-    ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     public init(
         modelType: FogModelType,
-        systemPrompt: String? = nil,
-        authToken: @Sendable @escaping () async -> String?
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil,
+        systemPrompt: String? = nil
     ) {
-        self.init(modelType: modelType.rawValue, systemPrompts: systemPrompt.map { [$0] } ?? [], authToken: authToken)
+        self.init(modelType: modelType.rawValue, overwritingAuthToken: overwritingAuthToken, systemPrompts: systemPrompt.map { [$0] } ?? [])
     }
     
     /// Creates the ``LLMFogParameters``.
     ///
     /// - Parameters:
     ///   - modelType: The to-be-used Fog LLM model such as Meta's Llama models.
+    ///   - overwritingAuthToken: Token to authenticate with the fog node (such as a Firebase Token), defaults to `nil`. Overwrites the token defined on the ``LLMFogPlatform``.
     ///   - systemPrompts: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular Llama2 system prompt.
-    ///   - authToken: Closure that returns an up-to-date auth token for requests to Fog LLMs (e.g., a Firebase ID token).
     @_disfavoredOverload
     public init(
         modelType: String,
-        systemPrompts: [String] = [],
-        authToken: @Sendable @escaping () async -> String?
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil,
+        systemPrompts: [String] = []
     ) {
         self.modelType = modelType
+        self.overwritingAuthToken = overwritingAuthToken
         self.systemPrompts = systemPrompts
-        self.authToken = authToken
     }
 }

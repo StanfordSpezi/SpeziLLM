@@ -16,6 +16,7 @@ struct UITestsApp: App {
         case llmOpenAI = "LLMOpenAI"
         case llmLocal = "LLMLocal"
         case llmFog = "LLMFog"
+        case llmOpenAIRealtime = "LLMOpenAIRealtime"
         
         
         var id: RawValue {
@@ -32,7 +33,9 @@ struct UITestsApp: App {
             case .llmLocal:
                 LLMLocalTestView()
             case .llmFog:
-                LLMFogChatTestView()
+                LLMFogTestView()
+            case .llmOpenAIRealtime:
+                LLMOpenAIRealtimeTestView()
             }
         }
     }

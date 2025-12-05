@@ -7,20 +7,21 @@
 //
 
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 /// Onboarding Welcome view for the Local LLM example application.
 struct LLMLocalOnboardingWelcomeView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
-    
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
+
     
     var body: some View {
         OnboardingView(
             title: "WELCOME_TITLE",
             subtitle: "WELCOME_SUBTITLE",
             areas: [
-                OnboardingInformationView.Content(
+                OnboardingInformationView.Area(
                     icon: {
                         Image(systemName: "apps.iphone")
                             .accessibilityHidden(true)
@@ -28,7 +29,7 @@ struct LLMLocalOnboardingWelcomeView: View {
                     title: "WELCOME_AREA1_TITLE",
                     description: "WELCOME_AREA1_DESCRIPTION"
                 ),
-                OnboardingInformationView.Content(
+                OnboardingInformationView.Area(
                     icon: {
                         Image(systemName: "shippingbox.fill")
                             .accessibilityHidden(true)
@@ -36,7 +37,7 @@ struct LLMLocalOnboardingWelcomeView: View {
                     title: "WELCOME_AREA2_TITLE",
                     description: "WELCOME_AREA2_DESCRIPTION"
                 ),
-                OnboardingInformationView.Content(
+                OnboardingInformationView.Area(
                     icon: {
                         Image(systemName: "globe")
                             .accessibilityHidden(true)
@@ -57,7 +58,7 @@ struct LLMLocalOnboardingWelcomeView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMLocalOnboardingWelcomeView()
         LLMLocalOnboardingDownloadView()
     }

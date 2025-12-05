@@ -15,128 +15,58 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: Build-and-Test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  buildandtest_ios:
-    name: Build and Test Swift Package iOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+  package_tests:
+    name: Build and Test Swift Package ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
-        include:
-          - buildConfig: Debug
-            artifactname: SpeziLLM-iOS.xcresult
-            resultBundle: SpeziLLM-iOS.xcresult
-          - buildConfig: Release
-            artifactname: SpeziLLM-iOS-Release.xcresult
-            resultBundle: SpeziLLM-iOS-Release.xcresult
+        config: [Debug, Release]
+        platform:
+          - name: iOS
+            destination: 'platform=iOS Simulator,name=iPhone 17 Pro'
+          - name: macOS
+            destination: 'platform=macOS,arch=arm64'
+          - name: visionOS
+            destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
+      fail-fast: false
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziLLM-Package
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
-  buildandtest_visionos:
-    name: Build and Test Swift Package visionOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+      destination: ${{ matrix.platform.destination }}
+      buildConfig: ${{ matrix.config }}
+      resultBundle: ${{ format('SpeziLLM-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+      artifactname: ${{ format('SpeziLLM-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+  ui_tests:
+    name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
-        include:
-          - buildConfig: Debug
-            artifactname: SpeziLLM-visionOS.xcresult
-            resultBundle: SpeziLLM-visionOS.xcresult
-          - buildConfig: Release
-            artifactname: SpeziLLM-visionOS-Release.xcresult
-            resultBundle: SpeziLLM-visionOS-Release.xcresult
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziLLM-Package
-      destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
-  buildandtest_macos:
-    name: Build and Test Swift Package macOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    strategy:
-      matrix:
-        include:
-          - buildConfig: Debug
-            artifactname: SpeziLLM-macOS.xcresult
-            resultBundle: SpeziLLM-macOS.xcresult
-          - buildConfig: Release
-            artifactname: SpeziLLM-macOS-Release.xcresult
-            resultBundle: SpeziLLM-macOS-Release.xcresult
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziLLM-Package
-      destination: 'platform=macOS,arch=arm64'
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
-  buildandtestuitests_ios:
-    name: Build and Test UI Tests iOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    strategy:
-      matrix:
-        include:
-          - buildConfig: Debug
-            resultBundle: TestApp-iOS.xcresult
-            artifactname: TestApp-iOS.xcresult
-          - buildConfig: Release
-            resultBundle: TestApp-iOS-Release.xcresult
-            artifactname: TestApp-iOS-Release.xcresult
+        config: [Debug, Release]
+        platform:
+          - name: iOS
+            destination: 'platform=iOS Simulator,name=iPhone 17 Pro'
+          - name: visionOS
+            destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
+      fail-fast: false
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
-  buildandtestuitests_ipad:
-    name: Build and Test UI Tests iPadOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    strategy:
-      matrix:
-        include:
-          - buildConfig: Debug
-            resultBundle: TestApp-iPad.xcresult
-            artifactname: TestApp-iPad.xcresult
-          - buildConfig: Release
-            resultBundle: TestApp-iPad-Release.xcresult
-            artifactname: TestApp-iPad-Release.xcresult
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      path: 'Tests/UITests'
-      scheme: TestApp
-      destination: 'platform=iOS Simulator,name=iPad Air 11-inch (M2)'
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
-  buildandtestuitests_visionos:
-    name: Build and Test UI Tests visionOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    strategy:
-      matrix:
-        include:
-          - buildConfig: Debug
-            resultBundle: TestApp-visionOS.xcresult
-            artifactname: TestApp-visionOS.xcresult
-          - buildConfig: Release
-            resultBundle: TestApp-visionOS-Release.xcresult
-            artifactname: TestApp-visionOS-Release.xcresult
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      path: 'Tests/UITests'
-      scheme: TestApp
-      destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
-      buildConfig: ${{ matrix.buildConfig }}
-      resultBundle: ${{ matrix.resultBundle }}
-      artifactname: ${{ matrix.artifactname }}
+      destination: ${{ matrix.platform.destination }}
+      buildConfig: ${{ matrix.config }}
+      resultBundle: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+      artifactname: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [buildandtest_ios, buildandtest_visionos, buildandtest_macos, buildandtestuitests_ios, buildandtestuitests_ipad, buildandtestuitests_visionos]
-    uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
+    needs: [package_tests, ui_tests]
+    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: 'SpeziLLM-iOS.xcresult SpeziLLM-visionOS.xcresult SpeziLLM-macOS.xcresult TestApp-iOS.xcresult TestApp-iPad.xcresult TestApp-visionOS.xcresult'
+      coveragereports: SpeziLLM-*.xcresult TestApp-*.xcresult
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
   buildandtest_fognode:

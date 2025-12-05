@@ -19,7 +19,7 @@ import SpeziLLM
 /// - Tip: ``LLMOpenAISchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
-public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
+public struct LLMOpenAISchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIPlatform
     
     
@@ -48,7 +48,7 @@ public struct LLMOpenAISchema: LLMSchema, @unchecked Sendable {
         parameters: LLMOpenAIParameters,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
-        @LLMFunctionBuilder _ functionsCollection: @escaping () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
+        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters

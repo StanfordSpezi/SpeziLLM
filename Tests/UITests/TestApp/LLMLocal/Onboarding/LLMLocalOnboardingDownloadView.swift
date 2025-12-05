@@ -7,21 +7,22 @@
 //
 
 import SpeziLLMLocalDownload
-import SpeziOnboarding
 import SpeziViews
 import SwiftUI
 
 
 /// Onboarding LLM Download view for the Local LLM example application.
 struct LLMLocalOnboardingDownloadView: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
-    
+    @Environment(ManagedNavigationStack.Path.self) private var onboardingNavigationPath
+
     
     var body: some View {
         LLMLocalDownloadView(
-            model: .llama3_8B_4bit,
+            model: .llama3_2_3B_4bit,
             downloadDescription: "LLM_DOWNLOAD_DESCRIPTION",
-            action: onboardingNavigationPath.nextStep
+            action: {
+                onboardingNavigationPath.nextStep()
+            }
         )
     }
 }
@@ -29,7 +30,7 @@ struct LLMLocalOnboardingDownloadView: View {
 
 #if DEBUG
 #Preview {
-    OnboardingStack {
+    ManagedNavigationStack {
         LLMLocalOnboardingDownloadView()
     }
 }

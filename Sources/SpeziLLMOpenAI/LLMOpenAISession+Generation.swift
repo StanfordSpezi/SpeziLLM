@@ -17,24 +17,43 @@ extension LLMOpenAISession {
     /// Based on the input prompt, generate the output via the OpenAI API.
     ///
     /// - Parameters:
-    ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
+    ///   - continuationObserver: A `ContinuationObserver` that tracks a Swift `AsyncThrowingStream` continuation for cancellation.
     func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
-        continuation: AsyncThrowingStream<String, any Error>.Continuation
+        with continuationObserver: ContinuationObserver<String, any Error>
     ) async {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+            return
+        }
+
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {
             self.state = .generating
         }
-        
+
         while true {
+            // Check if the generation has been cancelled
+            if continuationObserver.isCancelled {
+                Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+                break
+            }
+
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             do {
                 let response = try await openAiClient.createChatCompletion(openAIChatQuery)
 
-                if case let .undocumented(statusCode: statusCode, _) = response {
+                if case let .undocumented(statusCode: statusCode, payload) = response {
                     let llmError = handleErrorCode(statusCode)
-                    await finishGenerationWithError(llmError, on: continuation)
+                    #if DEBUG
+                    if let body = payload.body, case let .known(length) = body.length {
+                        let buffer = try await Data(collecting: body, upTo: Int(length))
+                        let text = String(data: buffer, encoding: .utf8) ?? "<non-UTF8 body>"
+                        Self.logger.debug("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
+                    }
+                    #endif
+                    await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                     return
                 }
 
@@ -46,6 +65,15 @@ extension LLMOpenAISession {
                     )
 
                 for try await chatStreamResult in chatStream {
+                    // Check if the generation has been cancelled
+                    if continuationObserver.isCancelled {
+                        Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
+
+                        // cleanup, discard any results so that we don't perform function calls
+                        llmStreamResults = [:]
+                        break
+                    }
+
                     guard let choices = chatStreamResult.data?.choices else {
                         Self.logger.error("SpeziLLMOpenAI: Couldn't obtain choices from stream response.")
                         return
@@ -68,20 +96,16 @@ extension LLMOpenAISession {
                     guard let content = assistantResults.first?.deltaContent else {
                         continue
                     }
-                    
-                    if await checkCancellation(on: continuation) {
-                        Self.logger.debug("SpeziLLMOpenAI: LLM inference cancelled because of Task cancellation.")
-                        return
-                    }
-                    
+
                     // Automatically inject the yielded string piece into the `LLMLocal/context`
                     if schema.injectIntoContext {
                         await MainActor.run {
                             context.append(assistantOutput: content)
                         }
                     }
-                    
-                    continuation.yield(content)
+
+                    // Yield string piece into continuation
+                    continuationObserver.continuation.yield(content)
                 }
                 
                 if schema.injectIntoContext {
@@ -91,15 +115,15 @@ extension LLMOpenAISession {
                 }
             } catch let error as ClientError {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
-                await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuation)
+                await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuationObserver.continuation)
                 return
             } catch let error as LLMOpenAIError {
                 Self.logger.error("SpeziLLMOpenAI: \(error.localizedDescription)")
-                await finishGenerationWithError(LLMOpenAIError.functionCallSchemaExtractionError(error), on: continuation)
+                await finishGenerationWithError(LLMOpenAIError.functionCallSchemaExtractionError(error), on: continuationObserver.continuation)
                 return
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Unknown Generation error occurred - \(error)")
-                await finishGenerationWithError(LLMOpenAIError.generationError, on: continuation)
+                await finishGenerationWithError(LLMOpenAIError.generationError, on: continuationObserver.continuation)
                 return
             }
 
@@ -107,6 +131,7 @@ extension LLMOpenAISession {
 
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
+                await checkForActiveToolCalls()
                 break
             }
             
@@ -122,83 +147,49 @@ extension LLMOpenAISession {
             await MainActor.run {
                 context.append(functionCalls: functionCallContext)
             }
-            
-            // Parallelize function call execution
+
+            // Parallel function call execution
             do {
-                try await withThrowingTaskGroup(of: Void.self) { group in   // swiftlint:disable:this closure_body_length
+                try await withThrowingTaskGroup(of: Void.self) { group in
                     for functionCall in functionCalls {
-                        group.addTask {     // swiftlint:disable:this closure_body_length
-                            Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
-                            Arguments: \(functionCall.arguments ?? "")
-                            """)
-
-                            guard let functionName = functionCall.name,
-                                  let functionID = functionCall.id,
-                                  let functionArgument = functionCall.arguments?.data(using: .utf8),
-                                  let function = self.schema.functions[functionName] else {
-                                Self.logger.debug("SpeziLLMOpenAI: Couldn't find the requested function to call")
-                                await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallName, on: continuation)
-                                throw LLMOpenAIError.invalidFunctionCallName
-                            }
-
-                            // Inject parameters into the @Parameters of the function call
-                            do {
-                                try function.injectParameters(from: functionArgument)
-                            } catch {
-                                Self.logger.error("SpeziLLMOpenAI: Invalid function call arguments - \(error)")
-                                await self.finishGenerationWithError(LLMOpenAIError.invalidFunctionCallArguments(error), on: continuation)
-                                throw LLMOpenAIError.invalidFunctionCallArguments(error)
-                            }
-
-                            let functionCallResponse: String?
-                            
-                            do {
-                                // Execute function
-                                // Errors thrown by the functions are surfaced to the user as an LLM generation error
-                                functionCallResponse = try await function.execute()
-                            } catch is CancellationError {
-                                if await self.checkCancellation(on: continuation) {
-                                    Self.logger.debug("SpeziLLMOpenAI: Function call execution cancelled because of Task cancellation.")
-                                    throw CancellationError()
-                                }
+                        group.addTask {
+                            // Check if the function call execution has been cancelled
+                            if continuationObserver.isCancelled {
+                                Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
                                 return
-                            } catch {
-                                Self.logger.error("SpeziLLMOpenAI: Function call execution error - \(error)")
-                                await self.finishGenerationWithError(LLMOpenAIError.functionCallError(error), on: continuation)
-                                throw LLMOpenAIError.functionCallError(error)
                             }
                             
-                            Self.logger.debug("""
-                            SpeziLLMOpenAI: Function call \(functionCall.name ?? "")
-                            Arguments: \(functionCall.arguments ?? "")
-                            Response: \(functionCallResponse ?? "<empty response>")
-                            """)
-                            
-                            await MainActor.run {
-                                let defaultResponse = "Function call to \(functionCall.name ?? "") succeeded, function intentionally didn't respond anything."
+                            let functionCallResponse = try? await self.callFunction(
+                                availableFunctions: self.schema.functions,
+                                functionCallArgs: functionCall,
+                                failureHandling: .returnErrorInResponse
+                            )
 
-                                // Return `defaultResponse` in case of `nil` or empty return of the function call
+                            guard let functionCallResponse = functionCallResponse else {
+                                Self.logger.warning("SpeziLLMOpenAI: callFunction() threw an error.")
+                                return
+                            }
+
+                            await MainActor.run {
                                 self.context.append(
-                                    forFunction: functionName,
-                                    withID: functionID,
-                                    response: functionCallResponse?.isEmpty != false ? defaultResponse : (functionCallResponse ?? defaultResponse)
+                                    forFunction: functionCallResponse.functionName,
+                                    withID: functionCallResponse.functionID,
+                                    response: functionCallResponse.response
                                 )
                             }
                         }
                     }
-
+                    
                     try await group.waitForAll()
                 }
             } catch {
-                // Stop LLM inference in case of a function call error
+                // Stop LLM inference in case of an unexpected error during the function call
                 return
             }
         }
-        
-        continuation.finish()
+
         Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
-        
+
         await MainActor.run {
             self.state = .ready
         }

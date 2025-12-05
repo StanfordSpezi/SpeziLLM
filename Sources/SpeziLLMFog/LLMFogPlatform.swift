@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import Network
+import os.log
 import Spezi
 import SpeziFoundation
+import SpeziKeychainStorage
 import SpeziLLM
 
 
@@ -20,9 +23,17 @@ import SpeziLLM
 /// It is important to note that the ``LLMFogPlatform`` discovers fog computing resources within the local network and then dispatches LLM inference jobs to these fog nodes.
 /// In turn, that means that such a fog node must exist within the local network, see the `FogNode` distributed with the package.
 ///
+/// > Important: To enable the discovery of available fog nodes in the local network via Bonjour, the consuming application must configure the following `Info.plist` entries:
+/// > - `NSLocalNetworkUsageDescription` (`String`): A description explaining why the app requires access to the local network. For example:
+/// `"This app uses local network access to discover nearby services."`
+/// > - `NSBonjourServices` (`Array<String>`): Specifies the Bonjour service types the app is allowed to discover.
+/// > For use with ``SpeziLLMFog``, include the following entry:
+/// >   - `_https._tcp` (for discovering secured services via TLS)
+/// >   - `_http._tcp` (optional, for testing purposes only; discovers unsecured services)
+///
 /// In order to establish a secure connection to the fog node, the TLS encryption mechanism is used.
 /// That results in the need for the ``LLMFogPlatform`` to be configured via ``LLMFogPlatform/init(configuration:)`` and
-/// ``LLMFogPlatformConfiguration/init(host:caCertificate:taskPriority:concurrentStreams:timeout:mDnsBrowsingTimeout:)`` with the custom
+/// ``LLMFogPlatformConfiguration/init(host:connectionType:authToken:taskPriority:concurrentStreams:timeout:retryPolicy:mDnsBrowsingTimeout:)`` with the custom
 /// root CA certificate in the `.crt` format that signed the web service certificate of the fog node. See the `FogNode/README.md` and specifically the `setup.sh` script for more details.
 ///
 /// - Important: ``LLMFogPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMFogPlatform``.
@@ -43,7 +54,8 @@ import SpeziLLM
 ///     override var configuration: Configuration {
 ///         Configuration {
 ///             LLMRunner {
-///                 LLMFogPlatform(configuration: .init(caCertificate: Self.caCertificateUrl))
+///                 LLMFogPlatform(configuration: .init(connectionType: .http, authToken: .none))
+///                 // If required, specify `.https` connection type, including the certificate
 ///             }
 ///         }
 ///     }
@@ -51,46 +63,57 @@ import SpeziLLM
 /// ```
 ///
 /// - Important: For development purposes, one is able to configure the fog node in the development mode, meaning no TLS connection (resulting in no need for custom certificates). See the `FogNode/README.md` for more details regarding server-side (so fog node) instructions.
-/// On the client-side within Spezi, one has to pass `nil` for the `caCertificate` parameter of the ``LLMFogPlatform`` as shown above. If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
-public actor LLMFogPlatform: LLMPlatform {
-    /// Enforce an arbitrary number of concurrent execution jobs of Fog LLMs.
-    private let semaphore: AsyncSemaphore
-    let configuration: LLMFogPlatformConfiguration
+/// On the client-side within Spezi, one has to pass either ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/http``(as shown above) or ``LLMFogPlatformConfiguration/ConnectionType-swift.enum/https(caCertificate:)`` with specifying the custom CA cert.
+/// If used in development mode, no custom CA certificate is required, ensuring a smooth and straightforward development process.
+public final class LLMFogPlatform: LLMPlatform {
+    /// A Swift Logger that logs important information from the ``LLMFogPlatform``.
+    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMFog")
     
-    @MainActor public var state: LLMPlatformState = .idle
-    
-    
+    /// Configuration of the platform.
+    public let configuration: LLMFogPlatformConfiguration
+    /// Queue that processed the LLM inference tasks in a structured concurrency manner.
+    let queue: LLMInferenceQueue<String>
+
+    @Dependency(KeychainStorage.self) private var keychainStorage
+    /// If set, the user indicated a preferred fog service to connect to. Can change over time.
+    @MainActor public var preferredFogService: NWBrowser.Result?
+    @MainActor public var state: LLMPlatformState {
+        self.queue.platformState
+    }
+
+
     /// Creates an instance of the ``LLMFogPlatform``.
     ///
     /// - Parameters:
     ///     - configuration: The configuration of the platform.
     public init(configuration: LLMFogPlatformConfiguration) {
         self.configuration = configuration
-        self.semaphore = AsyncSemaphore(value: configuration.concurrentStreams)
+        self.queue = LLMInferenceQueue(
+            maxConcurrentTasks: configuration.concurrentStreams,
+            taskPriority: configuration.taskPriority
+        )
     }
     
-    
-    public nonisolated func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
-        LLMFogSession(self, schema: llmSchema)
-    }
-    
-    func exclusiveAccess() async throws {
-        try await semaphore.waitCheckingCancellation()
-        
-        if await state != .processing {
-            await MainActor.run {
-                state = .processing
-            }
+
+    public func run() async {
+        do {
+            // Run the LLM task queue
+            try await self.queue.runQueue()
+        } catch is CancellationError {
+            // No-op, shutdown
+        } catch {
+            fatalError("Inconsistent state of the LLMFogPlatform: \(error)")
         }
     }
-    
-    func signal() async {
-        let otherTasksWaiting = semaphore.signal()
-        
-        if !otherTasksWaiting {
-            await MainActor.run {
-                state = .idle
-            }
-        }
+
+    public func callAsFunction(with llmSchema: LLMFogSchema) -> LLMFogSession {
+        LLMFogSession(self, schema: llmSchema, keychainStorage: self.keychainStorage)
+    }
+
+
+    deinit {
+        self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
     }
 }
+
+extension LLMFogPlatform: @unchecked Sendable {} // unchecked because of the `Dependency` property wrapper storage

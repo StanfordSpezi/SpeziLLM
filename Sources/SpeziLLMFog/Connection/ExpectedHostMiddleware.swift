@@ -6,19 +6,27 @@
 // SPDX-License-Identifier: MIT
 //
 
-// Reference: https://github.com/apple/swift-openapi-generator/blob/main/Examples/auth-client-middleware-example/Sources/AuthenticationClientMiddleware/AuthenticationClientMiddleware.swift
-
 import Foundation
 import HTTPTypes
 import OpenAPIRuntime
 
 
-/// A `ClientMiddleware` for injecting the OpenAI API key into outgoing requests.
-struct AuthMiddleware: ClientMiddleware {
-    private let APIKey: String
+/// Middleware to set the expected host name of the request, required for proper custom TLS verification.
+struct ExpectedHostMiddleware: ClientMiddleware {
+    private let hostHeaderKey: HTTPField.Name = {
+        guard let hostHeader = HTTPField.Name("Host") else {
+            fatalError("SpeziLLMFog: Failed to create HTTPField.Name for `Host`.")
+        }
+
+        return hostHeader
+    }()
+
+    private let expectedHost: String?
 
 
-    init(APIKey: String) { self.APIKey = APIKey }
+    init(expectedHost: String?) {
+        self.expectedHost = expectedHost
+    }
 
 
     func intercept(
@@ -29,7 +37,9 @@ struct AuthMiddleware: ClientMiddleware {
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         var request = request
-        request.headerFields[.authorization] = "Bearer \(APIKey)"
+        if let expectedHost = expectedHost {
+            request.headerFields[hostHeaderKey] = expectedHost
+        }
         return try await next(request, body, baseURL)
     }
 }

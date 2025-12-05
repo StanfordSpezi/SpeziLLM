@@ -9,6 +9,7 @@
 import Foundation
 import Spezi
 #if os(iOS)
+import FirebaseAuth
 import FirebaseFirestore
 import SpeziAccount
 import SpeziFirebaseAccount
@@ -19,13 +20,14 @@ import SpeziLLM
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
+import SpeziLLMOpenAIRealtime
 
 
 class TestAppDelegate: SpeziAppDelegate {
     // Used for production-ready setup including TLS traffic to the fog node
-    private nonisolated static var caCertificateUrl: URL? {
+    nonisolated private static var caCertificateUrl: URL? {
         guard let url = Bundle.main.url(forResource: "ca", withExtension: "crt") else {
-            preconditionFailure("CA Certificate not found!")
+            fatalError("CA Certificate not found!")
         }
         
         return url
@@ -46,10 +48,31 @@ class TestAppDelegate: SpeziAppDelegate {
             
             LLMRunner {
                 LLMMockPlatform()
-                // No CA certificate (meaning no encrypted traffic) for development purposes, see `caCertificateUrl` above
-                LLMFogPlatform(configuration: .init(host: "spezillmfog.local", caCertificate: nil))
-                LLMOpenAIPlatform()
+                // HTTP connection type with no CA certificate (meaning no encrypted traffic) for development purposes
+                LLMFogPlatform(
+                    configuration:
+                        .init(
+                            host: "spezillmfog.local",
+                            connectionType: .http,      // change to `.https` and pass the CA cert URL from above in a production-ready setup
+                            authToken: {
+                                #if os(iOS)
+                                    .closure {
+                                        // Get Firebase ID token
+                                        try? await Auth.auth().currentUser?.getIDToken()
+                                    }
+                                #else
+                                    .none
+                                #endif
+                            }()
+                        )
+                )
+                LLMOpenAIPlatform(configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)))
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
+                LLMOpenAIRealtimePlatform(
+                    configuration: .init(
+                        authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername),
+                    )
+                )
             }
         }
     }

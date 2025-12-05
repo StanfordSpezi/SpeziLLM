@@ -6,15 +6,16 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Atomics
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
 import OpenAPIURLSession
 import os
 import SpeziChat
+import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
-
 
 /// Represents an ``LLMOpenAISchema`` in execution.
 ///
@@ -50,7 +51,7 @@ import SpeziLLM
 ///                 let llmSession: LLMOpenAISession = runner(
 ///                     with: LLMOpenAISchema(
 ///                         parameters: .init(
-///                             modelType: .gpt3_5Turbo,
+///                             modelType: .gpt4o,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingToken: "abc123"
 ///                         )
@@ -69,104 +70,108 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAISession: LLMSession, @unchecked Sendable {
+public final class LLMOpenAISession: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
-    static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+    package static let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     
     
     let platform: LLMOpenAIPlatform
-    let schema: LLMOpenAISchema
+    package let schema: LLMOpenAISchema
     let keychainStorage: KeychainStorage
-    
-    /// A set of `Task`s managing the ``LLMOpenAISession`` output generation.
-    @ObservationIgnored private var tasks: Set<Task<(), Never>> = []
-    /// Ensuring thread-safe access to the `LLMOpenAISession/task`.
-    @ObservationIgnored private var lock = NSLock()
+ 
+    private let clientLock = RWLock()
+    /// Counter for tracking nested tool calls
+    package let toolCallCounter = ManagedAtomic<Int>(0)
+    package let toolCallCompletionState = LLMState.generating
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored var wrappedClient: (any LLMOpenAIChatClientProtocol)?
+    @ObservationIgnored nonisolated(unsafe) private var wrappedClient: Client?
+    /// Holds the currently generating continuations so that we can cancel them if required.
+    let continuationHolder = LLMInferenceQueueContinuationHolder()
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
-    var openAiClient: any LLMOpenAIChatClientProtocol {
-        guard let client = wrappedClient else {
-            preconditionFailure("""
-            SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
-            Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
-            """)
+    var openAiClient: Client {
+        get {
+            let client = self.clientLock.withReadLock { self.wrappedClient }
+
+            guard let client else {
+                fatalError("""
+                SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
+                Ensure that the `LLMOpenAIPlatform` is passed to the `LLMRunner` within the Spezi `Configuration`.
+                """)
+            }
+            return client
         }
-        return client
+
+        set {
+            self.clientLock.withWriteLock {
+                self.wrappedClient = newValue
+            }
+        }
     }
     
     
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
-    /// Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     ///
     /// - Parameters:
     ///   - platform: Reference to the ``LLMOpenAIPlatform`` where the ``LLMOpenAISession`` is running on.
     ///   - schema: The configuration of the OpenAI LLM expressed by the ``LLMOpenAISchema``.
     ///   - keychainStorage: Reference to the `KeychainStorage` from `SpeziStorage` in order to securely persist the token.
+    ///
+    /// - Important: Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     init(_ platform: LLMOpenAIPlatform, schema: LLMOpenAISchema, keychainStorage: KeychainStorage) {
         self.platform = platform
         self.schema = schema
         self.keychainStorage = keychainStorage
-        
-        // Inject system prompts into context
-        Task { @MainActor in
-            schema.parameters.systemPrompts.forEach { systemPrompt in
-                context.append(systemMessage: systemPrompt)
-            }
-        }
     }
     
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        try await platform.exclusiveAccess()
-        
-        let (stream, continuation) = AsyncThrowingStream.makeStream(of: String.self)
-        
-        // Execute the output generation of the LLM
-        let task = Task(priority: platform.configuration.taskPriority) {
-            // Unregister as soon as `Task` finishes
-            defer {
-                Task {
-                    await platform.signal()
+        // Inject system prompts into context
+        if await self.context.isEmpty {
+            await MainActor.run {
+                for prompt in self.schema.parameters.systemPrompts {
+                    self.context.append(systemMessage: prompt)
                 }
             }
-            
-            // Setup the model, if not already done
-            if wrappedClient == nil {
-                guard await setup(continuation: continuation) else {
+        }
+
+        return try self.platform.queue.submit { continuation in
+            // starts tracking the continuation for cancellation
+            let continuationObserver = ContinuationObserver(track: continuation)
+            defer {
+                // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
+                continuationObserver.continuation.finish()
+            }
+
+            // Retains the continuation during inference for potential cancellation
+            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+                if continuationObserver.isCancelled {
+                    Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
                     return
                 }
+
+                // Setup the model, if not already done
+                if self.wrappedClient == nil {
+                    guard await self.setup(with: continuationObserver) else {
+                        return
+                    }
+                }
+
+                // Execute the inference
+                await self._generate(with: continuationObserver)
             }
-            
-            if await checkCancellation(on: continuation) {
-                return
-            }
-            
-            // Execute the inference
-            await _generate(continuation: continuation)
         }
-        
-        _ = lock.withLock {
-            tasks.insert(task)
-        }
-        
-        return stream
     }
     
     public func cancel() {
-        lock.withLock {
-            for task in tasks {
-                task.cancel()
-            }
-        }
+        // cancel all currently generating continuations
+        self.continuationHolder.cancelAll()
     }
     
-    
     deinit {
-        cancel()
+        self.cancel()
     }
 }

@@ -8,6 +8,8 @@
 
 import OpenAPIRuntime
 import OSLog
+import SpeziFoundation
+import Synchronization
 
 
 // NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
@@ -20,32 +22,35 @@ public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectCo
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
+public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
     /// A Swift Logger that logs important information and errors.
-    var logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
-    
-    private var injectedValue: T?
-    
-    
-    var schema: LLMFunctionParameterItemSchema
+    let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+
+    let schema: LLMFunctionParameterItemSchema
+
+    nonisolated(unsafe) private var injectedValue: T?
+    private let lock = RWLock()
+
     public var wrappedValue: T {
-        // If the unwrapped injectedValue is not nil, return the non-nil value
-        if let value = injectedValue {
-            return value
-        // If the unwrapped injectedValue is nil, return nil
-        } else if let selfCasted = self as? any NilValueProtocol {
-            return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
-        // Fail if not injected yet
-        } else {
-            preconditionFailure("""
-                                Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
-                                Are you sure that you declared the function call within the respective SpeziLLM functions and
-                                only access the @Parameter within the `LLMFunction/execute()` method?
-                                """)
+        self.lock.withReadLock {
+            // If the unwrapped injectedValue is not nil, return the non-nil value
+            if let injectedValue {
+                return injectedValue
+            // If the unwrapped injectedValue is nil, return nil
+            } else if let selfCasted = self as? any NilValueProtocol {
+                return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
+            // Fail if not injected yet
+            } else {
+                fatalError("""
+                Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
+                Are you sure that you declared the function call within the respective SpeziLLM functions and
+                only access the @Parameter within the `LLMFunction/execute()` method?
+                """)
+            }
         }
     }
-    
-    
+
+
     /// Creates an ``LLMFunction/Parameter`` which contains a custom-defined type that conforms to ``LLMFunctionParameter``.
     ///
     /// The custom-defined type needs to implement the ``LLMFunctionParameter`` protocol which mandates the implementation of the
@@ -63,10 +68,12 @@ public class _LLMFunctionParameterWrapper<T: Decodable>: LLMFunctionParameterSch
     init(schema: LLMFunctionParameterItemSchema) {
         self.schema = schema
     }
-    
-    
+
+
     func inject(_ value: T) where T: Decodable {
-        self.injectedValue = value
+        self.lock.withWriteLock {
+            self.injectedValue = value
+        }
     }
 }
 

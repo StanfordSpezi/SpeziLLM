@@ -6,7 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+import GeneratedOpenAIClient
 import Spezi
+import SpeziKeychainStorage
 import SpeziOnboarding
 import SwiftUI
 
@@ -14,59 +16,42 @@ import SwiftUI
 /// View to display an onboarding step for the user to enter an OpenAI API Key.
 /// 
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: The ``LLMOpenAIAPITokenOnboardingStep`` can only be used with the auth token being set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 public struct LLMOpenAIAPITokenOnboardingStep: View {
-    @Environment(LLMOpenAITokenSaver.self) private var tokenSaver
-    
     private let actionText: String
-    private let action: () -> Void
-    
+    private let action: () async throws -> Void
+
+    @Environment(LLMOpenAIPlatform.self) private var openAiPlatform
+
+    private var credentials: (tag: CredentialsTag, username: String) {
+        guard case let .keychain(tag, username) = openAiPlatform.configuration.authToken else {
+            fatalError(
+            """
+            Use of the `LLMOpenAIAPITokenOnboardingStep` without specifying the
+            `LLMOpenAIPlatform.Configuration.authToken` to `.keychain` is not supported.
+            """
+            )
+        }
+
+        return (tag, username)
+    }
+
     
     public var body: some View {
-        @Bindable var tokenSaver = tokenSaver
-        
-        OnboardingView(
-            titleView: {
-                OnboardingTitleView(
-                    title: String(localized: "OPENAI_API_KEY_TITLE", bundle: .module)
-                )
-            },
-            contentView: {
-                ScrollView {
-                    VStack(spacing: 0) {
-                        Text(String(localized: "OPENAI_API_KEY_SUBTITLE", bundle: .module))
-                            .multilineTextAlignment(.center)
-                        
-                        TextField(String(localized: "OPENAI_API_KEY_PROMPT", bundle: .module), text: $tokenSaver.token)
-                            .frame(height: 50)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.vertical, 16)
-                        
-                        Text((try? AttributedString(
-                            markdown: String(
-                                localized: "OPENAI_API_KEY_SUBTITLE_HINT",
-                                bundle: .module
-                            )
-                        )) ?? "")
-                            .multilineTextAlignment(.center)
-                            .font(.caption)
-                    }
-                }
-            },
-            actionView: {
-                OnboardingActionsView(
-                    verbatim: actionText,
-                    action: {
-                        tokenSaver.store()
-                        action()
-                    }
-                )
-                    .disabled(!tokenSaver.tokenPresent)
-            }
-        )
-            .onDisappear {
-                // Persist the collected OpenAI token in the secure enclave
-                tokenSaver.store()
-            }
+        LLMAuthTokenCollector(
+            credentialsConfig: .init(
+                tag: self.credentials.tag,
+                username: self.credentials.username
+            ),
+            titleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
+            subtitleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
+            promptResource: .init("LLM_AUTH_TOKEN_ONBOARDING_PROMPT", bundle: .atURL(from: .module)),
+            hintResource: .init("LLM_AUTH_TOKEN_ONBOARDING_HINT", bundle: .atURL(from: .module)),
+            actionTextResource: .init("LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT", bundle: .atURL(from: .module))
+        ) {
+            try await self.action()
+        }
     }
     
     
@@ -75,7 +60,7 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     ///   - action: Action that should be performed after the openAI API key has been persisted.
     public init(
         actionText: LocalizedStringResource? = nil,
-        _ action: @escaping () -> Void
+        _ action: @escaping () async throws -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_API_KEY_SAVE_BUTTON", bundle: .module),
@@ -89,9 +74,23 @@ public struct LLMOpenAIAPITokenOnboardingStep: View {
     @_disfavoredOverload
     public init<ActionText: StringProtocol>(
         actionText: ActionText,
-        _ action: @escaping () -> Void
+        _ action: @escaping () async throws -> Void
     ) {
         self.actionText = String(actionText)
         self.action = action
     }
 }
+
+
+#if DEBUG
+#Preview {
+    LLMOpenAIAPITokenOnboardingStep(
+        actionText: "Continue"
+    ) {}
+        .previewWith {
+            LLMOpenAIPlatform(
+                configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername))
+            )
+        }
+}
+#endif

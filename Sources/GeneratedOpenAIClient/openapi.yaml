@@ -22382,6 +22382,9 @@ components:
         arguments:
           type: string
           description: The final arguments as a JSON string.
+        name:
+          type: string
+          description: The name of the function to call.
       required:
         - event_id
         - type
@@ -22390,6 +22393,7 @@ components:
         - output_index
         - call_id
         - arguments
+        - name
       x-oaiMeta:
         name: response.function_call_arguments.done
         group: realtime

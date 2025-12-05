@@ -1,6 +1,302 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@.%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@.%2$@"
+          }
+        }
+      }
+    },
+    "Available fog nodes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available fog nodes"
+          }
+        }
+      }
+    },
+    "Domain: %@" : {
+
+    },
+    "Done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "FOG_API_KEY_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save key"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_GRANTED_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network access has been granted!"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_GRANTED_NEXT_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting access to discover available fog computing resources in the network that perform the LLM inference."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTH_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Node Discovery"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog node discovery rights have not been granted."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network access has been denied by the user."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_DENIED_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please go to the OS settings, browser for the app and explicitly enable local network access."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting access for fog node discovery has failed."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting local network access has failed."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_AUTHORIZATION_FAILED_RECOVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try restart the app and the device. If the error persists, go to the OS settings, browser for the app and explicitly enable local network access."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_REQUEST_AUTH_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request network access"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_REQUEST_AUTH_INFO" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tapping the button will prompt a request for local network access. Please tap “Allow” to continue."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_NEXT_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select fog node"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_NEXT_BUTTON_ALLOW_EMPTY_SELECTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip fog node selection (auto-discover)"
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select one of the discovered fog nodes on your local network to use as the preferred dispatch location."
+          }
+        }
+      }
+    },
+    "FOG_DISCOVERY_SELECT_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Node Selection"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog Model"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_SAVE_BUTTON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the model that you want to use on the fog node. Make sure that the fog node has the specified model!"
+          }
+        }
+      }
+    },
+    "FOG_MODEL_SELECTION_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose LLM on Fog Node"
+          }
+        }
+      }
+    },
+    "Interface: %@" : {
+
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_HINT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the selected fog node requires a static authentication token, please enter it here."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_PROMPT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog LLM Token"
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a static token for authenticating with the Fog LLM."
+          }
+        }
+      }
+    },
+    "LLM_AUTH_TOKEN_ONBOARDING_TITLE" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fog LLM Token"
+          }
+        }
+      }
+    },
     "LLM_CONNECTIVITY_ERROR_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -117,6 +413,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ensure that SpeziLLMFog is configured with the valid root CA certificate used to sign the Fog node certificates."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_ERROR_DESCRIPTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token for accessing the Fog LLM could not be found in the keychian"
+          }
+        }
+      }
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_FAILURE_REASON" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The local keychain did not hold the required token for accessing the Fog LLM."
+          }
+        }
+      }
+    },
+    "LLM_MISSING_KEYCHAIN_TOKEN_RECORVERY_SUGGESTION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try to set the token properly and restart the application."
           }
         }
       }
@@ -240,6 +566,33 @@
           }
         }
       }
+    },
+    "Metadata" : {
+
+    },
+    "More information about service" : {
+
+    },
+    "Name: %@" : {
+
+    },
+    "No metadata" : {
+
+    },
+    "Searching for available fog nodes" : {
+
+    },
+    "Selected service" : {
+
+    },
+    "Service" : {
+
+    },
+    "Service Info" : {
+
+    },
+    "Type: %@" : {
+
     }
   },
   "version" : "1.0"

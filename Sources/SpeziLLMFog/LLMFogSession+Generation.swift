@@ -10,6 +10,7 @@ import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
 import SpeziChat
+import SpeziLLM
 
 
 extension LLMFogSession {
@@ -17,15 +18,30 @@ extension LLMFogSession {
     ///
     /// - Parameters:
     ///   - continuation: A Swift `AsyncThrowingStream` that streams the generated output.
-    func _generate( // swiftlint:disable:this identifier_name function_body_length
-        continuation: AsyncThrowingStream<String, any Error>.Continuation
+    func _generate( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
+        with continuationObserver: ContinuationObserver<String, any Error>
     ) async {
+        // Check if the generation has been cancelled
+        if continuationObserver.isCancelled {
+            Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+            return
+        }
+
         Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
         }
+
         do {
             let response = try await fogNodeClient.createChatCompletion(openAIChatQuery)
+
+            if continuationObserver.isCancelled {
+                Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+                await MainActor.run {
+                    self.state = .ready
+                }
+                return
+            }
 
             if case let .undocumented(statusCode: statusCode, payload) = response {
                 var errorMessage: String?
@@ -36,7 +52,7 @@ extension LLMFogSession {
                 }
 
                 let llmError = handleErrorCode(statusCode: statusCode, message: errorMessage)
-                await finishGenerationWithError(llmError, on: continuation)
+                await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                 return
             }
 
@@ -44,10 +60,17 @@ extension LLMFogSession {
                 .asDecodedServerSentEventsWithJSONData(
                     of: Components.Schemas.CreateChatCompletionStreamResponse.self,
                     decoder: .init(),
-                    while: { incomingData in incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8)) }
+                    while: { incomingData in
+                        incomingData != ArraySlice<UInt8>(Data("[DONE]".utf8))
+                    }
                 )
 
             for try await chatStreamResult in chatStream {
+                if continuationObserver.isCancelled {
+                    Self.logger.warning("SpeziLLMFog: Generation cancelled by the user.")
+                    break
+                }
+                
                 guard let choices = chatStreamResult.data?.choices else {
                     Self.logger.error("SpeziLLMFog: Couldn't obtain choices from stream response.")
                     return
@@ -61,11 +84,6 @@ extension LLMFogSession {
                     continue
                 }
 
-                if await checkCancellation(on: continuation) {
-                    Self.logger.debug("SpeziLLMFog: LLM inference cancelled because of Task cancellation.")
-                    return
-                }
-
                 // Automatically inject the yielded string piece into the `LLMLocal/context`
                 if schema.injectIntoContext {
                     await MainActor.run {
@@ -73,10 +91,10 @@ extension LLMFogSession {
                     }
                 }
 
-                continuation.yield(content)
+                continuationObserver.continuation.yield(content)
             }
 
-            continuation.finish()
+            continuationObserver.continuation.finish()
 
             if schema.injectIntoContext {
                 await MainActor.run {
@@ -85,11 +103,11 @@ extension LLMFogSession {
             }
         } catch let error as ClientError {
             Self.logger.error("SpeziLLMFog: Connectivity Issues with the Fog Node: \(error)")
-            await finishGenerationWithError(LLMFogError.connectivityIssues(error), on: continuation)
+            await finishGenerationWithError(LLMFogError.connectivityIssues(error), on: continuationObserver.continuation)
             return
         } catch {
             Self.logger.error("SpeziLLMFog: Unknown Generation error occurred - \(error)")
-            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuation)
+            await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuationObserver.continuation)
             return
         }
 

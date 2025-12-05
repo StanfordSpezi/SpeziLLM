@@ -10,6 +10,7 @@ import Foundation
 @testable import SpeziLLMOpenAI
 import Testing
 
+
 @Suite("LLM OpenAI Function Calling Parameter DSL Tests")
 struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this type_name
     struct ParametersPrimitive: Encodable {
@@ -26,9 +27,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         static let description: String = "This is a test LLM function."
         
         let someInitArg: String
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Primitive Int Parameter", multipleOf: 3)
         var intParameter: Int
         @Parameter(description: "Primitive Double Parameter", minimum: 12.3, maximum: 34.56)
@@ -37,9 +36,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         var boolParameter: Bool
         @Parameter(description: "Primitive String Parameter", format: .datetime, pattern: "/d/d/d/d", enum: ["1234", "5678"])
         var stringParameter: String
-        
-        // swiftlint:enable attributes
-        
+
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg
@@ -101,9 +98,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         #expect(schemaPrimitiveString.schema.value["enum"] as? [String] == ["1234", "5678"])
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersPrimitive.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersPrimitive.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()

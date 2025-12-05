@@ -24,13 +24,9 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         let someInitArg: String
         
-        // swiftlint:disable attributes
-        
         @Parameter(description: "Random Parameter", pattern: "/d/d/d/d")
         var randomParameter: String
-        
-        // swiftlint:enable attributes
-        
+
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg
@@ -68,9 +64,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect(schema["pattern"] as? String == "/d/d/d/d")
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersInvalid.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersInvalid.shared)
 
         #expect(
             throws: DecodingError.self,

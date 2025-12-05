@@ -31,9 +31,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         static let description: String = "This is a test enum LLM function."
         
         let someInitArg: String
-        
-        // swiftlint:disable attributes
-        
+
         @Parameter(description: "Enum Parameter", const: "optionA")
         var enumParameter: CustomEnumType
         @Parameter(description: "Optional Enum Parameter")
@@ -42,9 +40,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         var arrayEnumParameter: [CustomEnumType]
         @Parameter(description: "Optional Array Enum Parameter")
         var optionalArrayEnumParameter: [CustomEnumType]?   // swiftlint:disable:this discouraged_optional_collection
-        
-        // swiftlint:enable attributes
-        
+                
         
         init(someInitArg: String) {
             self.someInitArg = someInitArg
@@ -115,9 +111,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         #expect(items?["enum"] as? [String] == CustomEnumType.allCases.map { $0.rawValue })
         
         // Validate parameter injection
-        let parameterData = try #require(
-            try JSONEncoder().encode(ParametersEnum.shared)
-        )
+        let parameterData = try JSONEncoder().encode(ParametersEnum.shared)
         
         try llmFunction.injectParameters(from: parameterData)
         let llmFunctionResponse = try await llmFunction.execute()
