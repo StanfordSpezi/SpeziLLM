@@ -33,12 +33,6 @@
         }
       ]
     },
-    "environmentVariableEntries" : [
-      {
-        "key" : "OPENAI_API_TOKEN",
-        "value" : ""
-      }
-    ],
     "targetForVariableExpansion" : {
       "containerPath" : "container:UITests.xcodeproj",
       "identifier" : "2F6D139128F5F384007C25D6",
@@ -51,13 +45,6 @@
         "containerPath" : "container:UITests.xcodeproj",
         "identifier" : "2F6D13AB28F5F386007C25D6",
         "name" : "TestAppUITests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/..",
-        "identifier" : "SpeziLLMTests",
-        "name" : "SpeziLLMTests"
       }
     }
   ],
