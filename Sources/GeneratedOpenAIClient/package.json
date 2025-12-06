@@ -7,7 +7,7 @@
     "preprocess": "node preprocess-openapi-spec.js"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.1"
   },
   "config": {
     "openapiFile": "openapi.yaml"
