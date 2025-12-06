@@ -28,10 +28,10 @@ public struct LLMOpenAIModelOnboardingStep: View {
     }
     
     
-    @State private var modelSelection: LLMOpenAIParameters.ModelType
+    @State private var selection: LLMOpenAIParameters.ModelType
     private let actionText: String
-    private let action: (LLMOpenAIParameters.ModelType) -> Void
     private let models: [LLMOpenAIParameters.ModelType]
+    private let action: @MainActor (LLMOpenAIParameters.ModelType) -> Void
 
     
     public var body: some View {
@@ -45,7 +45,7 @@ public struct LLMOpenAIModelOnboardingStep: View {
             content: {
                 Picker(
                     String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module),
-                    selection: $modelSelection
+                    selection: $selection
                 ) {
                     ForEach(models, id: \.rawValue) { model in
                         Text(model.rawValue)
@@ -60,12 +60,9 @@ public struct LLMOpenAIModelOnboardingStep: View {
                 .accessibilityIdentifier("modelPicker")
             },
             footer: {
-                OnboardingActionsView(
-                    actionText,
-                    action: {
-                        action(modelSelection)
-                    }
-                )
+                OnboardingActionsView(actionText) {
+                    action(selection)
+                }
             }
         )
     }
@@ -73,15 +70,18 @@ public struct LLMOpenAIModelOnboardingStep: View {
     /// - Parameters:
     ///   - actionText: Localized text that should appear on the action button.
     ///   - models: The models that should be displayed in the picker user interface.
+    ///   - initial: The initial model which should be selected.
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     public init(
         actionText: LocalizedStringResource? = nil,
         models: [LLMOpenAIParameters.ModelType] = Default.models,
-        _ action: @escaping (LLMOpenAIParameters.ModelType) -> Void
+        initial: LLMOpenAIParameters.ModelType? = nil,
+        _ action: @escaping @MainActor (LLMOpenAIParameters.ModelType) -> Void
     ) {
         self.init(
             actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
             models: models,
+            initial: initial,
             action
         )
     }
@@ -89,16 +89,18 @@ public struct LLMOpenAIModelOnboardingStep: View {
     /// - Parameters:
     ///   - actionText: Text that should appear on the action button without localization.
     ///   - models: The models that should be displayed in the picker user interface.
+    ///   - initial: The initial model which should be selected.
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     @_disfavoredOverload
-    public init<ActionText: StringProtocol>(
-        actionText: ActionText,
+    public init(
+        actionText: some StringProtocol,
         models: [LLMOpenAIParameters.ModelType] = Default.models,
-        _ action: @escaping (LLMOpenAIParameters.ModelType) -> Void
+        initial: LLMOpenAIParameters.ModelType? = nil,
+        _ action: @escaping @MainActor (LLMOpenAIParameters.ModelType) -> Void
     ) {
         self.actionText = String(actionText)
         self.models = models
         self.action = action
-        _modelSelection = State(initialValue: models.first ?? .gpt3_5_turbo)
+        _selection = State(initialValue: initial ?? models.first ?? .gpt3_5_turbo)
     }
 }
