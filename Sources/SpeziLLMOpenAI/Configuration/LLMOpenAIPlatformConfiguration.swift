@@ -8,6 +8,7 @@
 
 import Foundation
 import GeneratedOpenAIClient
+import OpenAPIRuntime
 
 
 /// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
@@ -36,6 +37,10 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
     public let retryPolicy: RetryPolicy
     /// The task priority of the initiated LLM inference tasks.
     public let taskPriority: TaskPriority
+    /// Additional middlewares that should be used by the client.
+    ///
+    /// The `ClientMiddleware` instances specified here are placed after any other middleware configured by SpeziLLM (e.g., the retry mechanism).
+    public let middlewares: [any ClientMiddleware]
 
     
     /// Creates the ``LLMOpenAIPlatformConfiguration`` which configures the Spezi ``LLMOpenAIPlatform``.
@@ -48,12 +53,13 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
     ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     public init(
-        serverUrl: URL = Defaults.defaultServerUrl,     // swiftlint:disable:this function_default_parameter_at_end
+        serverUrl: URL = Defaults.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
         authToken: RemoteLLMInferenceAuthToken,
         concurrentStreams: Int = 10,
         timeout: TimeInterval = 60,
         retryPolicy: RetryPolicy = .attempts(3),
-        taskPriority: TaskPriority = .userInitiated
+        taskPriority: TaskPriority = .userInitiated,
+        middlewares: [any ClientMiddleware] = []
     ) {
         self.serverUrl = serverUrl
         self.authToken = authToken
@@ -61,5 +67,6 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
         self.timeout = timeout
         self.retryPolicy = retryPolicy
         self.taskPriority = taskPriority
+        self.middlewares = middlewares
     }
 }
