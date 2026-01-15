@@ -55,17 +55,6 @@ extension LLMOpenAISession {
     ///
     /// - Returns: `true` if the client could be initialized, `false` otherwise.
     private func initializeClient() -> Bool {
-        let bearerAuthMiddleware = BearerAuthMiddleware(
-            authToken: {
-                if let overwritingToken = self.schema.parameters.overwritingAuthToken {
-                    return overwritingToken
-                }
-
-                return self.platform.configuration.authToken
-            }(),
-            keychainStorage: self.keychainStorage
-        )
-
         // Initialize the OpenAI model
         self.openAiClient = Client(
             serverURL: self.platform.configuration.serverUrl,
@@ -76,12 +65,14 @@ extension LLMOpenAISession {
             }(),
             middlewares: [
                 // Injects the bearer auth token for account verification into request headers
-                bearerAuthMiddleware,
+                BearerAuthMiddleware(
+                    authToken: schema.parameters.overwritingAuthToken ?? platform.configuration.authToken,
+                    keychainStorage: keychainStorage
+                ),
                 // Retry policy for failed requests
                 RetryMiddleware(policy: self.platform.configuration.retryPolicy)
-            ]
+            ] + platform.configuration.middlewares
         )
-
         return true
     }
 
