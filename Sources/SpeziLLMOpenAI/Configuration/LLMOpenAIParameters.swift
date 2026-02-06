@@ -13,37 +13,14 @@ import OpenAPIRuntime
 
 /// Represents the parameters of OpenAIs LLMs.
 public struct LLMOpenAIParameters: Sendable {
-    public enum ModelType: String, Sendable {
-        // swiftlint:disable identifier_name
-
-        // GPT-5 series
-        case gpt5 = "gpt-5"
-        case gpt5_mini = "gpt-5-mini"
-        case gpt5_nano = "gpt-5-nano"
-        case gpt5_chat = "gpt-5-chat-latest"
-
-        // GPT-4 series
-        case gpt4o = "gpt-4o"
-        case gpt4o_mini = "gpt-4o-mini"
-        case gpt4_turbo = "gpt-4-turbo"
-        case gpt4_1 = "gpt-4.1"
-        case gpt4_1_mini = "gpt-4.1-mini"
-        case gpt4_1_nano = "gpt-4.1-nano"
-
-        // o-series
-        case o4_mini = "o4-mini"
-        case o3 = "o3"
-        case o3_pro = "o3-pro"
-        case o3_mini = "o3-mini"
-        case o3_mini_high = "o3-mini-high"
-        case o1_pro = "o1-pro"
-        case o1 = "o1"
-        case o1_mini = "o1-mini"
-
-        // Others
-        case gpt3_5_turbo = "gpt-3.5-turbo"
-
-        // swiftlint:enable identifier_name
+    public struct ModelType: Hashable, RawRepresentable, Codable, Sendable {
+        /// The identifier of the underlying model.
+        public let rawValue: String
+        
+        /// Creates a new `ModelType`
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
     }
 
     /// Defaults of possible LLMs parameter settings.
@@ -104,4 +81,35 @@ public struct LLMOpenAIParameters: Sendable {
         self.modelAccessTest = modelAccessTest
         self.overwritingAuthToken = overwritingAuthToken
     }
+}
+
+
+// swiftlint:disable identifier_name missing_docs
+extension LLMOpenAIParameters.ModelType {
+    // GPT-5 series
+    public static let gpt5 = Self(rawValue: "gpt-5")
+    public static let gpt5_mini = Self(rawValue: "gpt-5-mini")
+    public static let gpt5_nano = Self(rawValue: "gpt-5-nano")
+    public static let gpt5_chat = Self(rawValue: "gpt-5-chat-latest")
+
+    // GPT-4 series
+    public static let gpt4o = Self(rawValue: "gpt-4o")
+    public static let gpt4o_mini = Self(rawValue: "gpt-4o-mini")
+    public static let gpt4_turbo = Self(rawValue: "gpt-4-turbo")
+    public static let gpt4_1 = Self(rawValue: "gpt-4.1")
+    public static let gpt4_1_mini = Self(rawValue: "gpt-4.1-mini")
+    public static let gpt4_1_nano = Self(rawValue: "gpt-4.1-nano")
+
+    // o-series
+    public static let o4_mini = Self(rawValue: "o4-mini")
+    public static let o3 = Self(rawValue: "o3")
+    public static let o3_pro = Self(rawValue: "o3-pro")
+    public static let o3_mini = Self(rawValue: "o3-mini")
+    public static let o3_mini_high = Self(rawValue: "o3-mini-high")
+    public static let o1_pro = Self(rawValue: "o1-pro")
+    public static let o1 = Self(rawValue: "o1")
+    public static let o1_mini = Self(rawValue: "o1-mini")
+
+    // Others
+    public static let gpt3_5_turbo = Self(rawValue: "gpt-3.5-turbo")
 }
