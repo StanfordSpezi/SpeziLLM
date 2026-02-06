@@ -186,17 +186,18 @@ package final class LLMInferenceQueue<Element>: Sendable {
     /// cancels any in-flight `Task`s. After shutdown, the queue transitions to the
     /// `.shutdown` state and any subsequent `submit(...)` calls will throw.
     ///
-    /// - Note: Calling `shutdown()` when the queue isn’t running or has already
-    ///   been shut down results in a runtime error.
+    /// - Note: Calling `shutdown()` when the queue isn’t yet running or has already been shut down has no effect.
     package func shutdown() {
         self.stateLock.withWriteLock {
             switch self.state {
             case .processing(_, let continuation):
-                continuation.finish()  // also cancels the processing task group
-            default: fatalError("The LLM Inference Task Queue is not yet running or has already been shut down.")
+                self.state = .shutdown
+                continuation.finish() // also cancels the processing task group
+            case .initialized:
+                self.state = .shutdown
+            case .shutdown:
+                return
             }
-
-            self.state = .shutdown
         }
     }
 }
