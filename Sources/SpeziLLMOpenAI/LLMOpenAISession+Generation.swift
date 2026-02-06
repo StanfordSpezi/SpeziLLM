@@ -27,7 +27,6 @@ extension LLMOpenAISession {
             return
         }
 
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT started a new inference")
         await MainActor.run {
             self.state = .generating
         }
@@ -50,7 +49,7 @@ extension LLMOpenAISession {
                     if let body = payload.body, case let .known(length) = body.length {
                         let buffer = try await Data(collecting: body, upTo: Int(length))
                         let text = String(data: buffer, encoding: .utf8) ?? "<non-UTF8 body>"
-                        Self.logger.debug("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
+                        Self.logger.warning("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
                     }
                     #endif
                     await finishGenerationWithError(llmError, on: continuationObserver.continuation)
@@ -187,9 +186,7 @@ extension LLMOpenAISession {
                 return
             }
         }
-
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI GPT completed an inference")
-
+        
         await MainActor.run {
             self.state = .ready
         }

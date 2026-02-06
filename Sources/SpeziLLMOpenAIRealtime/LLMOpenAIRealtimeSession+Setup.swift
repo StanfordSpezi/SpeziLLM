@@ -43,19 +43,14 @@ extension LLMOpenAIRealtimeSession {
     ///
     /// - Throws: An error if client initialization fails.
     private func setup() async throws {
-        Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API is being initialized")
         await MainActor.run {
             self.state = .loading
         }
-
         try await self.initializeClient()
-
         await self.listenToLLMEvents()
-
         await MainActor.run {
             self.state = .ready
         }
-        Self.logger.debug("SpeziLLMOpenAIRealtime: OpenAI Realtime API finished initializing, now ready to use")
     }
 
     /// Retrieves the auth token and opens the WebSocket connection to the Realtime API.

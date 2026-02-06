@@ -94,18 +94,12 @@ extension FunctionCallLLMSession {
         availableFunctions: [String: any LLMFunction],
         functionCallArgs: LLMOpenAIStreamResult.FunctionCall,
     ) async throws -> FunctionCallLLMSessionTypes.FunctionCallResponse {
-        Self.logger.debug("""
-        FunctionCallLLMSession: Function call \(functionCallArgs.name ?? "")
-        Arguments: \(functionCallArgs.arguments ?? "")
-        """)
-    
         await self.incrementToolCallCounter()
-
         guard let functionName = functionCallArgs.name,
               let functionID = functionCallArgs.id,
               let functionArgument = functionCallArgs.arguments?.data(using: .utf8),
               let function = availableFunctions[functionName] else {
-            Self.logger.debug("FunctionCallLLMSession: Couldn't find the requested function to call")
+            Self.logger.error("FunctionCallLLMSession: Couldn't find the requested function to call")
             await self.decrementToolCallCounter()
             throw LLMOpenAIError.invalidFunctionCallName
         }
@@ -132,12 +126,6 @@ extension FunctionCallLLMSession {
             await self.decrementToolCallCounter()
             throw LLMOpenAIError.functionCallError(error)
         }
-        
-        Self.logger.debug("""
-        FunctionCallLLMSession: Function call \(functionName)
-        Arguments: \(functionCallArgs.arguments ?? "")
-        Response: \(functionCallResponseStr ?? "<empty response>")
-        """)
         
         await self.decrementToolCallCounter()
         

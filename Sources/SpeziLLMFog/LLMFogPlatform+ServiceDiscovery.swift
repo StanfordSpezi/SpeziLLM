@@ -71,11 +71,6 @@ extension LLMFogPlatform {
             )
             throw LLMFogError.mDnsServicesNotFound
         }
-
-        let ipAddress = String(rawAddress)
-        Self.logger.debug(
-            "SpeziLLMFog: Resolved \(endpoint.debugDescription) → \(ipAddress)"
-        )
-        return ipAddress
+        return String(rawAddress)
     }
 }

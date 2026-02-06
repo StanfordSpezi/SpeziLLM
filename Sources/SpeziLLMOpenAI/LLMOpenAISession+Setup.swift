@@ -21,7 +21,6 @@ extension LLMOpenAISession {
     ///   - continuationObserver: A `ContinuationObserver` that tracks a Swift `AsyncThrowingStream` continuation for cancellation.
     /// - Returns: `true` if the setup was successful, `false` otherwise.
     func setup(with continuationObserver: ContinuationObserver<String, any Error>) async -> Bool {
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM is being initialized")
         await MainActor.run {
             self.state = .loading
         }
@@ -47,7 +46,6 @@ extension LLMOpenAISession {
         await MainActor.run {
             self.state = .ready
         }
-        Self.logger.debug("SpeziLLMOpenAI: OpenAI LLM finished initializing, now ready to use")
         return true
     }
 
@@ -89,7 +87,6 @@ extension LLMOpenAISession {
                 await finishGenerationWithError(llmError, on: continuation)
                 return false
             }
-            Self.logger.debug("SpeziLLMOpenAI: Model access check completed")
             return true
         } catch let error as ClientError {
             Self.logger.error("SpeziLLMOpenAI: Model access check - Connectivity Issues with the OpenAI API: \(error)")

@@ -23,7 +23,6 @@ extension LLMFogSession {
     /// - Returns: `true` if the setup was successful, `false` otherwise.
     func _setup(with continuationObserver: ContinuationObserver<String, any Error>) async -> Bool {
         // swiftlint:disable:previous function_body_length identifier_name
-        Self.logger.debug("SpeziLLMFog: Fog LLM is being initialized")
         await MainActor.run {
             self.state = .loading
         }
@@ -150,7 +149,6 @@ extension LLMFogSession {
         await MainActor.run {
             self.state = .ready
         }
-        Self.logger.debug("SpeziLLMFog: Fog LLM finished initializing, now ready to use")
         return true
     }
 }
@@ -181,7 +179,6 @@ extension LLMFogSession {
         }
 
         browser.cancel()
-
         return discoveredEndpoint
     }
 

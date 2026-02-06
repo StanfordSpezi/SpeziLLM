@@ -27,7 +27,6 @@ extension LLMFogSession {
             return
         }
 
-        Self.logger.debug("SpeziLLMFog: Fog LLM started a new inference")
         await MainActor.run {
             self.state = .generating
         }
@@ -110,8 +109,6 @@ extension LLMFogSession {
             await finishGenerationWithError(LLMFogError.unknownError(error.localizedDescription), on: continuationObserver.continuation)
             return
         }
-
-        Self.logger.debug("SpeziLLMFog: Fog LLM completed an inference")
 
         await MainActor.run {
             self.state = .ready

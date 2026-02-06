@@ -262,6 +262,5 @@ actor LLMOpenAIRealtimeConnection {
 
 
         try await socket?.send(.string(String(decoding: finalData, as: UTF8.self)))
-        Self.logger.debug("Sent session update:\n\(String(decoding: finalData, as: UTF8.self))")
     }
 }

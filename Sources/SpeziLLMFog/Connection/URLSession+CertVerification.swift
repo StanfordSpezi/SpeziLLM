@@ -56,7 +56,6 @@ final class TransportCertificateValidationDelegate: NSObject, URLSessionDelegate
         var error: CFError?
         if SecTrustEvaluateWithError(serverTrust, &error) {
             // Trust evaluation succeeded, proceed with the connection
-            logger.debug("SpeziLLMOpenAI: Trust evaluation succeeded, proceed the connection.")
             completionHandler(.useCredential, URLCredential(trust: serverTrust))
         } else {
             // Trust evaluation failed, handle the error

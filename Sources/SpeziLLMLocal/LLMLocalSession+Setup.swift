@@ -31,8 +31,6 @@ extension LLMLocalSession {
 #if targetEnvironment(simulator)
         return await _mockSetup(continuation: continuation)
 #else
-        Self.logger.debug("SpeziLLMLocal: Local LLM is being initialized")
-        
         await MainActor.run {
             self.state = .loading
         }
@@ -62,27 +60,18 @@ extension LLMLocalSession {
             Self.logger.error("SpeziLLMLocal: Failed to load local `modelContainer`")
             return false
         }
-        
-        Self.logger.debug("SpeziLLMLocal: Local LLM has finished initializing")
         return true
 #endif
     }
     
     private func _mockSetup(continuation: AsyncThrowingStream<String, any Error>.Continuation?) async -> Bool {
-        Self.logger.debug("SpeziLLMLocal: Local Mock LLM is being initialized")
-        
         await MainActor.run {
             self.state = .loading
         }
-        
         try? await Task.sleep(for: .seconds(1))
-        
         await MainActor.run {
             self.state = .ready
         }
-        
-        Self.logger.debug("SpeziLLMLocal: Local Mock LLM has finished initializing")
-        
         return true
     }
 }
