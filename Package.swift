@@ -160,6 +160,14 @@ let package = Package(
                 .product(name: "SpeziOnboarding", package: "SpeziOnboarding"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
             ],
+            exclude: [
+                "package.json",
+                "package.json.license",
+                "preprocess-openapi-spec.js",
+                "package-lock.json",
+                "README.md",
+                "package-lock.json.license"
+            ],
             resources: [
                 .process("Resources")
             ],
