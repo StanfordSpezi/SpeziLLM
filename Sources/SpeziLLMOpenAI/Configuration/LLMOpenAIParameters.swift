@@ -13,13 +13,20 @@ import OpenAPIRuntime
 
 /// Represents the parameters of OpenAIs LLMs.
 public struct LLMOpenAIParameters: Sendable {
-    public struct ModelType: Hashable, RawRepresentable, Codable, Sendable {
+    public struct ModelType: Hashable, RawRepresentable, LosslessStringConvertible, Codable, Sendable {
         /// The identifier of the underlying model.
         public let rawValue: String
-        
+        /// The identifier of the underlying model.
+        public var description: String {
+            rawValue
+        }
         /// Creates a new `ModelType`
         public init(rawValue: String) {
             self.rawValue = rawValue
+        }
+        /// Creates a new `ModelType`
+        public init(_ description: String) {
+            self.rawValue = description
         }
     }
 
