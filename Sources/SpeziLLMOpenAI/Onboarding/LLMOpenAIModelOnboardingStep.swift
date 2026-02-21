@@ -19,19 +19,22 @@ public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep
 
 /// View to display an onboarding step for the user to select an OpenAI-like model.
 public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     private let continueTitle: LocalizedStringResource
     private let models: [PlatformConfig.ModelType]
     // why is this a closure instead of passing in a binding?
     private let action: @MainActor (PlatformConfig.ModelType) -> Void
+    
     @State private var selection: PlatformConfig.ModelType
     
     public var body: some View {
         OnboardingView {
             OnboardingTitleView(
-                title: LocalizedStringResource("\(PlatformConfig.platformName) Model", bundle: .atURL(from: .module)),
+                title: LocalizedStringResource("\(PlatformConfig.platformName) Model", bundle: .module),
                 subtitle: LocalizedStringResource(
                     "Select the \(PlatformConfig.platformName) model that you want to use.\nEnsure that your API key has proper access to the model.",
-                    bundle: .atURL(from: .module)
+                    bundle: .module
                 )
             )
         } content: {
@@ -39,7 +42,7 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlat
                 String(localized: "\(PlatformConfig.platformName) Model", bundle: .module),
                 selection: $selection
             ) {
-                ForEach(models, id: \.rawValue) { model in
+                ForEach(models) { model in
                     Text(model.rawValue)
                         .tag(model)
                 }
@@ -68,7 +71,7 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlat
         initial: PlatformConfig.ModelType? = nil,
         action: @escaping @MainActor (PlatformConfig.ModelType) -> Void
     ) {
-        self.continueTitle = continueTitle ?? LocalizedStringResource("Next", bundle: .module)
+        self.continueTitle = continueTitle ?? LocalizedStringResource("Continue", bundle: .module)
         self.models = models
         self._selection = .init(initialValue: initial ?? .default)
         self.action = action

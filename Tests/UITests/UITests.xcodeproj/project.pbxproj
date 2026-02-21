@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
 		2FAD21CB2CBDC82500C9665B /* SpeziFirebaseAccountStorage in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 2FAD21CA2CBDC82500C9665B /* SpeziFirebaseAccountStorage */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
 		8054ECD42F4A0A3100EC57AD /* SpeziLLMAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */; };
@@ -16,7 +15,6 @@
 		9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A12B5B5CB20005645E /* SpeziLLMLocal */; };
 		9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */; };
 		9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A52B5B5CB20005645E /* SpeziLLMOpenAI */; };
-		976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */; };
 		9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */; };
 		979D41902BB3EBD8001953BD /* SpeziAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 979D418F2BB3EBD8001953BD /* SpeziAccount */; };
 		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
@@ -37,9 +35,7 @@
 		2F68C3C6292E9F8F00B3E12C /* SpeziLLM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziLLM; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppLLMOpenAIUITests.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
-		976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppLLMLocalUITests.swift; sourceTree = "<group>"; };
 		977438092B05709700EC6527 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		A35639222E46556400E815EC /* RealityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityFoundation.framework; path = System/Library/Frameworks/RealityFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -55,6 +51,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8074DA3F2F4A39BF00B8997A /* TestAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TestAppUITests; sourceTree = "<group>"; };
 		80A516492F49D085002AB920 /* TestApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (80A516742F49D085002AB920 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TestApp; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -94,7 +91,7 @@
 				2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */,
 				2F68C3C6292E9F8F00B3E12C /* SpeziLLM */,
 				80A516492F49D085002AB920 /* TestApp */,
-				2F6D13AF28F5F386007C25D6 /* TestAppUITests */,
+				8074DA3F2F4A39BF00B8997A /* TestAppUITests */,
 				2F6D139328F5F384007C25D6 /* Products */,
 				2F6D13C228F5F3BE007C25D6 /* Frameworks */,
 			);
@@ -107,15 +104,6 @@
 				2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		2F6D13AF28F5F386007C25D6 /* TestAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */,
-				2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */,
-			);
-			path = TestAppUITests;
 			sourceTree = "<group>";
 		};
 		2F6D13C228F5F3BE007C25D6 /* Frameworks */ = {
@@ -175,6 +163,9 @@
 			);
 			dependencies = (
 				2F6D13AE28F5F386007C25D6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8074DA3F2F4A39BF00B8997A /* TestAppUITests */,
 			);
 			name = TestAppUITests;
 			packageProductDependencies = (
@@ -279,8 +270,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */,
-				976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,7 +419,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -450,7 +439,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sebltz.spezillm.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.SpeziLLMTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -476,7 +465,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -496,7 +485,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sebltz.spezillm.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.SpeziLLMTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";

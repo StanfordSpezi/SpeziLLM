@@ -55,7 +55,7 @@ extension LLMOpenAILikePlatformConfiguration {
 }
 
 
-public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<String>, ExpressibleByStringLiteral, Sendable {
+public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<String>, Identifiable, ExpressibleByStringLiteral, Sendable {
     /// The default model, that should be used as a fallback.
     static var `default`: Self { get }
     
@@ -63,4 +63,11 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     ///
     /// Used e.g. when picking a model in the UI.
     static var wellKnownModels: [Self] { get }
+}
+
+
+extension LLMOpenAILikePlatformModelType {
+    public var id: some Hashable {
+        rawValue
+    }
 }

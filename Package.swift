@@ -39,7 +39,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "2.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.5")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.11"),
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0")

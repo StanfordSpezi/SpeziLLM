@@ -8,6 +8,9 @@
 
 import Security
 import SpeziKeychainStorage
+import SpeziLLMAnthropic
+import SpeziLLMGemini
+import SpeziLLMOpenAI
 import SwiftUI
 
 
@@ -24,8 +27,16 @@ private struct TestAppTestingSetup: ViewModifier {
                     // NOTE: since the corresponding definitions in SpeziLLMOpenAI are internal,
                     // we need to manually ensure that the values here match the values used by SpeziLLM.
                     try? keychainStorage.deleteCredentials(
-                        withUsername: "OpenAIGPT",
-                        for: .genericPassword(forService: "openai.com")
+                        withUsername: LLMOpenAIConstants.credentialsUsername,
+                        for: .openAIKey
+                    )
+                    try? keychainStorage.deleteCredentials(
+                        withUsername: LLMAnthropicConstants.credentialsUsername,
+                        for: .anthropicKey
+                    )
+                    try? keychainStorage.deleteCredentials(
+                        withUsername: LLMGeminiConstants.credentialsUsername,
+                        for: .geminiKey
                     )
                 }
                 if FeatureFlags.showOnboarding {

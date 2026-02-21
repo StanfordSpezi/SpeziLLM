@@ -428,9 +428,6 @@
         }
       }
     },
-    "Next" : {
-
-    },
     "OPENAI_API_KEY_SAVE_BUTTON" : {
       "extractionState" : "stale",
       "localizations" : {
