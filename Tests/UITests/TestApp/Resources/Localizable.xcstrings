@@ -51,6 +51,9 @@
         }
       }
     },
+    "LLM %@ Chat" : {
+
+    },
     "LLM_DOWNLOAD_DESCRIPTION" : {
       "localizations" : {
         "en" : {
@@ -92,6 +95,7 @@
       }
     },
     "LLM_OPENAI_CHAT_VIEW_TITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -130,6 +134,9 @@
           }
         }
       }
+    },
+    "Onboarding" : {
+
     },
     "SPEZI_LLM_TEST_NAVIGATION_TITLE" : {
       "localizations" : {

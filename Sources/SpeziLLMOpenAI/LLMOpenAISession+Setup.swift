@@ -14,7 +14,7 @@ import SpeziKeychainStorage
 import SpeziLLM
 
 
-extension LLMOpenAISession {
+extension LLMOpenAILikeSession {
     /// Set up the OpenAI LLM execution client.
     ///
     /// - Parameters:
@@ -82,7 +82,7 @@ extension LLMOpenAISession {
     private func modelAccessTest(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         do {
             if case let .undocumented(statusCode, _) = try await openAiClient
-                .retrieveModel(.init(path: .init(model: schema.parameters.modelType))) {
+                .retrieveModel(.init(path: .init(model: schema.parameters.modelType.rawValue))) {
                 let llmError = handleErrorCode(statusCode)
                 await finishGenerationWithError(llmError, on: continuation)
                 return false

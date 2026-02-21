@@ -43,7 +43,7 @@ struct LLMOpenAIRealtimeTokenOnboarding: View {
 #if DEBUG
 #Preview {
     ManagedNavigationStack {
-        LLMOpenAITokenOnboarding()
+        LLMOpenAILikeAPIKeyOnboarding<LLMOpenAIPlatformConfiguration>()
     }
         .previewWith {
             LLMOpenAIPlatform(

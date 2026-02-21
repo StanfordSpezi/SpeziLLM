@@ -11,7 +11,7 @@ import OpenAPIRuntime
 import SpeziLLM
 
 
-extension LLMOpenAISession {
+extension LLMOpenAILikeSession {
     /// Map the ``LLMOpenAISession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
     private var openAIContext: [Components.Schemas.ChatCompletionRequestMessage] {
         get async {
@@ -47,7 +47,7 @@ extension LLMOpenAISession {
                     body: .json(
                         Components.Schemas.CreateChatCompletionRequest(
                             messages: openAIContext,
-                            model: .init(value1: schema.parameters.modelType),
+                            model: .init(value1: schema.parameters.modelType.rawValue),
                             frequency_penalty: schema.modelParameters.frequencyPenalty,
                             logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
                                 .modelParameters

@@ -11,60 +11,47 @@ import SpeziOnboarding
 import SwiftUI
 
 
-/// View to display an onboarding step for the user to enter change the OpenAI model.
-public struct LLMOpenAIModelOnboardingStep: View {
-    public enum Default {
-        public static let models: [LLMOpenAIParameters.ModelType] = [
-            .gpt5,
-            .gpt5_mini,
-            .gpt5_chat,
-            .gpt4_1,
-            .gpt4o,
-            .o4_mini,
-            .o3_pro,
-            .o3,
-            .o3_mini
-        ]
-    }
-    
-    
-    @State private var selection: LLMOpenAIParameters.ModelType
-    private let actionText: String
-    private let models: [LLMOpenAIParameters.ModelType]
-    private let action: @MainActor (LLMOpenAIParameters.ModelType) -> Void
+public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<LLMOpenAIPlatformConfiguration>
 
+
+/// View to display an onboarding step for the user to enter change the OpenAI model.
+public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+    private let continueTitle: LocalizedStringResource
+    private let models: [PlatformConfig.ModelType]
+    // why is this a closure instead of passing in a binding?
+    private let action: @MainActor (PlatformConfig.ModelType) -> Void
+    @State private var selection: PlatformConfig.ModelType
     
     public var body: some View {
-        OnboardingView(
-            header: {
-                OnboardingTitleView(
-                    title: LocalizedStringResource("OPENAI_MODEL_SELECTION_TITLE", bundle: .atURL(from: .module)),
-                    subtitle: LocalizedStringResource("OPENAI_MODEL_SELECTION_SUBTITLE", bundle: .atURL(from: .module))
+        OnboardingView {
+            OnboardingTitleView(
+                title: LocalizedStringResource("\(PlatformConfig.platformName) Model", bundle: .atURL(from: .module)),
+                subtitle: LocalizedStringResource(
+                    "Select the \(PlatformConfig.platformName) model that you want to use.\nEnsure that your API key has proper access to the model.",
+                    bundle: .atURL(from: .module)
                 )
-            },
-            content: {
-                Picker(
-                    String(localized: "OPENAI_MODEL_SELECTION_DESCRIPTION", bundle: .module),
-                    selection: $selection
-                ) {
-                    ForEach(models, id: \.rawValue) { model in
-                        Text(model.rawValue)
-                            .tag(model)
-                    }
-                }
-#if !os(macOS)
-                .pickerStyle(.wheel)
-#else
-                .pickerStyle(PopUpButtonPickerStyle())
-#endif
-                .accessibilityIdentifier("modelPicker")
-            },
-            footer: {
-                OnboardingActionsView(actionText) {
-                    action(selection)
+            )
+        } content: {
+            Picker(
+                String(localized: "\(PlatformConfig.platformName) Model", bundle: .module),
+                selection: $selection
+            ) {
+                ForEach(models, id: \.rawValue) { model in
+                    Text(model.rawValue)
+                        .tag(model)
                 }
             }
-        )
+            #if !os(macOS)
+            .pickerStyle(.wheel)
+            #else
+            .pickerStyle(PopUpButtonPickerStyle())
+            #endif
+            .accessibilityIdentifier("modelPicker")
+        } footer: {
+            OnboardingActionsView(continueTitle) {
+                action(selection)
+            }
+        }
     }
     
     /// - Parameters:
@@ -73,34 +60,14 @@ public struct LLMOpenAIModelOnboardingStep: View {
     ///   - initial: The initial model which should be selected.
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     public init(
-        actionText: LocalizedStringResource? = nil,
-        models: [LLMOpenAIParameters.ModelType] = Default.models,
-        initial: LLMOpenAIParameters.ModelType? = nil,
-        _ action: @escaping @MainActor (LLMOpenAIParameters.ModelType) -> Void
+        continueTitle: LocalizedStringResource? = nil,
+        models: [PlatformConfig.ModelType] = PlatformConfig.ModelType.wellKnownModels,
+        initial: PlatformConfig.ModelType? = nil,
+        action: @escaping @MainActor (PlatformConfig.ModelType) -> Void
     ) {
-        self.init(
-            actionText: actionText?.localizedString() ?? String(localized: "OPENAI_MODEL_SELECTION_SAVE_BUTTON", bundle: .module),
-            models: models,
-            initial: initial,
-            action
-        )
-    }
-    
-    /// - Parameters:
-    ///   - actionText: Text that should appear on the action button without localization.
-    ///   - models: The models that should be displayed in the picker user interface.
-    ///   - initial: The initial model which should be selected.
-    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
-    @_disfavoredOverload
-    public init(
-        actionText: some StringProtocol,
-        models: [LLMOpenAIParameters.ModelType] = Default.models,
-        initial: LLMOpenAIParameters.ModelType? = nil,
-        _ action: @escaping @MainActor (LLMOpenAIParameters.ModelType) -> Void
-    ) {
-        self.actionText = String(actionText)
+        self.continueTitle = continueTitle ?? LocalizedStringResource("Next", bundle: .module)
         self.models = models
+        self._selection = .init(initialValue: initial ?? .default)
         self.action = action
-        _selection = State(initialValue: initial ?? models.first ?? .gpt3_5_turbo)
     }
 }

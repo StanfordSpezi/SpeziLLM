@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable all
+
 import Foundation
 import Spezi
 #if os(iOS)
@@ -17,6 +19,7 @@ import SpeziFirebaseAccountStorage
 #endif
 import SpeziKeychainStorage
 import SpeziLLM
+import SpeziLLMAnthropic
 import SpeziLLMFog
 import SpeziLLMLocal
 import SpeziLLMOpenAI
@@ -66,7 +69,12 @@ class TestAppDelegate: SpeziAppDelegate {
                             }()
                         )
                 )
-                LLMOpenAIPlatform(configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)))
+                LLMOpenAIPlatform(configuration: .init(
+                    authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)
+                ))
+                LLMAnthropicPlatform(configuration: .init(
+                    authToken: .keychain(tag: .anthropicKey, username: LLMAnthropicConstants.credentialsUsername)
+                ))
                 LLMLocalPlatform() // Note: Spezi LLM Local is not compatible with simulators.
                 LLMOpenAIRealtimePlatform(
                     configuration: .init(

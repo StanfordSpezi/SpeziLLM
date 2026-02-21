@@ -15,8 +15,8 @@ import SwiftUI
 /// `View` for the user to enter an auth token for remote LLM inference.
 ///
 /// The displayed text is fully configurable via init parameters using `LocalizedStringResource`, with sensible fallback defaults.
-public struct LLMAuthTokenCollector: View {
-    public struct CredentialsConfig: Sendable {
+package struct LLMAuthTokenCollector: View {
+    package struct CredentialsConfig: Sendable {
         public let tag: CredentialsTag
         public let username: String
 
@@ -29,31 +29,31 @@ public struct LLMAuthTokenCollector: View {
     @Environment(KeychainStorage.self) private var keychainStorage
 
     private let credentialsConfig: CredentialsConfig
-    private let titleResource: LocalizedStringResource
-    private let subtitleResource: LocalizedStringResource
-    private let promptResource: LocalizedStringResource
-    private let hintResource: LocalizedStringResource
-    private let actionTextResource: LocalizedStringResource
-    private let action: () async throws -> Void
+    private let title: LocalizedStringResource
+    private let subtitle: LocalizedStringResource
+    private let prompt: LocalizedStringResource
+    private let hint: LocalizedStringResource
+    private let actionText: LocalizedStringResource
+    private let action: @MainActor () async throws -> Void
 
     @State private var token: String = ""
 
 
-    public var body: some View {
+    package var body: some View {
         OnboardingView(
             header: {
                 OnboardingTitleView(
-                    title: self.titleResource
+                    title: self.title
                 )
             },
             content: {
                 ScrollView {
                     VStack(spacing: 0) {
-                        Text(self.subtitleResource)
+                        Text(self.subtitle)
                             .multilineTextAlignment(.center)
                         
                         TextField(
-                            self.promptResource.localizedString(),
+                            self.prompt.localizedString(),
                             text: $token
                         )
                         .frame(height: 50)
@@ -62,7 +62,7 @@ public struct LLMAuthTokenCollector: View {
                         
                         Text(
                             (try? AttributedString(
-                                markdown: self.hintResource.localizedString()
+                                markdown: self.hint.localizedString()
                             )) ?? ""
                         )
                         .multilineTextAlignment(.center)
@@ -72,7 +72,7 @@ public struct LLMAuthTokenCollector: View {
             },
             footer: {
                 OnboardingActionsView(
-                    self.actionTextResource,
+                    self.actionText,
                     action: {
                         try keychainStorage.store(
                             Credentials(
@@ -102,27 +102,27 @@ public struct LLMAuthTokenCollector: View {
     ///
     /// - Parameters:
     ///   - credentialsConfig: How to store the token.
-    ///   - titleResource: Localized title. Defaults to `Defaults.title`.
-    ///   - subtitleResource: Localized subtitle. Defaults to `Defaults.subtitle`.
-    ///   - promptResource: Localized prompt. Defaults to `Defaults.prompt`.
-    ///   - hintResource: Localized hint (markdown). Defaults to `Defaults.hint`.
-    ///   - actionTextResource: Localized action button text. Defaults to `Defaults.action`.
+    ///   - titleResource: Localized title. Defaults to `Defaults.title` if `nil`.
+    ///   - subtitleResource: Localized subtitle. Defaults to `Defaults.subtitle` if `nil`.
+    ///   - promptResource: Localized prompt. Defaults to `Defaults.prompt` if `nil`.
+    ///   - hintResource: Localized hint (markdown). Defaults to `Defaults.hint` if `nil`.
+    ///   - actionTextResource: Localized action button text. Defaults to `Defaults.action` if `nil`.
     ///   - action: Closure to run after storing.
-    public init(
+    package init(
         credentialsConfig: CredentialsConfig,
-        titleResource: LocalizedStringResource = Defaults.title,
-        subtitleResource: LocalizedStringResource = Defaults.subtitle,
-        promptResource: LocalizedStringResource = Defaults.prompt,
-        hintResource: LocalizedStringResource = Defaults.hint,
-        actionTextResource: LocalizedStringResource = Defaults.action,
-        action: @escaping () async throws -> Void
+        title: LocalizedStringResource? = nil,
+        subtitle: LocalizedStringResource? = nil,
+        prompt: LocalizedStringResource? = nil,
+        hint: LocalizedStringResource? = nil,
+        actionText: LocalizedStringResource? = nil,
+        action: @escaping @MainActor () async throws -> Void
     ) {
         self.credentialsConfig = credentialsConfig
-        self.titleResource = titleResource
-        self.subtitleResource = subtitleResource
-        self.promptResource = promptResource
-        self.hintResource = hintResource
-        self.actionTextResource = actionTextResource
+        self.title = title ?? Defaults.title
+        self.subtitle = subtitle ?? Defaults.subtitle
+        self.prompt = prompt ?? Defaults.prompt
+        self.hint = hint ?? Defaults.hint
+        self.actionText = actionText ?? Defaults.action
         self.action = action
     }
 }

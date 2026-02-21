@@ -11,42 +11,17 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
-/// Represents the parameters of OpenAIs LLMs.
-public struct LLMOpenAIParameters: Sendable {
-    public struct ModelType: Hashable, RawRepresentable, LosslessStringConvertible, Codable, Sendable {
-        /// The identifier of the underlying model.
-        public let rawValue: String
-        /// The identifier of the underlying model.
-        public var description: String {
-            rawValue
-        }
-        /// Creates a new `ModelType`
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-        /// Creates a new `ModelType`
-        public init(_ description: String) {
-            self.rawValue = description
-        }
-    }
-
-    /// Defaults of possible LLMs parameter settings.
-    public enum Defaults {
-        public static let defaultOpenAISystemPrompt: String = {
-            String(localized: LocalizedStringResource("SPEZI_LLM_OPENAI_SYSTEM_PROMPT", bundle: .atURL(from: .module)))
-        }()
-    }
-    
-    
+/// Represents the parameters of OpenAI-like LLMs.
+public struct LLMOpenAIParameters<PlatformConfig: LLMOpenAILikePlatformConfiguration>: Sendable {
     /// The to-be-used OpenAI model.
-    let modelType: String
+    let modelType: PlatformConfig.ModelType
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
     /// Indicates if a model access test should be made during LLM setup.
     let modelAccessTest: Bool
     /// Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     let overwritingAuthToken: RemoteLLMInferenceAuthToken?
-
+    
     
     /// Creates the ``LLMOpenAIParameters``.
     ///
@@ -56,13 +31,13 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
-        modelType: ModelType,
-        systemPrompt: String? = Defaults.defaultOpenAISystemPrompt,
+        modelType: PlatformConfig.ModelType,
+        systemPrompt: String? = nil,
         modelAccessTest: Bool = false,
         overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
     ) {
         self.init(
-            modelType: modelType.rawValue,
+            modelType: modelType,
             systemPrompts: systemPrompt.map { [$0] } ?? [],
             modelAccessTest: modelAccessTest,
             overwritingAuthToken: overwritingAuthToken
@@ -76,10 +51,9 @@ public struct LLMOpenAIParameters: Sendable {
     ///   - systemPrompts: The to-be-used system prompt(s) of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
-    @_disfavoredOverload
     public init(
-        modelType: String,
-        systemPrompts: [String] = [Defaults.defaultOpenAISystemPrompt],
+        modelType: PlatformConfig.ModelType,
+        systemPrompts: [String],
         modelAccessTest: Bool = false,
         overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
     ) {
@@ -91,8 +65,20 @@ public struct LLMOpenAIParameters: Sendable {
 }
 
 
+// TODO move!
 // swiftlint:disable identifier_name missing_docs
-extension LLMOpenAIParameters.ModelType {
+extension LLMOpenAIPlatformConfiguration.ModelType {
+    public static let wellKnownModels: [Self] = [
+        .gpt5, .gpt5_mini, .gpt5_nano, .gpt5_chat,
+        .gpt4o, .gpt4o_mini,
+        .gpt4_turbo,
+        .gpt4_1, .gpt4_1_mini, .gpt4_1_nano,
+        .o4_mini,
+        .o3, .o3_pro, .o3_mini, .o3_mini_high,
+        .o1_pro, .o1, .o1_mini,
+        .gpt3_5_turbo
+    ]
+    
     // GPT-5 series
     public static let gpt5 = Self(rawValue: "gpt-5")
     public static let gpt5_mini = Self(rawValue: "gpt-5-mini")

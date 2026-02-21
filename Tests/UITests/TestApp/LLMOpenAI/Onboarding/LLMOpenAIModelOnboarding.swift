@@ -11,15 +11,15 @@ import SpeziViews
 import SwiftUI
 
 
-struct LLMOpenAIModelOnboarding: View {
+struct LLMOpenAILikeModelOnboarding<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
     @Environment(ManagedNavigationStack.Path.self) private var path
     @State private var showingAlert = false
-    @State private var modelSelection: LLMOpenAIParameters.ModelType?
+    @State private var modelSelection: PlatformConfig.ModelType?
 
 
     var body: some View {
         Group {
-            LLMOpenAIModelOnboardingStep { model in
+            LLMOpenAILikeModelOnboardingStep<PlatformConfig> { model in
                 modelSelection = model
                 showingAlert.toggle()
             }

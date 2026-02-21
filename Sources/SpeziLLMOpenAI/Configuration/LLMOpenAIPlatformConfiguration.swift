@@ -12,7 +12,22 @@ import OpenAPIRuntime
 
 
 /// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
-public struct LLMOpenAIPlatformConfiguration: Sendable {
+public struct LLMOpenAIPlatformConfiguration: LLMOpenAILikePlatformConfiguration {
+    public struct ModelType: LLMOpenAILikePlatformModelType {
+        public static let `default`: Self = .gpt4o
+        
+        /// The identifier of the underlying model.
+        public let rawValue: String
+        /// Creates a new `ModelType`
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+        /// Creates a new `ModelType`
+        public init(stringLiteral rawValue: String) {
+            self.rawValue = rawValue
+        }
+    }
+    
     /// Default configurations of the ``LLMOpenAIPlatform``.
     public enum Defaults: Sendable {
         /// Default server `URL` that the inference tasks are dispatched to.
@@ -24,6 +39,9 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
             return url
         }()
     }
+    
+    public static let platformName = "OpenAI"
+    public static let platformDeveloperConsoleUrl = URL(string: "https://platform.openai.com/account/api-keys")
 
     /// The server endpoint that the inference tasks are dispatched to.
     public let serverUrl: URL

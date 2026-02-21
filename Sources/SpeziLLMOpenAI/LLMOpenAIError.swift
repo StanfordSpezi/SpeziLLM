@@ -146,7 +146,7 @@ public enum LLMOpenAIError: LLMError {
 }
 
 // Reference: https://platform.openai.com/docs/guides/error-codes/api-errors
-extension LLMOpenAISession {
+extension LLMOpenAILikeSession {
     func handleErrorCode(_ statusCode: Int) -> LLMOpenAIError {
         switch statusCode {
         case 400:

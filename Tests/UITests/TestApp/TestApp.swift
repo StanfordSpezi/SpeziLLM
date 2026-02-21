@@ -7,6 +7,8 @@
 //
 
 import Spezi
+import SpeziLLMAnthropic
+import SpeziLLMOpenAI
 import SwiftUI
 
 
@@ -17,6 +19,7 @@ struct UITestsApp: App {
         case llmLocal = "LLMLocal"
         case llmFog = "LLMFog"
         case llmOpenAIRealtime = "LLMOpenAIRealtime"
+        case llmAnthropic = "LLMAnthropic"
         
         
         var id: RawValue {
@@ -29,13 +32,15 @@ struct UITestsApp: App {
         func view(withNavigationPath path: Binding<NavigationPath>) -> some View {
             switch self {
             case .llmOpenAI:
-                LLMOpenAIChatTestView()
+                LLMOpenAILikeChatTestView<LLMOpenAIPlatformConfiguration>(model: .gpt4o)
             case .llmLocal:
                 LLMLocalTestView()
             case .llmFog:
                 LLMFogTestView()
             case .llmOpenAIRealtime:
                 LLMOpenAIRealtimeTestView()
+            case .llmAnthropic:
+                LLMOpenAILikeChatTestView<LLMAnthropicPlatformConfiguration>(model: .opus4_6)
             }
         }
     }
