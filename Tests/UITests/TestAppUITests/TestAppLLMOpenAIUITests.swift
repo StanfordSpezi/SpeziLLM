@@ -52,7 +52,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.popUpButtons["gpt-5-chat-latest"].waitForExistence(timeout: 2))
         #elseif os(visionOS)
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
-        XCTAssert(app.pickerWheels["o3-mini"].waitForExistence(timeout: 2))     // swipe down to the o3-mini model
+        XCTAssert(app.pickerWheels["gpt-3.5-turbo"].waitForExistence(timeout: 2))     // swipe down to the gpt-3.5-turbo model
         #else
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-5-chat-latest")
         XCTAssert(app.pickerWheels["gpt-5-chat-latest"].waitForExistence(timeout: 2))
@@ -68,7 +68,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssertTrue(alert.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
         #if os(visionOS)
-        XCTAssertTrue(alert.staticTexts["o3-mini"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert.staticTexts["gpt-3.5-turbo"].exists, "The correct model was not registered.")
         #else
         XCTAssertTrue(alert.staticTexts["gpt-5-chat-latest"].exists, "The correct model was not registered.")
         #endif
