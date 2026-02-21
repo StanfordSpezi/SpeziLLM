@@ -67,7 +67,7 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
 
 
 extension LLMOpenAILikePlatformModelType {
-    public var id: some Hashable {
+    public var id: some Hashable { // swiftlint:disable:this missing_docs
         rawValue
     }
 }
