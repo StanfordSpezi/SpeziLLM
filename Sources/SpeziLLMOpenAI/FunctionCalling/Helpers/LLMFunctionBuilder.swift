@@ -16,10 +16,6 @@ public enum LLMFunctionBuilder {
     public static func buildExpression<L: LLMFunction>(_ expression: L) -> [L] {
         [expression]
     }
-    
-    public static func buildBlock() -> [any LLMFunction] {
-        []
-    }
 
     /// Required by every result builder to build combined results from statement blocks.
     public static func buildBlock(_ children: [any LLMFunction]...) -> [any LLMFunction] {

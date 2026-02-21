@@ -22,10 +22,6 @@ import SpeziLLM
 public struct LLMOpenAILikeSchema<PlatformConfig: LLMOpenAILikePlatformConfiguration>: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAILikePlatform<PlatformConfig>
     
-    public static var emptyFunctions: _LLMFunctionCollection {
-        .init(functions: [])
-    }
-    
     let parameters: LLMOpenAIParameters<PlatformConfig>
     let modelParameters: LLMOpenAIModelParameters
     let functions: [String: any LLMFunction]
@@ -43,7 +39,7 @@ public struct LLMOpenAILikeSchema<PlatformConfig: LLMOpenAILikePlatformConfigura
         parameters: LLMOpenAIParameters<PlatformConfig>,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
-        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { Self.emptyFunctions }
+        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters

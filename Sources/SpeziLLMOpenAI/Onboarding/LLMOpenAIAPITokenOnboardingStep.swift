@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import GeneratedOpenAIClient
 import Spezi
 import SpeziKeychainStorage
@@ -13,10 +15,16 @@ import SpeziOnboarding
 import SwiftUI
 
 
+/// View to display an onboarding step for the user to enter an OpenAI API Key.
+///
+/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<LLMOpenAIPlatformConfiguration>
 
-/// View to display an onboarding step for the user to enter an OpenAI API Key.
-/// 
+
+/// View to display an onboarding step for the user to enter an API key for an OpenAI-like platform.
+///
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
 /// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
