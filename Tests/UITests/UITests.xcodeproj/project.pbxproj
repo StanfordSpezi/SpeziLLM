@@ -11,6 +11,7 @@
 		2FAD21CB2CBDC82500C9665B /* SpeziFirebaseAccountStorage in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 2FAD21CA2CBDC82500C9665B /* SpeziFirebaseAccountStorage */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
 		8054ECD42F4A0A3100EC57AD /* SpeziLLMAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */; };
+		8054ECD62F4A2B9000EC57AD /* SpeziLLMGemini in Frameworks */ = {isa = PBXBuildFile; productRef = 8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */; };
 		9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A59F2B5B5CB20005645E /* SpeziLLM */; };
 		9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A12B5B5CB20005645E /* SpeziLLMLocal */; };
 		9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */; };
@@ -68,6 +69,7 @@
 				A32FF4DF2E4A124500DBA37B /* SpeziLLMOpenAIRealtime in Frameworks */,
 				9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */,
 				97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */,
+				8054ECD62F4A2B9000EC57AD /* SpeziLLMGemini in Frameworks */,
 				9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */,
 				9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */,
 				9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */,
@@ -155,6 +157,7 @@
 				979D418F2BB3EBD8001953BD /* SpeziAccount */,
 				A32FF4DE2E4A124500DBA37B /* SpeziLLMOpenAIRealtime */,
 				8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */,
+				8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -635,6 +638,10 @@
 		8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziLLMAnthropic;
+		};
+		8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMGemini;
 		};
 		9722A59F2B5B5CB20005645E /* SpeziLLM */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -8,6 +8,7 @@
 
 import Spezi
 import SpeziLLMAnthropic
+import SpeziLLMGemini
 import SpeziLLMOpenAI
 import SwiftUI
 
@@ -20,6 +21,7 @@ struct UITestsApp: App {
         case llmFog = "LLMFog"
         case llmOpenAIRealtime = "LLMOpenAIRealtime"
         case llmAnthropic = "LLMAnthropic"
+        case llmGemini = "LLMGemini"
         
         
         var id: RawValue {
@@ -41,6 +43,8 @@ struct UITestsApp: App {
                 LLMOpenAIRealtimeTestView()
             case .llmAnthropic:
                 LLMOpenAILikeChatTestView<LLMAnthropicPlatformConfiguration>(model: .opus4_6)
+            case .llmGemini:
+                LLMOpenAILikeChatTestView<LLMGeminiPlatformConfiguration>(model: .gemini2_5_pro)
             }
         }
     }
