@@ -11,10 +11,6 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
-/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
-public typealias LLMOpenAIPlatformConfiguration = LLMOpenAILikePlatformConfiguration<OpenAIPlatformDefinition>
-
-
 /// Represents the configuration of an OpenAI-like `LLMPlatform`.
 public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILikePlatformDefinition> {
     /// The platform's model type.
