@@ -12,7 +12,7 @@
 /// The `LLMFunction` is the Spezi-based implementation of an [OpenAI LLM function](https://platform.openai.com/docs/guides/function-calling).  <!-- markdown-link-check-disable-line -->
 /// It enables a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools, such as the Spezi ecosystem.
 ///
-/// Upon initializing the ``LLMOpenAISchema``, developers can pass an array of ``LLMFunction``s via ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)``.
+/// Upon initializing the ``LLMOpenAISchema``, developers can pass an array of ``LLMFunction``s via ``LLMOpenAILikeSchema/init(parameters:modelParameters:injectIntoContext:_:)``.
 /// These functions are then made available to OpenAI's GPT models and can be called if the model decides to do so, based on the current conversational context.
 /// An ``LLMFunction`` can have multiple ``LLMFunction/Parameter``s (`@Parameter`) to tailor the requested functionality of the LLM.
 ///

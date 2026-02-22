@@ -9,22 +9,13 @@
 import SpeziLLMOpenAI
 
 
-/// LLM execution platform of an Anthropic  ``LLMAnthropicSchema``.
+/// LLM execution platform of an Anthropic ``LLMAnthropicSchema``.
 ///
-/// The ``LLMAnthropicPlatform`` turns a received ``LLMAnthropicSchema`` to an executable ``LLMAnthropicSession``.
-/// Use ``LLMAnthropicPlatform/callAsFunction(with:)`` with an ``LLMAnthropicSchema`` parameter to get an executable ``LLMAnthropicSession`` that does the actual inference.
-///
-/// The platform can be configured with the ``LLMAnthropicPlatformConfiguration``, enabling developers to specify properties like a custom server `URL`s, API tokens, the retry policy or timeouts.
-///
-/// - Important: ``LLMAnthropicPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMAnthropicPlatform``.
-/// The `SpeziLLM` `LLMRunner` must be configured with the ``LLMAnthropicPlatform`` within the Spezi `Configuration`.
-///
-/// - Tip: For more information, refer to the documentation of the `LLMPlatform` from SpeziLLM.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAIPlatform`, except that it interacts with Anthropic's APIs instead of OpenAI's; see the [`LLMOpenAIPlatform`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaiplatform) documentation for further documentation.
 ///
 /// ### Usage
 ///
 /// The example below demonstrates the setup of the ``LLMAnthropicPlatform`` within the Spezi `Configuration`.
-///
 /// ```swift
 /// class TestAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {

@@ -12,16 +12,10 @@ import SpeziLLMOpenAI
 /// Represents an ``LLMGeminiSchema`` in execution.
 ///
 /// The ``LLMGeminiSession`` is the executable version of the LLMGeminiPlatform LLM containing context and state as defined by the ``LLMGeminiSchema``.
-/// It provides access to text-based Gemini models.
+/// It provides access to text-based models from Gemini.
 ///
-/// The inference is started by ``LLMGeminiSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMGeminiSession/cancel()``.
-/// The ``LLMGeminiSession`` exposes its current state via the ``LLMGeminiSession/context`` property, containing all the conversational history with the LLM.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMGeminiSession`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
 ///
-/// - Warning: The ``LLMGeminiSession`` shouldn't be created manually but always through the ``LLMGeminiPlatform`` via the `LLMRunner`.
-///
-/// - Tip: ``LLMGeminiSession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the LLMGeminiPlatform LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
-///
-/// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
 /// ### Usage
 ///
@@ -43,7 +37,7 @@ import SpeziLLMOpenAI
 ///                 let llmSession: LLMGeminiSession = runner(
 ///                     with: LLMGeminiSchema(
 ///                         parameters: .init(
-///                             modelType: .gpt4o,
+///                             modelType: .gemini3_1_pro,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingToken: "abc123"
 ///                         )

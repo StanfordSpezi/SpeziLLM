@@ -33,7 +33,8 @@ public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
 
 // swiftlint:disable identifier_name
 extension GeminiPlatformDefinition.ModelType {
-    public static let `default`: Self = .gemini2_5_pro // swiftlint:disable:this missing_docs
+    /// The default model to be used with Gemini.
+    public static let `default`: Self = .gemini2_5_pro
     
     public static let wellKnownModels: [Self] = [ // swiftlint:disable:this missing_docs
         .gemini3_1_pro, .gemini3_pro, .gemini3_flash,

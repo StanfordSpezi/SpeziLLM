@@ -33,17 +33,17 @@ public struct LLMOpenAILikeSchema<PlatformDefinition: LLMOpenAILikePlatformDefin
     /// - Parameters:
     ///    - parameters: Parameters of the OpenAI LLM client.
     ///    - modelParameters: Parameters of the used OpenAI LLM.
-    ///    - injectIntoContext: Indicates if the inference output by the ``LLMOpenAISession`` should automatically be inserted into the ``LLMOpenAISession/context``, defaults to false.
-    ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
+    ///    - injectIntoContext: Indicates if the inference output by the ``LLMOpenAISession`` should automatically be inserted into the ``LLMOpenAILikeSession/context``, defaults to false.
+    ///    - functions: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
         parameters: LLMOpenAIParameters<PlatformDefinition>,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
-        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }
+        @LLMFunctionBuilder _ functions: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }
     ) {
         self.parameters = parameters
         self.modelParameters = modelParameters
         self.injectIntoContext = injectIntoContext
-        self.functions = functionsCollection().functions
+        self.functions = functions().functions
     }
 }

@@ -33,7 +33,8 @@ public struct AnthropicPlatformDefinition: LLMOpenAILikePlatformDefinition {
 
 // swiftlint:disable identifier_name
 extension AnthropicPlatformDefinition.ModelType {
-    public static let `default`: Self = .opus4_6 // swiftlint:disable:this missing_docs
+    /// The default model to be used with Anthropic.
+    public static let `default`: Self = .opus4_6
     
     public static let wellKnownModels: [Self] = [ // swiftlint:disable:this missing_docs
         .opus4_6, .sonnet4_6, .haiku4_6

@@ -43,6 +43,7 @@ public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILi
     ///   - timeout: Indicates the maximum network timeout of OpenAI requests in seconds. defaults to `60`.
     ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
+    ///   - middlewares: Additional middlewares that should be used for requests.
     public init(
         serverUrl: URL = PlatformDefinition.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
         authToken: RemoteLLMInferenceAuthToken,

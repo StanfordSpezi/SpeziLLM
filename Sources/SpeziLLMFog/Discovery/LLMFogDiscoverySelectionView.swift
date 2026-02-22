@@ -135,14 +135,14 @@ public struct LLMFogDiscoverySelectionView: View {
 
     /// Initializes a discovery view where a service **must** be selected.
     ///
-    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen ``NWBrowser/Result``.
+    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen `NWBrowser/Result`.
     public init(action: @escaping (NWBrowser.Result) async throws -> Void) {
         self.completion = .required(action)
     }
 
     /// Initializes a discovery view where selection is **optional**.
     ///
-    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen ``NWBrowser/Result`` or `nil` if skipped.
+    /// - Parameter action: The action closure to call once the "next" button is hit, called with the chosen `NWBrowser/Result` or `nil` if skipped.
     public init(allowingEmptySelection action: @escaping (NWBrowser.Result?) async throws -> Void = { _ in }) {
         self.completion = .optional(action)
     }

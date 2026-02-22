@@ -22,8 +22,8 @@ import SpeziLLM
 /// The ``LLMOpenAISession`` is the executable version of the OpenAI LLM containing context and state as defined by the ``LLMOpenAISchema``.
 /// It provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
 ///
-/// The inference is started by ``LLMOpenAISession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAISession/cancel()``.
-/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAISession/context`` property, containing all the conversational history with the LLM.
+/// The inference is started by ``LLMOpenAILikeSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAILikeSession/cancel()``.
+/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAILikeSession/context`` property, containing all the conversational history with the LLM.
 ///
 /// - Warning: The ``LLMOpenAISession`` shouldn't be created manually but always through the ``LLMOpenAIPlatform`` via the `LLMRunner`.
 ///

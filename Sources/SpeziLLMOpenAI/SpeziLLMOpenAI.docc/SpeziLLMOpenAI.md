@@ -55,7 +55,7 @@ The core components of the ``SpeziLLMOpenAI`` target are the ``LLMOpenAISchema``
 
 ### LLM OpenAI
 
-``LLMOpenAISchema`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAISchema/init(parameters:modelParameters:injectIntoContext:_:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
+``LLMOpenAISchema`` offers a variety of configuration possibilities that are supported by the OpenAI API, such as the model type, the system prompt, the temperature of the model, and many more. These options can be set via the ``LLMOpenAILikeSchema/init(parameters:modelParameters:injectIntoContext:_:)`` initializer and the ``LLMOpenAIParameters`` and ``LLMOpenAIModelParameters``.
 
 - Important: The OpenAI LLM abstractions shouldn't be used on it's own but always used together with the Spezi `LLMRunner`.
 
@@ -84,10 +84,10 @@ class LLMOpenAIAppDelegate: SpeziAppDelegate {
 
 The code example below showcases the interaction with the OpenAI LLMs within the Spezi ecosystem through the the [SpeziLLM](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm) [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner), which is injected into the SwiftUI `Environment` via the `Configuration` shown above.
 
-The ``LLMOpenAISchema`` defines the type and configurations of the to-be-executed ``LLMOpenAISession``. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the ``LLMOpenAIPlatform``. The inference via ``LLMOpenAISession/generate()`` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
+The ``LLMOpenAISchema`` defines the type and configurations of the to-be-executed ``LLMOpenAISession``. This transformation is done via the [`LLMRunner`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillm/llmrunner) that uses the ``LLMOpenAIPlatform``. The inference via ``LLMOpenAILikeSession/generate()`` returns an `AsyncThrowingStream` that yields all generated `String` pieces.
 
-The ``LLMOpenAISession`` contains the ``LLMOpenAISession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
-Ensure the property always contains all necessary information, as the ``LLMOpenAISession/generate()`` function executes the inference based on the ``LLMOpenAISession/context``
+The ``LLMOpenAISession`` contains the ``LLMOpenAILikeSession/context`` property which holds the entire history of the model interactions. This includes the system prompt, user input, but also assistant responses.
+Ensure the property always contains all necessary information, as the ``LLMOpenAILikeSession/generate()`` function executes the inference based on the ``LLMOpenAILikeSession/context``
 
 ```swift
 import SpeziLLM

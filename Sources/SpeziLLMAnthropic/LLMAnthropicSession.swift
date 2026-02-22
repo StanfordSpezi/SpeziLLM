@@ -14,14 +14,8 @@ import SpeziLLMOpenAI
 /// The ``LLMAnthropicSession`` is the executable version of the LLMAnthropicPlatform LLM containing context and state as defined by the ``LLMAnthropicSchema``.
 /// It provides access to text-based models from Anthropic, such as Claude Opus or Sonnet.
 ///
-/// The inference is started by ``LLMAnthropicSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMAnthropicSession/cancel()``.
-/// The ``LLMAnthropicSession`` exposes its current state via the ``LLMAnthropicSession/context`` property, containing all the conversational history with the LLM.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMAnthropicSession`, except that it interacts with Anthropic's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
 ///
-/// - Warning: The ``LLMAnthropicSession`` shouldn't be created manually but always through the ``LLMAnthropicPlatform`` via the `LLMRunner`.
-///
-/// - Tip: ``LLMAnthropicSession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the LLMAnthropicPlatform LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
-///
-/// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
 /// ### Usage
 ///
@@ -43,7 +37,7 @@ import SpeziLLMOpenAI
 ///                 let llmSession: LLMAnthropicSession = runner(
 ///                     with: LLMAnthropicSchema(
 ///                         parameters: .init(
-///                             modelType: .gpt4o,
+///                             modelType: .opus4_6,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingToken: "abc123"
 ///                         )

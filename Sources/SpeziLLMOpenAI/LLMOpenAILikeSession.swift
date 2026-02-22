@@ -17,23 +17,23 @@ import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
 
-/// Represents an ``LLMOpenAISchema`` in execution.
+/// Represents an ``LLMOpenAILikeSchema`` in execution.
 ///
-/// The ``LLMOpenAISession`` is the executable version of the OpenAI LLM containing context and state as defined by the ``LLMOpenAISchema``.
+/// The ``LLMOpenAILikeSession`` is the executable version of the OpenAI LLM containing context and state as defined by the ``LLMOpenAILikeSchema``.
 /// It provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
 ///
-/// The inference is started by ``LLMOpenAISession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAISession/cancel()``.
-/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAISession/context`` property, containing all the conversational history with the LLM.
+/// The inference is started by ``LLMOpenAILikeSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAILikeSession/cancel()``.
+/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAILikeSession/context`` property, containing all the conversational history with the LLM.
 ///
-/// - Warning: The ``LLMOpenAISession`` shouldn't be created manually but always through the ``LLMOpenAIPlatform`` via the `LLMRunner`.
+/// - Warning: The ``LLMOpenAILikeSession`` shouldn't be created manually but always through the ``LLMOpenAILikePlatform`` via the `LLMRunner`.
 ///
-/// - Tip: ``LLMOpenAISession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
+/// - Tip: ``LLMOpenAILikeSession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
 ///
 /// ### Usage
 ///
-/// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
+/// The example below demonstrates a minimal usage of the ``LLMOpenAILikeSession`` via the `LLMRunner`.
 ///
 /// ```swift
 /// import SpeziLLM

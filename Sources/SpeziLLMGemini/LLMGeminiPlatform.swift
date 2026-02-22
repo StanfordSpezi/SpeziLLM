@@ -9,22 +9,13 @@
 import SpeziLLMOpenAI
 
 
-/// LLM execution platform of a ``LLMGeminiSchema``.
+/// LLM execution platform of an Anthropic ``LLMGeminiSchema``.
 ///
-/// The ``LLMGeminiPlatform`` turns a received ``LLMGeminiSchema`` to an executable ``LLMGeminiSession``.
-/// Use ``LLMGeminiPlatform/callAsFunction(with:)`` with an ``LLMGeminiSchema`` parameter to get an executable ``LLMGeminiSession`` that does the actual inference.
-///
-/// The platform can be configured with the ``LLMGeminiPlatformConfiguration``, enabling developers to specify properties like a custom server `URL`s, API tokens, the retry policy or timeouts.
-///
-/// - Important: ``LLMGeminiPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMGeminiPlatform``.
-/// The `SpeziLLM` `LLMRunner` must be configured with the ``LLMGeminiPlatform`` within the Spezi `Configuration`.
-///
-/// - Tip: For more information, refer to the documentation of the `LLMPlatform` from SpeziLLM.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAIPlatform`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAIPlatform`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaiplatform) documentation for further documentation.
 ///
 /// ### Usage
 ///
 /// The example below demonstrates the setup of the ``LLMGeminiPlatform`` within the Spezi `Configuration`.
-///
 /// ```swift
 /// class TestAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
