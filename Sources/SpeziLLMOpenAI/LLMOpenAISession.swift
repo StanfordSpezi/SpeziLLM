@@ -69,4 +69,4 @@ import SpeziLLM
 ///     }
 /// }
 /// ```
-public typealias LLMOpenAISession = LLMOpenAILikeSession<LLMOpenAIPlatformConfiguration>
+public typealias LLMOpenAISession = LLMOpenAILikeSession<OpenAIPlatformDefinition>

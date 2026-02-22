@@ -11,7 +11,7 @@ import SpeziViews
 import SwiftUI
 
 
-struct LLMOpenAILikeOnboardingView<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+struct LLMOpenAILikeOnboardingView<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     #if os(macOS)
     @Environment(\.dismiss) private var dismiss
     #endif
@@ -19,8 +19,8 @@ struct LLMOpenAILikeOnboardingView<PlatformConfig: LLMOpenAILikePlatformConfigur
     
     var body: some View {
         ManagedNavigationStack {
-            LLMOpenAILikeAPIKeyOnboarding<PlatformConfig>()
-            LLMOpenAILikeModelOnboarding<PlatformConfig>()
+            LLMOpenAILikeAPIKeyOnboarding<PlatformDefinition>()
+            LLMOpenAILikeModelOnboarding<PlatformDefinition>()
         }
             #if os(macOS)
             .toolbar {

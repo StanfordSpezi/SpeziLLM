@@ -71,15 +71,15 @@ import SpeziLLM
 /// ```
 @Observable
 public final class LLMOpenAILikeSession<
-    PlatformConfiguration: LLMOpenAILikePlatformConfiguration // swiftlint:disable:this generic_type_name
+    PlatformDefinition: LLMOpenAILikePlatformDefinition
 >: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     package static var logger: Logger {
         Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
     }
     
-    let platform: LLMOpenAILikePlatform<PlatformConfiguration>
-    package let schema: LLMOpenAILikeSchema<PlatformConfiguration>
+    let platform: LLMOpenAILikePlatform<PlatformDefinition>
+    package let schema: LLMOpenAILikeSchema<PlatformDefinition>
     let keychainStorage: KeychainStorage
  
     private let clientLock = RWLock()
@@ -124,8 +124,8 @@ public final class LLMOpenAILikeSession<
     ///
     /// - Important: Only the ``LLMOpenAIPlatform`` should create an instance of ``LLMOpenAISession``.
     init(
-        _ platform: LLMOpenAILikePlatform<PlatformConfiguration>,
-        schema: LLMOpenAILikeSchema<PlatformConfiguration>,
+        _ platform: LLMOpenAILikePlatform<PlatformDefinition>,
+        schema: LLMOpenAILikeSchema<PlatformDefinition>,
         keychainStorage: KeychainStorage
     ) {
         self.platform = platform

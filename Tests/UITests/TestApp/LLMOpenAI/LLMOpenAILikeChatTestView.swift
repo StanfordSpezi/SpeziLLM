@@ -12,8 +12,8 @@ import SpeziLLMOpenAI
 import SwiftUI
 
 
-struct LLMOpenAILikeChatTestView<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
-    typealias Platform = LLMOpenAILikePlatform<PlatformConfig>
+struct LLMOpenAILikeChatTestView<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
+    typealias Platform = LLMOpenAILikePlatform<PlatformDefinition>
     
     let schema: Platform.Schema
     @LLMSessionProvider<Platform.Schema> var llm: Platform.Session
@@ -34,7 +34,7 @@ struct LLMOpenAILikeChatTestView<PlatformConfig: LLMOpenAILikePlatformConfigurat
                     .speechToolbarButton(muted: $muted)
             }
         }
-        .navigationTitle("LLM \(PlatformConfig.platformName) Chat")
+        .navigationTitle("LLM \(PlatformDefinition.platformName) Chat")
         .toolbar {
             ToolbarItem {
                 Button("Onboarding") {
@@ -43,7 +43,7 @@ struct LLMOpenAILikeChatTestView<PlatformConfig: LLMOpenAILikePlatformConfigurat
             }
         }
         .sheet(isPresented: $showOnboarding) {
-            LLMOpenAILikeOnboardingView<PlatformConfig>()
+            LLMOpenAILikeOnboardingView<PlatformDefinition>()
                 #if os(macOS)
                 .frame(minWidth: 400, minHeight: 550)
                 #endif
@@ -51,7 +51,7 @@ struct LLMOpenAILikeChatTestView<PlatformConfig: LLMOpenAILikePlatformConfigurat
         .accentColor(Color(red: 0, green: 166 / 255, blue: 126 / 255))  // OpenAI Green
     }
     
-    init(model: PlatformConfig.ModelType) {
+    init(model: PlatformDefinition.ModelType) {
         schema = Platform.Schema(
             parameters: .init(
                 modelType: model,

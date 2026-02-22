@@ -19,4 +19,4 @@ import SpeziLLM
 /// - Tip: ``LLMOpenAISchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
-public typealias LLMOpenAISchema = LLMOpenAILikeSchema<LLMOpenAIPlatformConfiguration>
+public typealias LLMOpenAISchema = LLMOpenAILikeSchema<OpenAIPlatformDefinition>

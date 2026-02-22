@@ -33,4 +33,4 @@
 ///     }
 /// }
 /// ```
-public typealias LLMOpenAIPlatform = LLMOpenAILikePlatform<LLMOpenAIPlatformConfiguration>
+public typealias LLMOpenAIPlatform = LLMOpenAILikePlatform<OpenAIPlatformDefinition>

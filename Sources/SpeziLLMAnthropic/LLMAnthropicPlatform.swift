@@ -36,4 +36,4 @@ import SpeziLLMOpenAI
 ///     }
 /// }
 /// ```
-public typealias LLMAnthropicPlatform = LLMOpenAILikePlatform<LLMAnthropicPlatformConfiguration>
+public typealias LLMAnthropicPlatform = LLMOpenAILikePlatform<AnthropicPlatformDefinition>

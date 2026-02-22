@@ -14,32 +14,32 @@ import SwiftUI
 
 
 /// View to display an onboarding step for the user to enter change the OpenAI model.
-public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<LLMOpenAIPlatformConfiguration>
+public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
 
 
 /// View to display an onboarding step for the user to select an OpenAI-like model.
-public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     @Environment(\.colorScheme) private var colorScheme
     
     private let continueTitle: LocalizedStringResource
-    private let models: [PlatformConfig.ModelType]
+    private let models: [PlatformDefinition.ModelType]
     // why is this a closure instead of passing in a binding?
-    private let action: @MainActor (PlatformConfig.ModelType) -> Void
+    private let action: @MainActor (PlatformDefinition.ModelType) -> Void
     
-    @State private var selection: PlatformConfig.ModelType
+    @State private var selection: PlatformDefinition.ModelType
     
     public var body: some View {
         OnboardingView {
             OnboardingTitleView(
-                title: LocalizedStringResource("\(PlatformConfig.platformName) Model", bundle: .module),
+                title: LocalizedStringResource("\(PlatformDefinition.platformName) Model", bundle: .module),
                 subtitle: LocalizedStringResource(
-                    "Select the \(PlatformConfig.platformName) model that you want to use.\nEnsure that your API key has proper access to the model.",
+                    "Select the \(PlatformDefinition.platformName) model that you want to use.\nEnsure that your API key has proper access to the model.",
                     bundle: .module
                 )
             )
         } content: {
             Picker(
-                String(localized: "\(PlatformConfig.platformName) Model", bundle: .module),
+                String(localized: "\(PlatformDefinition.platformName) Model", bundle: .module),
                 selection: $selection
             ) {
                 ForEach(models) { model in
@@ -67,9 +67,9 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformConfig: LLMOpenAILikePlat
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     public init(
         continueTitle: LocalizedStringResource? = nil,
-        models: [PlatformConfig.ModelType] = PlatformConfig.ModelType.wellKnownModels,
-        initial: PlatformConfig.ModelType? = nil,
-        action: @escaping @MainActor (PlatformConfig.ModelType) -> Void
+        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
+        initial: PlatformDefinition.ModelType? = nil,
+        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
     ) {
         self.continueTitle = continueTitle ?? LocalizedStringResource("Continue", bundle: .module)
         self.models = models

@@ -17,4 +17,4 @@ import SpeziLLMOpenAI
 /// - Tip: ``LLMAnthropicSchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the LLMAnthropicPlatform LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
-public typealias LLMAnthropicSchema = LLMOpenAILikeSchema<LLMAnthropicPlatformConfiguration>
+public typealias LLMAnthropicSchema = LLMOpenAILikeSchema<AnthropicPlatformDefinition>

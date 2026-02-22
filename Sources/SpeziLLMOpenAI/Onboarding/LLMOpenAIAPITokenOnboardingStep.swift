@@ -20,7 +20,7 @@ import SwiftUI
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
 /// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
-public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<LLMOpenAIPlatformConfiguration>
+public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<OpenAIPlatformDefinition>
 
 
 /// View to display an onboarding step for the user to enter an API key for an OpenAI-like platform.
@@ -28,11 +28,11 @@ public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardi
 /// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
 /// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
-public struct LLMOpenAILikeAPITokenOnboardingStep<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+public struct LLMOpenAILikeAPITokenOnboardingStep<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     private let actionText: LocalizedStringResource
     private let action: @MainActor () async throws -> Void
 
-    @Environment(LLMOpenAILikePlatform<PlatformConfig>.self) private var platform
+    @Environment(LLMOpenAILikePlatform<PlatformDefinition>.self) private var platform
 
     private var credentials: (tag: CredentialsTag, username: String) {
         switch platform.configuration.authToken {
@@ -42,7 +42,7 @@ public struct LLMOpenAILikeAPITokenOnboardingStep<PlatformConfig: LLMOpenAILikeP
             fatalError(
                 """
                 Use of `\(Self.self)` without specifying the
-                `\(PlatformConfig.self).authToken` to `.keychain` is not supported.
+                `\(LLMOpenAILikePlatformConfiguration<PlatformDefinition>.self).authToken` to `.keychain` is not supported.
                 """
             )
         }
@@ -55,15 +55,15 @@ public struct LLMOpenAILikeAPITokenOnboardingStep<PlatformConfig: LLMOpenAILikeP
                 tag: self.credentials.tag,
                 username: self.credentials.username
             ),
-            title: .init("\(PlatformConfig.platformName) API Key", bundle: .atURL(from: .module)),
-            subtitle: .init("Please enter your \(PlatformConfig.platformName) API key", bundle: .atURL(from: .module)),
+            title: .init("\(PlatformDefinition.platformName) API Key", bundle: .atURL(from: .module)),
+            subtitle: .init("Please enter your \(PlatformDefinition.platformName) API key", bundle: .atURL(from: .module)),
             prompt: .init("API Key…", bundle: .atURL(from: .module)),
             hint: { () -> LocalizedStringResource? in
-                guard let url = PlatformConfig.platformDeveloperConsoleUrl else {
+                guard let url = PlatformDefinition.platformDeveloperConsoleUrl else {
                     return nil
                 }
                 return LocalizedStringResource(
-                    "You can create and inspect your \(PlatformConfig.platformName) API keys [in the API keys section of the \(PlatformConfig.platformName) Website](\(url.absoluteString)).",
+                    "You can create and inspect your \(PlatformDefinition.platformName) API keys [in the API keys section of the \(PlatformDefinition.platformName) Website](\(url.absoluteString)).",
                     bundle: .module
                 )
             }(),

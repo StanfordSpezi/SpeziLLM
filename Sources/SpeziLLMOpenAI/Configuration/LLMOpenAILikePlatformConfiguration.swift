@@ -1,73 +1,67 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
-
-// swiftlint:disable file_types_order
 
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
-/// The configuration of an OpenAI-like LLM platform
-public protocol LLMOpenAILikePlatformConfiguration: Sendable {
-    /// Defines the models available on this platform
-    associatedtype ModelType: LLMOpenAILikePlatformModelType
-    
-    /// The name of the platform, e.g. "OpenAI", or "Anthropic"
-    static var platformName: String { get }
-    /// URL of the platform's developer console website.
-    ///
-    /// Used in the UI when displaying API key instructions.
-    static var platformDeveloperConsoleUrl: URL? { get }
-    
+/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
+public typealias LLMOpenAIPlatformConfiguration = LLMOpenAILikePlatformConfiguration<OpenAIPlatformDefinition>
+
+
+/// Represents the configuration of an OpenAI-like `LLMPlatform`.
+public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILikePlatformDefinition> {
+    /// The platform's model type.
+    public typealias ModelType = PlatformDefinition.ModelType
+
     /// The server endpoint that the inference tasks are dispatched to.
-    var serverUrl: URL { get }
-    
+    public let serverUrl: URL
     /// The OpenAI API token on a global basis.
-    var authToken: RemoteLLMInferenceAuthToken { get }
-    
+    public let authToken: RemoteLLMInferenceAuthToken
     /// Indicates the maximum number of concurrent streams to the OpenAI API.
-    var concurrentStreams: Int { get }
-    
+    public let concurrentStreams: Int
     /// Maximum network timeout of OpenAI requests in seconds.
-    var timeout: TimeInterval { get }
-    
+    public let timeout: TimeInterval
     /// The retry policy that should be used.
-    var retryPolicy: RetryPolicy { get }
-    
+    public let retryPolicy: RetryPolicy
     /// The task priority of the initiated LLM inference tasks.
-    var taskPriority: TaskPriority { get }
-    
+    public let taskPriority: TaskPriority
     /// Additional middlewares that should be used by the client.
     ///
     /// The `ClientMiddleware` instances specified here are placed after any other middleware configured by SpeziLLM (e.g., the retry mechanism).
-    var middlewares: [any ClientMiddleware] { get }
-}
+    public let middlewares: [any ClientMiddleware]
 
-
-extension LLMOpenAILikePlatformConfiguration {
-    public static var platformDeveloperConsoleUrl: URL? { nil } // swiftlint:disable:this missing_docs
-}
-
-
-public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<String>, Identifiable, ExpressibleByStringLiteral, Sendable {
-    /// The default model, that should be used as a fallback.
-    static var `default`: Self { get }
     
-    /// The list of well-known model types.
+    /// Creates the ``LLMOpenAIPlatformConfiguration`` which configures the Spezi ``LLMOpenAIPlatform``.
     ///
-    /// Used e.g. when picking a model in the UI.
-    static var wellKnownModels: [Self] { get }
-}
-
-
-extension LLMOpenAILikePlatformModelType {
-    public var id: some Hashable { // swiftlint:disable:this missing_docs
-        rawValue
+    /// - Parameters:
+    ///   - serverUrl: The server `URL` that the inference tasks are dispatched to. Defaults to the OpenAI API endpoint specified in the OpenAI OpenAPI document.
+    ///   - authToken: Specifies the OpenAI API token on a global basis.
+    ///   - concurrentStreams: Indicates the maximum number of concurrent streams to the OpenAI API, defaults to `10`.
+    ///   - timeout: Indicates the maximum network timeout of OpenAI requests in seconds. defaults to `60`.
+    ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
+    ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
+    public init(
+        serverUrl: URL = PlatformDefinition.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
+        authToken: RemoteLLMInferenceAuthToken,
+        concurrentStreams: Int = 10,
+        timeout: TimeInterval = 60,
+        retryPolicy: RetryPolicy = .attempts(3),
+        taskPriority: TaskPriority = .userInitiated,
+        middlewares: [any ClientMiddleware] = []
+    ) {
+        self.serverUrl = serverUrl
+        self.authToken = authToken
+        self.concurrentStreams = concurrentStreams
+        self.timeout = timeout
+        self.retryPolicy = retryPolicy
+        self.taskPriority = taskPriority
+        self.middlewares = middlewares
     }
 }

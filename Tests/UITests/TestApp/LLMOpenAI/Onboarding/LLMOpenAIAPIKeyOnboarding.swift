@@ -14,7 +14,7 @@ import SwiftUI
 /// Onboarding view for setting a static API key for use with an OpenAI-like API.
 ///
 /// - Important: Only use this view if the auth token on the `LLMOpenAIPlatform` is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`.
-struct LLMOpenAILikeAPIKeyOnboarding<PlatformConfig: LLMOpenAILikePlatformConfiguration>: View {
+struct LLMOpenAILikeAPIKeyOnboarding<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     @Environment(ManagedNavigationStack.Path.self) private var path
     #if os(visionOS)
     @Environment(\.dismiss) private var dismiss
@@ -22,7 +22,7 @@ struct LLMOpenAILikeAPIKeyOnboarding<PlatformConfig: LLMOpenAILikePlatformConfig
 
     
     var body: some View {
-        LLMOpenAILikeAPITokenOnboardingStep<PlatformConfig> {
+        LLMOpenAILikeAPITokenOnboardingStep<PlatformDefinition> {
             path.nextStep()
         }
             #if os(visionOS)
@@ -44,7 +44,7 @@ struct LLMOpenAILikeAPIKeyOnboarding<PlatformConfig: LLMOpenAILikePlatformConfig
 #if DEBUG
 #Preview {
     ManagedNavigationStack {
-        LLMOpenAILikeAPIKeyOnboarding<LLMOpenAIPlatformConfiguration>()
+        LLMOpenAILikeAPIKeyOnboarding<OpenAIPlatformDefinition>()
     }
         .previewWith {
             LLMOpenAIPlatform(

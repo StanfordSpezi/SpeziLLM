@@ -19,10 +19,10 @@ import SpeziLLM
 /// - Tip: ``LLMOpenAISchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
 ///
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
-public struct LLMOpenAILikeSchema<PlatformConfig: LLMOpenAILikePlatformConfiguration>: LLMSchema, Sendable {
-    public typealias Platform = LLMOpenAILikePlatform<PlatformConfig>
+public struct LLMOpenAILikeSchema<PlatformDefinition: LLMOpenAILikePlatformDefinition>: LLMSchema, Sendable {
+    public typealias Platform = LLMOpenAILikePlatform<PlatformDefinition>
     
-    let parameters: LLMOpenAIParameters<PlatformConfig>
+    let parameters: LLMOpenAIParameters<PlatformDefinition>
     let modelParameters: LLMOpenAIModelParameters
     let functions: [String: any LLMFunction]
     public let injectIntoContext: Bool
@@ -36,7 +36,7 @@ public struct LLMOpenAILikeSchema<PlatformConfig: LLMOpenAILikePlatformConfigura
     ///    - injectIntoContext: Indicates if the inference output by the ``LLMOpenAISession`` should automatically be inserted into the ``LLMOpenAISession/context``, defaults to false.
     ///    - functionsCollection: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
-        parameters: LLMOpenAIParameters<PlatformConfig>,
+        parameters: LLMOpenAIParameters<PlatformDefinition>,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
         @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }

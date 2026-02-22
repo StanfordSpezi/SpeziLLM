@@ -12,9 +12,9 @@ import OpenAPIRuntime
 
 
 /// Represents the parameters of OpenAI-like LLMs.
-public struct LLMOpenAIParameters<PlatformConfig: LLMOpenAILikePlatformConfiguration>: Sendable {
+public struct LLMOpenAIParameters<PlatformDefinition: LLMOpenAILikePlatformDefinition>: Sendable {
     /// The to-be-used OpenAI model.
-    let modelType: PlatformConfig.ModelType
+    let modelType: PlatformDefinition.ModelType
     /// The to-be-used system prompt(s) of the LLM.
     let systemPrompts: [String]
     /// Indicates if a model access test should be made during LLM setup.
@@ -31,7 +31,7 @@ public struct LLMOpenAIParameters<PlatformConfig: LLMOpenAILikePlatformConfigura
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
-        modelType: PlatformConfig.ModelType,
+        modelType: PlatformDefinition.ModelType,
         systemPrompt: String? = nil,
         modelAccessTest: Bool = false,
         overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
@@ -52,7 +52,7 @@ public struct LLMOpenAIParameters<PlatformConfig: LLMOpenAILikePlatformConfigura
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     public init(
-        modelType: PlatformConfig.ModelType,
+        modelType: PlatformDefinition.ModelType,
         systemPrompts: [String],
         modelAccessTest: Bool = false,
         overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil

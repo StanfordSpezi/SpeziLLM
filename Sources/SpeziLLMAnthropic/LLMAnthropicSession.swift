@@ -61,4 +61,4 @@ import SpeziLLMOpenAI
 ///     }
 /// }
 /// ```
-public typealias LLMAnthropicSession = LLMOpenAILikeSession<LLMAnthropicPlatformConfiguration>
+public typealias LLMAnthropicSession = LLMOpenAILikeSession<AnthropicPlatformDefinition>

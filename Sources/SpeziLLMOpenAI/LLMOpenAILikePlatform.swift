@@ -15,12 +15,12 @@ import SpeziLLM
 
 
 /// A `LLMPlatform` that is interoperable with the OpenAI API.
-public final class LLMOpenAILikePlatform<Configuration: LLMOpenAILikePlatformConfiguration>: LLMPlatform, @unchecked Sendable {
-    public typealias Schema = LLMOpenAILikeSchema<Configuration>
-    public typealias Session = LLMOpenAILikeSession<Configuration>
+public final class LLMOpenAILikePlatform<PlatformDefinition: LLMOpenAILikePlatformDefinition>: LLMPlatform, @unchecked Sendable {
+    public typealias Schema = LLMOpenAILikeSchema<PlatformDefinition>
+    public typealias Session = LLMOpenAILikeSession<PlatformDefinition>
 
     /// Configuration of the platform.
-    public let configuration: Configuration
+    public let configuration: LLMOpenAILikePlatformConfiguration<PlatformDefinition>
     /// Queue that processed the LLM inference tasks in a structured concurrency manner.
     let queue: LLMInferenceQueue<String>
 
@@ -33,7 +33,7 @@ public final class LLMOpenAILikePlatform<Configuration: LLMOpenAILikePlatformCon
     ///
     /// - Parameters:
     ///     - configuration: The configuration of the platform.
-    public init(configuration: Configuration) {
+    public init(configuration: LLMOpenAILikePlatformConfiguration<PlatformDefinition>) {
         self.configuration = configuration
         self.queue = LLMInferenceQueue(
             maxConcurrentTasks: configuration.concurrentStreams,
@@ -53,8 +53,8 @@ public final class LLMOpenAILikePlatform<Configuration: LLMOpenAILikePlatformCon
         }
     }
 
-    public func callAsFunction(with llmSchema: LLMOpenAILikeSchema<Configuration>) -> LLMOpenAILikeSession<Configuration> {
-        LLMOpenAILikeSession<Configuration>(self, schema: llmSchema, keychainStorage: keychainStorage)
+    public func callAsFunction(with llmSchema: LLMOpenAILikeSchema<PlatformDefinition>) -> LLMOpenAILikeSession<PlatformDefinition> {
+        LLMOpenAILikeSession<PlatformDefinition>(self, schema: llmSchema, keychainStorage: keychainStorage)
     }
 
 

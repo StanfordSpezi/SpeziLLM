@@ -61,4 +61,4 @@ import SpeziLLMOpenAI
 ///     }
 /// }
 /// ```
-public typealias LLMGeminiSession = LLMOpenAILikeSession<LLMGeminiPlatformConfiguration>
+public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinition>
