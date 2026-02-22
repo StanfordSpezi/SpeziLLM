@@ -23,7 +23,10 @@ public struct AnthropicPlatformDefinition: LLMOpenAILikePlatformDefinition {
     }
     
     public static let platformName = "Anthropic"
+    public static let platformServiceIdentifier = "api.anthropic.com"
+    
     public static let defaultServerUrl = URL(string: "https://api.anthropic.com/v1")! // swiftlint:disable:this force_unwrapping
+    
     public static let platformDeveloperConsoleUrl = URL(string: "https://platform.claude.com/settings/keys")
 }
 

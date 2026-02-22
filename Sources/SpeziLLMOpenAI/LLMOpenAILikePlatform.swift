@@ -62,3 +62,24 @@ public final class LLMOpenAILikePlatform<PlatformDefinition: LLMOpenAILikePlatfo
         self.queue.shutdown()   // Safeguard shutdown of queue (should happen upon `ServiceModule/run() cancellation)
     }
 }
+
+
+extension LLMOpenAILikePlatform {
+    /// The platform's default credentials username for storing an API key to the keychain.
+    static var credentialsUsername: String {
+        "\(PlatformDefinition.platformName)_Token"
+    }
+    
+    /// Deletes the platform's API key credentials from the keychain.
+    ///
+    /// - Note: This function requires that the platform's configuration use a keychain-based auth token.
+    ///     Otherwise, nothing will be done.
+    public func clearApiKeyCredentials(in keychain: KeychainStorage) throws {
+        switch configuration.authToken {
+        case let .keychain(tag, username):
+            try keychain.deleteCredentials(withUsername: username, for: tag)
+        case .none, .constant, .closure:
+            break
+        }
+    }
+}

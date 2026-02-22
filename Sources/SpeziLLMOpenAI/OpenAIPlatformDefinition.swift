@@ -30,7 +30,10 @@ public struct OpenAIPlatformDefinition: LLMOpenAILikePlatformDefinition {
     }
     
     public static let platformName = "OpenAI"
+    public static let platformServiceIdentifier = "api.openai.com"
+    
     public static let platformDeveloperConsoleUrl = URL(string: "https://platform.openai.com/account/api-keys")
+    
     public static let defaultServerUrl: URL = {
         guard let url = try? Servers.Server1.url() else {
             fatalError("The default OpenAI API endpoint couldn't be extracted from the OpenAI OpenAPI document.")

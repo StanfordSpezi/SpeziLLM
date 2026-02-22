@@ -23,7 +23,10 @@ public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
     }
     
     public static let platformName = "Gemini"
+    public static let platformServiceIdentifier = "generativelanguage.googleapis.com"
+    
     public static let defaultServerUrl = URL(string: "https://generativelanguage.googleapis.com/v1beta/openai")! // swiftlint:disable:this force_unwrapping
+    
     public static let platformDeveloperConsoleUrl = URL(string: "https://aistudio.google.com/app/api-keys")
 }
 

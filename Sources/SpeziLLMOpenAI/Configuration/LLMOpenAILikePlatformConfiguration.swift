@@ -61,3 +61,14 @@ public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILi
         self.middlewares = middlewares
     }
 }
+
+
+extension RemoteLLMInferenceAuthToken {
+    /// Configures an auth token that uses the platform's default username and service identifier.
+    public static func keychain<D>(for platform: LLMOpenAILikePlatform<D>.Type) -> Self {
+        .keychain(
+            tag: .genericPassword(forService: D.platformServiceIdentifier),
+            username: platform.credentialsUsername
+        )
+    }
+}

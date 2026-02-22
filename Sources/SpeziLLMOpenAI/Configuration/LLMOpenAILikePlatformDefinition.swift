@@ -23,6 +23,12 @@ public protocol LLMOpenAILikePlatformDefinition: Sendable {
     /// The platform's default server endpoint that inference tasks should be dispatched to.
     static var defaultServerUrl: URL { get }
     
+    /// A URL-like identifier used as the service name when storing API keys for this platform to the keychain.
+    ///
+    /// This does not have to be a live URL; it just needs to uniquely identify the platform.
+    /// For example, the identifier for the ``OpenAIPlatformDefinition`` is `api.openai.com`.
+    static var platformServiceIdentifier: String { get }
+    
     /// URL of the platform's developer console website.
     ///
     /// Used in the UI when displaying API key instructions.

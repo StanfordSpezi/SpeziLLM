@@ -94,7 +94,7 @@ public struct LLMOpenAILikeAPITokenOnboardingStep<PlatformDefinition: LLMOpenAIL
     ) {}
         .previewWith {
             LLMOpenAIPlatform(
-                configuration: .init(authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername))
+                configuration: .init(authToken: .keychain(for: LLMOpenAIPlatform.self))
             )
         }
 }
