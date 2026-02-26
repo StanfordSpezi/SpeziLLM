@@ -14,9 +14,7 @@ import XCTestExtensions
 class TestAppLLMOpenAIUITests: XCTestCase {
     override func setUp() async throws {
         try super.setUpWithError()
-        
         continueAfterFailure = false
-        
         let app = XCUIApplication()
         app.launchArguments = ["--mockMode", "--resetSecureStorage", "--testMode"]
         app.launch()

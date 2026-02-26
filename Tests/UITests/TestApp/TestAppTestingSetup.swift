@@ -17,8 +17,8 @@ import SwiftUI
 private struct TestAppTestingSetup: ViewModifier {
     @Environment(KeychainStorage.self) var keychain
     @Environment(LLMOpenAIPlatform.self) var openAIPlatform
-    @Environment(LLMOpenAIPlatform.self) var anthropicPlatform
-    @Environment(LLMOpenAIPlatform.self) var geminiPlatform
+    @Environment(LLMAnthropicPlatform.self) var anthropicPlatform
+    @Environment(LLMGeminiPlatform.self) var geminiPlatform
     @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedLocalOnboardingFlow = false
     @AppStorage(StorageKeys.fogOnboardingFlowComplete) private var completedFogOnboardingFlow = false
 
