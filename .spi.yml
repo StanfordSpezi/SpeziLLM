@@ -16,3 +16,5 @@ builder:
       - SpeziLLMLocalDownload
       - SpeziLLMOpenAI
       - SpeziLLMFog
+      - SpeziLLMAnthropic
+      - SpeziLLMGemini

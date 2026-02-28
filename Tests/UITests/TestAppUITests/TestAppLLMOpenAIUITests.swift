@@ -14,16 +14,10 @@ import XCTestExtensions
 class TestAppLLMOpenAIUITests: XCTestCase {
     override func setUp() async throws {
         try super.setUpWithError()
-        
         continueAfterFailure = false
-        
         let app = XCUIApplication()
         app.launchArguments = ["--mockMode", "--resetSecureStorage", "--testMode"]
-        #if !os(macOS)
-        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
-        #else
         app.launch()
-        #endif
     }
     
     
@@ -42,11 +36,11 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.buttons["Onboarding"].firstMatch.waitForExistence(timeout: 2))
         app.buttons["Onboarding"].firstMatch.tap()
         
-        try app.textFields["OpenAI API Key"].enter(value: "New Token")
+        try app.textFields["API Key…"].enter(value: "New Token")
         sleep(1)
         
-        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
-        app.buttons["Next"].tap()
+        XCTAssert(app.buttons["Continue"].waitForExistence(timeout: 2))
+        app.buttons["Continue"].tap()
         
         #if os(macOS)
         XCTAssert(app.popUpButtons["modelPicker"].waitForExistence(timeout: 2))
@@ -56,7 +50,7 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.popUpButtons["gpt-5-chat-latest"].waitForExistence(timeout: 2))
         #elseif os(visionOS)
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
-        XCTAssert(app.pickerWheels["o3-mini"].waitForExistence(timeout: 2))     // swipe down to the o3-mini model
+        XCTAssert(app.pickerWheels["gpt-3.5-turbo"].waitForExistence(timeout: 2))     // swipe down to the gpt-3.5-turbo model
         #else
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-5-chat-latest")
         XCTAssert(app.pickerWheels["gpt-5-chat-latest"].waitForExistence(timeout: 2))
@@ -64,15 +58,15 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         sleep(1)
         
-        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
-        app.buttons["Next"].tap()
+        XCTAssert(app.buttons["Continue"].waitForExistence(timeout: 2))
+        app.buttons["Continue"].tap()
         
         #if !os(macOS)
         let alert = app.alerts["Model Selected"]
         
         XCTAssertTrue(alert.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
         #if os(visionOS)
-        XCTAssertTrue(alert.staticTexts["o3-mini"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert.staticTexts["gpt-3.5-turbo"].exists, "The correct model was not registered.")
         #else
         XCTAssertTrue(alert.staticTexts["gpt-5-chat-latest"].exists, "The correct model was not registered.")
         #endif
@@ -100,20 +94,20 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         sleep(1)
-        app.buttons["Next"].tap()
+        app.buttons["Continue"].tap()
         
         #if !os(macOS)
-        XCTAssert(app.pickerWheels["gpt-5"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
         #else
-        XCTAssert(app.popUpButtons["gpt-5"].waitForExistence(timeout: 2))
+        XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
         #endif
-        app.buttons["Next"].tap()
+        app.buttons["Continue"].tap()
         
         #if !os(macOS)
         let alert2 = app.alerts["Model Selected"]
 
         XCTAssertTrue(alert2.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(alert2.staticTexts["gpt-5"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert2.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
 
         let okButton2 = alert.buttons["OK"]
         XCTAssertTrue(okButton2.exists, "The OK button on the alert was not found.")
@@ -125,12 +119,8 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         app.buttons["OK"].firstMatch.tap()
         #endif
         
-        #if !os(macOS)
-        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
-        #else
         app.terminate()
         app.launch()
-        #endif
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
@@ -138,17 +128,18 @@ class TestAppLLMOpenAIUITests: XCTestCase {
         XCTAssert(app.buttons["Onboarding"].waitForExistence(timeout: 2))
         app.buttons["Onboarding"].firstMatch.tap()
         
-        XCTAssert(app.textFields["OpenAI API Key"].waitForExistence(timeout: 2))
+        XCTAssert(app.textFields["API Key…"].waitForExistence(timeout: 2))
         
-        XCTAssert(app.buttons["Next"].waitForExistence(timeout: 2))
-        app.buttons["Next"].tap()
+        XCTAssert(app.buttons["Continue"].waitForExistence(timeout: 2))
+        app.buttons["Continue"].tap()
         
         #if !os(macOS)
-        XCTAssert(app.pickerWheels["gpt-5"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
         #else
-        XCTAssert(app.popUpButtons["gpt-5"].waitForExistence(timeout: 2))
+        XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
         #endif
     }
+    
     
     func testSpeziLLMOpenAIChat() throws {
         let app = XCUIApplication()

@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SpeziLLMOpenAI
 import SpeziViews
 import SwiftUI
 
 
-struct LLMOpenAIOnboardingView: View {
+struct LLMOpenAILikeOnboardingView<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     #if os(macOS)
     @Environment(\.dismiss) private var dismiss
     #endif
@@ -18,8 +19,8 @@ struct LLMOpenAIOnboardingView: View {
     
     var body: some View {
         ManagedNavigationStack {
-            LLMOpenAITokenOnboarding()
-            LLMOpenAIModelOnboarding()
+            LLMOpenAILikeAPIKeyOnboarding<PlatformDefinition>()
+            LLMOpenAILikeModelOnboarding<PlatformDefinition>()
         }
             #if os(macOS)
             .toolbar {

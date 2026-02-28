@@ -8,11 +8,17 @@
 
 import Security
 import SpeziKeychainStorage
+import SpeziLLMAnthropic
+import SpeziLLMGemini
+import SpeziLLMOpenAI
 import SwiftUI
 
 
 private struct TestAppTestingSetup: ViewModifier {
-    @Environment(KeychainStorage.self) var keychainStorage
+    @Environment(KeychainStorage.self) var keychain
+    @Environment(LLMOpenAIPlatform.self) var openAIPlatform
+    @Environment(LLMAnthropicPlatform.self) var anthropicPlatform
+    @Environment(LLMGeminiPlatform.self) var geminiPlatform
     @AppStorage(StorageKeys.localOnboardingFlowComplete) private var completedLocalOnboardingFlow = false
     @AppStorage(StorageKeys.fogOnboardingFlowComplete) private var completedFogOnboardingFlow = false
 
@@ -21,12 +27,9 @@ private struct TestAppTestingSetup: ViewModifier {
         content
             .task {
                 if FeatureFlags.resetSecureStorage {
-                    // NOTE: since the corresponding definitions in SpeziLLMOpenAI are internal,
-                    // we need to manually ensure that the values here match the values used by SpeziLLM.
-                    try? keychainStorage.deleteCredentials(
-                        withUsername: "OpenAIGPT",
-                        for: .genericPassword(forService: "openai.com")
-                    )
+                    try? openAIPlatform.clearApiKeyCredentials(in: keychain)
+                    try? anthropicPlatform.clearApiKeyCredentials(in: keychain)
+                    try? geminiPlatform.clearApiKeyCredentials(in: keychain)
                 }
                 if FeatureFlags.showOnboarding {
                     completedLocalOnboardingFlow = false

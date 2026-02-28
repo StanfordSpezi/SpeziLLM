@@ -19,11 +19,7 @@ class TestAppLLMLocalUITests: XCTestCase {
         
         let app = XCUIApplication()
         app.launchArguments = ["--mockMode", "--showOnboarding", "--testMode"]
-        #if !os(macOS)
-        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
-        #else
         app.launch()
-        #endif
     }
     
     func testSpeziLLMLocal() throws {

@@ -11,19 +11,10 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
-/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
-public struct LLMOpenAIPlatformConfiguration: Sendable {
-    /// Default configurations of the ``LLMOpenAIPlatform``.
-    public enum Defaults: Sendable {
-        /// Default server `URL` that the inference tasks are dispatched to.
-        public static let defaultServerUrl: URL = {
-            guard let url = try? Servers.Server1.url() else {
-                fatalError("The default OpenAI API endpoint couldn't be extracted from the OpenAI OpenAPI document.")
-            }
-
-            return url
-        }()
-    }
+/// Represents the configuration of an OpenAI-like `LLMPlatform`.
+public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILikePlatformDefinition> {
+    /// The platform's model type.
+    public typealias ModelType = PlatformDefinition.ModelType
 
     /// The server endpoint that the inference tasks are dispatched to.
     public let serverUrl: URL
@@ -52,8 +43,9 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
     ///   - timeout: Indicates the maximum network timeout of OpenAI requests in seconds. defaults to `60`.
     ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
+    ///   - middlewares: Additional middlewares that should be used for requests.
     public init(
-        serverUrl: URL = Defaults.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
+        serverUrl: URL = PlatformDefinition.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
         authToken: RemoteLLMInferenceAuthToken,
         concurrentStreams: Int = 10,
         timeout: TimeInterval = 60,
@@ -68,5 +60,16 @@ public struct LLMOpenAIPlatformConfiguration: Sendable {
         self.retryPolicy = retryPolicy
         self.taskPriority = taskPriority
         self.middlewares = middlewares
+    }
+}
+
+
+extension RemoteLLMInferenceAuthToken {
+    /// Configures an auth token that uses the platform's default username and service identifier.
+    public static func keychain<D>(for platform: LLMOpenAILikePlatform<D>.Type) -> Self {
+        .keychain(
+            tag: .genericPassword(forService: D.platformServiceIdentifier),
+            username: platform.credentialsUsername
+        )
     }
 }

@@ -13,7 +13,7 @@ import SpeziChat
 import SpeziLLM
 
 
-extension LLMOpenAISession {
+extension LLMOpenAILikeSession {
     /// Based on the input prompt, generate the output via the OpenAI API.
     ///
     /// - Parameters:

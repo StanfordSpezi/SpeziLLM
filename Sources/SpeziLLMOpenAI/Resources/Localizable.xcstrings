@@ -1,7 +1,20 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ API Key" : {
+
+    },
+    "%@ Model" : {
+
+    },
+    "API Key…" : {
+
+    },
+    "Continue" : {
+
+    },
     "LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -12,6 +25,7 @@
       }
     },
     "LLM_AUTH_TOKEN_ONBOARDING_HINT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -22,6 +36,7 @@
       }
     },
     "LLM_AUTH_TOKEN_ONBOARDING_PROMPT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -32,6 +47,7 @@
       }
     },
     "LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -42,6 +58,7 @@
       }
     },
     "LLM_AUTH_TOKEN_ONBOARDING_TITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -412,6 +429,7 @@
       }
     },
     "OPENAI_API_KEY_SAVE_BUTTON" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -434,6 +452,7 @@
       }
     },
     "OPENAI_MODEL_SELECTION_DESCRIPTION" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -456,6 +475,7 @@
       }
     },
     "OPENAI_MODEL_SELECTION_SAVE_BUTTON" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -478,6 +498,7 @@
       }
     },
     "OPENAI_MODEL_SELECTION_SUBTITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -500,6 +521,7 @@
       }
     },
     "OPENAI_MODEL_SELECTION_TITLE" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -521,12 +543,29 @@
         }
       }
     },
+    "Please enter your %@ API key" : {
+
+    },
+    "Select the %@ model that you want to use.\nEnsure that your API key has proper access to the model." : {
+
+    },
     "SPEZI_LLM_OPENAI_SYSTEM_PROMPT" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You are ChatGPT, a large language model trained by OpenAI, based on the GPT architecture."
+          }
+        }
+      }
+    },
+    "You can create and inspect your %@ API keys [in the API keys section of the %@ Website](%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You can create and inspect your %1$@ API keys [in the API keys section of the %2$@ Website](%3$@)."
           }
         }
       }

@@ -26,7 +26,9 @@ let package = Package(
         .library(name: "SpeziLLMLocalDownload", targets: ["SpeziLLMLocalDownload"]),
         .library(name: "SpeziLLMOpenAI", targets: ["SpeziLLMOpenAI"]),
         .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"]),
-        .library(name: "SpeziLLMOpenAIRealtime", targets: ["SpeziLLMOpenAIRealtime"])
+        .library(name: "SpeziLLMOpenAIRealtime", targets: ["SpeziLLMOpenAIRealtime"]),
+        .library(name: "SpeziLLMAnthropic", targets: ["SpeziLLMAnthropic"]),
+        .library(name: "SpeziLLMGemini", targets: ["SpeziLLMGemini"])
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.29.1")),
@@ -37,7 +39,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "2.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.5")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.11"),
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0")
@@ -133,6 +135,22 @@ let package = Package(
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
+        ),
+        .target(
+            name: "SpeziLLMAnthropic",
+            dependencies: [
+                "SpeziLLMOpenAI",
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
+        ),
+        .target(
+            name: "SpeziLLMGemini",
+            dependencies: [
+                "SpeziLLMOpenAI",
+                .product(name: "SpeziKeychainStorage", package: "SpeziStorage")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
         ),
         .target(
             name: "SpeziLLMFog",

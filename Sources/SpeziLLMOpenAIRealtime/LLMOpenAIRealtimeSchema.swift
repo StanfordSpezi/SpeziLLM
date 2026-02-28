@@ -21,14 +21,6 @@ import SpeziLLMOpenAI
 /// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
 public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIRealtimePlatform
-    
-    
-    /// Default values of ``LLMOpenAIRealtimeSchema``.
-    public enum Defaults {
-        /// Empty default of passed function calls (`_LLMFunctionCollection`).
-        /// Reason: Cannot use internal init of `_LLMFunctionCollection` as default parameter within public ``LLMOpenAIRealtimeSchema/init(parameters:injectIntoContext:_:)``.
-        nonisolated(unsafe) public static let emptyLLMFunctions: _LLMFunctionCollection = .init(functions: [])
-    }
 
     let parameters: LLMOpenAIRealtimeParameters
     let functions: [String: any LLMFunction]
@@ -44,7 +36,7 @@ public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public init(
         parameters: LLMOpenAIRealtimeParameters,
         injectIntoContext: Bool = true,
-        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { Defaults.emptyLLMFunctions }
+        @LLMFunctionBuilder _ functionsCollection: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }
     ) {
         self.parameters = parameters
         self.injectIntoContext = injectIntoContext

@@ -43,12 +43,12 @@ struct LLMOpenAIRealtimeTokenOnboarding: View {
 #if DEBUG
 #Preview {
     ManagedNavigationStack {
-        LLMOpenAITokenOnboarding()
+        LLMOpenAILikeAPIKeyOnboarding<OpenAIPlatformDefinition>()
     }
         .previewWith {
             LLMOpenAIPlatform(
                 configuration: .init(
-                    authToken: .keychain(tag: .openAIKey, username: LLMOpenAIConstants.credentialsUsername)
+                    authToken: .keychain(for: LLMOpenAIPlatform.self)
                 )
             )
         }

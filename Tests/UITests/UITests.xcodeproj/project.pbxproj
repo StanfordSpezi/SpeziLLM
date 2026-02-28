@@ -3,58 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */; };
-		1033ED742DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */; };
-		109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */; };
-		109E6A5B2DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */; };
-		109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */; };
-		10E9A7502DD1573700D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */; };
-		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
-		2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */; };
-		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
 		2FAD21CB2CBDC82500C9665B /* SpeziFirebaseAccountStorage in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 2FAD21CA2CBDC82500C9665B /* SpeziFirebaseAccountStorage */; };
 		2FD590522A19E9F000153BE4 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2FD590512A19E9F000153BE4 /* XCTestExtensions */; };
-		63EF9CF02BA7398C001D92D7 /* TestAppTestingSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */; };
+		8054ECD42F4A0A3100EC57AD /* SpeziLLMAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */; };
+		8054ECD62F4A2B9000EC57AD /* SpeziLLMGemini in Frameworks */ = {isa = PBXBuildFile; productRef = 8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */; };
 		9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A59F2B5B5CB20005645E /* SpeziLLM */; };
 		9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A12B5B5CB20005645E /* SpeziLLMLocal */; };
 		9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A32B5B5CB20005645E /* SpeziLLMLocalDownload */; };
 		9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 9722A5A52B5B5CB20005645E /* SpeziLLMOpenAI */; };
-		9748DBED2B5C811F00B917EE /* LLMOpenAIFunctionHealthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */; };
-		9748DBEE2B5C811F00B917EE /* LLMOpenAIFunctionPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */; };
-		9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24B2B0316240006B6BD /* Binding+Negate.swift */; };
-		9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24C2B0316240006B6BD /* StorageKeys.swift */; };
-		9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */; };
-		9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */; };
-		9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */; };
-		9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 9756D2562B0316740006B6BD /* Localizable.xcstrings */; };
-		9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */; };
-		976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9761794F2B034E0400E1046E /* TestAppDelegate.swift */; };
-		976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */; };
-		976179542B03501100E1046E /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976179532B03501100E1046E /* FeatureFlags.swift */; };
-		976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 976CE5162BA2C05100E21810 /* GoogleService-Info.plist */; };
-		976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */; };
 		9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */; };
-		9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */; };
-		9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */; };
-		977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */; };
-		977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977E499F2B035563001485D4 /* LLMLocalTestView.swift */; };
 		979D41902BB3EBD8001953BD /* SpeziAccount in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 979D418F2BB3EBD8001953BD /* SpeziAccount */; };
-		97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */; };
-		97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */; };
 		97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */ = {isa = PBXBuildFile; productRef = 97A36E142B999EA60034D821 /* SpeziLLMFog */; };
-		97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */; };
-		A3222B9D2E57CE250090C8A0 /* AudioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */; };
 		A32FF4DF2E4A124500DBA37B /* SpeziLLMOpenAIRealtime in Frameworks */ = {isa = PBXBuildFile; productRef = A32FF4DE2E4A124500DBA37B /* SpeziLLMOpenAIRealtime */; };
-		A36A7B2C2E4A32CB00D94B2F /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */; };
-		A36A7B2E2E4A36AA00D94B2F /* PCMPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */; };
-		A37466182E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */; };
-		BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */; };
-		CE8C62E42E848BB100F03DFE /* LLMOpenAIRealtimeTokenOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8C62E32E848BB100F03DFE /* LLMOpenAIRealtimeTokenOnboarding.swift */; };
-		CEA5955F2E8485390058761E /* LLMOpenAIRealtimeOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA5955E2E8485390058761E /* LLMOpenAIRealtimeOnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,53 +32,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		102BDD882DB6F20400FF084E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingView.swift; sourceTree = "<group>"; };
-		1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogAuthTokenOnboardingView.swift; sourceTree = "<group>"; };
-		109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogDiscoveryAuthOnboardingView.swift; sourceTree = "<group>"; };
-		109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogOnboardingFlow.swift; sourceTree = "<group>"; };
-		109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogTestView.swift; sourceTree = "<group>"; };
-		10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogDiscoverySelectionOnboardingView.swift; sourceTree = "<group>"; };
 		2F68C3C6292E9F8F00B3E12C /* SpeziLLM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziLLM; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppLLMOpenAIUITests.swift; sourceTree = "<group>"; };
-		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
-		63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppTestingSetup.swift; sourceTree = "<group>"; };
-		9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionHealthData.swift; sourceTree = "<group>"; };
-		9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionPerson.swift; sourceTree = "<group>"; };
-		9756D24B2B0316240006B6BD /* Binding+Negate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Binding+Negate.swift"; sourceTree = "<group>"; };
-		9756D24C2B0316240006B6BD /* StorageKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
-		9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingDownloadView.swift; sourceTree = "<group>"; };
-		9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingWelcomeView.swift; sourceTree = "<group>"; };
-		9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalOnboardingFlow.swift; sourceTree = "<group>"; };
-		9756D2562B0316740006B6BD /* Localizable.xcstrings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMLocalChatTestView.swift; sourceTree = "<group>"; };
-		9761794F2B034E0400E1046E /* TestAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
-		976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppLLMLocalUITests.swift; sourceTree = "<group>"; };
-		976179532B03501100E1046E /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
-		976CE5162BA2C05100E21810 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSetupHeader.swift; sourceTree = "<group>"; };
-		9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIOnboardingView.swift; sourceTree = "<group>"; };
-		9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIChatTestView.swift; sourceTree = "<group>"; };
 		977438092B05709700EC6527 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
-		977447212B992D3A00D1F85E /* TestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestApp.entitlements; sourceTree = "<group>"; };
-		977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionWeather.swift; sourceTree = "<group>"; };
-		977E499F2B035563001485D4 /* LLMLocalTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMLocalTestView.swift; sourceTree = "<group>"; };
-		97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAIModelOnboarding.swift; sourceTree = "<group>"; };
-		97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LLMOpenAITokenOnboarding.swift; sourceTree = "<group>"; };
-		97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMFogChatTestView.swift; sourceTree = "<group>"; };
-		A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioViewModel.swift; sourceTree = "<group>"; };
 		A35639222E46556400E815EC /* RealityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityFoundation.framework; path = System/Library/Frameworks/RealityFoundation.framework; sourceTree = SDKROOT; };
-		A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
-		A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMPlayer.swift; sourceTree = "<group>"; };
-		A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIRealtimeTestView.swift; sourceTree = "<group>"; };
-		BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIFunctionRecursive.swift; sourceTree = "<group>"; };
-		CE8C62E32E848BB100F03DFE /* LLMOpenAIRealtimeTokenOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIRealtimeTokenOnboarding.swift; sourceTree = "<group>"; };
-		CEA5955E2E8485390058761E /* LLMOpenAIRealtimeOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMOpenAIRealtimeOnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		80A516742F49D085002AB920 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2F6D139128F5F384007C25D6 /* TestApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8074DA3F2F4A39BF00B8997A /* TestAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TestAppUITests; sourceTree = "<group>"; };
+		80A516492F49D085002AB920 /* TestApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (80A516742F49D085002AB920 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TestApp; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2F6D138F28F5F384007C25D6 /* Frameworks */ = {
@@ -122,10 +61,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				9722A5A02B5B5CB20005645E /* SpeziLLM in Frameworks */,
+				8054ECD42F4A0A3100EC57AD /* SpeziLLMAnthropic in Frameworks */,
 				2FAD21CB2CBDC82500C9665B /* SpeziFirebaseAccountStorage in Frameworks */,
 				A32FF4DF2E4A124500DBA37B /* SpeziLLMOpenAIRealtime in Frameworks */,
 				9770F2912BB3C40C00478571 /* SpeziFirebaseAccount in Frameworks */,
 				97A36E152B999EA60034D821 /* SpeziLLMFog in Frameworks */,
+				8054ECD62F4A2B9000EC57AD /* SpeziLLMGemini in Frameworks */,
 				9722A5A22B5B5CB20005645E /* SpeziLLMLocal in Frameworks */,
 				9722A5A62B5B5CB20005645E /* SpeziLLMOpenAI in Frameworks */,
 				9722A5A42B5B5CB20005645E /* SpeziLLMLocalDownload in Frameworks */,
@@ -144,26 +85,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		109E6A592DB6E8E5009F9E9F /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				976CE51A2BA2C4C600E21810 /* Account */,
-				102BDD892DB6F43B00FF084E /* AccountOnboardingView.swift */,
-				109E6A572DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift */,
-				1033ED732DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift */,
-				10E9A74F2DD1572000D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift */,
-				109E6A582DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
 		2F6D138928F5F384007C25D6 = {
 			isa = PBXGroup;
 			children = (
 				2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */,
 				2F68C3C6292E9F8F00B3E12C /* SpeziLLM */,
-				2F6D139428F5F384007C25D6 /* TestApp */,
-				2F6D13AF28F5F386007C25D6 /* TestAppUITests */,
+				80A516492F49D085002AB920 /* TestApp */,
+				8074DA3F2F4A39BF00B8997A /* TestAppUITests */,
 				2F6D139328F5F384007C25D6 /* Products */,
 				2F6D13C228F5F3BE007C25D6 /* Frameworks */,
 			);
@@ -178,34 +106,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2F6D139428F5F384007C25D6 /* TestApp */ = {
-			isa = PBXGroup;
-			children = (
-				102BDD882DB6F20400FF084E /* Info.plist */,
-				977447212B992D3A00D1F85E /* TestApp.entitlements */,
-				9756D25A2B0316790006B6BD /* Resources */,
-				97DD56B32B02F72D00389331 /* LLMLocal */,
-				97C93FCE2B999DA40023F4B9 /* LLMFog */,
-				97DD56B42B02F72D00389331 /* LLMOpenAI */,
-				A37466172E4A052B008FB415 /* LLMOpenAIRealtime */,
-				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
-				9761794F2B034E0400E1046E /* TestAppDelegate.swift */,
-				63EF9CEF2BA7398C001D92D7 /* TestAppTestingSetup.swift */,
-				976179532B03501100E1046E /* FeatureFlags.swift */,
-				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
-			);
-			path = TestApp;
-			sourceTree = "<group>";
-		};
-		2F6D13AF28F5F386007C25D6 /* TestAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				976179512B034F0900E1046E /* TestAppLLMLocalUITests.swift */,
-				2F8A431229130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift */,
-			);
-			path = TestAppUITests;
-			sourceTree = "<group>";
-		};
 		2F6D13C228F5F3BE007C25D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,107 +113,6 @@
 				977438092B05709700EC6527 /* libc++.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9748DBEF2B5C813000B917EE /* Functions */ = {
-			isa = PBXGroup;
-			children = (
-				BB7290EA2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift */,
-				9748DBEB2B5C811E00B917EE /* LLMOpenAIFunctionHealthData.swift */,
-				977C052E2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift */,
-				9748DBEC2B5C811E00B917EE /* LLMOpenAIFunctionPerson.swift */,
-			);
-			path = Functions;
-			sourceTree = "<group>";
-		};
-		9756D24A2B0316240006B6BD /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				9756D24B2B0316240006B6BD /* Binding+Negate.swift */,
-				9756D24C2B0316240006B6BD /* StorageKeys.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
-		9756D24D2B0316240006B6BD /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				9756D24E2B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift */,
-				9756D24F2B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift */,
-				9756D2502B0316240006B6BD /* LLMLocalOnboardingFlow.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		9756D25A2B0316790006B6BD /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				976CE5162BA2C05100E21810 /* GoogleService-Info.plist */,
-				9756D2562B0316740006B6BD /* Localizable.xcstrings */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		976CE51A2BA2C4C600E21810 /* Account */ = {
-			isa = PBXGroup;
-			children = (
-				976CE51B2BA2C51E00E21810 /* AccountSetupHeader.swift */,
-			);
-			path = Account;
-			sourceTree = "<group>";
-		};
-		97A25C912B28DDAB0073B990 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				97A25C922B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift */,
-				97A25C932B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		97C93FCE2B999DA40023F4B9 /* LLMFog */ = {
-			isa = PBXGroup;
-			children = (
-				109E6A592DB6E8E5009F9E9F /* Onboarding */,
-				97C93FCF2B999DD10023F4B9 /* LLMFogChatTestView.swift */,
-				109E6A5C2DB6E8F0009F9E9F /* LLMFogTestView.swift */,
-			);
-			path = LLMFog;
-			sourceTree = "<group>";
-		};
-		97DD56B32B02F72D00389331 /* LLMLocal */ = {
-			isa = PBXGroup;
-			children = (
-				9756D24A2B0316240006B6BD /* Helpers */,
-				9756D24D2B0316240006B6BD /* Onboarding */,
-				9756D25C2B0316A30006B6BD /* LLMLocalChatTestView.swift */,
-				977E499F2B035563001485D4 /* LLMLocalTestView.swift */,
-			);
-			path = LLMLocal;
-			sourceTree = "<group>";
-		};
-		97DD56B42B02F72D00389331 /* LLMOpenAI */ = {
-			isa = PBXGroup;
-			children = (
-				9748DBEF2B5C813000B917EE /* Functions */,
-				97A25C912B28DDAB0073B990 /* Onboarding */,
-				9772D6812B033D5500E62B9D /* LLMOpenAIChatTestView.swift */,
-				9772D67F2B03381400E62B9D /* LLMOpenAIOnboardingView.swift */,
-			);
-			path = LLMOpenAI;
-			sourceTree = "<group>";
-		};
-		A37466172E4A052B008FB415 /* LLMOpenAIRealtime */ = {
-			isa = PBXGroup;
-			children = (
-				CE8C62E32E848BB100F03DFE /* LLMOpenAIRealtimeTokenOnboarding.swift */,
-				A3222B9C2E57CE220090C8A0 /* AudioViewModel.swift */,
-				A36A7B2D2E4A36A800D94B2F /* PCMPlayer.swift */,
-				A36A7B2B2E4A32C900D94B2F /* AudioRecorder.swift */,
-				A37466162E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift */,
-				CEA5955E2E8485390058761E /* LLMOpenAIRealtimeOnboardingView.swift */,
-			);
-			path = LLMOpenAIRealtime;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -332,6 +131,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				80A516492F49D085002AB920 /* TestApp */,
+			);
 			name = TestApp;
 			packageProductDependencies = (
 				9722A59F2B5B5CB20005645E /* SpeziLLM */,
@@ -342,6 +144,8 @@
 				9770F2902BB3C40C00478571 /* SpeziFirebaseAccount */,
 				979D418F2BB3EBD8001953BD /* SpeziAccount */,
 				A32FF4DE2E4A124500DBA37B /* SpeziLLMOpenAIRealtime */,
+				8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */,
+				8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -359,6 +163,9 @@
 			);
 			dependencies = (
 				2F6D13AE28F5F386007C25D6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8074DA3F2F4A39BF00B8997A /* TestAppUITests */,
 			);
 			name = TestAppUITests;
 			packageProductDependencies = (
@@ -417,9 +224,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9756D2582B0316740006B6BD /* Localizable.xcstrings in Resources */,
-				976CE5172BA2C05100E21810 /* GoogleService-Info.plist in Resources */,
-				2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,39 +263,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97C93FD02B999DD10023F4B9 /* LLMFogChatTestView.swift in Sources */,
-				9748DBEE2B5C811F00B917EE /* LLMOpenAIFunctionPerson.swift in Sources */,
-				9772D6802B03381400E62B9D /* LLMOpenAIOnboardingView.swift in Sources */,
-				9756D25E2B0316A30006B6BD /* LLMLocalChatTestView.swift in Sources */,
-				9756D2532B0316240006B6BD /* LLMLocalOnboardingDownloadView.swift in Sources */,
-				9756D2542B0316240006B6BD /* LLMLocalOnboardingWelcomeView.swift in Sources */,
-				976CE51C2BA2C51E00E21810 /* AccountSetupHeader.swift in Sources */,
-				A3222B9D2E57CE250090C8A0 /* AudioViewModel.swift in Sources */,
-				97A25C952B28DDAB0073B990 /* LLMOpenAITokenOnboarding.swift in Sources */,
-				63EF9CF02BA7398C001D92D7 /* TestAppTestingSetup.swift in Sources */,
-				977E49A02B035563001485D4 /* LLMLocalTestView.swift in Sources */,
-				9756D2522B0316240006B6BD /* StorageKeys.swift in Sources */,
-				A36A7B2C2E4A32CB00D94B2F /* AudioRecorder.swift in Sources */,
-				9772D6822B033D5500E62B9D /* LLMOpenAIChatTestView.swift in Sources */,
-				1033ED742DCF601A0056EC0B /* LLMFogAuthTokenOnboardingView.swift in Sources */,
-				109E6A5A2DB6E8E5009F9E9F /* LLMFogOnboardingFlow.swift in Sources */,
-				109E6A5B2DB6E8E5009F9E9F /* LLMFogDiscoveryAuthOnboardingView.swift in Sources */,
-				976179542B03501100E1046E /* FeatureFlags.swift in Sources */,
-				9748DBED2B5C811F00B917EE /* LLMOpenAIFunctionHealthData.swift in Sources */,
-				976179502B034E0400E1046E /* TestAppDelegate.swift in Sources */,
-				A37466182E4A052B008FB415 /* LLMOpenAIRealtimeTestView.swift in Sources */,
-				9756D2552B0316240006B6BD /* LLMLocalOnboardingFlow.swift in Sources */,
-				CE8C62E42E848BB100F03DFE /* LLMOpenAIRealtimeTokenOnboarding.swift in Sources */,
-				97A25C942B28DDAB0073B990 /* LLMOpenAIModelOnboarding.swift in Sources */,
-				CEA5955F2E8485390058761E /* LLMOpenAIRealtimeOnboardingView.swift in Sources */,
-				109E6A5D2DB6E8F0009F9E9F /* LLMFogTestView.swift in Sources */,
-				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
-				A36A7B2E2E4A36AA00D94B2F /* PCMPlayer.swift in Sources */,
-				10E9A7502DD1573700D84D3A /* LLMFogDiscoverySelectionOnboardingView.swift in Sources */,
-				977C052F2B4CCA0A00BA9861 /* LLMOpenAIFunctionWeather.swift in Sources */,
-				9756D2512B0316240006B6BD /* Binding+Negate.swift in Sources */,
-				102BDD8A2DB6F43B00FF084E /* AccountOnboardingView.swift in Sources */,
-				BB7290EB2DEF466C00A57602 /* LLMOpenAIFunctionRecursive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,8 +270,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F8A431329130A8C005D2B8F /* TestAppLLMOpenAIUITests.swift in Sources */,
-				976179522B034F0900E1046E /* TestAppLLMLocalUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,7 +419,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -670,7 +439,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sebltz.spezillm.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.SpeziLLMTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -696,7 +465,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -716,7 +485,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sebltz.spezillm.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.SpeziLLMTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -854,6 +623,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FD590502A19E9F000153BE4 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
 			productName = XCTestExtensions;
+		};
+		8054ECD32F4A0A3100EC57AD /* SpeziLLMAnthropic */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMAnthropic;
+		};
+		8054ECD52F4A2B9000EC57AD /* SpeziLLMGemini */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziLLMGemini;
 		};
 		9722A59F2B5B5CB20005645E /* SpeziLLM */ = {
 			isa = XCSwiftPackageProductDependency;

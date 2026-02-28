@@ -44,11 +44,11 @@ public struct LLMFogAuthTokenOnboardingStep: View {
                 tag: self.credentials.tag,
                 username: self.credentials.username
             ),
-            titleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
-            subtitleResource: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
-            promptResource: .init("LLM_AUTH_TOKEN_ONBOARDING_PROMPT", bundle: .atURL(from: .module)),
-            hintResource: .init("LLM_AUTH_TOKEN_ONBOARDING_HINT", bundle: .atURL(from: .module)),
-            actionTextResource: .init("LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT", bundle: .atURL(from: .module))
+            title: .init("LLM_AUTH_TOKEN_ONBOARDING_TITLE", bundle: .atURL(from: .module)),
+            subtitle: .init("LLM_AUTH_TOKEN_ONBOARDING_SUBTITLE", bundle: .atURL(from: .module)),
+            prompt: .init("LLM_AUTH_TOKEN_ONBOARDING_PROMPT", bundle: .atURL(from: .module)),
+            hint: .init("LLM_AUTH_TOKEN_ONBOARDING_HINT", bundle: .atURL(from: .module)),
+            actionText: .init("LLM_AUTH_TOKEN_ONBOARDING_ACTION_TEXT", bundle: .atURL(from: .module))
         ) {
             try await self.action()
         }
