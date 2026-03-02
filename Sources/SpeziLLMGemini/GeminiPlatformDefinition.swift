@@ -40,11 +40,11 @@ public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
 public typealias LLMGeminiPlatformConfiguration = LLMOpenAILikePlatformConfiguration<GeminiPlatformDefinition>
 
 
-/// Represents the parameters of an Gemini LLM model.
+/// Represents the parameters of a Gemini LLM model.
 public typealias LLMGeminiParameters = LLMOpenAILikeParameters<GeminiPlatformDefinition>
 
 
-/// LLM execution platform of an Anthropic ``LLMGeminiSchema``.
+/// LLM execution platform of a ``LLMGeminiSchema``.
 ///
 /// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAIPlatform`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAIPlatform`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaiplatform) documentation for further documentation.
 ///
@@ -134,7 +134,7 @@ public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinitio
 public typealias LLMGeminiAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<GeminiPlatformDefinition>
 
 
-/// View to display an onboarding step for the user to enter change the Gemini model.
+/// View to display an onboarding step for the user to select a Gemini model.
 public typealias LLMGeminiModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<GeminiPlatformDefinition>
 
 

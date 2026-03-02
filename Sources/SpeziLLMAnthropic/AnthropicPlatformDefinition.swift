@@ -134,7 +134,7 @@ public typealias LLMAnthropicSession = LLMOpenAILikeSession<AnthropicPlatformDef
 public typealias LLMAnthropicAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<AnthropicPlatformDefinition>
 
 
-/// View to display an onboarding step for the user to enter change the Anthropic model.
+/// View to display an onboarding step for the user to select an Anthropic model.
 public typealias LLMAnthropicModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<AnthropicPlatformDefinition>
 
 

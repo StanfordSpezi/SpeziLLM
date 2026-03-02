@@ -156,7 +156,7 @@ public typealias LLMOpenAISession = LLMOpenAILikeSession<OpenAIPlatformDefinitio
 public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<OpenAIPlatformDefinition>
 
 
-/// View to display an onboarding step for the user to enter change the OpenAI model.
+/// View to display an onboarding step for the user to select an OpenAI model.
 public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
 
 
