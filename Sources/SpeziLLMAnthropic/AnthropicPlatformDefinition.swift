@@ -128,7 +128,7 @@ public typealias LLMAnthropicSession = LLMOpenAILikeSession<AnthropicPlatformDef
 
 /// View to display an onboarding step for the user to enter an Anthropic API Key.
 ///
-/// - Warning: Ensure that the ``LLMAnthropicPlatformD`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+/// - Warning: Ensure that the ``LLMAnthropicPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
 ///
 /// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
 public typealias LLMAnthropicAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<AnthropicPlatformDefinition>

@@ -126,6 +126,18 @@ public typealias LLMGeminiSchema = LLMOpenAILikeSchema<GeminiPlatformDefinition>
 public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinition>
 
 
+/// View to display an onboarding step for the user to enter a Gemini API Key.
+///
+/// - Warning: Ensure that the ``LLMGeminiPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
+public typealias LLMGeminiAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<GeminiPlatformDefinition>
+
+
+/// View to display an onboarding step for the user to enter change the Gemini model.
+public typealias LLMGeminiModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<GeminiPlatformDefinition>
+
+
 extension CredentialsTag {
     /// The canonical credentials tag for the Gemini API key
     public static let geminiKey = Self.for(GeminiPlatformDefinition.self)
