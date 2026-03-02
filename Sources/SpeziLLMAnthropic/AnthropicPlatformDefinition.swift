@@ -10,6 +10,7 @@
 
 import Foundation
 import SpeziLLMOpenAI
+import SpeziKeychainStorage
 
 
 /// Defines the Anthropic LLM platform.
@@ -135,6 +136,11 @@ public typealias LLMAnthropicAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboa
 
 /// View to display an onboarding step for the user to enter change the Anthropic model.
 public typealias LLMAnthropicModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<AnthropicPlatformDefinition>
+
+
+extension CredentialsTag {
+    public static let anthropicKey = Self.for(AnthropicPlatformDefinition.self)
+}
 
 
 // MARK: Models

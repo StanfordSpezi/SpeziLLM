@@ -10,6 +10,7 @@
 
 import Foundation
 import GeneratedOpenAIClient
+import SpeziKeychainStorage
 
 
 /// The OpenAI platform's definition.
@@ -157,6 +158,11 @@ public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardi
 
 /// View to display an onboarding step for the user to enter change the OpenAI model.
 public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
+
+
+extension CredentialsTag {
+    public static let openAIKey = Self.for(OpenAIPlatformDefinition.self)
+}
 
 
 // MARK: Models

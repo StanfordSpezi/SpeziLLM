@@ -10,6 +10,7 @@
 
 import Foundation
 import SpeziLLMOpenAI
+import SpeziKeychainStorage
 
 
 /// Defines the Gemini LLM platform.
@@ -123,6 +124,11 @@ public typealias LLMGeminiSchema = LLMOpenAILikeSchema<GeminiPlatformDefinition>
 /// }
 /// ```
 public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinition>
+
+
+extension CredentialsTag {
+    public static let geminiKey = Self.for(GeminiPlatformDefinition.self)
+}
 
 
 // MARK: Models
