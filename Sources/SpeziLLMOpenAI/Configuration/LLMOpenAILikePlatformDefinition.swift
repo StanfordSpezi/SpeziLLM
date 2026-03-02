@@ -49,6 +49,9 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     ///
     /// Used e.g. when picking a model in the UI.
     static var wellKnownModels: [Self] { get }
+    
+    /// Creates a `ModelType` from a raw string value
+    init(rawValue: String)
 }
 
 
