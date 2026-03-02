@@ -12,7 +12,7 @@ import OpenAPIRuntime
 
 
 /// Represents the parameters of OpenAI-like LLMs.
-public struct LLMOpenAIParameters<PlatformDefinition: LLMOpenAILikePlatformDefinition>: Sendable {
+public struct LLMOpenAILikeParameters<PlatformDefinition: LLMOpenAILikePlatformDefinition>: Sendable {
     /// The to-be-used OpenAI model.
     let modelType: PlatformDefinition.ModelType
     /// The to-be-used system prompt(s) of the LLM.

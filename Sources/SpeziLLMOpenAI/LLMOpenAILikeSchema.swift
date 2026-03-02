@@ -22,7 +22,7 @@ import SpeziLLM
 public struct LLMOpenAILikeSchema<PlatformDefinition: LLMOpenAILikePlatformDefinition>: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAILikePlatform<PlatformDefinition>
     
-    let parameters: LLMOpenAIParameters<PlatformDefinition>
+    let parameters: LLMOpenAILikeParameters<PlatformDefinition>
     let modelParameters: LLMOpenAIModelParameters
     let functions: [String: any LLMFunction]
     public let injectIntoContext: Bool
@@ -36,7 +36,7 @@ public struct LLMOpenAILikeSchema<PlatformDefinition: LLMOpenAILikePlatformDefin
     ///    - injectIntoContext: Indicates if the inference output by the ``LLMOpenAISession`` should automatically be inserted into the ``LLMOpenAILikeSession/context``, defaults to false.
     ///    - functions: LLM Functions (tools) used for the OpenAI function calling mechanism.
     public init(
-        parameters: LLMOpenAIParameters<PlatformDefinition>,
+        parameters: LLMOpenAILikeParameters<PlatformDefinition>,
         modelParameters: LLMOpenAIModelParameters = .init(),
         injectIntoContext: Bool = false,
         @LLMFunctionBuilder _ functions: () -> _LLMFunctionCollection = { _LLMFunctionCollection() }

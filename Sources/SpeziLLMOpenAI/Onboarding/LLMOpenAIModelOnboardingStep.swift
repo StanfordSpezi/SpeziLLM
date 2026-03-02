@@ -6,15 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order
-
 import Spezi
 import SpeziOnboarding
 import SwiftUI
-
-
-/// View to display an onboarding step for the user to enter change the OpenAI model.
-public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
 
 
 /// View to display an onboarding step for the user to select an OpenAI-like model.
