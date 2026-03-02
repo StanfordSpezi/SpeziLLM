@@ -82,7 +82,7 @@ public typealias LLMAnthropicSchema = LLMOpenAILikeSchema<AnthropicPlatformDefin
 /// The ``LLMAnthropicSession`` is the executable version of the LLMAnthropicPlatform LLM containing context and state as defined by the ``LLMAnthropicSchema``.
 /// It provides access to text-based models from Anthropic, such as Claude Opus or Sonnet.
 ///
-/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMAnthropicSession`, except that it interacts with Anthropic's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAISession`, except that it interacts with Anthropic's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
 ///
 ///
 /// ### Usage
@@ -107,7 +107,7 @@ public typealias LLMAnthropicSchema = LLMOpenAILikeSchema<AnthropicPlatformDefin
 ///                         parameters: .init(
 ///                             modelType: .opus4_6,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
-///                             overwritingToken: "abc123"
+///                             overwritingAuthToken: "abc123"
 ///                         )
 ///                     )
 ///                 )

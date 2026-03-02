@@ -82,7 +82,7 @@ public typealias LLMGeminiSchema = LLMOpenAILikeSchema<GeminiPlatformDefinition>
 /// The ``LLMGeminiSession`` is the executable version of the LLMGeminiPlatform LLM containing context and state as defined by the ``LLMGeminiSchema``.
 /// It provides access to text-based models from Gemini.
 ///
-/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMGeminiSession`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAISession`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
 ///
 ///
 /// ### Usage
@@ -107,7 +107,7 @@ public typealias LLMGeminiSchema = LLMOpenAILikeSchema<GeminiPlatformDefinition>
 ///                         parameters: .init(
 ///                             modelType: .gemini3_1_pro,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
-///                             overwritingToken: "abc123"
+///                             overwritingAuthToken: "abc123"
 ///                         )
 ///                     )
 ///                 )
