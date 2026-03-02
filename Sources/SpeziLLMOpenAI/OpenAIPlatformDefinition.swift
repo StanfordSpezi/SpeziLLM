@@ -161,6 +161,7 @@ public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep
 
 
 extension CredentialsTag {
+    /// The canonical credentials tag for the OpenAI API key
     public static let openAIKey = Self.for(OpenAIPlatformDefinition.self)
 }
 

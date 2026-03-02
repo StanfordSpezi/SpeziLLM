@@ -9,8 +9,8 @@
 // swiftlint:disable file_types_order
 
 import Foundation
-import SpeziLLMOpenAI
 import SpeziKeychainStorage
+import SpeziLLMOpenAI
 
 
 /// Defines the Anthropic LLM platform.
@@ -139,6 +139,7 @@ public typealias LLMAnthropicModelOnboardingStep = LLMOpenAILikeModelOnboardingS
 
 
 extension CredentialsTag {
+    /// The canonical credentials tag for the Anthropic API key
     public static let anthropicKey = Self.for(AnthropicPlatformDefinition.self)
 }
 

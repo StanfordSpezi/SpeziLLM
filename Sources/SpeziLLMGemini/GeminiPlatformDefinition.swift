@@ -9,8 +9,8 @@
 // swiftlint:disable file_types_order
 
 import Foundation
-import SpeziLLMOpenAI
 import SpeziKeychainStorage
+import SpeziLLMOpenAI
 
 
 /// Defines the Gemini LLM platform.
@@ -127,6 +127,7 @@ public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinitio
 
 
 extension CredentialsTag {
+    /// The canonical credentials tag for the Gemini API key
     public static let geminiKey = Self.for(GeminiPlatformDefinition.self)
 }
 
