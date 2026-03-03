@@ -76,6 +76,7 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILike
     ///   - models: The models that should be displayed in the picker user interface.
     ///   - initial: The initial model which should be selected.
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
+    @_disfavoredOverload
     public init(
         _ primaryActionTitle: some StringProtocol,
         models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
