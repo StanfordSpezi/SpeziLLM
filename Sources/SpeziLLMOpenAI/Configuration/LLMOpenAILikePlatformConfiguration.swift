@@ -9,6 +9,7 @@
 import Foundation
 import GeneratedOpenAIClient
 import OpenAPIRuntime
+import SpeziKeychainStorage
 
 
 /// Represents the configuration of an OpenAI-like `LLMPlatform`.
@@ -64,11 +65,19 @@ public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILi
 }
 
 
+extension CredentialsTag {
+    /// Constructs the canonical tag for storing the specified platform's API keys in the keychain.
+    public static func `for`(_ platformDef: (some LLMOpenAILikePlatformDefinition).Type) -> Self {
+        .genericPassword(forService: platformDef.platformServiceIdentifier)
+    }
+}
+
+
 extension RemoteLLMInferenceAuthToken {
     /// Configures an auth token that uses the platform's default username and service identifier.
     public static func keychain<D>(for platform: LLMOpenAILikePlatform<D>.Type) -> Self {
         .keychain(
-            tag: .genericPassword(forService: D.platformServiceIdentifier),
+            tag: .for(D.self),
             username: platform.credentialsUsername
         )
     }

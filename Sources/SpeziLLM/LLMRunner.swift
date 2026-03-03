@@ -108,7 +108,7 @@ public final class LLMRunner: Module, EnvironmentAccessible, DefaultInitializabl
     /// - Parameters:
     ///   - dependencies: A result builder that aggregates all stated ``LLMPlatform``s.
     public init(
-        @LLMPlatformBuilder _ dependencies: @Sendable () -> DependencyCollection
+        @LLMPlatformBuilder _ dependencies: () -> DependencyCollection
     ) {
         self._llmPlatformModules = Dependency(using: dependencies())
     }

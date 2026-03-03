@@ -6,22 +6,16 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order
-
 import Spezi
 import SpeziOnboarding
 import SwiftUI
-
-
-/// View to display an onboarding step for the user to enter change the OpenAI model.
-public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
 
 
 /// View to display an onboarding step for the user to select an OpenAI-like model.
 public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILikePlatformDefinition>: View {
     @Environment(\.colorScheme) private var colorScheme
     
-    private let continueTitle: LocalizedStringResource
+    private let primaryActionTitle: Text
     private let models: [PlatformDefinition.ModelType]
     // why is this a closure instead of passing in a binding?
     private let action: @MainActor (PlatformDefinition.ModelType) -> Void
@@ -54,26 +48,76 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILike
             #endif
             .accessibilityIdentifier("modelPicker")
         } footer: {
-            OnboardingActionsView(continueTitle) {
+            OnboardingActionsView(title: { primaryActionTitle }) {
                 action(selection)
             }
         }
     }
     
     /// - Parameters:
-    ///   - continueTitle: Localized text that should appear on the action button.
+    ///   - primaryActionTitle: Localized text that should appear on the action button.
     ///   - models: The models that should be displayed in the picker user interface.
     ///   - initial: The initial model which should be selected.
     ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
     public init(
-        continueTitle: LocalizedStringResource? = nil,
+        _ primaryActionTitle: LocalizedStringResource? = nil,
         models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
         initial: PlatformDefinition.ModelType? = nil,
         action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
     ) {
-        self.continueTitle = continueTitle ?? LocalizedStringResource("Continue", bundle: .module)
+        self.primaryActionTitle = primaryActionTitle.map(Text.init) ?? Text("Continue", bundle: .module)
         self.models = models
         self._selection = .init(initialValue: initial ?? .default)
         self.action = action
+    }
+    
+    /// - Parameters:
+    ///   - primaryActionTitle: Localized text that should appear on the action button.
+    ///   - models: The models that should be displayed in the picker user interface.
+    ///   - initial: The initial model which should be selected.
+    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
+    public init(
+        _ primaryActionTitle: some StringProtocol,
+        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
+        initial: PlatformDefinition.ModelType? = nil,
+        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
+    ) {
+        self.primaryActionTitle = Text(primaryActionTitle)
+        self.models = models
+        self._selection = .init(initialValue: initial ?? .default)
+        self.action = action
+    }
+}
+
+
+extension LLMOpenAILikeModelOnboardingStep {
+    /// - Parameters:
+    ///   - actionText: Localized text that should appear on the action button.
+    ///   - models: The models that should be displayed in the picker user interface.
+    ///   - initial: The initial model which should be selected.
+    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
+    @available(*, deprecated, renamed: "init(_:models:initial:action:)")
+    public init(
+        actionText: LocalizedStringResource?,
+        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
+        initial: PlatformDefinition.ModelType? = nil,
+        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
+    ) {
+        self.init(actionText, models: models, initial: initial, action: action)
+    }
+    
+    /// - Parameters:
+    ///   - actionText: Localized text that should appear on the action button.
+    ///   - models: The models that should be displayed in the picker user interface.
+    ///   - initial: The initial model which should be selected.
+    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
+    @available(*, deprecated, renamed: "init(_:models:initial:action:)")
+    public init(
+        actionText: some StringProtocol,
+        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
+        initial: PlatformDefinition.ModelType? = nil,
+        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
+    ) {
+        self.init(actionText, models: models, initial: initial, action: action)
     }
 }

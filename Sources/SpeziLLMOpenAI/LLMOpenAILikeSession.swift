@@ -53,7 +53,7 @@ import SpeziLLM
 ///                         parameters: .init(
 ///                             modelType: .gpt4o,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
-///                             overwritingToken: "abc123"
+///                             overwritingAuthToken: "abc123"
 ///                         )
 ///                     )
 ///                 )

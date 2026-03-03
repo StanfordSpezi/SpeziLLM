@@ -6,7 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import Foundation
+import SpeziKeychainStorage
 import SpeziLLMOpenAI
 
 
@@ -30,6 +33,118 @@ public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public static let platformDeveloperConsoleUrl = URL(string: "https://aistudio.google.com/app/api-keys")
 }
 
+
+// MARK: Type Specializations
+
+/// Represents the configuration of the Spezi ``LLMGeminiPlatform``.
+public typealias LLMGeminiPlatformConfiguration = LLMOpenAILikePlatformConfiguration<GeminiPlatformDefinition>
+
+
+/// Represents the parameters of a Gemini LLM model.
+public typealias LLMGeminiParameters = LLMOpenAILikeParameters<GeminiPlatformDefinition>
+
+
+/// LLM execution platform of a ``LLMGeminiSchema``.
+///
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAIPlatform`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAIPlatform`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaiplatform) documentation for further documentation.
+///
+/// ### Usage
+///
+/// The example below demonstrates the setup of the ``LLMGeminiPlatform`` within the Spezi `Configuration`.
+/// ```swift
+/// class TestAppDelegate: SpeziAppDelegate {
+///     override var configuration: Configuration {
+///         Configuration {
+///             LLMRunner {
+///                 LLMGeminiPlatform()
+///             }
+///         }
+///     }
+/// }
+/// ```
+public typealias LLMGeminiPlatform = LLMOpenAILikePlatform<GeminiPlatformDefinition>
+
+
+/// Defines the type and configuration of the ``LLMGeminiSession``.
+///
+/// The ``LLMGeminiSchema`` is used as a configuration for the to-be-used LLMGeminiPlatform LLM. It contains all information necessary for the creation of an executable ``LLMGeminiSession``.
+/// It is bound to a ``LLMGeminiPlatform`` that is responsible for turning the ``LLMGeminiSchema`` to an ``LLMGeminiSession``.
+///
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAISchema`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAISchema`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaischema) documentation for further documentation.
+///
+/// - Tip: ``LLMGeminiSchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the ``LLMGeminiPlatform`` LLMs and external tools.
+///     For more details, refer to the [`LLMOpenAISchema`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaischema) documentation.
+public typealias LLMGeminiSchema = LLMOpenAILikeSchema<GeminiPlatformDefinition>
+
+
+/// Represents an ``LLMGeminiSchema`` in execution.
+///
+/// The ``LLMGeminiSession`` is the executable version of the LLMGeminiPlatform LLM containing context and state as defined by the ``LLMGeminiSchema``.
+/// It provides access to text-based models from Gemini.
+///
+/// - Note: This type behaves identical to SpeziLLMOpenAI's `LLMOpenAISession`, except that it interacts with Gemini's APIs instead of OpenAI's; see the [`LLMOpenAISession`](https://swiftpackageindex.com/stanfordspezi/spezillm/documentation/spezillmopenai/llmopenaisession) documentation for further documentation.
+///
+///
+/// ### Usage
+///
+/// The example below demonstrates a minimal usage of the ``LLMGeminiSession`` via the `LLMRunner`.
+///
+/// ```swift
+/// import SpeziLLM
+/// import SpeziLLMGemini
+/// import SwiftUI
+///
+/// struct LLMGeminiDemoView: View {
+///     @Environment(LLMRunner.self) var runner
+///     @State var responseText = ""
+///
+///     var body: some View {
+///         Text(responseText)
+///             .task {
+///                 // Instantiate the `LLMGeminiSchema` to an `LLMGeminiSession` via the `LLMRunner`.
+///                 let llmSession: LLMGeminiSession = runner(
+///                     with: LLMGeminiSchema(
+///                         parameters: .init(
+///                             modelType: .gemini3_1_pro,
+///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
+///                             overwritingAuthToken: "abc123"
+///                         )
+///                     )
+///                 )
+///
+///                 do {
+///                     for try await token in try await llmSession.generate() {
+///                         responseText.append(token)
+///                     }
+///                 } catch {
+///                     // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
+///                 }
+///             }
+///     }
+/// }
+/// ```
+public typealias LLMGeminiSession = LLMOpenAILikeSession<GeminiPlatformDefinition>
+
+
+/// View to display an onboarding step for the user to enter a Gemini API Key.
+///
+/// - Warning: Ensure that the ``LLMGeminiPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
+public typealias LLMGeminiAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<GeminiPlatformDefinition>
+
+
+/// View to display an onboarding step for the user to select a Gemini model.
+public typealias LLMGeminiModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<GeminiPlatformDefinition>
+
+
+extension CredentialsTag {
+    /// The canonical credentials tag for the Gemini API key
+    public static let geminiKey = Self.for(GeminiPlatformDefinition.self)
+}
+
+
+// MARK: Models
 
 // swiftlint:disable identifier_name
 extension GeminiPlatformDefinition.ModelType {

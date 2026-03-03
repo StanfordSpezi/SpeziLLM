@@ -106,13 +106,7 @@ extension LLMFogSession {
         }
 
         let bearerAuthMiddleware = BearerAuthMiddleware(
-            authToken: {
-                if let overwritingToken = self.schema.parameters.overwritingAuthToken {
-                    return overwritingToken
-                }
-
-                return self.platform.configuration.authToken
-            }(),
+            authToken: schema.parameters.overwritingAuthToken ?? platform.configuration.authToken,
             keychainStorage: self.keychainStorage
         )
 

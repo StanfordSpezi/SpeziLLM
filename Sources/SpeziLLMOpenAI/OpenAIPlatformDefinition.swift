@@ -6,13 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import Foundation
 import GeneratedOpenAIClient
-import SpeziLLM
+import SpeziKeychainStorage
 
-
-/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
-public typealias LLMOpenAIPlatformConfiguration = LLMOpenAILikePlatformConfiguration<OpenAIPlatformDefinition>
 
 /// The OpenAI platform's definition.
 public struct OpenAIPlatformDefinition: LLMOpenAILikePlatformDefinition {
@@ -40,6 +39,130 @@ public struct OpenAIPlatformDefinition: LLMOpenAILikePlatformDefinition {
         }
         return url
     }()
+}
+
+
+// MARK: Type Specializations
+
+/// Represents the configuration of the Spezi ``LLMOpenAIPlatform``.
+public typealias LLMOpenAIPlatformConfiguration = LLMOpenAILikePlatformConfiguration<OpenAIPlatformDefinition>
+
+
+/// Represents the parameters of an OpenAI LLM model.
+public typealias LLMOpenAIParameters = LLMOpenAILikeParameters<OpenAIPlatformDefinition>
+
+
+/// LLM execution platform of an ``LLMOpenAISchema``.
+///
+/// The ``LLMOpenAIPlatform`` turns a received ``LLMOpenAISchema`` to an executable ``LLMOpenAISession``.
+/// Use ``LLMOpenAILikePlatform/callAsFunction(with:)`` with an ``LLMOpenAISchema`` parameter to get an executable ``LLMOpenAISession`` that does the actual inference.
+///
+/// The platform can be configured with the ``LLMOpenAIPlatformConfiguration``, enabling developers to specify properties like a custom server `URL`s, API tokens, the retry policy or timeouts.
+///
+/// - Important: ``LLMOpenAIPlatform`` shouldn't be used directly but used via the `SpeziLLM` `LLMRunner` that delegates the requests towards the ``LLMOpenAIPlatform``.
+/// The `SpeziLLM` `LLMRunner` must be configured with the ``LLMOpenAIPlatform`` within the Spezi `Configuration`.
+///
+/// - Tip: For more information, refer to the documentation of the `LLMPlatform` from SpeziLLM.
+///
+/// ### Usage
+///
+/// The example below demonstrates the setup of the ``LLMOpenAIPlatform`` within the Spezi `Configuration`.
+///
+/// ```swift
+/// class TestAppDelegate: SpeziAppDelegate {
+///     override var configuration: Configuration {
+///         Configuration {
+///             LLMRunner {
+///                 LLMOpenAIPlatform()
+///             }
+///         }
+///     }
+/// }
+/// ```
+public typealias LLMOpenAIPlatform = LLMOpenAILikePlatform<OpenAIPlatformDefinition>
+
+
+/// Defines the type and configuration of the ``LLMOpenAISession``.
+///
+/// The ``LLMOpenAISchema`` is used as a configuration for the to-be-used OpenAI LLM. It contains all information necessary for the creation of an executable ``LLMOpenAISession``.
+/// It is bound to a ``LLMOpenAIPlatform`` that is responsible for turning the ``LLMOpenAISchema`` to an ``LLMOpenAISession``.
+///
+/// - Tip: ``LLMOpenAISchema`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
+///
+/// - Tip: For more information, refer to the documentation of the `LLMSchema` from SpeziLLM.
+public typealias LLMOpenAISchema = LLMOpenAILikeSchema<OpenAIPlatformDefinition>
+
+
+/// Represents an ``LLMOpenAISchema`` in execution.
+///
+/// The ``LLMOpenAISession`` is the executable version of the OpenAI LLM containing context and state as defined by the ``LLMOpenAISchema``.
+/// It provides access to text-based models from OpenAI, such as GPT-3.5 or GPT-4.
+///
+/// The inference is started by ``LLMOpenAILikeSession/generate()``, returning an `AsyncThrowingStream` and can be cancelled via ``LLMOpenAILikeSession/cancel()``.
+/// The ``LLMOpenAISession`` exposes its current state via the ``LLMOpenAILikeSession/context`` property, containing all the conversational history with the LLM.
+///
+/// - Warning: The ``LLMOpenAISession`` shouldn't be created manually but always through the ``LLMOpenAIPlatform`` via the `LLMRunner`.
+///
+/// - Tip: ``LLMOpenAISession`` also enables the function calling mechanism to establish a structured, bidirectional, and reliable communication between the OpenAI LLMs and external tools. For details, refer to ``LLMFunction`` and ``LLMFunction/Parameter`` or the <doc:FunctionCalling> DocC article.
+///
+/// - Tip: For more information, refer to the documentation of the `LLMSession` from SpeziLLM.
+///
+/// ### Usage
+///
+/// The example below demonstrates a minimal usage of the ``LLMOpenAISession`` via the `LLMRunner`.
+///
+/// ```swift
+/// import SpeziLLM
+/// import SpeziLLMOpenAI
+/// import SwiftUI
+///
+/// struct LLMOpenAIDemoView: View {
+///     @Environment(LLMRunner.self) var runner
+///     @State var responseText = ""
+///
+///     var body: some View {
+///         Text(responseText)
+///             .task {
+///                 // Instantiate the `LLMOpenAISchema` to an `LLMOpenAISession` via the `LLMRunner`.
+///                 let llmSession: LLMOpenAISession = runner(
+///                     with: LLMOpenAISchema(
+///                         parameters: .init(
+///                             modelType: .gpt4o,
+///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
+///                             overwritingAuthToken: "abc123"
+///                         )
+///                     )
+///                 )
+///
+///                 do {
+///                     for try await token in try await llmSession.generate() {
+///                         responseText.append(token)
+///                     }
+///                 } catch {
+///                     // Handle errors here. E.g., you can use `ViewState` and `viewStateAlert` from SpeziViews.
+///                 }
+///             }
+///     }
+/// }
+/// ```
+public typealias LLMOpenAISession = LLMOpenAILikeSession<OpenAIPlatformDefinition>
+
+
+/// View to display an onboarding step for the user to enter an OpenAI API Key.
+///
+/// - Warning: Ensure that the ``LLMOpenAIPlatform`` is specified within the Spezi `Configuration` when using this view in the onboarding flow.
+///
+/// - Important: Only use this if the corresponding LLM platform's config's auth token is set to `RemoteLLMInferenceAuthToken/keychain(_:CredentialsTag)`
+public typealias LLMOpenAIAPITokenOnboardingStep = LLMOpenAILikeAPITokenOnboardingStep<OpenAIPlatformDefinition>
+
+
+/// View to display an onboarding step for the user to select an OpenAI model.
+public typealias LLMOpenAIModelOnboardingStep = LLMOpenAILikeModelOnboardingStep<OpenAIPlatformDefinition>
+
+
+extension CredentialsTag {
+    /// The canonical credentials tag for the OpenAI API key
+    public static let openAIKey = Self.for(OpenAIPlatformDefinition.self)
 }
 
 
