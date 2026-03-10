@@ -22,8 +22,8 @@ import SpeziLLMOpenAI
 public struct LLMOpenAIRealtimeSchema: LLMSchema, Sendable {
     public typealias Platform = LLMOpenAIRealtimePlatform
 
-    let parameters: LLMOpenAIRealtimeParameters
-    let functions: [String: any LLMFunction]
+    public let parameters: LLMOpenAIRealtimeParameters
+    public let functions: [String: any LLMFunction]
     public var injectIntoContext: Bool
     
     /// Creates an instance of the ``LLMOpenAIRealtimeSchema`` containing all necessary configuration for Realtime OpenAI LLM inference.

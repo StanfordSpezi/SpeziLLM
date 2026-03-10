@@ -23,7 +23,7 @@ extension LLMOpenAIRealtimeSession {
     ///
     /// - Throws: An error if setup fails or if the operation is cancelled.
     @MainActor
-    func ensureSetup() async throws {
+    public func ensureSetup() async throws {
         guard self.state != .ready && self.state != .generating else {
             return
         }

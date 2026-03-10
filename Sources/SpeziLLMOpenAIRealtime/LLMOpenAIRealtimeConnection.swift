@@ -70,8 +70,14 @@ actor LLMOpenAIRealtimeConnection {
     /// Opens socket connection to OpenAI's Realtime API and starts the event loop, which runs until calling `cancel()`
     /// Waits until the event loop has succesfully been initialized: only continues once session.created event is successfully received from socket
     func open(token: String, schema: LLMOpenAIRealtimeSchema) async throws {
-        guard let realtimeApiUrl = URL(string: "wss://api.openai.com/v1/realtime?model=\(schema.parameters.modelType)") else {
-            throw RealtimeError.malformedUrlError
+        let realtimeApiUrl: URL
+        if let customURL = schema.parameters.webSocketURL {
+            realtimeApiUrl = customURL
+        } else {
+            guard let url = URL(string: "wss://api.openai.com/v1/realtime?model=\(schema.parameters.modelType)") else {
+                throw RealtimeError.malformedUrlError
+            }
+            realtimeApiUrl = url
         }
         
         var req = URLRequest(url: realtimeApiUrl)

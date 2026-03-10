@@ -62,7 +62,17 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
     let transcriptionSettings: LLMRealtimeTranscriptionSettings?
     /// The voice to use for the assistant's audio output.
     let voice: OpenAIVoice?
-    
+    /// An optional custom WebSocket endpoint URL.
+    ///
+    /// When `nil` (the default), the connection opens to
+    /// `wss://api.openai.com/v1/realtime?model=<modelType>`.
+    /// Supply a value to override this URL entirely, e.g. for the phone-call transport
+    /// (`wss://api.openai.com/v1/realtime?call_id=<id>`), a proxy, or a self-hosted server.
+    ///
+    /// The connection layer still attaches the standard `Authorization` and `OpenAI-Beta`
+    /// request headers regardless of which URL is used.
+    public let webSocketURL: URL?
+
     /// Creates the ``LLMOpenAIRealtimeParameters``.
     ///
     /// - Parameters:
@@ -72,17 +82,20 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
     ///                            Set to `nil` to disable automatic turn detection and require manual `endUserTurn()` calls.
     ///   - transcriptionSettings: Transcription settings to transcribe user audio input into text. If set, these automatically get appended to the LLMSession's `LLMContext`.
     ///   - voice: The voice to use for the assistant's audio output.
+    ///   - webSocketURL: An optional custom WebSocket endpoint URL. When `nil`, the standard model-based URL is used.
     public init(
         modelType: ModelType,
         systemPrompt: String? = Defaults.defaultSystemPrompt,
         turnDetectionSettings: LLMRealtimeTurnDetectionSettings? = Defaults.turnDetectionSettings,
         transcriptionSettings: LLMRealtimeTranscriptionSettings? = Defaults.transcriptionSettings,
-        voice: OpenAIVoice? = Defaults.voice
+        voice: OpenAIVoice? = Defaults.voice,
+        webSocketURL: URL? = nil
     ) {
         self.modelType = modelType.rawValue
         self.systemPrompt = systemPrompt
         self.turnDetectionSettings = turnDetectionSettings
         self.transcriptionSettings = transcriptionSettings
         self.voice = voice
+        self.webSocketURL = webSocketURL
     }
 }
