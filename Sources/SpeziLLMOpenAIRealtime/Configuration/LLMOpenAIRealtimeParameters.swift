@@ -16,10 +16,11 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
         case gpt4oRealtime = "gpt-4o-realtime-preview"
         case gpt4oRealtime_mini = "gpt-4o-mini-realtime-preview"
         case gptRealtime = "gpt-realtime"
+        case gptRealtime1_5 = "gpt-realtime-1.5"
 
         // swiftlint:enable identifier_name
     }
-    
+
     public enum OpenAIVoice: String, Sendable {
         /// Neutral and balanced
         case alloy
@@ -37,20 +38,23 @@ public struct LLMOpenAIRealtimeParameters: Sendable {
         case shimmer
         /// Versatile and expressive
         case verse
-        
+
         public static let `default`: OpenAIVoice = .alloy
     }
-    
+
     /// Defaults of possible LLMs Realtime parameter settings.
     public enum Defaults {
         public static let defaultSystemPrompt: String = {
-            String(localized: LocalizedStringResource("SPEZI_LLM_OPENAI_REALTIME_SYSTEM_PROMPT", bundle: .atURL(from: .module)))
+            String(
+                localized: LocalizedStringResource(
+                    "SPEZI_LLM_OPENAI_REALTIME_SYSTEM_PROMPT", bundle: .atURL(from: .module)
+                )
+            )
         }()
         public static let turnDetectionSettings: LLMRealtimeTurnDetectionSettings = .default
         public static let transcriptionSettings: LLMRealtimeTranscriptionSettings = .default
         public static let voice: OpenAIVoice = .default
     }
-
 
     /// The to-be-used OpenAI model.
     let modelType: String
