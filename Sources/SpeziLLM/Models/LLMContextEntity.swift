@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 /// Represents the basic building block of a Spezi ``LLMContext``.
@@ -56,10 +57,19 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
         }
     }
     
+    public enum Content: Codable, Hashable, Sendable {
+        case text(String)
+        case image(Image)
+        
+        public enum Image: Codable, Hashable, Sendable {
+            case base64(contentType: String, image: String)
+        }
+    }
+    
     /// ``LLMContextEntity/Role`` associated with the ``LLMContextEntity``.
     public let role: Role
-    /// `String`-based content of the ``LLMContextEntity``.
-    public let content: String
+    /// Content of the ``LLMContextEntity``.
+    public let content: Content
     /// Indicates if the ``LLMContextEntity`` is complete and will not receive any additional content.
     public let complete: Bool
     /// Unique identifier of the ``LLMContextEntity``.
@@ -67,6 +77,20 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     /// The creation date of the ``LLMContextEntity``.
     public let date: Date
     
+    
+    public init(
+        role: Role,
+        content: Content,
+        complete: Bool = true,
+        id: UUID = UUID(),
+        date: Date = .now
+    ) {
+        self.role = role
+        self.content = content
+        self.complete = complete
+        self.id = id
+        self.date = date
+    }
     
     /// Creates a ``LLMContextEntity`` which is the building block of a Spezi ``LLMContext``.
     ///
@@ -76,17 +100,47 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     ///    - complete: Indicates if the content of the ``LLMContextEntity`` is complete and will not receive any additional content. Defaults to `true`.
     ///    - id: Unique identifier of the ``LLMContextEntity``, defaults to a randomly assigned id.
     ///    - date: Timestamp on when the ``LLMContextEntity`` was originally created, defaults to the current time.
-    public init<Content: StringProtocol>(
+    public init(
         role: Role,
-        content: Content,
+        content: some StringProtocol,
         complete: Bool = true,
         id: UUID = .init(),
         date: Date = .now
     ) {
         self.role = role
-        self.content = String(content)
+        self.content = .text(String(content))
         self.complete = complete
         self.id = id
         self.date = date
+    }
+}
+
+
+extension LLMContextEntity {
+    public init?(role: Role, image: UIImage, complete: Bool = true, id: UUID = UUID(), date: Date = .now) {
+        guard let imageBase64 = image.pngData()?.base64EncodedString() else {
+            return nil
+        }
+        self.init(
+            role: role,
+            content: .image(.base64(contentType: "image/png", image: imageBase64)),
+            complete: complete,
+            id: id,
+            date: date
+        )
+    }
+    
+    
+    public init?(role: Role, image: UIImage, jpegCompressionFactor: Double, complete: Bool = true, id: UUID = UUID(), date: Date = .now) {
+        guard let imageBase64 = image.jpegData(compressionQuality: jpegCompressionFactor)?.base64EncodedString() else {
+            return nil
+        }
+        self.init(
+            role: role,
+            content: .image(.base64(contentType: "image/jpeg", image: imageBase64)),
+            complete: complete,
+            id: id,
+            date: date
+        )
     }
 }

@@ -74,14 +74,14 @@ extension LLMOpenAILikeSession {
         case let .tool(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
                 role: .tool,
-                content: .case1(contextEntity.content),
+                content: .case1(contextEntity.stringContentForChatEntity),
                 tool_call_id: functionID
             ))
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
             if toolCalls.isEmpty {
                 return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
-                    content: .case1(contextEntity.content),
+                    content: .case1(contextEntity.stringContentForChatEntity),
                     role: .assistant
                 ))
             } else {
@@ -89,11 +89,11 @@ extension LLMOpenAILikeSession {
                 return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
                     role: .assistant,
                     tool_calls: toolCalls.map { toolCall in
-                        .init(
-                            id: toolCall.id,
-                            _type: .function,
-                            function: .init(name: toolCall.name, arguments: toolCall.arguments)
-                        )
+                            .init(
+                                id: toolCall.id,
+                                _type: .function,
+                                function: .init(name: toolCall.name, arguments: toolCall.arguments)
+                            )
                     }
                 ))
             }
@@ -107,13 +107,32 @@ extension LLMOpenAILikeSession {
             }
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
                 .init(
-                    content: .case1(contextEntity.content),
+                    content: .case1(contextEntity.stringContentForChatEntity),
                     role: role
                 )
             )
         case .user:
-            return Components.Schemas.ChatCompletionRequestMessage
-                .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+            switch contextEntity.content {
+            case .text(let text):
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case1(text), role: .user))
+            case let .image(.base64(contentType, image)):
+                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
+                    .image_urlPayload(url: .init("data:\(contentType);base64,\(image)"), detail: .low)
+                let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
+                    _type: .image_url,
+                    image_url: imgPayload
+                )
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case2([
+                        //                        .ChatCompletionRequestMessageContentPartText(.init(
+                        //                            _type: .text,
+                        //                            text: contextEntity.content
+                        //                        )),
+                        .ChatCompletionRequestMessageContentPartImage(imgContent)
+                    ]), role: .user))
+                
+            }
         }
     }
 }

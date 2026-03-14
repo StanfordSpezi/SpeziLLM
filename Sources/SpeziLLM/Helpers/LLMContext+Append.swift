@@ -23,6 +23,7 @@ extension LLMContext {
     public mutating func append(assistantOutput output: String, complete: Bool = false, overwrite: Bool = false) {
         guard let lastContextEntity = self.last,
               case .assistant(let functionCalls) = lastContextEntity.role,
+              case .text(let content) = lastContextEntity.content,
               functionCalls.isEmpty else {
             self.append(.init(role: .assistant(), content: output, complete: complete))
             return
@@ -30,7 +31,7 @@ extension LLMContext {
         
         self[self.count - 1] = .init(
             role: .assistant(),
-            content: overwrite ? output : (lastContextEntity.content + output),
+            content: overwrite ? output : (content + output),
             complete: complete,
             id: lastContextEntity.id,
             date: lastContextEntity.date

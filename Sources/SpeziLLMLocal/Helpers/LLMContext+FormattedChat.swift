@@ -19,7 +19,7 @@ extension LLMContext {
         self.map { entry in
             [
                 "role": entry.role.rawValue,
-                "content": entry.content
+                "content": entry.stringContentForChatEntity
             ]
         }
     }
