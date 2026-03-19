@@ -139,9 +139,9 @@ extension LLMContextEntity {
         _role: Role, // swiftlint:disable:this identifier_name
         image: _PlatformImage,
         format: _ImageFormat,
-        complete: Bool,
-        id: UUID,
-        date: Date
+        complete: Bool = true,
+        id: UUID = UUID(),
+        date: Date = .now
     ) {
         let imageData: Data? = switch format {
         case .png:
