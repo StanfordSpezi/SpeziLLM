@@ -18,7 +18,7 @@ extension LLMContext {
                 case .user:
                     ChatEntity(
                         role: .user,
-                        content: contextEntity.stringContentForChatEntity,
+                        content: contextEntity.content,
                         complete: contextEntity.complete,
                         id: contextEntity.id,
                         date: contextEntity.date
@@ -35,7 +35,7 @@ extension LLMContext {
                     } else {
                         ChatEntity(
                             role: .assistant,
-                            content: contextEntity.stringContentForChatEntity,
+                            content: contextEntity.content,
                             complete: contextEntity.complete,
                             id: contextEntity.id,
                             date: contextEntity.date
@@ -44,7 +44,7 @@ extension LLMContext {
                 case .system:
                     ChatEntity(
                         role: .hidden(type: .system),
-                        content: contextEntity.stringContentForChatEntity,
+                        content: contextEntity.content,
                         complete: contextEntity.complete,
                         id: contextEntity.id,
                         date: contextEntity.date
@@ -52,7 +52,7 @@ extension LLMContext {
                 case .tool:
                     ChatEntity(
                         role: .hidden(type: .function),
-                        content: contextEntity.stringContentForChatEntity,
+                        content: contextEntity.content,
                         complete: contextEntity.complete,
                         id: contextEntity.id,
                         date: contextEntity.date
@@ -80,16 +80,4 @@ extension ChatEntity.HiddenMessageType {
     static let system = ChatEntity.HiddenMessageType(name: "system")
     /// Function hidden message type of the `ChatEntity`.
     static let function = ChatEntity.HiddenMessageType(name: "function")
-}
-
-
-extension LLMContextEntity {
-    public var stringContentForChatEntity: String { // ewww
-        switch self.content {
-        case .text(let string):
-            string
-        case .image:
-            "<image>" // TODO?
-        }
-    }
 }

@@ -50,19 +50,21 @@ extension LLMFogSession {
     }
 
 
-    private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage? {
+    private func getChatMessage( // swiftlint:disable:this function_body_length
+        _ contextEntity: LLMContextEntity
+    ) -> Components.Schemas.ChatCompletionRequestMessage? {
         switch contextEntity.role {
         case let .tool(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
                 role: .tool,
-                content: .case1(contextEntity.stringContentForChatEntity),
+                content: .case1(contextEntity.content),
                 tool_call_id: functionID
             ))
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
             if toolCalls.isEmpty {
                 return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
-                    content: .case1(contextEntity.stringContentForChatEntity),
+                    content: .case1(contextEntity.content),
                     role: .assistant
                 ))
             } else {
@@ -88,30 +90,25 @@ extension LLMFogSession {
             }
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
                 .init(
-                    content: .case1(contextEntity.stringContentForChatEntity),
+                    content: .case1(contextEntity.content),
                     role: role
                 )
             )
         case .user:
-            switch contextEntity.content {
-            case .text(let text):
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case1(text), role: .user))
-            case let .image(.base64(contentType, image)):
+            if let imageContent = contextEntity._imageContent {
                 let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
-                    .image_urlPayload(url: .init("data:image/jpeg;base64,\(image)"))
+                    .image_urlPayload(url: .init("data:\(imageContent.contentType);base64,\(imageContent.base64Image)"))
                 let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
                     _type: .image_url,
                     image_url: imgPayload
                 )
                 return Components.Schemas.ChatCompletionRequestMessage
                     .ChatCompletionRequestUserMessage(.init(content: .case2([
-//                        .ChatCompletionRequestMessageContentPartText(.init(
-//                            _type: .text,
-//                            text: contextEntity.content
-//                        )),
                         .ChatCompletionRequestMessageContentPartImage(imgContent)
                     ]), role: .user))
+            } else {
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
             }
         }
     }
