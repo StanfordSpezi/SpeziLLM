@@ -7,6 +7,11 @@
 //
 
 import Foundation
+#if canImport(UIKit)
+import class UIKit.UIImage
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 
 /// Represents the basic building block of a Spezi ``LLMContext``.
@@ -56,9 +61,15 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
         }
     }
     
+    /// - Important: This type is not stable and will be removed in an upcoming release.
+    package struct _ImageContent: Codable, Hashable, Sendable { // swiftlint:disable:this type_name
+        package let contentType: String
+        package let base64Image: String
+    }
+    
     /// ``LLMContextEntity/Role`` associated with the ``LLMContextEntity``.
     public let role: Role
-    /// `String`-based content of the ``LLMContextEntity``.
+    /// Content of the ``LLMContextEntity``.
     public let content: String
     /// Indicates if the ``LLMContextEntity`` is complete and will not receive any additional content.
     public let complete: Bool
@@ -66,6 +77,12 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     public let id: UUID
     /// The creation date of the ``LLMContextEntity``.
     public let date: Date
+    /// The context entity's image payload, if applicable.
+    ///
+    /// If this property is non-nil, ``content`` will be ignored.
+    ///
+    /// - Important: This property is not stable and will be removed in an upcoming release.
+    package let _imageContent: _ImageContent? // swiftlint:disable:this identifier_name
     
     
     /// Creates a ``LLMContextEntity`` which is the building block of a Spezi ``LLMContext``.
@@ -76,9 +93,9 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     ///    - complete: Indicates if the content of the ``LLMContextEntity`` is complete and will not receive any additional content. Defaults to `true`.
     ///    - id: Unique identifier of the ``LLMContextEntity``, defaults to a randomly assigned id.
     ///    - date: Timestamp on when the ``LLMContextEntity`` was originally created, defaults to the current time.
-    public init<Content: StringProtocol>(
+    public init(
         role: Role,
-        content: Content,
+        content: some StringProtocol,
         complete: Bool = true,
         id: UUID = .init(),
         date: Date = .now
@@ -88,5 +105,75 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
         self.complete = complete
         self.id = id
         self.date = date
+        self._imageContent = nil
     }
 }
+
+
+extension LLMContextEntity {
+    #if canImport(UIKit)
+    /// - Important: This type is not stable and will be removed in an upcoming release.
+    public typealias _PlatformImage = UIImage // swiftlint:disable:this type_name
+    #elseif canImport(AppKit)
+    /// - Important: This type is not stable and will be removed in an upcoming release.
+    public typealias _PlatformImage = NSImage // swiftlint:disable:this type_name
+    #endif
+    
+    /// - Important: This type is not stable and will be removed in an upcoming release.
+    public enum _ImageFormat: Sendable { // swiftlint:disable:this type_name
+        case png
+        case jpeg(compressionFactor: Double)
+        
+        fileprivate var contentType: String {
+            switch self {
+            case .png:
+                "image/png"
+            case .jpeg:
+                "image/jpeg"
+            }
+        }
+    }
+    
+    /// - Important: This init is not stable and will be removed in an upcoming release.
+    public init?(
+        _role: Role, // swiftlint:disable:this identifier_name
+        image: _PlatformImage,
+        format: _ImageFormat,
+        complete: Bool = true,
+        id: UUID = UUID(),
+        date: Date = .now
+    ) {
+        let imageData: Data? = switch format {
+        case .png:
+            image.pngData()
+        case .jpeg(let compressionFactor):
+            image.jpegData(compressionQuality: compressionFactor)
+        }
+        guard let imageBase64 = imageData?.base64EncodedString() else {
+            return nil
+        }
+        self.role = _role
+        self.content = ""
+        self._imageContent = .init(contentType: format.contentType, base64Image: imageBase64)
+        self.complete = complete
+        self.id = id
+        self.date = date
+    }
+}
+
+
+#if canImport(AppKit)
+extension NSImage {
+    fileprivate func pngData() -> Data? {
+        tiffRepresentation
+            .flatMap { NSBitmapImageRep(data: $0) }?
+            .representation(using: .png, properties: [:])
+    }
+    
+    fileprivate func jpegData(compressionQuality: Double) -> Data? {
+        tiffRepresentation
+            .flatMap { NSBitmapImageRep(data: $0) }?
+            .representation(using: .jpeg, properties: [.compressionFactor: compressionQuality])
+    }
+}
+#endif

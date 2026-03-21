@@ -50,7 +50,9 @@ extension LLMFogSession {
     }
 
 
-    private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage? {
+    private func getChatMessage( // swiftlint:disable:this function_body_length
+        _ contextEntity: LLMContextEntity
+    ) -> Components.Schemas.ChatCompletionRequestMessage? {
         switch contextEntity.role {
         case let .tool(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
@@ -93,8 +95,21 @@ extension LLMFogSession {
                 )
             )
         case .user:
-            return Components.Schemas.ChatCompletionRequestMessage
-                .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+            if let imageContent = contextEntity._imageContent {
+                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
+                    .image_urlPayload(url: .init("data:\(imageContent.contentType);base64,\(imageContent.base64Image)"))
+                let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
+                    _type: .image_url,
+                    image_url: imgPayload
+                )
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case2([
+                        .ChatCompletionRequestMessageContentPartImage(imgContent)
+                    ]), role: .user))
+            } else {
+                return Components.Schemas.ChatCompletionRequestMessage
+                    .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+            }
         }
     }
 }

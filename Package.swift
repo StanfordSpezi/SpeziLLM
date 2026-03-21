@@ -31,18 +31,18 @@ let package = Package(
         .library(name: "SpeziLLMGemini", targets: ["SpeziLLMGemini"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.29.1")),
-        .package(url: "https://github.com/ml-explore/mlx-swift-examples", .upToNextMinor(from: "2.29.1")),
-        .package(url: "https://github.com/huggingface/swift-transformers", from: "1.0.0"),
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.9.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation", from: "2.2.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage", from: "2.1.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding", from: "2.0.2"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat", .upToNextMinor(from: "0.2.5")),
-        .package(url: "https://github.com/StanfordSpezi/SpeziViews", from: "1.12.11"),
-        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.8.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.1.0")
+        .package(url: "https://github.com/ml-explore/mlx-swift.git", .upToNextMinor(from: "0.29.1")),
+        .package(url: "https://github.com/ml-explore/mlx-swift-examples.git", .upToNextMinor(from: "2.29.1")),
+        .package(url: "https://github.com/huggingface/swift-transformers.git", from: "1.0.0"),
+        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.9.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.2.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding.git", from: "2.0.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat.git", .upToNextMinor(from: "0.2.5")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziViews.git", from: "1.12.11"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.1.0")
     ],
     targets: [
         .target(
