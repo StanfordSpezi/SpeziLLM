@@ -79,7 +79,7 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     public let date: Date
     /// The context entity's image payload, if applicable.
     ///
-    /// If this proparty is non-nil, ``content`` will be ignored.
+    /// If this property is non-nil, ``content`` will be ignored.
     ///
     /// - Important: This property is not stable and will be removed in an upcoming release.
     package let _imageContent: _ImageContent? // swiftlint:disable:this identifier_name
