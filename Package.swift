@@ -36,7 +36,7 @@ let package = Package(
         .package(url: "https://github.com/huggingface/swift-transformers.git", from: "1.0.0"),
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.9.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.2.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.4"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding.git", from: "2.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat.git", .upToNextMinor(from: "0.2.5")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews.git", from: "1.12.11"),
