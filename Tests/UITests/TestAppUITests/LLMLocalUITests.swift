@@ -10,20 +10,9 @@ import XCTest
 import XCTestExtensions
 
 
-@MainActor
-class TestAppLLMLocalUITests: XCTestCase {
-    override func setUp() async throws {
-        try super.setUpWithError()
-        
-        continueAfterFailure = false
-        
-        let app = XCUIApplication()
-        app.launchArguments = ["--mockMode", "--showOnboarding", "--testMode"]
-        app.launch()
-    }
-    
+final class TestAppLLMLocalUITests: TestAppTestCase {
     func testSpeziLLMLocal() throws {
-        let app = XCUIApplication()
+        launch(enableMockMode: true, showOnboarding: true, clearAPIKeysFromKeychain: false)
         
         XCTAssert(app.buttons["LLMLocal"].waitForExistence(timeout: 2))
         app.buttons["LLMLocal"].tap()
@@ -42,7 +31,6 @@ class TestAppLLMLocalUITests: XCTestCase {
         // Chat
         let inputTextfield = app.textFields["Message Input Textfield"]
         XCTAssertTrue(inputTextfield.exists)
-        
         
         #if !os(macOS)
         if UIDevice.current.userInterfaceIdiom == .pad {

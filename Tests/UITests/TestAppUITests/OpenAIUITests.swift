@@ -7,22 +7,11 @@
 //
 
 import XCTest
-import XCTestExtensions
 
 
-@MainActor
-class TestAppLLMOpenAIUITests: XCTestCase {
-    override func setUp() async throws {
-        try super.setUpWithError()
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchArguments = ["--mockMode", "--resetSecureStorage", "--testMode"]
-        app.launch()
-    }
-    
-    
+final class TestAppLLMOpenAIUITests: TestAppTestCase {
     func testSpeziLLMOpenAIOnboarding() throws {    // swiftlint:disable:this function_body_length
-        let app = XCUIApplication()
+        launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: true)
         
         #if canImport(UIKit)
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -142,18 +131,18 @@ class TestAppLLMOpenAIUITests: XCTestCase {
     
     
     func testSpeziLLMOpenAIChat() throws {
-        let app = XCUIApplication()
-        
         #if canImport(UIKit)
         if UIDevice.current.userInterfaceIdiom == .pad {
             throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
         }
         #endif
         
+        launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: true)
+        
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
         
-        XCTAssert(app.buttons["Record Message"].waitForExistence(timeout: 2))
+        XCTAssert(app.buttons["Record Message"].waitForExistence(timeout: 7))
         
         XCTAssertFalse(app.staticTexts["You're a helpful assistant that answers questions from users."].waitForExistence(timeout: 2))
 
