@@ -10,7 +10,6 @@ import Foundation
 import Hub
 import MLXLMCommon
 import Observation
-import SpeziFoundation
 import SpeziLLMLocal
 import SpeziViews
 
@@ -25,7 +24,7 @@ import SpeziViews
 /// is of type ``LLMLocalDownloadManager/DownloadState``, containing states such as ``LLMLocalDownloadManager/DownloadState/downloading(progress:)``
 /// which includes the progress of the download or ``LLMLocalDownloadManager/DownloadState/downloaded`` which indicates that the download has finished.
 @Observable
-public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
+public final class LLMLocalDownloadManager: NSObject, Sendable {
     /// An enum containing all possible states of the ``LLMLocalDownloadManager``.
     public enum DownloadState: Equatable, Sendable {
         case idle
@@ -48,9 +47,8 @@ public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
 
     /// The model to download.
     private let model: LLMLocalModel
-    private let downloadLock = RWLock()
     /// The `URLSessionDownloadTask` that handles the download of the model.
-    @ObservationIgnored private var downloadTask: Task<(), Never>?
+    @ObservationIgnored @MainActor private var downloadTask: Task<(), Never>?
     /// Indicates the current state of the ``LLMLocalDownloadManager``.
     @MainActor public var state: DownloadState = .idle
 
@@ -96,23 +94,20 @@ public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
         }
         
         cancelDownload()
-        
-        downloadLock.withWriteLock {
-            downloadTask = Task(priority: .userInitiated) {
-                do {
-                    try await downloadWithHub()
-                    state = .downloaded
-                } catch {
-                    state = .error(
-                        AnyLocalizedError(
-                            error: error,
-                            defaultErrorDescription: LocalizedStringResource(
-                                "LLM_DOWNLOAD_FAILED_ERROR",
-                                bundle: .atURL(from: .module)
-                            )
+        downloadTask = Task(priority: .userInitiated) {
+            do {
+                try await downloadWithHub()
+                state = .downloaded
+            } catch {
+                state = .error(
+                    AnyLocalizedError(
+                        error: error,
+                        defaultErrorDescription: LocalizedStringResource(
+                            "LLM_DOWNLOAD_FAILED_ERROR",
+                            bundle: .atURL(from: .module)
                         )
                     )
-                }
+                )
             }
         }
     }
@@ -120,27 +115,19 @@ public final class LLMLocalDownloadManager: NSObject, @unchecked Sendable {
     /// Cancels the download of a specified model via a `URLSessionDownloadTask`.
     @MainActor
     public func cancelDownload() {
-        downloadLock.withWriteLock {
-            downloadTask?.cancel()
-            state = .idle
-        }
+        downloadTask?.cancel()
+        downloadTask = nil
+        state = .idle
     }
 
     private func downloadWithHub() async throws {
-        // Sadly, we need this workaround to make the Swift compiler (strict concurrency checking) happy
-        @MainActor
-        func mutate(progress: Progress) {
-            self.state = .downloading(progress: progress)
-        }
-
         let repo = Hub.Repo(id: model.hubID)
         let modelFiles = ["*.safetensors", "*.json"]
-
         // important to match the same destination directory as in the `ModelFactory`
         try await LLMLocalSession.hubApi
             .snapshot(from: repo, matching: modelFiles) { progress in
-                Task { @MainActor [mutate] in
-                    mutate(progress)
+                Task { @MainActor in
+                    self.state = .downloading(progress: progress)
                 }
             }
     }
