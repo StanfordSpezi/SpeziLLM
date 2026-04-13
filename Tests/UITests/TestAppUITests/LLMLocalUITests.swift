@@ -12,7 +12,7 @@ import XCTestExtensions
 
 final class TestAppLLMLocalUITests: TestAppTestCase {
     func testSpeziLLMLocal() throws {
-        launch(enableMockMode: true, showOnboarding: true, clearAPIKeysFromKeychain: false)
+        launch(enableMockMode: true, showOnboarding: true, clearAPIKeysFromKeychain: true)
         
         XCTAssert(app.buttons["LLMLocal"].waitForExistence(timeout: 2))
         app.buttons["LLMLocal"].tap()
