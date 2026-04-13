@@ -127,6 +127,9 @@ public final class LLMLocalDownloadManager: NSObject, Sendable {
         try await LLMLocalSession.hubApi
             .snapshot(from: repo, matching: modelFiles) { progress in
                 Task { @MainActor in
+                    guard self.downloadTask != nil else {
+                        return
+                    }
                     self.state = .downloading(progress: progress)
                 }
             }
