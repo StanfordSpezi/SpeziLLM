@@ -13,12 +13,6 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
     func testSpeziLLMOpenAIOnboarding() throws {    // swiftlint:disable:this function_body_length
         launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: true)
         
-        #if canImport(UIKit)
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
-        }
-        #endif
-        
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
         
@@ -131,12 +125,6 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
     
     
     func testSpeziLLMOpenAIChat() throws {
-        #if canImport(UIKit)
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
-        }
-        #endif
-        
         launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: true)
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))

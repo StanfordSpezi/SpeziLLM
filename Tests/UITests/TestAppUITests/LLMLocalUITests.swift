@@ -32,21 +32,7 @@ final class TestAppLLMLocalUITests: TestAppTestCase {
         let inputTextfield = app.textFields["Message Input Textfield"]
         XCTAssertTrue(inputTextfield.exists)
         
-        #if !os(macOS)
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            #if RELEASE
-            throw XCTSkip("Skipped on iPad, see: https://github.com/StanfordBDHG/XCTestExtensions/issues/27")
-            #endif
-            
-            inputTextfield.tap()
-            sleep(1)
-            inputTextfield.typeText("New Message!")
-        } else {
-            try inputTextfield.enter(value: "New Message!", options: [.disableKeyboardDismiss])
-        }
-        #else
-        try app.textFields["Message Input Textfield"].enter(value: "New Message!", options: [.disableKeyboardDismiss])
-        #endif
+        try inputTextfield.enter(value: "New Message!", options: [.disableKeyboardDismiss])
         
         XCTAssert(app.buttons["Send Message"].waitForExistence(timeout: 2))
         app.buttons["Send Message"].tap()
