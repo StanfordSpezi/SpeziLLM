@@ -73,7 +73,7 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         XCTAssert(app.textFields["New Token"].waitForExistence(timeout: 2))
         
         app.terminate()
-        app.launch()
+        launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: false)
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
@@ -109,7 +109,7 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         #endif
         
         app.terminate()
-        app.launch()
+        launch(enableMockMode: true, showOnboarding: false, clearAPIKeysFromKeychain: false)
         
         XCTAssert(app.buttons["LLMOpenAI"].waitForExistence(timeout: 2))
         app.buttons["LLMOpenAI"].tap()
