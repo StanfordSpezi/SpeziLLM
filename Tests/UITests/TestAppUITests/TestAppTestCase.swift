@@ -16,10 +16,6 @@ class TestAppTestCase: XCTestCase, Sendable {
     override nonisolated func setUp() {
         super.setUp()
         continueAfterFailure = false
-        MainActor.assumeIsolated {
-            app.launchArguments = ["--mockMode", "--showOnboarding"]
-            app.launch()
-        }
     }
     
     
