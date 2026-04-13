@@ -98,6 +98,8 @@ public final class LLMLocalDownloadManager: NSObject, Sendable {
             do {
                 try await downloadWithHub()
                 state = .downloaded
+            } catch is CancellationError {
+                state = .idle
             } catch {
                 state = .error(
                     AnyLocalizedError(
