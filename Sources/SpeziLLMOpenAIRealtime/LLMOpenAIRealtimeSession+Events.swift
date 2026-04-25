@@ -71,11 +71,11 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
         let existingMessage = self.context[existingTranscriptIdx]
 
         self.context[existingTranscriptIdx] = .init(
+            id: contentUUID,
+            date: existingMessage.date,
             role: .user,
             content: existingMessage.content + content,
-            complete: isComplete,
-            id: contentUUID,
-            date: existingMessage.date
+            complete: isComplete
         )
     }
     
@@ -92,11 +92,11 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
         let contentUUID = UUID.deterministic(from: itemId)
         self.context.append(
             .init(
+                id: contentUUID,
+                date: Date.now,
                 role: .user,
                 content: "",
-                complete: false,
-                id: contentUUID,
-                date: Date.now
+                complete: false
             )
         )
     }

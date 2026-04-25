@@ -30,23 +30,18 @@ extension LLMContext {
         overwrite: Bool = false,
         interactionId: LLMInteractionId? = nil
     ) {
-        guard let lastContextEntity = self.last,
-              case .assistant(let functionCalls) = lastContextEntity.role,
-              functionCalls.isEmpty else {
-            self.append(.init(role: .assistant(), content: output, complete: complete, interactionId: interactionId))
+        guard let last, last.role == .assistant(toolCalls: []) else {
+            self.append(.init(
+                role: .assistant(toolCalls: []),
+                interactionId: interactionId,
+                content: output,
+                complete: complete
+            ))
             return
         }
-
-        self[self.count - 1] = .init(
-            role: .assistant(),
-            content: overwrite ? output : (lastContextEntity.content + output),
-            complete: complete,
-            id: lastContextEntity.id,
-            date: lastContextEntity.date,
-            interactionId: lastContextEntity.interactionId
-        )
+        self[endIndex - 1].content = overwrite ? output : (last.content + output)
     }
-
+    
     /// Append an ``LLMContextEntity/Role-swift.enum/user`` input to the ``LLMContext``.
     ///
     /// - Parameters:
@@ -61,9 +56,15 @@ extension LLMContext {
         date: Date = .now,
         interactionId: LLMInteractionId? = nil
     ) {
-        self.append(.init(role: .user, content: input, id: id, date: date, interactionId: interactionId))
+        self.append(.init(
+            id: id,
+            date: date,
+            role: .user,
+            interactionId: interactionId,
+            content: input
+        ))
     }
-
+    
     /// Append a ``LLMContextEntity/Role-swift.enum/system`` prompt to the ``LLMContext``.
     ///
     /// - Parameters:
@@ -83,7 +84,7 @@ extension LLMContext {
             self.append(.init(role: .system, content: systemPrompt))
         }
     }
-
+    
     /// Append a ``LLMContextEntity/Role-swift.enum/tool(id:name:)`` response from a function call to the ``LLMContext``.
     ///
     /// - Parameters:
@@ -100,11 +101,11 @@ extension LLMContext {
     ) {
         self.append(.init(
             role: .tool(id: functionID, name: functionName),
-            content: functionResponse,
-            interactionId: interactionId
+            interactionId: interactionId,
+            content: functionResponse
         ))
     }
-
+    
     /// Append an ``LLMContextEntity/Role-swift.enum/assistant(toolCalls:)`` response including `toolCalls` to the ``LLMContext``.
     ///
     /// - Parameters:
@@ -117,30 +118,20 @@ extension LLMContext {
     ) {
         self.append(.init(
             role: .assistant(toolCalls: functionCalls),
-            content: "",
-            interactionId: interactionId
+            interactionId: interactionId,
+            content: ""
         ))
     }
-
+    
     /// Marks the latest chat entry as ``LLMContextEntity/complete``, if the role of the chat is ``LLMContextEntity/Role-swift.enum/assistant(toolCalls:)`` without any `toolCalls`.
     @MainActor
     public mutating func completeAssistantStreaming() {
-        guard let lastContextEntity = self.last,
-              case .assistant(let functionCalls) = lastContextEntity.role,
-              functionCalls.isEmpty else {
+        guard let last, last.role == .assistant(toolCalls: []) else {
             return
         }
-
-        self[self.count - 1] = .init(
-            role: .assistant(),
-            content: lastContextEntity.content,
-            complete: true,
-            id: lastContextEntity.id,
-            date: lastContextEntity.date,
-            interactionId: lastContextEntity.interactionId
-        )
+        self[endIndex - 1].complete = true
     }
-
+    
     /// Append a delta to the latest ``LLMContextEntity/Role-swift.enum/assistantThinking`` entry, or start a new one.
     ///
     /// Use ``beginAssistantThinkingPlaceholder(interactionId:)`` to mark the boundary between reasoning summary parts;
@@ -159,19 +150,38 @@ extension LLMContext {
         complete: Bool = false,
         interactionId: LLMInteractionId? = nil
     ) {
-        if let last, last.role == .assistantThinking {
+        // Continue the active thinking entity only if it's still in-progress. A finalized thinking
+        // entity (complete == true) is treated as closed: a new delta starts a new entity instead of
+        // (a) appending to a finalized record or (b) demoting it back to incomplete.
+        if let last, case .assistantThinking = last.role, !last.complete {
             self[endIndex - 1].content += thinking
-            self[endIndex - 1].complete = complete
+            // Only promote to complete; never demote. Without this guard, every delta call (which
+            // passes `complete: false` by default) would silently undo a prior `completeAssistantThinkingStreaming`.
+            if complete {
+                self[endIndex - 1].complete = true
+            }
         } else {
-            self.append(.init(role: .assistantThinking, content: thinking, complete: complete, interactionId: interactionId))
+            self.append(.init(
+                role: .assistantThinking,
+                interactionId: interactionId,
+                content: thinking,
+                complete: complete
+            ))
         }
     }
+}
 
+
+// MARK: Thinking
+
+extension LLMContext {
     /// Marks the latest chat entry as ``LLMContextEntity/complete``, if its role is ``LLMContextEntity/Role-swift.enum/assistantThinking``.
     @MainActor
-    public mutating func completeAssistantThinkingStreaming() {
-        if let last, last.role == .assistantThinking {
-            self[endIndex - 1].complete = true
+    package mutating func completeAssistantThinkingStreaming(for interactionId: LLMInteractionId) {
+        for idx in self.indices.reversed() {
+            if self[idx].interactionId == interactionId, self[idx].role == .assistantThinking {
+                self[idx].complete = true
+            }
         }
     }
 
@@ -186,11 +196,16 @@ extension LLMContext {
     ///
     /// - Parameter interactionId: The interaction this thinking phase belongs to. Used when creating a new entity.
     @MainActor
-    public mutating func beginAssistantThinkingPlaceholder(interactionId: LLMInteractionId? = nil) {
+    package mutating func beginAssistantThinkingPlaceholder(with interactionId: LLMInteractionId?) {
         if let last = self.last, case .assistantThinking = last.role, !last.complete {
             return
         }
-        self.append(.init(role: .assistantThinking, content: "", complete: false, interactionId: interactionId))
+        self.append(.init(
+            role: .assistantThinking,
+            interactionId: interactionId,
+            content: "",
+            complete: false
+        ))
     }
 
     /// Removes the trailing ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity if it is still in-progress.
@@ -198,34 +213,13 @@ extension LLMContext {
     /// Sessions call this on cancel or error paths to clean up an unfinished thinking placeholder so it
     /// doesn't linger in the conversation history.
     @MainActor
-    public mutating func removeIncompleteAssistantThinking() {
-        guard let last = self.last, case .assistantThinking = last.role, !last.complete else {
-            return
+    package mutating func removeIncompleteAssistantThinking(for interactionId: LLMInteractionId) {
+        if let last, last.role == .assistantThinking, last.interactionId == interactionId {
+            self.removeLast()
         }
-        self.removeLast()
-    }
-
-    /// The start of the currently-active thinking phase, or `nil` if the latest entity isn't an in-progress thinking entity.
-    ///
-    /// "Active" means the latest entity is an incomplete `.assistantThinking`. The returned date is the
-    /// `date` of the *earliest* entity that shares the active entity's ``LLMContextEntity/interactionId``,
-    /// so the timer reflects elapsed time for the entire user → LLM turn — not just the current sub-step
-    /// between function calls. If the active thinking entity has no interaction ID, falls back to that
-    /// entity's own date.
-    ///
-    /// View code can show "Thinking… (Xs)" with `Date.now.timeIntervalSince(value)`.
-    public var currentThinkingStart: Date? {
-        guard let last = self.last,
-              case .assistantThinking = last.role,
-              !last.complete else {
-            return nil
-        }
-        guard let id = last.interactionId else {
-            return last.date
-        }
-        return self.first(where: { $0.interactionId == id })?.date ?? last.date
     }
     
+    /// Determines the start date of the specified interaction's initial thinking phase.
     func startDate(for interactionId: LLMInteractionId) -> Date? {
         self.first { $0.interactionId == interactionId }?.date
     }

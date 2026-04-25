@@ -135,19 +135,19 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     ///    - date: Timestamp on when the ``LLMContextEntity`` was originally created, defaults to the current time.
     ///    - interactionId: Identifier of the user → LLM interaction this entity belongs to. Defaults to `nil`.
     public init(
-        role: Role,
-        content: some StringProtocol,
-        complete: Bool = true,
         id: UUID = .init(),
         date: Date = .now,
-        interactionId: LLMInteractionId? = nil
+        role: Role,
+        interactionId: LLMInteractionId? = nil,
+        content: some StringProtocol,
+        complete: Bool = true
     ) {
-        self.role = role
-        self.content = String(content)
-        self.complete = complete
         self.id = id
         self.date = date
+        self.role = role
         self.interactionId = interactionId
+        self.content = String(content)
+        self.complete = complete
         self._imageContent = nil
     }
 }

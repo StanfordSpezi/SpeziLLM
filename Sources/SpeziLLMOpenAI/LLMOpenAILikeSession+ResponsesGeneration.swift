@@ -41,7 +41,7 @@ extension LLMOpenAILikeSession {
             if continuationObserver.isCancelled {
                 Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
                 await MainActor.run {
-                    context.removeIncompleteAssistantThinking()
+                    context.removeIncompleteAssistantThinking(for: interactionId)
                 }
                 break
             }
@@ -99,7 +99,7 @@ extension LLMOpenAILikeSession {
                     case .responseCreated:
                         print(eventType.rawValue)
                         await MainActor.run {
-                            context.beginAssistantThinkingPlaceholder(interactionId: interactionId)
+                            context.beginAssistantThinkingPlaceholder(with: interactionId)
                         }
                     case .responseOutputTextDelta:
                         print(eventType.rawValue)
@@ -108,10 +108,8 @@ extension LLMOpenAILikeSession {
                         }
                         // First content token signals end of thinking phase.
                         await MainActor.run {
-                            context.completeAssistantThinkingStreaming()
-                        }
-                        if schema.injectIntoContext {
-                            await MainActor.run {
+                            context.completeAssistantThinkingStreaming(for: interactionId)
+                            if schema.injectIntoContext {
                                 context.append(assistantOutput: delta, interactionId: interactionId)
                             }
                         }
@@ -150,7 +148,7 @@ extension LLMOpenAILikeSession {
                         // Idempotent against the placeholder we created above; only creates a new entity
                         // when the previous part is already complete (i.e. starting a subsequent part).
                         await MainActor.run {
-                            context.beginAssistantThinkingPlaceholder(interactionId: interactionId)
+                            context.beginAssistantThinkingPlaceholder(with: interactionId)
                         }
                     case .responseReasoningSummaryTextDelta:
 //                        print(eventType.rawValue)
@@ -161,7 +159,7 @@ extension LLMOpenAILikeSession {
                     case .responseReasoningSummaryTextDone, .responseReasoningSummaryPartDone:
                         print(eventType.rawValue)
                         await MainActor.run {
-                            context.completeAssistantThinkingStreaming()
+                            context.completeAssistantThinkingStreaming(for: interactionId)
                         }
                     case .responseCompleted:
                         print(eventType.rawValue)
@@ -176,7 +174,7 @@ extension LLMOpenAILikeSession {
                         let message = errorMsg?["message"] as? String ?? "Unknown error"
                         Self.logger.error("SpeziLLMOpenAI: Response failed: \(message)")
                         await MainActor.run {
-                            context.removeIncompleteAssistantThinking()
+                            context.removeIncompleteAssistantThinking(for: interactionId)
                         }
                         await finishGenerationWithError(LLMOpenAIError.generationError, on: continuationObserver.continuation)
                         return
@@ -194,29 +192,29 @@ extension LLMOpenAILikeSession {
                 // it complete.
                 await MainActor.run {
                     if continuationObserver.isCancelled {
-                        context.removeIncompleteAssistantThinking()
+                        context.removeIncompleteAssistantThinking(for: interactionId)
                     } else {
-                        context.completeAssistantThinkingStreaming()
+                        context.completeAssistantThinkingStreaming(for: interactionId)
                     }
                 }
             } catch let error as ClientError {
                 Self.logger.error("SpeziLLMOpenAI: Connectivity Issues with the OpenAI API: \(error)")
                 await MainActor.run {
-                    context.removeIncompleteAssistantThinking()
+                    context.removeIncompleteAssistantThinking(for: interactionId)
                 }
                 await finishGenerationWithError(LLMOpenAIError.connectivityIssues(error), on: continuationObserver.continuation)
                 return
             } catch let error as LLMOpenAIError {
                 Self.logger.error("SpeziLLMOpenAI: \(error.localizedDescription)")
                 await MainActor.run {
-                    context.removeIncompleteAssistantThinking()
+                    context.removeIncompleteAssistantThinking(for: interactionId)
                 }
                 await finishGenerationWithError(LLMOpenAIError.functionCallSchemaExtractionError(error), on: continuationObserver.continuation)
                 return
             } catch {
                 Self.logger.error("SpeziLLMOpenAI: Unknown Generation error occurred - \(error)")
                 await MainActor.run {
-                    context.removeIncompleteAssistantThinking()
+                    context.removeIncompleteAssistantThinking(for: interactionId)
                 }
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuationObserver.continuation)
                 return
