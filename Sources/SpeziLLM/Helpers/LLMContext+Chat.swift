@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import SpeziChat
 
 
@@ -13,58 +14,64 @@ extension LLMContext {
     /// Maps the ``LLMContext`` to a `SpeziChat/Chat`.
     @MainActor public var chat: Chat {
         get {
-            self.map { contextEntity in     // swiftlint:disable:this closure_body_length
-                switch contextEntity.role {
+            var interactionStartDates: [LLMInteractionId: Date] = [:]
+            return self.map { entity in // swiftlint:disable:this closure_body_length
+                if let interactionId = entity.interactionId, interactionStartDates[interactionId] == nil {
+                    interactionStartDates[interactionId] = entity.date
+                }
+                return switch entity.role {
                 case .user:
                     ChatEntity(
                         role: .user,
-                        content: .text(contextEntity.content),
-                        complete: contextEntity.complete,
-                        id: contextEntity.id,
-                        date: contextEntity.date
+                        content: .text(entity.content),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
                     )
                 case .assistant(let toolCalls):
                     if !toolCalls.isEmpty {
                         ChatEntity(
                             role: .assistant(.toolCall),
                             content: .text(toolCalls.map { "\($0.id) \($0.name) \($0.arguments)" }.joined(separator: "\n")),
-                            complete: contextEntity.complete,
-                            id: contextEntity.id,
-                            date: contextEntity.date
+                            complete: entity.complete,
+                            id: entity.id,
+                            date: entity.date
                         )
                     } else {
                         ChatEntity(
                             role: .assistant(.response),
-                            content: .text(contextEntity.content),
-                            complete: contextEntity.complete,
-                            id: contextEntity.id,
-                            date: contextEntity.date
+                            content: .text(entity.content),
+                            complete: entity.complete,
+                            id: entity.id,
+                            date: entity.date
                         )
                     }
                 case .system:
                     ChatEntity(
                         role: .hidden(type: .system),
-                        content: .text(contextEntity.content),
-                        complete: contextEntity.complete,
-                        id: contextEntity.id,
-                        date: contextEntity.date
+                        content: .text(entity.content),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
                     )
                 case .tool:
                     ChatEntity(
 //                        role: .hidden(type: .function),
                         role: .assistant(.toolResponse),
-                        content: .text(contextEntity.content),
-                        complete: contextEntity.complete,
-                        id: contextEntity.id,
-                        date: contextEntity.date
+                        content: .text(entity.content),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
                     )
                 case .assistantThinking:
                     ChatEntity(
-                        role: .assistant(.thinking),
-                        content: .text(contextEntity.content),
-                        complete: contextEntity.complete,
-                        id: contextEntity.id,
-                        date: contextEntity.date
+                        role: .assistant(.thinking(
+                            startDate: entity.interactionId.flatMap { interactionStartDates[$0] }
+                        )),
+                        content: .text(entity.content),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
                     )
                 }
             }

@@ -27,6 +27,9 @@ extension LLMOpenAILikeSession {
             return
         }
 
+        // One interactionId per generate() call (covers all function-call iterations).
+        let interactionId = LLMInteractionId()
+
         await MainActor.run {
             self.state = .generating
         }
@@ -99,7 +102,7 @@ extension LLMOpenAILikeSession {
                     // Automatically inject the yielded string piece into the `LLMLocal/context`
                     if schema.injectIntoContext {
                         await MainActor.run {
-                            context.append(assistantOutput: content)
+                            context.append(assistantOutput: content, interactionId: interactionId)
                         }
                     }
 
@@ -144,7 +147,7 @@ extension LLMOpenAILikeSession {
                 return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
-                context.append(functionCalls: functionCallContext)
+                context.append(functionCalls: functionCallContext, interactionId: interactionId)
             }
 
             // Parallel function call execution
@@ -157,7 +160,7 @@ extension LLMOpenAILikeSession {
                                 Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
                                 return
                             }
-                            
+
                             let functionCallResponse = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
@@ -173,7 +176,8 @@ extension LLMOpenAILikeSession {
                                 self.context.append(
                                     forFunction: functionCallResponse.functionName,
                                     withID: functionCallResponse.functionID,
-                                    response: functionCallResponse.response
+                                    response: functionCallResponse.response,
+                                    interactionId: interactionId
                                 )
                             }
                         }

@@ -14,6 +14,29 @@ import AppKit
 #endif
 
 
+/// Identifies a single interaction between the user and the LLM.
+///
+/// E.g., if the user asks the LLM a question, and the LLM responds by triggering 2 tool calls and then with a response,
+/// all 3 ``LLMContextEntity`` objects coming from the LLM would have the same ``LLMContextEntity/interactionId``,
+/// allowing them to be logically grouped together.
+public struct LLMInteractionId: Hashable, Sendable, Codable {
+    /// The actual id of the interaction.
+    ///
+    /// Has no special meaning, and the format is not guaranteed to be stable.
+    public let value: String
+
+    /// Creates an interaction identifier from a raw string.
+    public init(_ value: String) {
+        self.value = value
+    }
+
+    /// Creates a fresh, random interaction identifier.
+    public init() {
+        self.value = UUID().uuidString
+    }
+}
+
+
 /// Represents the basic building block of a Spezi ``LLMContext``.
 ///
 /// A ``LLMContextEntity`` can be thought of as a single message entity within a ``LLMContext``
@@ -78,22 +101,30 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     public let id: UUID
     /// The creation date of the ``LLMContextEntity``.
     public let date: Date
-    
+
+    /// Identifier of the user → LLM interaction this entity belongs to.
+    ///
+    /// All entities produced by a single ``LLMSession/generate()`` call (including reasoning summaries,
+    /// tool calls, tool outputs, and the final assistant response) share the same identifier. `nil` for
+    /// entities not associated with a specific interaction (e.g. the system prompt or user input that hasn't
+    /// yet triggered a generation).
+    public let interactionId: LLMInteractionId?
+
     /// ``LLMContextEntity/Role`` associated with the ``LLMContextEntity``.
     public let role: Role
     /// Content of the ``LLMContextEntity``.
     public var content: String
     /// Indicates if the ``LLMContextEntity`` is complete and will not receive any additional content.
     public var complete: Bool
-    
+
     /// The context entity's image payload, if applicable.
     ///
     /// If this property is non-nil, ``content`` will be ignored.
     ///
     /// - Important: This property is not stable and will be removed in an upcoming release.
     package let _imageContent: _ImageContent? // swiftlint:disable:this identifier_name
-    
-    
+
+
     /// Creates a ``LLMContextEntity`` which is the building block of a Spezi ``LLMContext``.
     ///
     /// - Parameters:
@@ -102,18 +133,21 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     ///    - complete: Indicates if the content of the ``LLMContextEntity`` is complete and will not receive any additional content. Defaults to `true`.
     ///    - id: Unique identifier of the ``LLMContextEntity``, defaults to a randomly assigned id.
     ///    - date: Timestamp on when the ``LLMContextEntity`` was originally created, defaults to the current time.
+    ///    - interactionId: Identifier of the user → LLM interaction this entity belongs to. Defaults to `nil`.
     public init(
         role: Role,
         content: some StringProtocol,
         complete: Bool = true,
         id: UUID = .init(),
-        date: Date = .now
+        date: Date = .now,
+        interactionId: LLMInteractionId? = nil
     ) {
         self.role = role
         self.content = String(content)
         self.complete = complete
         self.id = id
         self.date = date
+        self.interactionId = interactionId
         self._imageContent = nil
     }
 }
@@ -150,7 +184,8 @@ extension LLMContextEntity {
         format: _ImageFormat,
         complete: Bool = true,
         id: UUID = UUID(),
-        date: Date = .now
+        date: Date = .now,
+        interactionId: LLMInteractionId? = nil
     ) {
         let imageData: Data? = switch format {
         case .png:
@@ -167,6 +202,7 @@ extension LLMContextEntity {
         self.complete = complete
         self.id = id
         self.date = date
+        self.interactionId = interactionId
     }
 }
 

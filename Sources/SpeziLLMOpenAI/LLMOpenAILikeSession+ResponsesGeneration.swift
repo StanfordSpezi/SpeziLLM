@@ -28,6 +28,11 @@ extension LLMOpenAILikeSession {
             return
         }
 
+        // One interactionId per `generate()` call — covers all iterations of the function-calling loop, so
+        // every entity created during this user→LLM turn (thinking, tool calls, tool outputs, response)
+        // shares a single identifier.
+        let interactionId = LLMInteractionId()
+
         await MainActor.run {
             self.state = .generating
         }
@@ -94,7 +99,7 @@ extension LLMOpenAILikeSession {
                     case .responseCreated:
                         print(eventType.rawValue)
                         await MainActor.run {
-                            context.beginAssistantThinkingPlaceholder()
+                            context.beginAssistantThinkingPlaceholder(interactionId: interactionId)
                         }
                     case .responseOutputTextDelta:
                         print(eventType.rawValue)
@@ -107,7 +112,7 @@ extension LLMOpenAILikeSession {
                         }
                         if schema.injectIntoContext {
                             await MainActor.run {
-                                context.append(assistantOutput: delta)
+                                context.append(assistantOutput: delta, interactionId: interactionId)
                             }
                         }
                         continuationObserver.continuation.yield(delta)
@@ -145,13 +150,13 @@ extension LLMOpenAILikeSession {
                         // Idempotent against the placeholder we created above; only creates a new entity
                         // when the previous part is already complete (i.e. starting a subsequent part).
                         await MainActor.run {
-                            context.beginAssistantThinkingPlaceholder()
+                            context.beginAssistantThinkingPlaceholder(interactionId: interactionId)
                         }
                     case .responseReasoningSummaryTextDelta:
 //                        print(eventType.rawValue)
                         guard let delta = dict["delta"] as? String else { continue }
                         await MainActor.run {
-                            context.append(assistantThinking: delta)
+                            context.append(assistantThinking: delta, interactionId: interactionId)
                         }
                     case .responseReasoningSummaryTextDone, .responseReasoningSummaryPartDone:
                         print(eventType.rawValue)
@@ -231,7 +236,7 @@ extension LLMOpenAILikeSession {
                 return .init(id: functionCall.id ?? "", name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
-                context.append(functionCalls: functionCallContext)
+                context.append(functionCalls: functionCallContext, interactionId: interactionId)
             }
 
             // Parallel function call execution
@@ -259,7 +264,8 @@ extension LLMOpenAILikeSession {
                                 self.context.append(
                                     forFunction: functionCallResponse.functionName,
                                     withID: functionCallResponse.functionID,
-                                    response: functionCallResponse.response
+                                    response: functionCallResponse.response,
+                                    interactionId: interactionId
                                 )
                             }
                         }

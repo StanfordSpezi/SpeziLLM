@@ -27,6 +27,9 @@ extension LLMFogSession {
             return
         }
 
+        // One interactionId per generate() call.
+        let interactionId = LLMInteractionId()
+
         await MainActor.run {
             self.state = .generating
         }
@@ -86,7 +89,7 @@ extension LLMFogSession {
                 // Automatically inject the yielded string piece into the `LLMLocal/context`
                 if schema.injectIntoContext {
                     await MainActor.run {
-                        context.append(assistantOutput: content)
+                        context.append(assistantOutput: content, interactionId: interactionId)
                     }
                 }
 

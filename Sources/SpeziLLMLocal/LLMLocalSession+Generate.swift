@@ -36,12 +36,15 @@ extension LLMLocalSession {
             return
         }
 
+        // One interactionId per generate() call.
+        let interactionId = LLMInteractionId()
+
         await MainActor.run {
             self.state = .generating
         }
 
 #if targetEnvironment(simulator)
-        await _mockGenerate(continuationObserver: continuationObserver)
+        await _mockGenerate(continuationObserver: continuationObserver, interactionId: interactionId)
         return
 #else
         guard let modelContainer = await self.modelContainer else {
@@ -80,14 +83,16 @@ extension LLMLocalSession {
                     self.processTokens(
                         tokens,
                         modelContext: modelContext,
-                        continuationObserver: continuationObserver
+                        continuationObserver: continuationObserver,
+                        interactionId: interactionId
                     )
                 }
-                
+
                 self.processRemainingTokens(
                     result: result,
                     modelContext: modelContext,
-                    continuation: continuationObserver.continuation
+                    continuation: continuationObserver.continuation,
+                    interactionId: interactionId
                 )
                 return result
             }
@@ -128,7 +133,8 @@ extension LLMLocalSession {
     private func processTokens(
         _ tokens: [Int],
         modelContext: ModelContext,
-        continuationObserver: ContinuationObserver<String, any Error>
+        continuationObserver: ContinuationObserver<String, any Error>,
+        interactionId: LLMInteractionId
     ) -> GenerateDisposition {
         // Check if the generation has been cancelled
         if continuationObserver.isCancelled {
@@ -140,38 +146,39 @@ extension LLMLocalSession {
             Self.logger.debug("SpeziLLMLocal: Max output length exceeded.")
             return .stop
         }
-        
+
         if tokens.count.isMultiple(of: schema.parameters.displayEveryNTokens) {
             let lastTokens = Array(tokens.suffix(schema.parameters.displayEveryNTokens))
             let text = modelContext.tokenizer.decode(tokens: lastTokens)
-            
+
             Self.logger.debug("SpeziLLMLocal: Yielded token: \(text, privacy: .public)")
             continuationObserver.continuation.yield(text)
 
             if schema.injectIntoContext {
                 Task { @MainActor in
-                    context.append(assistantOutput: text)
+                    context.append(assistantOutput: text, interactionId: interactionId)
                 }
             }
         }
-        
+
         return .more
     }
-    
+
     private func processRemainingTokens(
         result: GenerateResult,
         modelContext: ModelContext,
-        continuation: AsyncThrowingStream<String, any Error>.Continuation
+        continuation: AsyncThrowingStream<String, any Error>.Continuation,
+        interactionId: LLMInteractionId
     ) {
         // Yielding every Nth token may result in missing the final tokens.
         let remainingTokens = result.tokens.count % schema.parameters.displayEveryNTokens
         let lastTokens = Array(result.tokens.suffix(remainingTokens))
         let text = modelContext.tokenizer.decode(tokens: lastTokens)
         continuation.yield(text)
-        
+
         if schema.injectIntoContext {
             Task { @MainActor in
-                context.append(assistantOutput: text)
+                context.append(assistantOutput: text, interactionId: interactionId)
                 context.completeAssistantStreaming()
             }
         }
@@ -182,14 +189,17 @@ extension LLMLocalSession {
         await finishGenerationWithError(error, on: continuation)
     }
     
-    private func _mockGenerate(continuationObserver: ContinuationObserver<String, any Error>) async {
+    private func _mockGenerate(
+        continuationObserver: ContinuationObserver<String, any Error>,
+        interactionId: LLMInteractionId
+    ) async {
         let tokens = [
             "Mock ", "Message ", "from ", "SpeziLLM! ",
             "**Using SpeziLLMLocal only works on physical devices.**",
             "\n\n",
             String(localized: "LLM_MLX_NOT_SUPPORTED_WORKAROUND", bundle: .module)
         ]
-        
+
         for token in tokens {
             try? await Task.sleep(for: .seconds(1))
             if continuationObserver.isCancelled {
@@ -198,8 +208,13 @@ extension LLMLocalSession {
             }
 
             continuationObserver.continuation.yield(token)
+            if schema.injectIntoContext {
+                await MainActor.run {
+                    self.context.append(assistantOutput: token, interactionId: interactionId)
+                }
+            }
         }
-        
+
         continuationObserver.continuation.finish()
         await MainActor.run {
             self.context.completeAssistantStreaming()
