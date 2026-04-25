@@ -123,9 +123,11 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
                 ConversationItemCreateEvent(
                     _type: .conversation_period_item_period_create,
                     item: .init(
-                        _type: .function_call_output,
-                        call_id: functionCallResponse.functionID,
-                        output: functionCallResponse.response
+                        value5: .init(
+                            _type: .function_call_output,
+                            call_id: functionCallResponse.functionID,
+                            output: functionCallResponse.response
+                        )
                     )
                 )
             )

@@ -18,7 +18,7 @@ public struct LLMOpenAIModelParameters: Sendable {
         case jsonObject
 
 
-        var openAiRepresentation: Components.Schemas.CreateChatCompletionRequest.response_formatPayload {
+        var openAiRepresentation: Components.Schemas.CreateChatCompletionRequest.Value2Payload.response_formatPayload {
             switch self {
             case .text:
                 .ResponseFormatText(.init(_type: .text))
@@ -30,7 +30,7 @@ public struct LLMOpenAIModelParameters: Sendable {
 
 
     /// The format for model responses.
-    let responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload?
+    let responseFormat: Components.Schemas.CreateChatCompletionRequest.Value2Payload.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
     let temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.
@@ -48,7 +48,7 @@ public struct LLMOpenAIModelParameters: Sendable {
     /// Controls repetition (-2.0 to 2.0). Higher values reduce the likelihood of repeating content.
     let frequencyPenalty: Double?
     /// Alters specific token's likelihood in completion.
-    let logitBias: Components.Schemas.CreateChatCompletionRequest.logit_biasPayload
+    let logitBias: Components.Schemas.CreateChatCompletionRequest.Value2Payload.logit_biasPayload
     /// Unique identifier for the end-user, aiding in abuse monitoring.
     let user: String?
     
@@ -89,7 +89,7 @@ public struct LLMOpenAIModelParameters: Sendable {
         self.seed = seed
         self.presencePenalty = presencePenalty
         self.frequencyPenalty = frequencyPenalty
-        self.logitBias = Components.Schemas.CreateChatCompletionRequest.logit_biasPayload(additionalProperties: logitBias)
+        self.logitBias = Components.Schemas.CreateChatCompletionRequest.Value2Payload.logit_biasPayload(additionalProperties: logitBias)
         self.user = user
     }
 }

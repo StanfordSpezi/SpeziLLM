@@ -171,7 +171,7 @@ extension CredentialsTag {
 // swiftlint:disable identifier_name missing_docs
 extension OpenAIPlatformDefinition.ModelType {
     public static let `default`: Self = .gpt4o
-    
+
     public static let wellKnownModels: [Self] = [
         .gpt5, .gpt5_mini, .gpt5_nano, .gpt5_chat,
         .gpt4o, .gpt4o_mini,
@@ -182,12 +182,42 @@ extension OpenAIPlatformDefinition.ModelType {
         .o1_pro, .o1, .o1_mini,
         .gpt3_5_turbo
     ]
-    
+
+    /// Models that use the legacy Chat Completions API.
+    /// All other OpenAI models (including custom model strings) default to the Responses API.
+    private static let chatCompletionModels: Set<String> = [
+        "gpt-4o", "gpt-4o-mini",
+        "gpt-4-turbo",
+        "gpt-3.5-turbo"
+    ]
+
+    public var apiMode: LLMOpenAIAPIMode {
+        Self.chatCompletionModels.contains(rawValue) ? .chatCompletions : .responses
+    }
+
+    public var supportsReasoningSummary: Bool {
+        // The o-series and GPT-5 reasoning variants emit reasoning summaries.
+        // `gpt-5-chat-latest` is the non-reasoning chat variant and is excluded.
+        if rawValue == "gpt-5-chat-latest" {
+            return false
+        }
+        return rawValue.hasPrefix("o1")
+            || rawValue.hasPrefix("o3")
+            || rawValue.hasPrefix("o4")
+            || rawValue.hasPrefix("gpt-5")
+    }
+
     // GPT-5 series
     public static let gpt5 = Self(rawValue: "gpt-5")
     public static let gpt5_mini = Self(rawValue: "gpt-5-mini")
     public static let gpt5_nano = Self(rawValue: "gpt-5-nano")
     public static let gpt5_chat = Self(rawValue: "gpt-5-chat-latest")
+    public static let gpt5_pro = Self(rawValue: "gpt-5-pro")
+    
+    public static let gpt5_4 = Self(rawValue: "gpt-5.4")
+    public static let gpt5_4_pro = Self(rawValue: "gpt-5.4-pro")
+    public static let gpt5_5 = Self(rawValue: "gpt-5.5")
+    public static let gpt5_5_pro = Self(rawValue: "gpt-5.5-pro")
 
     // GPT-4 series
     public static let gpt4o = Self(rawValue: "gpt-4o")

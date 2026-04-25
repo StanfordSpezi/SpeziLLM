@@ -19,7 +19,7 @@ public struct LLMFogModelParameters: Sendable {
         case jsonObject
 
 
-        var openAiRepresentation: Components.Schemas.CreateChatCompletionRequest.response_formatPayload {
+        var openAiRepresentation: Components.Schemas.CreateChatCompletionRequest.Value2Payload.response_formatPayload {
             switch self {
             case .text:
                 .ResponseFormatText(.init(_type: .text))
@@ -31,7 +31,7 @@ public struct LLMFogModelParameters: Sendable {
 
 
     /// The format for model responses.
-    let responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload?
+    let responseFormat: Components.Schemas.CreateChatCompletionRequest.Value2Payload.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
     let temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.

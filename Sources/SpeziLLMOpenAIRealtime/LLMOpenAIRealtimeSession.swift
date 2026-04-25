@@ -148,9 +148,11 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
                         ConversationItemCreate(
                             _type: .conversation_period_item_period_create,
                             item: .init(
-                                _type: .message,
-                                role: .user,
-                                content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
+                                value2: .init(
+                                    _type: .message,
+                                    role: .user,
+                                    content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
+                                )
                             )
                         )
                     )

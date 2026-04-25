@@ -25,44 +25,53 @@ extension LLMOpenAILikeSession {
     /// in an OpenAI `Operations.createChatCompletion.Input` representation used for querying the OpenAI API.
     var openAIChatQuery: Operations.createChatCompletion.Input {
         get async throws {
-            let functions: [Components.Schemas.ChatCompletionTool] = try schema.functions.values.compactMap { function in
-                try Components.Schemas.ChatCompletionTool(
-                    _type: .function,
-                    function: Components.Schemas.FunctionObject(
-                        description: Swift.type(of: function).description,
-                        name: Swift.type(of: function).name,
-                        parameters: function.schema
+            let functions: [Components.Schemas.CreateChatCompletionRequest.Value2Payload.toolsPayloadPayload] =
+                try schema.functions.values.compactMap { function in
+                    .ChatCompletionTool(
+                        Components.Schemas.ChatCompletionTool(
+                            _type: .function,
+                            function: Components.Schemas.FunctionObject(
+                                description: Swift.type(of: function).description,
+                                name: Swift.type(of: function).name,
+                                parameters: try function.schema
+                            )
+                        )
                     )
-                )
-            }
-            
-            let stop: Components.Schemas.CreateChatCompletionRequest.stopPayload? = if schema.modelParameters.stopSequence.isEmpty {
+                }
+
+            let stop: Components.Schemas.StopConfiguration? = if schema.modelParameters.stopSequence.isEmpty {
                 nil
             } else {
-                Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence)
+                .case2(schema.modelParameters.stopSequence)
             }
 
             return await Operations.createChatCompletion
                 .Input(
                     body: .json(
                         Components.Schemas.CreateChatCompletionRequest(
-                            messages: openAIContext,
-                            model: .init(value1: schema.parameters.modelType.rawValue),
-                            frequency_penalty: schema.modelParameters.frequencyPenalty,
-                            logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
-                                .modelParameters
-                                .logitBias,
-                            max_completion_tokens: schema.modelParameters.maxOutputLength,
-                            n: schema.modelParameters.completionsPerOutput,
-                            presence_penalty: schema.modelParameters.presencePenalty,
-                            response_format: schema.modelParameters.responseFormat,
-                            seed: schema.modelParameters.seed.map { Int64($0) },
-                            stop: stop,
-                            stream: true,
-                            temperature: schema.modelParameters.temperature,
-                            top_p: schema.modelParameters.topP,
-                            tools: functions.isEmpty ? nil : functions,
-                            user: schema.modelParameters.user
+                            value1: .init(
+                                value1: .init(
+                                    temperature: schema.modelParameters.temperature,
+                                    top_p: schema.modelParameters.topP
+                                ),
+                                value2: .init()
+                            ),
+                            value2: .init(
+                                messages: openAIContext,
+                                model: .init(value1: schema.parameters.modelType.rawValue),
+                                max_completion_tokens: schema.modelParameters.maxOutputLength,
+                                frequency_penalty: schema.modelParameters.frequencyPenalty,
+                                presence_penalty: schema.modelParameters.presencePenalty,
+                                response_format: schema.modelParameters.responseFormat,
+                                stream: true,
+                                stop: stop,
+                                logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
+                                    .modelParameters
+                                    .logitBias,
+                                n: schema.modelParameters.completionsPerOutput,
+                                tools: functions.isEmpty ? nil : functions,
+                                tool_choice: nil
+                            )
                         )
                     )
                 )
@@ -91,11 +100,13 @@ extension LLMOpenAILikeSession {
                 return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
                     role: .assistant,
                     tool_calls: toolCalls.map { toolCall in
+                        .ChatCompletionMessageToolCall(
                             .init(
                                 id: toolCall.id,
                                 _type: .function,
                                 function: .init(name: toolCall.name, arguments: toolCall.arguments)
                             )
+                        )
                     }
                 ))
             }
@@ -129,6 +140,9 @@ extension LLMOpenAILikeSession {
                 return Components.Schemas.ChatCompletionRequestMessage
                     .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
             }
+        case .assistantThinking:
+            // Reasoning summaries are local UI artifacts; the Chat Completions API has no input slot for them.
+            return nil
         }
     }
 }

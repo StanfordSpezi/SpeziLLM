@@ -24,6 +24,14 @@ public struct LLMOpenAILikeParameters<PlatformDefinition: LLMOpenAILikePlatformD
     let modelAccessTest: Bool
     /// Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
     let overwritingAuthToken: RemoteLLMInferenceAuthToken?
+    /// Overrides the model's default API mode.
+    /// When `nil`, uses the model type's ``LLMOpenAILikePlatformModelType/apiMode`` property.
+    let apiModeOverride: LLMOpenAIAPIMode?
+
+    /// The effective API mode for this configuration.
+    var effectiveAPIMode: LLMOpenAIAPIMode {
+        apiModeOverride ?? modelType.apiMode
+    }
     
     
     /// Creates the ``LLMOpenAIParameters``.
@@ -33,20 +41,23 @@ public struct LLMOpenAILikeParameters<PlatformDefinition: LLMOpenAILikePlatformD
     ///   - systemPrompt: The to-be-used system prompt of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
+    ///   - apiMode: Overrides the model's default API mode. When `nil`, uses the model type's default.
     public init(
         modelType: PlatformDefinition.ModelType,
         systemPrompt: String? = nil,
         modelAccessTest: Bool = false,
-        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil,
+        apiMode: LLMOpenAIAPIMode? = nil
     ) {
         self.init(
             modelType: modelType,
             systemPrompts: systemPrompt.map { [$0] } ?? [],
             modelAccessTest: modelAccessTest,
-            overwritingAuthToken: overwritingAuthToken
+            overwritingAuthToken: overwritingAuthToken,
+            apiMode: apiMode
         )
     }
-    
+
     /// Creates the ``LLMOpenAIParameters``.
     ///
     /// - Parameters:
@@ -54,16 +65,19 @@ public struct LLMOpenAILikeParameters<PlatformDefinition: LLMOpenAILikePlatformD
     ///   - systemPrompts: The to-be-used system prompt(s) of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
     ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
     ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
+    ///   - apiMode: Overrides the model's default API mode. When `nil`, uses the model type's default.
     public init(
         modelType: PlatformDefinition.ModelType,
         systemPrompts: [String],
         modelAccessTest: Bool = false,
-        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil
+        overwritingAuthToken: RemoteLLMInferenceAuthToken? = nil,
+        apiMode: LLMOpenAIAPIMode? = nil
     ) {
         self.modelType = modelType
         self.systemPrompts = systemPrompts
         self.modelAccessTest = modelAccessTest
         self.overwritingAuthToken = overwritingAuthToken
+        self.apiModeOverride = apiMode
     }
 }
 
@@ -79,7 +93,7 @@ extension LLMOpenAILikeParameters {
     @available(
         *,
          deprecated,
-         renamed: "init(modelType:systemPrompt:modelAccessTest:overwritingAuthToken:)",
+         renamed: "init(modelType:systemPrompt:modelAccessTest:overwritingAuthToken:apiMode:)",
          message: "Please switch to the overload that accepts a typed `modelType`"
     )
     public init(
@@ -92,21 +106,15 @@ extension LLMOpenAILikeParameters {
             modelType: .init(rawValue: modelType),
             systemPrompts: systemPrompt.map { [$0] } ?? [],
             modelAccessTest: modelAccessTest,
-            overwritingAuthToken: overwritingAuthToken
+            overwritingAuthToken: overwritingAuthToken,
+            apiMode: nil
         )
     }
-    
-    /// Creates the ``LLMOpenAIParameters``.
-    ///
-    /// - Parameters:
-    ///   - modelType: The to-be-used OpenAI model such as GPT3.5 or GPT4.
-    ///   - systemPrompts: The to-be-used system prompt(s) of the LLM enabling fine-tuning of the LLMs behaviour. Defaults to the regular OpenAI chat-based GPT system prompt.
-    ///   - modelAccessTest: Indicates if access to the configured OpenAI model via the specified token should be made upon LLM setup.
-    ///   - overwritingAuthToken: Separate OpenAI token that overrides the one defined within the ``LLMOpenAIPlatform``.
+
     @available(
         *,
          deprecated,
-         renamed: "init(modelType:systemPrompts:modelAccessTest:overwritingAuthToken:)",
+         renamed: "init(modelType:systemPrompts:modelAccessTest:overwritingAuthToken:apiMode:)",
          message: "Please switch to the overload that accepts a typed `modelType`"
     )
     public init(
@@ -119,7 +127,8 @@ extension LLMOpenAILikeParameters {
             modelType: .init(rawValue: modelType),
             systemPrompts: systemPrompts,
             modelAccessTest: modelAccessTest,
-            overwritingAuthToken: overwritingAuthToken
+            overwritingAuthToken: overwritingAuthToken,
+            apiMode: nil
         )
     }
 }

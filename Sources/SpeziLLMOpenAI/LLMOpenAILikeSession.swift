@@ -90,6 +90,8 @@ public final class LLMOpenAILikeSession<
     @ObservationIgnored nonisolated(unsafe) var wrappedClient: (any LLMOpenAIChatClientProtocol)?
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
+    /// The ID of the last completed Responses API response, used for multi-turn via `previous_response_id`.
+    @ObservationIgnored nonisolated(unsafe) var lastResponseId: String?
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
@@ -97,7 +99,6 @@ public final class LLMOpenAILikeSession<
     var openAiClient: any LLMOpenAIChatClientProtocol {
         get {
             let client = self.clientLock.withReadLock { self.wrappedClient }
-
             guard let client else {
                 fatalError("""
                 SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
@@ -167,8 +168,13 @@ public final class LLMOpenAILikeSession<
                     }
                 }
 
-                // Execute the inference
-                await self._generate(with: continuationObserver)
+                // Execute the inference using the appropriate API
+                switch self.schema.parameters.effectiveAPIMode {
+                case .chatCompletions:
+                    await self._generate(with: continuationObserver)
+                case .responses:
+                    await self._generateWithResponses(with: continuationObserver)
+                }
             }
         }
     }

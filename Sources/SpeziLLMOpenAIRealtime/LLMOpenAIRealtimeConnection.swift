@@ -203,39 +203,56 @@ actor LLMOpenAIRealtimeConnection {
     }
     
     private func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
-        typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
-        typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
         typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
-        typealias RealtimeSessionCreateRequest = Components.Schemas.RealtimeSessionCreateRequest
+        typealias RealtimeSessionCreateRequestGA = Components.Schemas.RealtimeSessionCreateRequestGA
+        typealias ToolsPayload = RealtimeSessionCreateRequestGA.toolsPayloadPayload
 
         let tools: [ToolsPayload] = try schema.functions.values.compactMap { function in
             let functionType = Swift.type(of: function)
             let encodedSchema = try Self.encoder.encode(try function.schema)
             let jsonObject = try JSONSerialization.jsonObject(with: encodedSchema) as? [String: any Sendable] ?? [:]
 
-            return ToolsPayload(
-                _type: .function,
-                name: functionType.name,
-                description: functionType.description,
-                parameters: try .init(unvalidatedValue: jsonObject)
+            return .RealtimeFunctionTool(
+                Components.Schemas.RealtimeFunctionTool(
+                    _type: .function,
+                    name: functionType.name,
+                    description: functionType.description,
+                    parameters: try .init(unvalidatedValue: jsonObject)
+                )
             )
         }
-        
+
         let transcriptionSettings = schema.parameters.transcriptionSettings
-        
+        let transcription: Components.Schemas.AudioTranscription? = if let transcriptionSettings {
+            Components.Schemas.AudioTranscription(
+                model: .init(value1: transcriptionSettings.model.rawValue),
+                language: transcriptionSettings.language?.identifier,
+                prompt: transcriptionSettings.prompt
+            )
+        } else {
+            nil
+        }
+
         let eventSessionUpdate = RealtimeClientEventSessionUpdate(
             _type: .session_period_update,
-            session: .init(
-                instructions: schema.parameters.systemPrompt,
-                voice: schema.parameters.voice
-                    .flatMap { val in .init(rawValue: val.rawValue) },
-                input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
-                    .input_audio_transcriptionPayload(
-                        model: transcriptionSettings?.model.rawValue,
-                        language: transcriptionSettings?.language?.identifier,
-                        prompt: transcriptionSettings?.prompt,
+            session: .RealtimeSessionCreateRequestGA(
+                RealtimeSessionCreateRequestGA(
+                    _type: .realtime,
+                    instructions: schema.parameters.systemPrompt,
+                    audio: .init(
+                        input: .init(
+                            transcription: transcription
+                        ),
+                        output: .init(
+                            voice: schema.parameters.voice.map { val in
+                                Components.Schemas.VoiceIdsOrCustomVoice(
+                                    value1: .init(value1: val.rawValue)
+                                )
+                            }
+                        )
                     ),
-                tools: tools,
+                    tools: tools
+                )
             )
         )
         

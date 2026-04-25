@@ -16,8 +16,12 @@ extension LLMContext {
     ///   - `role`: The role of the message (e.g., "user", "assistant"), derived from the `rawValue` of the entry's `role`.
     ///   - `content`: The textual content of the message.
     package var formattedChat: [[String: String]] {
-        self.map { entry in
-            [
+        self.compactMap { entry in
+            // Skip reasoning summaries — they are local UI artifacts and would confuse a Transformers chat template.
+            if case .assistantThinking = entry.role {
+                return nil
+            }
+            return [
                 "role": entry.role.rawValue,
                 "content": entry.content
             ]

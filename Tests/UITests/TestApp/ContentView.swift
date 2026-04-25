@@ -43,7 +43,7 @@ extension ContentView {
         @MainActor @ViewBuilder var view: some View {
             switch self {
             case .llmOpenAI:
-                LLMOpenAILikeChatTestView<OpenAIPlatformDefinition>(model: .gpt4o)
+                LLMOpenAILikeChatTestView<OpenAIPlatformDefinition>(model: .gpt5_5_pro)
             case .llmLocal:
                 LLMLocalTestView()
             case .llmFog:

@@ -96,7 +96,7 @@ extension LLMContext {
               functionCalls.isEmpty else {
             return
         }
-        
+
         self[self.count - 1] = .init(
             role: .assistant(),
             content: lastContextEntity.content,
@@ -104,5 +104,62 @@ extension LLMContext {
             id: lastContextEntity.id,
             date: lastContextEntity.date
         )
+    }
+
+    /// Append a delta to the latest ``LLMContextEntity/Role-swift.enum/assistantThinking`` entry, or start a new one.
+    ///
+    /// Use ``beginAssistantThinkingPlaceholder()`` to mark the boundary between reasoning summary parts;
+    /// this method then appends incoming deltas onto the active thinking entity.
+    ///
+    /// - Parameters:
+    ///    - thinking: The reasoning text delta to append. Can contain Markdown.
+    ///    - complete: Indicates if the entity is complete after this append.
+    @MainActor
+    public mutating func append(assistantThinking thinking: String, complete: Bool = false) {
+        if let last, last.role == .assistantThinking {
+            self[endIndex - 1].content += thinking
+            self[endIndex - 1].complete = complete
+        } else {
+            self.append(.init(role: .assistantThinking, content: thinking, complete: complete))
+        }
+    }
+
+    /// Marks the latest chat entry as ``LLMContextEntity/complete``, if its role is ``LLMContextEntity/Role-swift.enum/assistantThinking``.
+    @MainActor
+    public mutating func completeAssistantThinkingStreaming() {
+        print(#function)
+        if let last, last.role == .assistantThinking {
+            self[endIndex - 1].complete = true
+        }
+    }
+
+    /// Ensures there is an in-progress ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity at the end of the context.
+    ///
+    /// Sessions call this to signal that the model is doing work that hasn't yet produced visible output —
+    /// e.g. while waiting for a reasoning model to finish its internal thinking phase. The entity's
+    /// ``LLMContextEntity/date`` doubles as the start timestamp (useful for displaying elapsed time in the UI).
+    ///
+    /// Idempotent: if the latest entity is already an incomplete thinking entity, this is a no-op so
+    /// existing content (e.g. a partially streamed reasoning summary) is preserved.
+    @MainActor
+    public mutating func beginAssistantThinkingPlaceholder() {
+        print(#function)
+        if let last = self.last, case .assistantThinking = last.role, !last.complete {
+            return
+        }
+        self.append(.init(role: .assistantThinking, content: "", complete: false))
+    }
+
+    /// Removes the trailing ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity if it is still in-progress.
+    ///
+    /// Sessions call this on cancel or error paths to clean up an unfinished thinking placeholder so it
+    /// doesn't linger in the conversation history.
+    @MainActor
+    public mutating func removeIncompleteAssistantThinking() {
+        print(#function)
+        guard let last = self.last, case .assistantThinking = last.role, !last.complete else {
+            return
+        }
+        self.removeLast()
     }
 }

@@ -11,7 +11,9 @@ import GeneratedOpenAIClient
 
 internal protocol LLMOpenAIChatClientProtocol {
     func createChatCompletion(_ input: Operations.createChatCompletion.Input) async throws -> Operations.createChatCompletion.Output
-    
+
+    func createResponse(_ input: Operations.createResponse.Input) async throws -> Operations.createResponse.Output
+
     func retrieveModel(_ input: Operations.retrieveModel.Input) async throws -> Operations.retrieveModel.Output
 }
 

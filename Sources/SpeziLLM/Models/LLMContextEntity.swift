@@ -47,14 +47,21 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     public enum Role: Codable, Equatable, Hashable, Sendable {
         case user
         case assistant(toolCalls: [ToolCall] = [])
+        /// A reasoning summary emitted by the model during its internal thinking phase.
+        ///
+        /// Reasoning models (e.g. GPT-5, o-series) can emit one or more reasoning summaries before producing
+        /// their visible response. Each summary is stored as a separate ``LLMContextEntity`` with this role.
+        /// Tool calls and the final assistant response remain as their own entities, interleaved as the model emits them.
+        case assistantThinking
         case system
         case tool(id: String, name: String)
-        
-        
+
+
         package var rawValue: String {
             switch self {
             case .user: "user"
             case .assistant: "assistant"
+            case .assistantThinking: "assistant_thinking"
             case .system: "system"
             case .tool: "tool"
             }
@@ -67,16 +74,18 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
         package let base64Image: String
     }
     
-    /// ``LLMContextEntity/Role`` associated with the ``LLMContextEntity``.
-    public let role: Role
-    /// Content of the ``LLMContextEntity``.
-    public let content: String
-    /// Indicates if the ``LLMContextEntity`` is complete and will not receive any additional content.
-    public let complete: Bool
     /// Unique identifier of the ``LLMContextEntity``.
     public let id: UUID
     /// The creation date of the ``LLMContextEntity``.
     public let date: Date
+    
+    /// ``LLMContextEntity/Role`` associated with the ``LLMContextEntity``.
+    public let role: Role
+    /// Content of the ``LLMContextEntity``.
+    public var content: String
+    /// Indicates if the ``LLMContextEntity`` is complete and will not receive any additional content.
+    public var complete: Bool
+    
     /// The context entity's image payload, if applicable.
     ///
     /// If this property is non-nil, ``content`` will be ignored.

@@ -66,7 +66,8 @@ public struct LLMChatView<Session: LLMSession>: View {
             self.$llm.context.chat,
             disableInput: self.inputDisabled,
             exportFormat: self.exportFormat,
-            messagePendingAnimation: .automatic
+            messagePendingAnimation: .automatic,
+            hiddenMessages: .custom([])
         )
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
