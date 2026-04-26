@@ -16,27 +16,34 @@ import SwiftUI
 
 extension LLMOpenAIMockedInferenceTests {
     /// A mock implementation of the OpenAI API `Client`
-    final class MockChatClient: LLMOpenAIChatClientProtocol {
-        var retrieveModelHandler: ((GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws ->
-                                   GeneratedOpenAIClient.Operations.retrieveModel.Output)?
+    final class MockChatClient: LLMOpenAIChatClientProtocol, @unchecked Sendable {
+        // swiftlint:disable line_length
+        var retrieveModelHandler: (@Sendable (GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws -> GeneratedOpenAIClient.Operations.retrieveModel.Output)?
+        var createChatCompletionHandler: (@Sendable (Operations.createChatCompletion.Input) async throws -> Operations.createChatCompletion.Output)?
+        var createResponseHandler: (@Sendable (_ input: Operations.createResponse.Input) async throws -> Operations.createResponse.Output)?
+        // swiftlint:enable line_length
         
-        var createChatCompletionHandler: ((Operations.createChatCompletion.Input) async throws ->
-                                          Operations.createChatCompletion.Output)?
-        
-        func retrieveModel(_ input: GeneratedOpenAIClient.Operations.retrieveModel.Input) async throws ->
-        GeneratedOpenAIClient.Operations.retrieveModel.Output {
+        func retrieveModel(
+            _ input: GeneratedOpenAIClient.Operations.retrieveModel.Input
+        ) async throws -> GeneratedOpenAIClient.Operations.retrieveModel.Output {
             guard let handler = retrieveModelHandler else {
                 fatalError("Mock handler not set!")
             }
             return try await handler(input)
         }
         
-        
         func createChatCompletion(_ input: Operations.createChatCompletion.Input) async throws -> Operations.createChatCompletion.Output {
             guard let handler = createChatCompletionHandler else {
                 fatalError("Mock handler not set!")
             }
             return try await handler(input)
+        }
+        
+        func createResponse(_ input: Operations.createResponse.Input) async throws -> Operations.createResponse.Output {
+            guard let createResponseHandler else {
+                fatalError("Mock handler not set!")
+            }
+            return try await createResponseHandler(input)
         }
     }
     

@@ -79,7 +79,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     @Test("Test Optional Parameters")
     func testLLMFunctionOptionalParameters() async throws { // swiftlint:disable:this function_body_length
         let llm = LLMOpenAISchema(
-            parameters: .init(modelType: "gpt-4o")
+            parameters: .init(modelType: .gpt4o)
         ) {
             LLMFunctionTestOptional(someInitArg: "testArg")
         }
@@ -90,15 +90,15 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // Validate parameter metadata
         #expect(llmFunctionPair.key == LLMFunctionTestOptional.name)
         let llmFunction = llmFunctionPair.value
-        #expect(try #require(llmFunction.parameterValueCollectors["intParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["boolParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["stringParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["intArrayParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["doubleArrayParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["boolArrayParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["stringArrayParameter"]).isOptional)
-        #expect(try #require(llmFunction.parameterValueCollectors["arrayNilParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["intParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["doubleParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["boolParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["stringParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["intArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["doubleArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["boolArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["stringArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["arrayNilParameter"]).isOptional)
         
         // Validate parameter schema
         let schemaOptionalInt = try #require(llmFunction.schemaValueCollectors["intParameter"])
@@ -166,9 +166,8 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersOptional.shared)
-        
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "testArg")
+        let arguments = try LLMFunctionCallArguments(from: parameterData, for: llmFunction)
+        let response = try await llmFunction._execute(arguments)
+        #expect(response == "testArg")
     }
 }

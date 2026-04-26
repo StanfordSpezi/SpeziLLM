@@ -9,6 +9,38 @@
 import Foundation
 
 
+package struct LLMFunctionCallArguments: Sendable, ~Copyable {
+    let values: [ObjectIdentifier: any Sendable]
+    
+    /// Creates a new Function Call Arguments object, by decoding them from JSON.
+    init(from encodedArguments: Data, for function: some LLMFunction) throws {
+        let topLayerParameterData = try JSONDecoder().decode(
+            LLMFunctionParameterIntermediary.self,
+            from: encodedArguments
+        ).topLayerJSONRepresentation
+        values = try function.parameters.reduce(into: [:]) { result, parameter in
+            let (paramName, parameter) = parameter
+            if let data = topLayerParameterData[paramName] {
+                result[parameter.storageKey] = try parameter.decode(from: data)
+            } else {
+                guard !parameter.isOptional else {
+                    // If optional property, tolerable that there isn't a value
+                    return
+                }
+                let missingCodingKey = LLMFunctionParameterCodingKey(stringValue: paramName)
+                throw DecodingError.keyNotFound(
+                    missingCodingKey,
+                    .init(
+                        codingPath: [missingCodingKey],
+                        debugDescription: "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
+                    )
+                )
+            }
+        }
+    }
+}
+
+
 extension LLMFunction {
     /// All ``LLMFunction/Parameter``s, mapped by their name.
     var parameters: [String: any LLMFunctionParameterWrapperProtocol] {
@@ -32,35 +64,35 @@ extension LLMFunction {
     }
 
     
-    /// Decodes the function-call arguments JSON into a per-call `[ObjectIdentifier: any Sendable]` dictionary.
-    ///
-    /// - Note: See ``LLMFunctionParameterStorage`` for more info.
-    ///
-    /// - parameter parameterData: JSON-based parameter data of the ``LLMFunction``.
-    /// - returns: A dicttionary mapping the function's `@Parameter`s to their respective values for a function call with these arguments.
-    package func decodeParameterValues(from parameterData: Data) throws -> [ObjectIdentifier: any Sendable] {
-        let topLayerParameterData = try JSONDecoder().decode(
-            LLMFunctionParameterIntermediary.self,
-            from: parameterData
-        ).topLayerJSONRepresentation
-        return try parameters.reduce(into: [:]) { result, parameter in
-            let (paramName, parameter) = parameter
-            if let data = topLayerParameterData[paramName] {
-                result[parameter.storageKey] = try parameter.decode(from: data)
-            } else {
-                guard !parameter.isOptional else {
-                    // If optional property, tolerable that there isn't a value
-                    return
-                }
-                let missingCodingKey = LLMFunctionParameterCodingKey(stringValue: paramName)
-                throw DecodingError.keyNotFound(
-                    missingCodingKey,
-                    .init(
-                        codingPath: [missingCodingKey],
-                        debugDescription: "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
-                    )
-                )
-            }
-        }
-    }
+//    /// Decodes the function-call arguments JSON into a per-call `[ObjectIdentifier: any Sendable]` dictionary.
+//    ///
+//    /// - Note: See ``LLMFunctionParameterStorage`` for more info.
+//    ///
+//    /// - parameter parameterData: JSON-based parameter data of the ``LLMFunction``.
+//    /// - returns: A dicttionary mapping the function's `@Parameter`s to their respective values for a function call with these arguments.
+//    func decodeParameterValues(from parameterData: Data) throws -> LLMFunctionArguments {
+//        let topLayerParameterData = try JSONDecoder().decode(
+//            LLMFunctionParameterIntermediary.self,
+//            from: parameterData
+//        ).topLayerJSONRepresentation
+//        return LLMFunctionArguments(_values: try parameters.reduce(into: [:]) { result, parameter in
+//            let (paramName, parameter) = parameter
+//            if let data = topLayerParameterData[paramName] {
+//                result[parameter.storageKey] = try parameter.decode(from: data)
+//            } else {
+//                guard !parameter.isOptional else {
+//                    // If optional property, tolerable that there isn't a value
+//                    return
+//                }
+//                let missingCodingKey = LLMFunctionParameterCodingKey(stringValue: paramName)
+//                throw DecodingError.keyNotFound(
+//                    missingCodingKey,
+//                    .init(
+//                        codingPath: [missingCodingKey],
+//                        debugDescription: "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
+//                    )
+//                )
+//            }
+//        })
+//    }
 }

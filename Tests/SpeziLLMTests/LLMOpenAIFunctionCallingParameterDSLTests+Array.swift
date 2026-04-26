@@ -56,7 +56,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     @Test("Test Array Parameters")
     func testLLMFunctionArrayParameters() async throws {
         let llm = LLMOpenAISchema(
-            parameters: .init(modelType: "gpt-4o")
+            parameters: .init(modelType: .gpt4o)
         ) {
             LLMFunctionTestArray(someInitArg: "testArg")
         }
@@ -67,10 +67,10 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // Validate parameter metadata
         #expect(llmFunctionPair.key == LLMFunctionTestArray.name)
         let llmFunction = llmFunctionPair.value
-        #expect(try #require(llmFunction.parameterValueCollectors["intArrayParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["doubleArrayParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["boolArrayParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["stringArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["intArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["doubleArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["boolArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["stringArrayParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaArrayInt = try #require(llmFunction.schemaValueCollectors["intArrayParameter"])
@@ -111,9 +111,8 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersArray.shared)
-        
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "testArg")
+        let arguments = try LLMFunctionCallArguments(from: parameterData, for: llmFunction)
+        let response = try await llmFunction._execute(arguments)
+        #expect(response == "testArg")
     }
 }

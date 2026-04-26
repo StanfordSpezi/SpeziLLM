@@ -141,8 +141,8 @@ extension LLMFunction {
     
     
     /// Executes the function, with the specified parameter-value mappign injected for the duration of the execution.
-    internal func _execute(injectingValues paramValues: [ObjectIdentifier: any Sendable]) async throws -> String? {
-        try await LLMFunctionParameterStorage.$currentValues.withValue(paramValues) {
+    internal func _execute(_ arguments: consuming LLMFunctionCallArguments) async throws -> String? {
+        try await LLMFunctionParameterStorage.$currentValues.withValue(arguments.values) {
             try await self.execute()
         }
     }

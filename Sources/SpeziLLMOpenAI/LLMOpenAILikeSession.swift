@@ -82,8 +82,7 @@ where PlatformDefinition: LLMOpenAILikePlatformDefinition {
     let platform: LLMOpenAILikePlatform<PlatformDefinition>
     package let schema: LLMOpenAILikeSchema<PlatformDefinition>
     let keychainStorage: KeychainStorage
- 
-//    private let clientLock = RWLock()
+    
     /// Counter for tracking nested tool calls
     package let toolCallCounter = ManagedAtomic<Int>(0)
     package let toolCallCompletionState = LLMState.generating
