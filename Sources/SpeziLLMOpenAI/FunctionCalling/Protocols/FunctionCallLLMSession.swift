@@ -104,9 +104,10 @@ extension FunctionCallLLMSession {
             throw LLMOpenAIError.invalidFunctionCallName
         }
         
-        // Inject parameters into the @Parameters of the function call
+        /// Mapping of `@Parameter`s (within the function being called) to their to-be-injected values.
+        let parameterValues: [ObjectIdentifier: any Sendable]
         do {
-            try function.injectParameters(from: functionArgument)
+            parameterValues = try function.decodeParameterValues(from: functionArgument)
         } catch {
             Self.logger.error(
                 "FunctionCallLLMSession: Invalid function call arguments - \(error)"
@@ -116,11 +117,8 @@ extension FunctionCallLLMSession {
         }
         
         let functionCallResponseStr: String?
-
         do {
-            // Execute function
-            // Errors thrown by the functions are surfaced to the user as an LLM generation error
-            functionCallResponseStr = try await function.execute()
+            functionCallResponseStr = try await function._execute(injectingValues: parameterValues)
         } catch {
             Self.logger.error("FunctionCallLLMSession: Function call execution error - \(error)")
             await self.decrementToolCallCounter()

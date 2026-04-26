@@ -28,6 +28,14 @@ struct LLMOpenAIFunctionWeather: LLMFunction {
     
     func execute() async throws -> String? {
         print(Self.self, #function, self)
-        return "The weather at \(location) is 30 degrees \(unit)"
+        if location.localizedCaseInsensitiveContains("munich") {
+            return "The weather at \(location) is 21 degrees \(unit)"
+        } else if location.localizedCaseInsensitiveContains("San Francisco") {
+            return "The weather at \(location) is 23 degrees \(unit)"
+        } else if location.localizedCaseInsensitiveContains("Berlin") {
+            return "The weather at \(location) is 19 degrees \(unit)"
+        } else {
+            return "The weather at \(location) is 30 degrees \(unit)"
+        }
     }
 }

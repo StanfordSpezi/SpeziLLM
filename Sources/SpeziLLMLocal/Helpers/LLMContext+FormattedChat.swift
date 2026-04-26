@@ -17,14 +17,17 @@ extension LLMContext {
     ///   - `content`: The textual content of the message.
     package var formattedChat: [[String: String]] {
         self.compactMap { entry in
-            // Skip reasoning summaries — they are local UI artifacts and would confuse a Transformers chat template.
-            if case .assistantThinking = entry.role {
+            switch entry.role {
+            case .assistantThinking:
+                // we intentionally want to skip these, as they are really just internal in-progress intermediate states
+                // (which sometimes but actually not always will contain some model thought process insights, but that's not desired output here)
                 return nil
+            case .user, .system, .assistant, .tool:
+                return [
+                    "role": entry.role.rawValue,
+                    "content": entry.content
+                ]
             }
-            return [
-                "role": entry.role.rawValue,
-                "content": entry.content
-            ]
         }
     }
 }

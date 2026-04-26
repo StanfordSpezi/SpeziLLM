@@ -15,7 +15,7 @@ import SpeziLLM
 extension LLMOpenAILikeSession {
     /// Converts the LLMContext to the Responses API input format using `EasyInputMessage` items.
     ///
-    /// System messages are excluded from the input items — they are passed via the `instructions` field instead.
+    /// System messages are excluded, since they instead are passed via the `instructions` field.
     private var responsesInputItems: [Components.Schemas.InputItem] {
         get async {
             await context.compactMap { entity -> Components.Schemas.InputItem? in

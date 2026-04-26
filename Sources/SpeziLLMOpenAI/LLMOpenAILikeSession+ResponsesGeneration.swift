@@ -27,38 +27,25 @@ extension LLMOpenAILikeSession {
             Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
             return
         }
-
-        // One interactionId per `generate()` call — covers all iterations of the function-calling loop, so
-        // every entity created during this user→LLM turn (thinking, tool calls, tool outputs, response)
-        // shares a single identifier.
+        
+        /// unique ID for this user interaction with the LLM. used to group together all resulting context entities.
         let interactionId = LLMInteractionId()
-
+        
         await MainActor.run {
             self.state = .generating
         }
-
+        
         while true {
-            if continuationObserver.isCancelled {
+            guard !continuationObserver.isCancelled else {
                 Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
                 await MainActor.run {
                     context.removeIncompleteAssistantThinking(for: interactionId)
                 }
                 break
             }
-
             var functionCalls: [LLMOpenAIStreamResult.FunctionCall] = []
-
-//            // Insert a thinking placeholder immediately so the UI can show a "thinking…" indicator while the
-//            // request is in flight. The placeholder is filled in with reasoning summary content as it arrives
-//            // (for reasoning models), or marked complete and left empty when the first response token arrives
-//            // (for non-reasoning models / fast first-token cases).
-//            await MainActor.run {
-//                context.beginAssistantThinkingPlaceholder()
-//            }
-
             do {
                 let response = try await openAiClient.createResponse(openAIResponsesQuery)
-
                 if case let .undocumented(statusCode: statusCode, payload) = response {
                     let llmError = handleErrorCode(statusCode)
                     #if DEBUG
@@ -68,17 +55,14 @@ extension LLMOpenAILikeSession {
                         Self.logger.warning("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
                     }
                     #endif
-//                    await MainActor.run {
-//                        context.removeIncompleteAssistantThinking()
-//                    }
                     await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                     return
                 }
-
+                
                 let eventStream = try response.ok.body
                     .text_event_hyphen_stream
                     .asDecodedServerSentEvents()
-
+                
                 for try await event in eventStream {
                     if continuationObserver.isCancelled {
                         Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
@@ -94,19 +78,16 @@ extension LLMOpenAILikeSession {
                         Self.logger.error("Encountered unknown event: \(eventType)")
                         continue
                     }
-                    print("\n\n\n\n\n\(eventType)\n\(dict)")
                     switch eventType {
                     case .responseCreated:
-                        print(eventType.rawValue)
                         await MainActor.run {
                             context.beginAssistantThinkingPlaceholder(with: interactionId)
                         }
                     case .responseOutputTextDelta:
-                        print(eventType.rawValue)
                         guard let delta = dict["delta"] as? String else {
                             continue
                         }
-                        // First content token signals end of thinking phase.
+                        // first content token signals end of thinking phase.
                         await MainActor.run {
                             context.completeAssistantThinkingStreaming(for: interactionId)
                             if schema.injectIntoContext {
@@ -115,14 +96,12 @@ extension LLMOpenAILikeSession {
                         }
                         continuationObserver.continuation.yield(delta)
                     case .responseOutputTextDone:
-                        print(eventType.rawValue)
                         if schema.injectIntoContext {
                             await MainActor.run {
                                 context.completeAssistantStreaming()
                             }
                         }
                     case .responseOutputItemDone:
-                        print(eventType.rawValue)
                         // Function calls are streamed across multiple events. The `function_call_arguments.delta`
                         // and `.done` events only carry an `item_id` and the (partial) arguments string —
                         // notably NOT the function name in practice, despite the API spec marking it required.
@@ -139,37 +118,33 @@ extension LLMOpenAILikeSession {
                             Self.logger.warning("SpeziLLMOpenAI: Incomplete function_call output item: \(item)")
                             continue
                         }
-                        print("adding function call: \(name) w/ \(arguments)")
                         functionCalls.append(
                             LLMOpenAIStreamResult.FunctionCall(name: name, id: callId, arguments: arguments)
                         )
                     case .responseReasoningSummaryPartAdded:
-                        print(eventType.rawValue)
                         // Idempotent against the placeholder we created above; only creates a new entity
                         // when the previous part is already complete (i.e. starting a subsequent part).
                         await MainActor.run {
                             context.beginAssistantThinkingPlaceholder(with: interactionId)
                         }
                     case .responseReasoningSummaryTextDelta:
-//                        print(eventType.rawValue)
-                        guard let delta = dict["delta"] as? String else { continue }
+                        guard let delta = dict["delta"] as? String else {
+                            continue
+                        }
                         await MainActor.run {
                             context.append(assistantThinking: delta, interactionId: interactionId)
                         }
                     case .responseReasoningSummaryTextDone, .responseReasoningSummaryPartDone:
-                        print(eventType.rawValue)
                         await MainActor.run {
                             context.completeAssistantThinkingStreaming(for: interactionId)
                         }
                     case .responseCompleted:
-                        print(eventType.rawValue)
                         // Extract response ID for multi-turn support
                         if let responseObj = dict["response"] as? [String: Any],
                            let responseId = responseObj["id"] as? String {
                             self.lastResponseId = responseId
                         }
                     case .responseFailed:
-                        print(eventType.rawValue)
                         let errorMsg = (dict["response"] as? [String: Any])?["error"] as? [String: Any]
                         let message = errorMsg?["message"] as? String ?? "Unknown error"
                         Self.logger.error("SpeziLLMOpenAI: Response failed: \(message)")
@@ -179,13 +154,11 @@ extension LLMOpenAILikeSession {
                         await finishGenerationWithError(LLMOpenAIError.generationError, on: continuationObserver.continuation)
                         return
                     default:
-                        print(eventType.rawValue)
-//                        Self.logger.error("Ignored event: '\(eventType.rawValue)'")
                         // some other event that either doesn't need handling, or is not supported by us.
                         break
                     }
                 }
-
+                
                 // Stream ended for this iteration. Make sure no thinking placeholder is left dangling — e.g. if
                 // the model responded with only a function call and no reasoning summary parts. If the stream
                 // ended due to cancellation, remove the unfinished placeholder entirely instead of marking
@@ -219,13 +192,13 @@ extension LLMOpenAILikeSession {
                 await finishGenerationWithError(LLMOpenAIError.generationError, on: continuationObserver.continuation)
                 return
             }
-
+            
             // Exit the while loop if we don't have any function calls
             guard !functionCalls.isEmpty else {
                 await checkForActiveToolCalls()
                 break
             }
-
+            
             // Inject the requested function calls into the LLM context
             let functionCallContext: [LLMContextEntity.ToolCall] = functionCalls.compactMap { functionCall in
                 guard let functionCallName = functionCall.name else {
@@ -236,28 +209,23 @@ extension LLMOpenAILikeSession {
             await MainActor.run {
                 context.append(functionCalls: functionCallContext, interactionId: interactionId)
             }
-
+            
             // Parallel function call execution
             do {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for functionCall in functionCalls {
                         group.addTask {
-                            if continuationObserver.isCancelled {
-                                Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
+                            guard !continuationObserver.isCancelled else {
                                 return
                             }
-
                             let functionCallResponse = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
                                 failureHandling: .returnErrorInResponse
                             )
-
-                            guard let functionCallResponse = functionCallResponse else {
-                                Self.logger.warning("SpeziLLMOpenAI: callFunction() threw an error.")
+                            guard let functionCallResponse else {
                                 return
                             }
-
                             await MainActor.run {
                                 self.context.append(
                                     forFunction: functionCallResponse.functionName,
@@ -268,14 +236,13 @@ extension LLMOpenAILikeSession {
                             }
                         }
                     }
-
                     try await group.waitForAll()
                 }
             } catch {
                 return
             }
         }
-
+        
         await MainActor.run {
             self.state = .ready
         }

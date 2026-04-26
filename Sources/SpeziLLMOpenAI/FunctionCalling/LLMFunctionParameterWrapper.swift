@@ -6,10 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import OpenAPIRuntime
-import OSLog
-import SpeziFoundation
-import Synchronization
 
 
 // NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
@@ -20,37 +18,65 @@ public typealias LLMFunctionParameterPropertySchema = OpenAPIRuntime.OpenAPIObje
 public typealias LLMFunctionParameterItemSchema = OpenAPIRuntime.OpenAPIObjectContainer
 
 
+/// Stores the decoded `@Parameter` values for ``LLMFunction``s currently being executed.
+///
+/// This type exists because ``_LLMFunctionParameterWrapper`` is a reference type, meaning that if the same LLMFunction is
+/// executed multiple times in parallel, each instance of the function (which is a struct) could end up pointing to the same parameter storage,
+/// and multiple executions would operate on the same inputs (or the input could change mid-execution).
+///
+/// So what we do instead is that we have a Task-local dictionary of the decoded values (ie, the function parameters),
+/// and use the `@Parameter` as a key into that dictionary.
+///
+/// (We need to put this in here bc the `_LLMFunctionParameterWrapper` itself cannot contain static stored properties.
+private enum LLMFunctionParameterStorage {
+    @TaskLocal static var currentValues: [ObjectIdentifier: any Sendable] = [:]
+}
+
+
+internal protocol LLMFunctionParameterWrapperProtocol: AnyObject, Sendable {
+    /// The underlying type of the parameter
+    associatedtype T: Decodable & Sendable // TODO rename to Value!
+    
+    /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
+    var isOptional: Bool { get }
+    
+    /// JSON-decodes a parameter value
+    func decode(from data: Data) throws -> T
+}
+
+
+extension LLMFunctionParameterWrapperProtocol {
+    /// The key used when storing a value for this parameter into the ``LLMFunctionParameterStorage``
+    var storageKey: ObjectIdentifier {
+        ObjectIdentifier(self)
+    }
+}
+
+
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFunctionParameterSchemaCollector { // swiftlint:disable:this type_name
-    /// A Swift Logger that logs important information and errors.
-    let logger = Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
-
+public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFunctionParameterSchemaCollector {
+    // swiftlint:disable:previous type_name
     let schema: LLMFunctionParameterItemSchema
-
-    nonisolated(unsafe) private var injectedValue: T?
-    private let lock = RWLock()
-
+    
     public var wrappedValue: T {
-        self.lock.withReadLock {
+        if let value = LLMFunctionParameterStorage.currentValues[ObjectIdentifier(self)] as? T {
             // If the unwrapped injectedValue is not nil, return the non-nil value
-            if let injectedValue {
-                return injectedValue
+            return value
+        } else if let selfCasted = self as? any NilValueProtocol {
             // If the unwrapped injectedValue is nil, return nil
-            } else if let selfCasted = self as? any NilValueProtocol {
-                return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
+            return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
+        } else {
             // Fail if not injected yet
-            } else {
-                fatalError("""
+            fatalError("""
                 Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
-                Are you sure that you declared the function call within the respective SpeziLLM functions and
+                Are you sure that you declared the function call within the respective SpeziLLM functions and \
                 only access the @Parameter within the `LLMFunction/execute()` method?
                 """)
-            }
         }
     }
-
-
+    
+    
     /// Creates an ``LLMFunction/Parameter`` which contains a custom-defined type that conforms to ``LLMFunctionParameter``.
     ///
     /// The custom-defined type needs to implement the ``LLMFunctionParameter`` protocol which mandates the implementation of the
@@ -68,12 +94,19 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
     init(schema: LLMFunctionParameterItemSchema) {
         self.schema = schema
     }
+}
 
 
-    func inject(_ value: T) where T: Decodable {
-        self.lock.withWriteLock {
-            self.injectedValue = value
-        }
+extension _LLMFunctionParameterWrapper: LLMFunctionParameterWrapperProtocol {
+    typealias T = T
+    
+    var isOptional: Bool {
+        // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
+        T.self is any ExpressibleByNilLiteral.Type
+    }
+    
+    func decode(from data: Data) throws -> T {
+        try JSONDecoder().decode(T.self, from: data)
     }
 }
 
@@ -105,4 +138,12 @@ extension LLMFunction {
     /// ```
     public typealias Parameter<WrappedValue> =
         _LLMFunctionParameterWrapper<WrappedValue> where WrappedValue: Decodable
+    
+    
+    /// Executes the function, with the specified parameter-value mappign injected for the duration of the execution.
+    internal func _execute(injectingValues paramValues: [ObjectIdentifier: any Sendable]) async throws -> String? {
+        try await LLMFunctionParameterStorage.$currentValues.withValue(paramValues) {
+            try await self.execute()
+        }
+    }
 }

@@ -184,17 +184,10 @@ extension LLMContext {
             }
         }
     }
-
+    
     /// Ensures there is an in-progress ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity at the end of the context.
     ///
-    /// Sessions call this to signal that the model is doing work that hasn't yet produced visible output —
-    /// e.g. while waiting for a reasoning model to finish its internal thinking phase. The entity's
-    /// ``LLMContextEntity/date`` doubles as the start timestamp (useful for displaying elapsed time in the UI).
-    ///
-    /// Idempotent: if the latest entity is already an incomplete thinking entity, this is a no-op so
-    /// existing content (e.g. a partially streamed reasoning summary) is preserved.
-    ///
-    /// - Parameter interactionId: The interaction this thinking phase belongs to. Used when creating a new entity.
+    /// - parameter interactionId: The interaction this thinking phase belongs to. Used when creating a new entity.
     @MainActor
     package mutating func beginAssistantThinkingPlaceholder(with interactionId: LLMInteractionId?) {
         if let last = self.last, case .assistantThinking = last.role, !last.complete {
@@ -208,10 +201,7 @@ extension LLMContext {
         ))
     }
 
-    /// Removes the trailing ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity if it is still in-progress.
-    ///
-    /// Sessions call this on cancel or error paths to clean up an unfinished thinking placeholder so it
-    /// doesn't linger in the conversation history.
+    /// Removes the trailing ``LLMContextEntity/Role-swift.enum/assistantThinking`` entity, if it is still in-progress.
     @MainActor
     package mutating func removeIncompleteAssistantThinking(for interactionId: LLMInteractionId) {
         if let last, last.role == .assistantThinking, last.interactionId == interactionId {

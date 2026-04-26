@@ -16,6 +16,8 @@ import SpeziChat
 import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
+import Synchronization
+
 
 /// Represents an ``LLMOpenAILikeSchema`` in execution.
 ///
@@ -70,9 +72,8 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAILikeSession<
-    PlatformDefinition: LLMOpenAILikePlatformDefinition
->: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable {
+public final class LLMOpenAILikeSession<PlatformDefinition>: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable
+where PlatformDefinition: LLMOpenAILikePlatformDefinition {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     package static var logger: Logger {
         Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
@@ -82,12 +83,12 @@ public final class LLMOpenAILikeSession<
     package let schema: LLMOpenAILikeSchema<PlatformDefinition>
     let keychainStorage: KeychainStorage
  
-    private let clientLock = RWLock()
+//    private let clientLock = RWLock()
     /// Counter for tracking nested tool calls
     package let toolCallCounter = ManagedAtomic<Int>(0)
     package let toolCallCompletionState = LLMState.generating
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored nonisolated(unsafe) var wrappedClient: (any LLMOpenAIChatClientProtocol)?
+    @ObservationIgnored private let client = Mutex<(any LLMOpenAIChatClientProtocol)?>(nil)
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
     /// The ID of the last completed Responses API response, used for multi-turn via `previous_response_id`.
@@ -98,7 +99,7 @@ public final class LLMOpenAILikeSession<
 
     var openAiClient: any LLMOpenAIChatClientProtocol {
         get {
-            let client = self.clientLock.withReadLock { self.wrappedClient }
+            let client = self.client.withLock { $0 }
             guard let client else {
                 fatalError("""
                 SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
@@ -107,14 +108,14 @@ public final class LLMOpenAILikeSession<
             }
             return client
         }
-
         set {
-            self.clientLock.withWriteLock {
-                self.wrappedClient = newValue
-            }
+            self.client.withLock { $0 = newValue }
         }
     }
     
+    var hasClient: Bool {
+        client.withLock { $0 != nil }
+    }
     
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
     ///
@@ -162,7 +163,7 @@ public final class LLMOpenAILikeSession<
                 }
 
                 // Setup the model, if not already done
-                if self.wrappedClient == nil {
+                if !self.hasClient {
                     guard await self.setup(with: continuationObserver) else {
                         return
                     }
