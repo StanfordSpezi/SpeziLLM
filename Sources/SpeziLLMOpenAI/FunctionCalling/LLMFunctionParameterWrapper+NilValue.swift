@@ -10,13 +10,13 @@ import SpeziFoundation
 
 
 protocol NilValueProtocol {
-    func nilValue<Value>(_ value: Value.Type) -> Value
+    func nilValue<V>(_ value: V.Type) -> V
 }
 
 /// If injected type T of ``LLMFunction/Parameter`` is an `Optional`, enable the conformance of `nil` to static type T
-extension _LLMFunctionParameterWrapper: NilValueProtocol where T: AnyOptional {
-    func nilValue<Value>(_ value: Value.Type) -> Value {
-        guard let nilLiteral = T(nilLiteral: ()) as? Value else {
+extension _LLMFunctionParameterWrapper: NilValueProtocol where Value: AnyOptional {
+    func nilValue<V>(_ value: V.Type) -> V {
+        guard let nilLiteral = Value(nilLiteral: ()) as? V else {
             fatalError(
             """
             Inconsistent code: Could not cast T to passed Value (which has to be T)

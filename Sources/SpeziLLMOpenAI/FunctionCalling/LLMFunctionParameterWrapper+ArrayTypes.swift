@@ -10,7 +10,7 @@ import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean discouraged_optional_collection
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteger {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element: BinaryInteger {
     /// Declares an `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -26,8 +26,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
-        minimum: T.Element? = nil,
-        maximum: T.Element? = nil,
+        minimum: Value.Element? = nil,
+        maximum: Value.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
@@ -53,7 +53,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryInteg
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element: BinaryFloatingPoint {
     /// Declares an `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -67,8 +67,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     public convenience init(
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
-        minimum: T.Element? = nil,
-        maximum: T.Element? = nil,
+        minimum: Value.Element? = nil,
+        maximum: Value.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
@@ -93,7 +93,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: BinaryFloat
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element == Bool {
     /// Declares an `Bool`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -127,7 +127,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element == Bool {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element: StringProtocol {
     /// Declares an `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:

@@ -10,7 +10,7 @@ import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterArrayElement {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element: LLMFunctionParameterArrayElement {
     /// Declares an ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -25,7 +25,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
         uniqueItems: Bool? = nil
     ) {
         do {
-            let itemSchema = T.Element.itemSchema.value
+            let itemSchema = Value.Element.itemSchema.value
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),
@@ -49,8 +49,8 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
-                                             T.Wrapped.Element: LLMFunctionParameterArrayElement {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: AnyArray,
+                                             Value.Wrapped.Element: LLMFunctionParameterArrayElement {
     /// Declares an optional ``LLMFunctionParameterArrayElement``-based (custom type) ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -65,7 +65,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         uniqueItems: Bool? = nil
     ) {
         do {
-            let itemSchema = T.Wrapped.Element.itemSchema.value
+            let itemSchema = Value.Wrapped.Element.itemSchema.value
             try self.init(schema: .init(unvalidatedValue: [
                 "type": "array",
                 "description": String(description),

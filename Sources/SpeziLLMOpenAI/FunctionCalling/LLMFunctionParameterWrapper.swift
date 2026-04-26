@@ -37,13 +37,13 @@ private enum LLMFunctionParameterStorage {
 
 internal protocol LLMFunctionParameterWrapperProtocol: AnyObject, Sendable {
     /// The underlying type of the parameter
-    associatedtype T: Decodable, Sendable // rename to Value?
+    associatedtype Value: Decodable, Sendable
     
     /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
     var isOptional: Bool { get }
     
     /// JSON-decodes a parameter value
-    func decode(from data: Data) throws -> T
+    func decode(from data: Data) throws -> Value
 }
 
 
@@ -57,21 +57,21 @@ extension LLMFunctionParameterWrapperProtocol {
 
 /// Refer to the documentation of ``LLMFunction/Parameter`` for information on how to use the `@Parameter` property wrapper.
 @propertyWrapper
-public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFunctionParameterSchemaCollector {
+public final class _LLMFunctionParameterWrapper<Value: Decodable & Sendable>: LLMFunctionParameterSchemaCollector {
     // swiftlint:disable:previous type_name
     let schema: LLMFunctionParameterItemSchema
     
-    public var wrappedValue: T {
-        if let value = LLMFunctionParameterStorage.currentValues[ObjectIdentifier(self)] as? T {
+    public var wrappedValue: Value {
+        if let value = LLMFunctionParameterStorage.currentValues[ObjectIdentifier(self)] as? Value {
             // If the unwrapped injectedValue is not nil, return the non-nil value
             return value
         } else if let selfCasted = self as? any NilValueProtocol {
             // If the unwrapped injectedValue is nil, return nil
-            return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
+            return selfCasted.nilValue(Value.self)  // Need an indirection to enable to return nil as type T
         } else {
             // Fail if not injected yet
             fatalError("""
-                Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
+                Tried to access @Parameter for value [\(Value.self)] which wasn't injected yet. \
                 Are you sure that you declared the function call within the respective SpeziLLM functions and \
                 only access the @Parameter within the `LLMFunction/execute()` method?
                 """)
@@ -89,8 +89,8 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
     /// - Parameters:
     ///    - description: Describes the purpose of the parameter, used by the LLM to grasp the purpose of the parameter.
     @_disfavoredOverload
-    public convenience init(description _: some StringProtocol) where T: LLMFunctionParameter {
-        self.init(schema: T.schema)
+    public convenience init(description _: some StringProtocol) where Value: LLMFunctionParameter {
+        self.init(schema: Value.schema)
     }
 
     init(schema: LLMFunctionParameterItemSchema) {
@@ -100,15 +100,15 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
 
 
 extension _LLMFunctionParameterWrapper: LLMFunctionParameterWrapperProtocol {
-    typealias T = T
+    typealias Value = Value
     
     var isOptional: Bool {
         // Only `Optional` conforms to `ExpressibleByNilLiteral`: https://developer.apple.com/documentation/swift/expressiblebynilliteral
-        T.self is any ExpressibleByNilLiteral.Type
+        Value.self is any ExpressibleByNilLiteral.Type
     }
     
-    func decode(from data: Data) throws -> T {
-        try JSONDecoder().decode(T.self, from: data)
+    func decode(from data: Data) throws -> Value {
+        try JSONDecoder().decode(Value.self, from: data)
     }
 }
 
