@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import Foundation
 import OpenAPIRuntime
 
@@ -35,7 +37,7 @@ private enum LLMFunctionParameterStorage {
 
 internal protocol LLMFunctionParameterWrapperProtocol: AnyObject, Sendable {
     /// The underlying type of the parameter
-    associatedtype T: Decodable & Sendable // TODO rename to Value!
+    associatedtype T: Decodable, Sendable // rename to Value?
     
     /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
     var isOptional: Bool { get }
@@ -141,7 +143,7 @@ extension LLMFunction {
     
     
     /// Executes the function, with the specified parameter-value mappign injected for the duration of the execution.
-    internal func _execute(_ arguments: consuming LLMFunctionCallArguments) async throws -> String? {
+    internal func _execute(_ arguments: consuming LLMFunctionCallArguments) async throws -> String? { // swiftlint:disable:this identifier_name
         try await LLMFunctionParameterStorage.$currentValues.withValue(arguments.values) {
             try await self.execute()
         }

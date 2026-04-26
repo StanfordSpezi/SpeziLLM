@@ -61,7 +61,7 @@ public struct LLMFogPlatformConfiguration: Sendable {
     ///   - retryPolicy: The retry policy that should be used, defaults to `3` retry attempts.
     ///   - mDnsBrowsingTimeout: Duration of mDNS browsing for Fog LLM services, default to `100ms`.
     public init(
-        host: String = "spezillmfog.local",     // swiftlint:disable:this function_default_parameter_at_end
+        host: String = "spezillmfog.local",
         connectionType: ConnectionType,
         authToken: RemoteLLMInferenceAuthToken,
         taskPriority: TaskPriority = .userInitiated,

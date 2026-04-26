@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open source project
 //
-// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -37,7 +37,7 @@ extension LLMOpenAILikeSession {
                             content: .case1(entity.content)
                         )
                     )
-                case .assistant(toolCalls: _):
+                case .assistant:
                     // Assistant messages with tool calls are represented by the tool call items themselves,
                     // which are included when we process the subsequent .tool role messages.
                     // Skip the assistant message here to avoid duplication.
@@ -92,7 +92,7 @@ extension LLMOpenAILikeSession {
             let instructions = await responsesInstructions
 
             let reasoning: Components.Schemas.Reasoning? = schema.parameters.modelType.supportsReasoningSummary
-                ? .init(summary: .auto) // TODO allow somehow passing in the reasoning level from the outside!!
+                ? .init(summary: .auto) // QUESTION allow somehow passing in the reasoning level from the outside!!
                 : nil
 
             return Operations.createResponse.Input(
@@ -107,7 +107,7 @@ extension LLMOpenAILikeSession {
                         ),
                         value2: .init(
                             previous_response_id: lastResponseId,
-                            model: .init(value1: .init(value1: schema.parameters.modelType.rawValue)),
+                            model: .init(value1: .init(value1: schema.parameters.modelType.modelId)),
                             reasoning: reasoning,
                             tools: tools.isEmpty ? nil : .init(tools)
                         ),

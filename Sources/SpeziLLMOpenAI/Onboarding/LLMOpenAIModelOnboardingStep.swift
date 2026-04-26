@@ -36,8 +36,8 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILike
                 String(localized: "\(PlatformDefinition.platformName) Model", bundle: .module),
                 selection: $selection
             ) {
-                ForEach(models) { model in
-                    Text(model.rawValue)
+                ForEach(models, id: \.self) { model in
+                    Text(model.modelId)
                         .tag(model)
                 }
             }

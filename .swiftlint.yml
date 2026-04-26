@@ -117,8 +117,6 @@ only_rules:
   - force_try
   # Force unwrapping should be avoided.
   - force_unwrapping
-  # Prefer to locate parameters with defaults toward the end of the parameter list.
-  - function_default_parameter_at_end
   # Functions bodies should not span too many lines.
   # See function_body_length below for the exact configuration.
   - function_body_length

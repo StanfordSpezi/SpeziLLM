@@ -58,7 +58,7 @@ extension LLMOpenAILikeSession {
                             ),
                             value2: .init(
                                 messages: openAIContext,
-                                model: .init(value1: schema.parameters.modelType.rawValue),
+                                model: .init(value1: schema.parameters.modelType.modelId),
                                 max_completion_tokens: schema.modelParameters.maxOutputLength,
                                 frequency_penalty: schema.modelParameters.frequencyPenalty,
                                 presence_penalty: schema.modelParameters.presencePenalty,

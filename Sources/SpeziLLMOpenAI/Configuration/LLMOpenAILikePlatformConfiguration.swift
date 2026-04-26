@@ -46,7 +46,7 @@ public struct LLMOpenAILikePlatformConfiguration<PlatformDefinition: LLMOpenAILi
     ///   - taskPriority: The task priority of the initiated LLM inference tasks, defaults to `.userInitiated`.
     ///   - middlewares: Additional middlewares that should be used for requests.
     public init(
-        serverUrl: URL = PlatformDefinition.defaultServerUrl, // swiftlint:disable:this function_default_parameter_at_end
+        serverUrl: URL = PlatformDefinition.defaultServerUrl,
         authToken: RemoteLLMInferenceAuthToken,
         concurrentStreams: Int = 10,
         timeout: TimeInterval = 60,

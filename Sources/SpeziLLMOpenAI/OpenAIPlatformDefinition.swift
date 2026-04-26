@@ -16,15 +16,12 @@ import SpeziKeychainStorage
 /// The OpenAI platform's definition.
 public struct OpenAIPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public struct ModelType: LLMOpenAILikePlatformModelType {
-        /// The identifier of the underlying model.
-        public let rawValue: String
-        /// Creates a new `ModelType`
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-        /// Creates a new `ModelType`
-        public init(stringLiteral rawValue: String) {
-            self.rawValue = rawValue
+        public let modelId: String
+        public let apiMode: LLMOpenAIAPIMode
+        
+        public init(modelId: String, apiMode: LLMOpenAIAPIMode) {
+            self.modelId = modelId
+            self.apiMode = apiMode
         }
     }
     
@@ -191,52 +188,52 @@ extension OpenAIPlatformDefinition.ModelType {
         "gpt-3.5-turbo"
     ]
 
-    public var apiMode: LLMOpenAIAPIMode {
-        Self.chatCompletionModels.contains(rawValue) ? .chatCompletions : .responses
-    }
-
-    public var supportsReasoningSummary: Bool {
-        // The o-series and GPT-5 reasoning variants emit reasoning summaries.
-        // `gpt-5-chat-latest` is the non-reasoning chat variant and is excluded.
-        if rawValue == "gpt-5-chat-latest" {
-            return false
-        }
-        return rawValue.hasPrefix("o1")
-            || rawValue.hasPrefix("o3")
-            || rawValue.hasPrefix("o4")
-            || rawValue.hasPrefix("gpt-5")
-    }
-
     // GPT-5 series
-    public static let gpt5 = Self(rawValue: "gpt-5")
-    public static let gpt5_mini = Self(rawValue: "gpt-5-mini")
-    public static let gpt5_nano = Self(rawValue: "gpt-5-nano")
-    public static let gpt5_chat = Self(rawValue: "gpt-5-chat-latest")
-    public static let gpt5_pro = Self(rawValue: "gpt-5-pro")
+    public static let gpt5 = Self(modelId: "gpt-5", apiMode: .responses)
+    public static let gpt5_mini = Self(modelId: "gpt-5-mini", apiMode: .responses)
+    public static let gpt5_nano = Self(modelId: "gpt-5-nano", apiMode: .responses)
+    public static let gpt5_chat = Self(modelId: "gpt-5-chat-latest", apiMode: .responses)
+    public static let gpt5_pro = Self(modelId: "gpt-5-pro", apiMode: .responses)
     
-    public static let gpt5_4 = Self(rawValue: "gpt-5.4")
-    public static let gpt5_4_pro = Self(rawValue: "gpt-5.4-pro")
-    public static let gpt5_5 = Self(rawValue: "gpt-5.5")
-    public static let gpt5_5_pro = Self(rawValue: "gpt-5.5-pro")
+    public static let gpt5_4 = Self(modelId: "gpt-5.4", apiMode: .responses)
+    public static let gpt5_4_pro = Self(modelId: "gpt-5.4-pro", apiMode: .responses)
+    public static let gpt5_5 = Self(modelId: "gpt-5.5", apiMode: .responses)
+    public static let gpt5_5_pro = Self(modelId: "gpt-5.5-pro", apiMode: .responses)
 
     // GPT-4 series
-    public static let gpt4o = Self(rawValue: "gpt-4o")
-    public static let gpt4o_mini = Self(rawValue: "gpt-4o-mini")
-    public static let gpt4_turbo = Self(rawValue: "gpt-4-turbo")
-    public static let gpt4_1 = Self(rawValue: "gpt-4.1")
-    public static let gpt4_1_mini = Self(rawValue: "gpt-4.1-mini")
-    public static let gpt4_1_nano = Self(rawValue: "gpt-4.1-nano")
+    public static let gpt4o = Self(modelId: "gpt-4o", apiMode: .chatCompletions)
+    public static let gpt4o_mini = Self(modelId: "gpt-4o-mini", apiMode: .chatCompletions)
+    public static let gpt4_turbo = Self(modelId: "gpt-4-turbo", apiMode: .chatCompletions)
+    public static let gpt4_1 = Self(modelId: "gpt-4.1", apiMode: .responses)
+    public static let gpt4_1_mini = Self(modelId: "gpt-4.1-mini", apiMode: .responses)
+    public static let gpt4_1_nano = Self(modelId: "gpt-4.1-nano", apiMode: .responses)
 
     // o-series
-    public static let o4_mini = Self(rawValue: "o4-mini")
-    public static let o3 = Self(rawValue: "o3")
-    public static let o3_pro = Self(rawValue: "o3-pro")
-    public static let o3_mini = Self(rawValue: "o3-mini")
-    public static let o3_mini_high = Self(rawValue: "o3-mini-high")
-    public static let o1_pro = Self(rawValue: "o1-pro")
-    public static let o1 = Self(rawValue: "o1")
-    public static let o1_mini = Self(rawValue: "o1-mini")
+    public static let o4_mini = Self(modelId: "o4-mini", apiMode: .responses)
+    public static let o3 = Self(modelId: "o3", apiMode: .responses)
+    public static let o3_pro = Self(modelId: "o3-pro", apiMode: .responses)
+    public static let o3_mini = Self(modelId: "o3-mini", apiMode: .responses)
+    public static let o3_mini_high = Self(modelId: "o3-mini-high", apiMode: .responses)
+    public static let o1_pro = Self(modelId: "o1-pro", apiMode: .responses)
+    public static let o1 = Self(modelId: "o1", apiMode: .responses)
+    public static let o1_mini = Self(modelId: "o1-mini", apiMode: .responses)
 
     // Others
-    public static let gpt3_5_turbo = Self(rawValue: "gpt-3.5-turbo")
+    public static let gpt3_5_turbo = Self(modelId: "gpt-3.5-turbo", apiMode: .chatCompletions)
+    
+    
+    public var supportsReasoningSummary: Bool {
+        guard apiMode == .responses else {
+            return false
+        }
+        // The o-series and GPT-5 reasoning variants emit reasoning summaries.
+        // `gpt-5-chat-latest` is the non-reasoning chat variant and is excluded.
+        if modelId == "gpt-5-chat-latest" {
+            return false
+        }
+        return modelId.hasPrefix("o1")
+            || modelId.hasPrefix("o3")
+            || modelId.hasPrefix("o4")
+            || modelId.hasPrefix("gpt-5")
+    }
 }

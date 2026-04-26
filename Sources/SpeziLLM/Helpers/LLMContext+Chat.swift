@@ -77,7 +77,7 @@ extension LLMContext {
             }
         }
         set {
-            // TODO what if:
+            // QUESTION what if:
             // - a message is inserted somewhere in the middle of the chat? (we'd end up duplicating the last message)
             // - the last message is being updated by the client? (we'd end up creating a duplicate new one, instead of updating it)
             /// Write back newly added ``LLMContextEntity/Role-swift.enum/user`` message from `Chat` to the ``LLMSession/context`.

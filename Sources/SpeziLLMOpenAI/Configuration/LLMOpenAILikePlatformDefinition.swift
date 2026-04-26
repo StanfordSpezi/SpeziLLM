@@ -19,7 +19,7 @@ import OpenAPIRuntime
 ///   Supported by all OpenAI-compatible platforms (OpenAI, Anthropic, Gemini).
 /// - ``responses``: Uses the OpenAI Responses API (`POST /v1/responses`).
 ///   Required for newer OpenAI models (GPT-5.x, o-series, GPT-4.1, etc.).
-public enum LLMOpenAIAPIMode: Sendable {
+public enum LLMOpenAIAPIMode: String, Encodable, Sendable {
     case chatCompletions
     case responses
 }
@@ -53,7 +53,7 @@ extension LLMOpenAILikePlatformDefinition {
 }
 
 
-public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<String>, Codable, Identifiable, ExpressibleByStringLiteral, Sendable {
+public protocol LLMOpenAILikePlatformModelType: Hashable, Encodable, Sendable {
     /// The default model, that should be used as a fallback.
     static var `default`: Self { get }
 
@@ -61,11 +61,11 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     ///
     /// Used e.g. when picking a model in the UI.
     static var wellKnownModels: [Self] { get }
+    
+    /// The model identifier
+    var modelId: String { get }
 
     /// The API mode to use for inference with this model.
-    ///
-    /// Defaults to ``LLMOpenAIAPIMode/chatCompletions``.
-    /// Override this for models that require the Responses API.
     var apiMode: LLMOpenAIAPIMode { get }
 
     /// Whether this model can emit reasoning summaries during inference.
@@ -75,21 +75,10 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     /// ``LLMContextEntity/Role-swift.enum/assistantThinking`` entries in the session context.
     /// Defaults to `false`.
     var supportsReasoningSummary: Bool { get }
-
-    /// Creates a `ModelType` from a raw string value
-    init(rawValue: String)
 }
 
 
 extension LLMOpenAILikePlatformModelType {
-    public var id: some Hashable { // swiftlint:disable:this missing_docs
-        rawValue
-    }
-
-    public var apiMode: LLMOpenAIAPIMode { // swiftlint:disable:this missing_docs
-        .chatCompletions
-    }
-
     public var supportsReasoningSummary: Bool { // swiftlint:disable:this missing_docs
         false
     }
