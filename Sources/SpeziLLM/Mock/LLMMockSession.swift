@@ -42,10 +42,9 @@ public final class LLMMockSession: LLMSession, Sendable {
     
     @discardableResult
     public func generate() async throws -> AsyncThrowingStream<String, any Error> {
-        try self.platform.queue.submit { continuation in
+        try self.platform.queue.submit { continuation in // swiftlint:disable:this closure_body_length
             // starts tracking the continuation for cancellation
             let continuationObserver = ContinuationObserver(track: continuation)
-            
             // Retains the continuation during inference for potential cancellation
             await self.continuationHolder.withContinuationHold(continuation: continuation) {
                 await MainActor.run {
@@ -59,11 +58,9 @@ public final class LLMMockSession: LLMSession, Sendable {
                         return
                     }
                 }
-
                 await MainActor.run {
                     self.state = .generating
                 }
-
                 // Generate mock messages
                 let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
                 for token in tokens {
@@ -72,19 +69,20 @@ public final class LLMMockSession: LLMSession, Sendable {
                     if continuationObserver.isCancelled {
                         break
                     }
-
                     continuationObserver.continuation.yield(token)
-
                     if self.schema.injectIntoContext {
                         await MainActor.run {
-                            self.context.append(assistantOutput: token)
+                            self.context.append(
+                                assistantOutputDelta: token,
+                                isComplete: false,
+                                interactionId: nil
+                            )
                         }
                     }
                 }
-
                 continuationObserver.continuation.finish()
                 await MainActor.run {
-                    self.context.completeAssistantStreaming()
+                    self.context.markAssistantOutputCompleted()
                     self.state = .ready
                 }
             }

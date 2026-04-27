@@ -68,25 +68,27 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
     
     /// Indicates which ``LLMContextEntity/Role`` is associated with a ``LLMContextEntity``.
     public enum Role: Codable, Equatable, Hashable, Sendable {
-        case user
-        case assistant(toolCalls: [ToolCall] = [])
-        /// A reasoning summary emitted by the model during its internal thinking phase.
-        ///
-        /// Reasoning models (e.g. GPT-5, o-series) can emit one or more reasoning summaries before producing
-        /// their visible response. Each summary is stored as a separate ``LLMContextEntity`` with this role.
-        /// Tool calls and the final assistant response remain as their own entities, interleaved as the model emits them.
-        case assistantThinking
         case system
-        case tool(id: String, name: String)
+        case user
+        case assistant
+        case toolCalls([ToolCall])
+        /// Represents a thinking phase in a reasoning model.
+        ///
+        /// Might have a thinking summary associated (in the ``LLMContextEntity``'s content.
+        /// Depending on the model, there might be multiple thinking phases associated with a single interaction,
+        /// e.g. if the model decided to initiate a tool call.
+        case assistantThinking
+        case toolCallResponse(id: String, name: String)
 
 
         package var rawValue: String {
             switch self {
             case .user: "user"
             case .assistant: "assistant"
+            case .toolCalls: "tool_calls"
             case .assistantThinking: "assistant_thinking"
             case .system: "system"
-            case .tool: "tool"
+            case .toolCallResponse: "tool"
             }
         }
     }
@@ -140,7 +142,7 @@ public struct LLMContextEntity: Codable, Equatable, Hashable, Identifiable, Send
         role: Role,
         interactionId: LLMInteractionId? = nil,
         content: some StringProtocol,
-        complete: Bool = true
+        complete: Bool
     ) {
         self.id = id
         self.date = date
@@ -182,9 +184,9 @@ extension LLMContextEntity {
         _role: Role, // swiftlint:disable:this identifier_name
         image: _PlatformImage,
         format: _ImageFormat,
-        complete: Bool = true,
+        complete: Bool,
         id: UUID = UUID(),
-        date: Date = .now,
+        date: Date,
         interactionId: LLMInteractionId? = nil
     ) {
         let imageData: Data? = switch format {

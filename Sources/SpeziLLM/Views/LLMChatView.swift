@@ -87,24 +87,24 @@ public struct LLMChatView<Session: LLMSession>: View {
                 guard self.messageTaskIdentifier != nil else {
                     return
                 }
-                
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()
-
                     // If injectIntoContext is true, the session manages context automatically.
                     // We still need to consume the stream to allow the generation to complete.
                     if let schemaProvider = llm as? any SchemaProvidingLLMSession,
                        schemaProvider.schema.injectIntoContext {
                         for try await _ in stream { }
-                        return
+                    } else {
+                        for try await token in stream {
+                            self.llm.context.append(
+                                assistantOutputDelta: token,
+                                isComplete: false,
+                                interactionId: nil
+                            )
+                        }
+                        self.llm.context.markAssistantOutputCompleted()
                     }
-
-                    for try await token in stream {
-                        self.llm.context.append(assistantOutput: token)
-                    }
-
-                    self.llm.context.completeAssistantStreaming()
                 } catch is CancellationError {
                     // noop
                 } catch let error as any LLMError {

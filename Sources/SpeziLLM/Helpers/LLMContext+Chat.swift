@@ -12,7 +12,7 @@ import SpeziChat
 
 extension LLMContext {
     /// Maps the ``LLMContext`` to a `SpeziChat/Chat`.
-    @MainActor public var chat: Chat {
+    public var chat: Chat {
         get {
             var interactionStartDates: [LLMInteractionId: Date] = [:]
             return self.map { entity in // swiftlint:disable:this closure_body_length
@@ -28,24 +28,22 @@ extension LLMContext {
                         id: entity.id,
                         date: entity.date
                     )
-                case .assistant(let toolCalls):
-                    if !toolCalls.isEmpty {
-                        ChatEntity(
-                            role: .assistant(.toolCall),
-                            content: .text(toolCalls.map { "\($0.id) \($0.name) \($0.arguments)" }.joined(separator: "\n")),
-                            complete: entity.complete,
-                            id: entity.id,
-                            date: entity.date
-                        )
-                    } else {
-                        ChatEntity(
-                            role: .assistant(.response),
-                            content: .text(entity.content),
-                            complete: entity.complete,
-                            id: entity.id,
-                            date: entity.date
-                        )
-                    }
+                case .assistant:
+                    ChatEntity(
+                        role: .assistant(.response),
+                        content: .text(entity.content),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
+                    )
+                case .toolCalls(let toolCalls):
+                    ChatEntity(
+                        role: .assistant(.toolCall),
+                        content: .text(toolCalls.map { "\($0.id) \($0.name) \($0.arguments)" }.joined(separator: "\n")),
+                        complete: entity.complete,
+                        id: entity.id,
+                        date: entity.date
+                    )
                 case .system:
                     ChatEntity(
                         role: .hidden(type: .system),
@@ -54,9 +52,8 @@ extension LLMContext {
                         id: entity.id,
                         date: entity.date
                     )
-                case .tool:
+                case .toolCallResponse:
                     ChatEntity(
-//                        role: .hidden(type: .function),
                         role: .assistant(.toolResponse),
                         content: .text(entity.content),
                         complete: entity.complete,
@@ -87,7 +84,7 @@ extension LLMContext {
             }
             switch newEntity.content {
             case .text(let text):
-                self.append(userInput: text, id: newEntity.id, date: newEntity.date)
+                self.append(userMessage: text, id: newEntity.id, date: newEntity.date)
             }
         }
     }

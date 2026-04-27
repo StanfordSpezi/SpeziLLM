@@ -17,7 +17,10 @@ import SpeziLLMOpenAI
 public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public struct ModelType: LLMOpenAILikePlatformModelType {
         public let modelId: String
-        public var apiMode: LLMOpenAIAPIMode { .chatCompletions }
+        public var apiMode: LLMOpenAIAPIMode {
+            // all gemini models are run via their OpenAI compatibility layer, which supports only the chat completions API
+            .chatCompletions
+        }
         
         public init(modelId: String) {
             self.modelId = modelId
@@ -155,18 +158,14 @@ extension GeminiPlatformDefinition.ModelType {
         .gemini2_5_pro, .gemini2_5_flash, .gemini2_5_flash_lite
     ]
     
-    /// Gemini 3.1 Pro
+    // swiftlint:disable missing_docs
     public static let gemini3_1_pro = Self(modelId: "gemini-3.1-pro")
-    /// Gemini 3 Pro
     public static let gemini3_pro = Self(modelId: "gemini-3-pro")
-    /// Gemini 3 Flash
     public static let gemini3_flash = Self(modelId: "gemini-3-flash")
     
-    /// Gemini 2.5 Pro
     public static let gemini2_5_pro = Self(modelId: "gemini-2.5-pro")
-    /// Gemini 2.5 Flash
     public static let gemini2_5_flash = Self(modelId: "gemini-2.5-flash")
-    /// Gemini 2.5 Flash Lite
     public static let gemini2_5_flash_lite = Self(modelId: "gemini-2.5-flash-lite")
+    // swiftlint:enable missing_docs
 }
 // swiftlint:enable identifier_name

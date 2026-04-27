@@ -30,19 +30,19 @@ extension LLMOpenAILikeSession {
                             content: .case1(entity.content)
                         )
                     )
-                case .assistant(toolCalls: let toolCalls) where toolCalls.isEmpty:
+                case .assistant:
                     return .EasyInputMessage(
                         Components.Schemas.EasyInputMessage(
                             role: .assistant,
                             content: .case1(entity.content)
                         )
                     )
-                case .assistant:
+                case .toolCalls:
                     // Assistant messages with tool calls are represented by the tool call items themselves,
                     // which are included when we process the subsequent .tool role messages.
                     // Skip the assistant message here to avoid duplication.
                     return nil
-                case .tool(id: let functionID, name: _):
+                case .toolCallResponse(id: let functionID, name: _):
                     return .Item(
                         .FunctionCallOutputItemParam(
                             Components.Schemas.FunctionCallOutputItemParam(

@@ -91,14 +91,14 @@ extension LLMOpenAILikeSession {
                         await MainActor.run {
                             context.completeAssistantThinkingStreaming(for: interactionId)
                             if schema.injectIntoContext {
-                                context.append(assistantOutput: delta, interactionId: interactionId)
+                                context.append(assistantOutputDelta: delta, isComplete: false, interactionId: interactionId)
                             }
                         }
                         continuationObserver.continuation.yield(delta)
                     case .responseOutputTextDone:
                         if schema.injectIntoContext {
                             await MainActor.run {
-                                context.completeAssistantStreaming()
+                                context.markAssistantOutputCompleted()
                             }
                         }
                     case .responseOutputItemDone:
@@ -132,7 +132,7 @@ extension LLMOpenAILikeSession {
                             continue
                         }
                         await MainActor.run {
-                            context.append(assistantThinking: delta, interactionId: interactionId)
+                            context.append(assistantThinkingDelta: delta, interactionId: interactionId)
                         }
                     case .responseReasoningSummaryTextDone, .responseReasoningSummaryPartDone:
                         await MainActor.run {
@@ -207,7 +207,7 @@ extension LLMOpenAILikeSession {
                 return .init(id: functionCall.id ?? "", name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
-                context.append(functionCalls: functionCallContext, interactionId: interactionId)
+                context.append(toolCalls: functionCallContext, interactionId: interactionId)
             }
             
             // Parallel function call execution
@@ -218,19 +218,19 @@ extension LLMOpenAILikeSession {
                             guard !continuationObserver.isCancelled else {
                                 return
                             }
-                            let functionCallResponse = try? await self.callFunction(
+                            let response = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
                                 failureHandling: .returnErrorInResponse
                             )
-                            guard let functionCallResponse else {
+                            guard let response else {
                                 return
                             }
                             await MainActor.run {
                                 self.context.append(
-                                    forFunction: functionCallResponse.functionName,
-                                    withID: functionCallResponse.functionID,
-                                    response: functionCallResponse.response,
+                                    toolCallResponse: response.response,
+                                    for: response.functionName,
+                                    withId: response.functionID,
                                     interactionId: interactionId
                                 )
                             }

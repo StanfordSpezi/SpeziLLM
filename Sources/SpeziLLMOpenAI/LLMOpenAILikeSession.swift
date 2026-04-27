@@ -141,7 +141,7 @@ where PlatformDefinition: LLMOpenAILikePlatformDefinition {
         if await self.context.isEmpty {
             await MainActor.run {
                 for prompt in self.schema.parameters.systemPrompts {
-                    self.context.append(systemMessage: prompt)
+                    self.context.append(systemMessage: prompt, to: .leadingSystemMessages)
                 }
             }
         }
@@ -169,7 +169,7 @@ where PlatformDefinition: LLMOpenAILikePlatformDefinition {
                 }
 
                 // Execute the inference using the appropriate API
-                switch self.schema.parameters.effectiveAPIMode {
+                switch self.schema.parameters.modelType.apiMode {
                 case .chatCompletions:
                     await self._generate(with: continuationObserver)
                 case .responses:

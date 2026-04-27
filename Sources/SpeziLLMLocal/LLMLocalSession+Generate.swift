@@ -156,7 +156,11 @@ extension LLMLocalSession {
 
             if schema.injectIntoContext {
                 Task { @MainActor in
-                    context.append(assistantOutput: text, interactionId: interactionId)
+                    context.append(
+                        assistantOutputDelta: text,
+                        isComplete: false,
+                        interactionId: interactionId
+                    )
                 }
             }
         }
@@ -178,8 +182,11 @@ extension LLMLocalSession {
 
         if schema.injectIntoContext {
             Task { @MainActor in
-                context.append(assistantOutput: text, interactionId: interactionId)
-                context.completeAssistantStreaming()
+                context.append(
+                    assistantOutputDelta: text,
+                    isComplete: true,
+                    interactionId: interactionId
+                )
             }
         }
     }
@@ -210,14 +217,14 @@ extension LLMLocalSession {
             continuationObserver.continuation.yield(token)
             if schema.injectIntoContext {
                 await MainActor.run {
-                    self.context.append(assistantOutput: token, interactionId: interactionId)
+                    self.context.append(assistantOutputDelta: token, isComplete: false, interactionId: interactionId)
                 }
             }
         }
 
         continuationObserver.continuation.finish()
         await MainActor.run {
-            self.context.completeAssistantStreaming()
+            self.context.markAssistantOutputCompleted()
             self.state = .ready
         }
     }

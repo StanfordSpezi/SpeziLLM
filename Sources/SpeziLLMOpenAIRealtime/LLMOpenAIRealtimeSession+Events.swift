@@ -20,16 +20,14 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
                 Self.logger.error("SpeziLLMOpenAIRealtime: No self in listenToLLMEvents...")
                 return
             }
-
             do {
                 for try await event in eventStream {
                     let shouldInject = self?.schema.injectIntoContext ?? true
-
                     switch event {
                     case .assistantTranscriptDelta(let content) where shouldInject:
-                        self?.context.append(assistantOutput: content)
+                        self?.context.append(assistantOutputDelta: content, isComplete: false, interactionId: nil)
                     case .assistantTranscriptDone where shouldInject:
-                        self?.context.completeAssistantStreaming()
+                        self?.context.markAssistantOutputCompleted()
                     case .userTranscriptDelta(let content) where shouldInject:
                         self?.handleTranscript(itemId: content.itemId, content: content.delta, isComplete: false)
                     case .userTranscriptDone(let content) where shouldInject:

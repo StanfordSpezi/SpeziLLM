@@ -102,7 +102,11 @@ extension LLMOpenAILikeSession {
                     // Automatically inject the yielded string piece into the `LLMLocal/context`
                     if schema.injectIntoContext {
                         await MainActor.run {
-                            context.append(assistantOutput: content, interactionId: interactionId)
+                            context.append(
+                                assistantOutputDelta: content,
+                                isComplete: false,
+                                interactionId: interactionId
+                            )
                         }
                     }
 
@@ -112,7 +116,7 @@ extension LLMOpenAILikeSession {
                 
                 if schema.injectIntoContext {
                     await MainActor.run {
-                        context.completeAssistantStreaming()
+                        context.markAssistantOutputCompleted()
                     }
                 }
             } catch let error as ClientError {
@@ -147,7 +151,7 @@ extension LLMOpenAILikeSession {
                 return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
-                context.append(functionCalls: functionCallContext, interactionId: interactionId)
+                context.append(toolCalls: functionCallContext, interactionId: interactionId)
             }
 
             // Parallel function call execution
@@ -156,33 +160,29 @@ extension LLMOpenAILikeSession {
                     for functionCall in functionCalls {
                         group.addTask {
                             // Check if the function call execution has been cancelled
-                            if continuationObserver.isCancelled {
+                            guard !continuationObserver.isCancelled else {
                                 Self.logger.warning("SpeziLLMOpenAI: Function call execution cancelled by the user.")
                                 return
                             }
-
-                            let functionCallResponse = try? await self.callFunction(
+                            let response = try? await self.callFunction(
                                 availableFunctions: self.schema.functions,
                                 functionCallArgs: functionCall,
                                 failureHandling: .returnErrorInResponse
                             )
-
-                            guard let functionCallResponse = functionCallResponse else {
+                            guard let response else {
                                 Self.logger.warning("SpeziLLMOpenAI: callFunction() threw an error.")
                                 return
                             }
-
                             await MainActor.run {
                                 self.context.append(
-                                    forFunction: functionCallResponse.functionName,
-                                    withID: functionCallResponse.functionID,
-                                    response: functionCallResponse.response,
+                                    toolCallResponse: response.response,
+                                    for: response.functionName,
+                                    withId: response.functionName,
                                     interactionId: interactionId
                                 )
                             }
                         }
                     }
-                    
                     try await group.waitForAll()
                 }
             } catch {

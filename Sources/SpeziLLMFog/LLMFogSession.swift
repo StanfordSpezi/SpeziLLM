@@ -128,7 +128,7 @@ public final class LLMFogSession: LLMSession, Sendable {
         if await self.context.isEmpty {
             await MainActor.run {
                 for prompt in self.schema.parameters.systemPrompts {
-                    self.context.append(systemMessage: prompt)
+                    self.context.append(systemMessage: prompt, to: .leadingSystemMessages)
                 }
             }
         }

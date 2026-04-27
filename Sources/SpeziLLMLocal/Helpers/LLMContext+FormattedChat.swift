@@ -22,7 +22,7 @@ extension LLMContext {
                 // we intentionally want to skip these, as they are really just internal in-progress intermediate states
                 // (which sometimes but actually not always will contain some model thought process insights, but that's not desired output here)
                 return nil
-            case .user, .system, .assistant, .tool:
+            case .user, .system, .assistant, .toolCalls, .toolCallResponse:
                 return [
                     "role": entry.role.rawValue,
                     "content": entry.content

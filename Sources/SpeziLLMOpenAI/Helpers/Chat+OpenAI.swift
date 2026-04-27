@@ -18,10 +18,10 @@ extension LLMContextEntity.Role {
     /// Maps the `LLMContextEntity/Role`s to the `OpenAI/Chat/Role`s.
     var openAIRepresentation: Role {
         switch self {
-        case .assistant, .assistantThinking: .assistant
+        case .assistant, .toolCalls, .assistantThinking: .assistant
         case .user: .user
         case .system: .system
-        case .tool: .tool
+        case .toolCallResponse: .tool
         }
     }
 }

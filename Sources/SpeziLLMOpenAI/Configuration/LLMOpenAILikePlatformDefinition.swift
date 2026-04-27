@@ -14,13 +14,10 @@ import OpenAPIRuntime
 
 
 /// The API mode to use for inference with an OpenAI-like platform.
-///
-/// - ``chatCompletions``: Uses the Chat Completions API (`POST /v1/chat/completions`).
-///   Supported by all OpenAI-compatible platforms (OpenAI, Anthropic, Gemini).
-/// - ``responses``: Uses the OpenAI Responses API (`POST /v1/responses`).
-///   Required for newer OpenAI models (GPT-5.x, o-series, GPT-4.1, etc.).
 public enum LLMOpenAIAPIMode: String, Encodable, Sendable {
+    /// The `/v1/chat/completions` API
     case chatCompletions
+    /// The `/v1/responses` API
     case responses
 }
 
@@ -56,7 +53,7 @@ extension LLMOpenAILikePlatformDefinition {
 public protocol LLMOpenAILikePlatformModelType: Hashable, Encodable, Sendable {
     /// The default model, that should be used as a fallback.
     static var `default`: Self { get }
-
+    
     /// The list of well-known model types.
     ///
     /// Used e.g. when picking a model in the UI.
@@ -64,15 +61,13 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, Encodable, Sendable {
     
     /// The model identifier
     var modelId: String { get }
-
+    
     /// The API mode to use for inference with this model.
     var apiMode: LLMOpenAIAPIMode { get }
-
+    
     /// Whether this model can emit reasoning summaries during inference.
     ///
-    /// When `true`, the Responses API request will include `reasoning.summary = .auto`, and incoming
-    /// `response.reasoning_summary_*` SSE events will be surfaced as
-    /// ``LLMContextEntity/Role-swift.enum/assistantThinking`` entries in the session context.
+    /// When `true`, SpeziLLMOpenAI will include `reasoning.summary = .auto` in requests made via the responses API, the resulting summaries will be propagated into the `LLMContext`.
     /// Defaults to `false`.
     var supportsReasoningSummary: Bool { get }
 }

@@ -82,36 +82,31 @@ extension LLMOpenAILikeSession {
         _ contextEntity: LLMContextEntity
     ) -> Components.Schemas.ChatCompletionRequestMessage? {
         switch contextEntity.role {
-        case let .tool(id: functionID, name: _):
+        case let .toolCallResponse(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
                 role: .tool,
                 content: .case1(contextEntity.content),
                 tool_call_id: functionID
             ))
-        case let .assistant(toolCalls: toolCalls):
-            // No function calls present -> regular assistant message
-            if toolCalls.isEmpty {
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
-                    content: .case1(contextEntity.content),
-                    role: .assistant
-                ))
-            } else {
-                // Function calls present
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
-                    role: .assistant,
-                    tool_calls: toolCalls.map { toolCall in
-                        .ChatCompletionMessageToolCall(
-                            .init(
-                                id: toolCall.id,
-                                _type: .function,
-                                function: .init(name: toolCall.name, arguments: toolCall.arguments)
-                            )
+        case .assistant:
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                content: .case1(contextEntity.content),
+                role: .assistant
+            ))
+        case .toolCalls(let toolCalls):
+            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                role: .assistant,
+                tool_calls: toolCalls.map { toolCall in
+                    .ChatCompletionMessageToolCall(
+                        .init(
+                            id: toolCall.id,
+                            _type: .function,
+                            function: .init(name: toolCall.name, arguments: toolCall.arguments)
                         )
-                    }
-                ))
-            }
+                    )
+                }
+            ))
         case .system:
-            // No function calls present -> regular assistant message
             guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
                 .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
             else {
