@@ -145,7 +145,6 @@ where PlatformDefinition: LLMOpenAILikePlatformDefinition {
                 }
             }
         }
-
         return try self.platform.queue.submit { continuation in
             // starts tracking the continuation for cancellation
             let continuationObserver = ContinuationObserver(track: continuation)
@@ -153,21 +152,18 @@ where PlatformDefinition: LLMOpenAILikePlatformDefinition {
                 // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
                 continuationObserver.continuation.finish()
             }
-
             // Retains the continuation during inference for potential cancellation
             await self.continuationHolder.withContinuationHold(continuation: continuation) {
-                if continuationObserver.isCancelled {
+                guard !continuationObserver.isCancelled else {
                     Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
                     return
                 }
-
                 // Setup the model, if not already done
                 if !self.hasClient {
                     guard await self.setup(with: continuationObserver) else {
                         return
                     }
                 }
-
                 // Execute the inference using the appropriate API
                 switch self.schema.parameters.modelType.apiMode {
                 case .chatCompletions:

@@ -147,7 +147,6 @@ extension LLMOpenAILikeSession {
                       let functionCallName = functionCall.name else {
                     return nil
                 }
-
                 return .init(id: functionCallID, name: functionCallName, arguments: functionCall.arguments ?? "")
             }
             await MainActor.run {
@@ -177,7 +176,7 @@ extension LLMOpenAILikeSession {
                                 self.context.append(
                                     toolCallResponse: response.response,
                                     for: response.functionName,
-                                    withId: response.functionName,
+                                    withId: response.functionID,
                                     interactionId: interactionId
                                 )
                             }

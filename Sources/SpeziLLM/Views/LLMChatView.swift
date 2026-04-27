@@ -67,7 +67,7 @@ public struct LLMChatView<Session: LLMSession>: View {
             disableInput: self.inputDisabled,
             exportFormat: self.exportFormat,
             messagePendingAnimation: .automatic,
-            hiddenMessages: .custom([])
+            messagesVisibility: .init(hiddenMessages: .custom([]))
         )
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
@@ -96,11 +96,12 @@ public struct LLMChatView<Session: LLMSession>: View {
                        schemaProvider.schema.injectIntoContext {
                         for try await _ in stream { }
                     } else {
+                        let interactionId = LLMInteractionId()
                         for try await token in stream {
                             self.llm.context.append(
                                 assistantOutputDelta: token,
                                 isComplete: false,
-                                interactionId: nil
+                                interactionId: interactionId
                             )
                         }
                         self.llm.context.markAssistantOutputCompleted()

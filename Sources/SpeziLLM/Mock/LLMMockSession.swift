@@ -46,7 +46,7 @@ public final class LLMMockSession: LLMSession, Sendable {
             // starts tracking the continuation for cancellation
             let continuationObserver = ContinuationObserver(track: continuation)
             // Retains the continuation during inference for potential cancellation
-            await self.continuationHolder.withContinuationHold(continuation: continuation) {
+            await self.continuationHolder.withContinuationHold(continuation: continuation) { // swiftlint:disable:this closure_body_length
                 await MainActor.run {
                     self.state = .loading
                 }
@@ -61,6 +61,7 @@ public final class LLMMockSession: LLMSession, Sendable {
                 await MainActor.run {
                     self.state = .generating
                 }
+                let interactionId = LLMInteractionId()
                 // Generate mock messages
                 let tokens = ["Mock ", "Message ", "from ", "SpeziLLM!"]
                 for token in tokens {
@@ -75,7 +76,7 @@ public final class LLMMockSession: LLMSession, Sendable {
                             self.context.append(
                                 assistantOutputDelta: token,
                                 isComplete: false,
-                                interactionId: nil
+                                interactionId: interactionId
                             )
                         }
                     }

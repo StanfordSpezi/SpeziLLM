@@ -69,7 +69,9 @@ extension LLMOpenAILikeSession {
 
 
 extension LLMContextEntity {
-    fileprivate func toChatMessage(logger: Logger) -> Components.Schemas.ChatCompletionRequestMessage? { // swiftlint:disable:this function_body_length
+    fileprivate func toChatMessage( // swiftlint:disable:this function_body_length
+        logger: Logger
+    ) -> Components.Schemas.ChatCompletionRequestMessage? {
         switch self.role {
         case let .toolCallResponse(id: functionID, name: _):
             return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
