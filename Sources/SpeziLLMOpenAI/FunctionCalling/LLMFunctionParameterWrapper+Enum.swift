@@ -10,7 +10,7 @@ import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean
 
-extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawValue: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: LLMFunctionParameterEnum, Value.RawValue: StringProtocol {
     /// Declares an `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of the
     /// ``LLMFunction``.
     ///
@@ -26,7 +26,7 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
                 "type": "string",
                 "description": String(description),
                 "const": const.map { String($0) } as (any Sendable)?,
-                "enum": T.allCases.map { String($0.rawValue) }
+                "enum": Value.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
             fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -34,8 +34,8 @@ extension _LLMFunctionParameterWrapper where T: LLMFunctionParameterEnum, T.RawV
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunctionParameterEnum,
-    T.Wrapped.RawValue: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: LLMFunctionParameterEnum,
+    Value.Wrapped.RawValue: StringProtocol {
     /// Declares an optional `enum`-based ``LLMFunction/Parameter`` defining all options of a text-based parameter of
     /// the ``LLMFunction``.
     ///
@@ -51,7 +51,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
                 "type": "string",
                 "description": String(description),
                 "const": const.map { String($0) } as (any Sendable)?,
-                "enum": T.Wrapped.allCases.map { String($0.rawValue) }
+                "enum": Value.Wrapped.allCases.map { String($0.rawValue) }
             ].compactMapValues { $0 }))
         } catch {
             fatalError("SpeziLLMOpenAI: Failed to create validated function call schema definition of `LLMFunction/Parameter`: \(error)")
@@ -59,8 +59,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: LLMFunct
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunctionParameterEnum,
-    T.Element.RawValue: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyArray, Value.Element: LLMFunctionParameterEnum,
+    Value.Element.RawValue: StringProtocol {
     /// Declares an `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all options of
     /// a text-based parameter of the ``LLMFunction``.
     ///
@@ -84,7 +84,7 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
                 "items": [
                     "type": "string",
                     "const": const.map { String($0) } as (any Sendable)?,
-                    "enum": T.Element.allCases.map { String($0.rawValue) }
+                    "enum": Value.Element.allCases.map { String($0.rawValue) }
                 ].compactMapValues { $0 },
                 "minItems": minItems as (any Sendable)?,
                 "maxItems": maxItems as (any Sendable)?,
@@ -96,10 +96,10 @@ extension _LLMFunctionParameterWrapper where T: AnyArray, T.Element: LLMFunction
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional,
-    T.Wrapped: AnyArray,
-    T.Wrapped.Element: LLMFunctionParameterEnum,
-    T.Wrapped.Element.RawValue: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional,
+    Value.Wrapped: AnyArray,
+    Value.Wrapped.Element: LLMFunctionParameterEnum,
+    Value.Wrapped.Element.RawValue: StringProtocol {
     /// Declares an optional `enum`-based ``LLMFunction/Parameter`` `array`. An individual `array` element defines all
     /// options of a text-based parameter of the ``LLMFunction``.
     ///
@@ -123,7 +123,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional,
                 "items": [
                     "type": "string",
                     "const": const.map { String($0) } as (any Sendable)?,
-                    "enum": T.Wrapped.Element.allCases.map { String($0.rawValue) }
+                    "enum": Value.Wrapped.Element.allCases.map { String($0.rawValue) }
                 ],
                 "minItems": minItems as (any Sendable)?,
                 "maxItems": maxItems as (any Sendable)?,

@@ -16,11 +16,18 @@ extension LLMContext {
     ///   - `role`: The role of the message (e.g., "user", "assistant"), derived from the `rawValue` of the entry's `role`.
     ///   - `content`: The textual content of the message.
     package var formattedChat: [[String: String]] {
-        self.map { entry in
-            [
-                "role": entry.role.rawValue,
-                "content": entry.content
-            ]
+        self.compactMap { entry in
+            switch entry.role {
+            case .assistantThinking:
+                // we intentionally want to skip these, as they are really just internal in-progress intermediate states
+                // (which sometimes but actually not always will contain some model thought process insights, but that's not desired output here)
+                return nil
+            case .user, .system, .assistant, .toolCalls, .toolCallResponse:
+                return [
+                    "role": entry.role.rawValue,
+                    "content": entry.content
+                ]
+            }
         }
     }
 }

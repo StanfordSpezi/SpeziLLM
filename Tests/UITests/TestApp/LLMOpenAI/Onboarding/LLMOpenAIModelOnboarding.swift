@@ -15,8 +15,7 @@ struct LLMOpenAILikeModelOnboarding<PlatformDefinition: LLMOpenAILikePlatformDef
     @Environment(ManagedNavigationStack.Path.self) private var path
     @State private var showingAlert = false
     @State private var modelSelection: PlatformDefinition.ModelType?
-
-
+    
     var body: some View {
         Group {
             LLMOpenAILikeModelOnboardingStep<PlatformDefinition> { model in
@@ -24,14 +23,12 @@ struct LLMOpenAILikeModelOnboarding<PlatformDefinition: LLMOpenAILikePlatformDef
                 showingAlert.toggle()
             }
         }
-        .alert(isPresented: $showingAlert) {
-            Alert(
-                title: Text("LLM_OPENAI_MODEL_SELECTED"),
-                message: Text(modelSelection?.rawValue ?? "No model selected"),
-                dismissButton: .default(Text("OK"), action: {
-                    path.removeLast()
-                })
-            )
+        .alert("LLM_OPENAI_MODEL_SELECTED", isPresented: $showingAlert) {
+            Button("OK") {
+                path.removeLast()
+            }
+        } message: {
+            Text(modelSelection?.modelId ?? "No model selected")
         }
     }
 }

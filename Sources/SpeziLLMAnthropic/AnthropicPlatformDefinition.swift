@@ -16,12 +16,14 @@ import SpeziLLMOpenAI
 /// Defines the Anthropic LLM platform.
 public struct AnthropicPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public struct ModelType: LLMOpenAILikePlatformModelType {
-        public let rawValue: String
-        public init(rawValue: String) {
-            self.rawValue = rawValue
+        public let modelId: String
+        public var apiMode: LLMOpenAIAPIMode {
+            // all anthropic models are run via their OpenAI compatibility layer, which supports only the chat completions API
+            .chatCompletions
         }
-        public init(stringLiteral value: String) {
-            self.rawValue = value
+        
+        public init(modelId: String) {
+            self.modelId = modelId
         }
     }
     
@@ -155,11 +157,10 @@ extension AnthropicPlatformDefinition.ModelType {
         .opus4_6, .sonnet4_6, .haiku4_6
     ]
     
-    /// Claude Opus 4.6
-    public static let opus4_6 = Self(rawValue: "claude-opus-4-6")
-    /// Claude Sonnet 4.6
-    public static let sonnet4_6 = Self(rawValue: "claude-sonnet-4-6")
-    /// Claude Haiku 4.5
-    public static let haiku4_6 = Self(rawValue: "claude-haiku-4-5")
+    // swiftlint:disable missing_docs
+    public static let opus4_6 = Self(modelId: "claude-opus-4-6")
+    public static let sonnet4_6 = Self(modelId: "claude-sonnet-4-6")
+    public static let haiku4_6 = Self(modelId: "claude-haiku-4-5")
+    // swiftlint:enable missing_docs
 }
 // swiftlint:enable identifier_name

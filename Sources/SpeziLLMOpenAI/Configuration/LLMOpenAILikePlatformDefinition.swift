@@ -13,6 +13,15 @@ import GeneratedOpenAIClient
 import OpenAPIRuntime
 
 
+/// The API mode to use for inference with an OpenAI-like platform.
+public enum LLMOpenAIAPIMode: String, Encodable, Sendable {
+    /// The `/v1/chat/completions` API
+    case chatCompletions
+    /// The `/v1/responses` API
+    case responses
+}
+
+
 public protocol LLMOpenAILikePlatformDefinition: Sendable {
     /// Defines the models available on this platform
     associatedtype ModelType: LLMOpenAILikePlatformModelType
@@ -41,7 +50,7 @@ extension LLMOpenAILikePlatformDefinition {
 }
 
 
-public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<String>, Codable, Identifiable, ExpressibleByStringLiteral, Sendable {
+public protocol LLMOpenAILikePlatformModelType: Hashable, Encodable, Sendable {
     /// The default model, that should be used as a fallback.
     static var `default`: Self { get }
     
@@ -50,13 +59,22 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     /// Used e.g. when picking a model in the UI.
     static var wellKnownModels: [Self] { get }
     
-    /// Creates a `ModelType` from a raw string value
-    init(rawValue: String)
+    /// The model identifier
+    var modelId: String { get }
+    
+    /// The API mode to use for inference with this model.
+    var apiMode: LLMOpenAIAPIMode { get }
+    
+    /// Whether this model can emit reasoning summaries during inference.
+    ///
+    /// When `true`, SpeziLLMOpenAI will include `reasoning.summary = .auto` in requests made via the responses API, the resulting summaries will be propagated into the `LLMContext`.
+    /// Defaults to `false`.
+    var supportsReasoningSummary: Bool { get }
 }
 
 
 extension LLMOpenAILikePlatformModelType {
-    public var id: some Hashable { // swiftlint:disable:this missing_docs
-        rawValue
+    public var supportsReasoningSummary: Bool { // swiftlint:disable:this missing_docs
+        false
     }
 }

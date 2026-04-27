@@ -16,12 +16,14 @@ import SpeziLLMOpenAI
 /// Defines the Gemini LLM platform.
 public struct GeminiPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public struct ModelType: LLMOpenAILikePlatformModelType {
-        public let rawValue: String
-        public init(rawValue: String) {
-            self.rawValue = rawValue
+        public let modelId: String
+        public var apiMode: LLMOpenAIAPIMode {
+            // all gemini models are run via their OpenAI compatibility layer, which supports only the chat completions API
+            .chatCompletions
         }
-        public init(stringLiteral value: String) {
-            self.rawValue = value
+        
+        public init(modelId: String) {
+            self.modelId = modelId
         }
     }
     
@@ -156,18 +158,14 @@ extension GeminiPlatformDefinition.ModelType {
         .gemini2_5_pro, .gemini2_5_flash, .gemini2_5_flash_lite
     ]
     
-    /// Gemini 3.1 Pro
-    public static let gemini3_1_pro = Self(rawValue: "gemini-3.1-pro")
-    /// Gemini 3 Pro
-    public static let gemini3_pro = Self(rawValue: "gemini-3-pro")
-    /// Gemini 3 Flash
-    public static let gemini3_flash = Self(rawValue: "gemini-3-flash")
+    // swiftlint:disable missing_docs
+    public static let gemini3_1_pro = Self(modelId: "gemini-3.1-pro")
+    public static let gemini3_pro = Self(modelId: "gemini-3-pro")
+    public static let gemini3_flash = Self(modelId: "gemini-3-flash")
     
-    /// Gemini 2.5 Pro
-    public static let gemini2_5_pro = Self(rawValue: "gemini-2.5-pro")
-    /// Gemini 2.5 Flash
-    public static let gemini2_5_flash = Self(rawValue: "gemini-2.5-flash")
-    /// Gemini 2.5 Flash Lite
-    public static let gemini2_5_flash_lite = Self(rawValue: "gemini-2.5-flash-lite")
+    public static let gemini2_5_pro = Self(modelId: "gemini-2.5-pro")
+    public static let gemini2_5_flash = Self(modelId: "gemini-2.5-flash")
+    public static let gemini2_5_flash_lite = Self(modelId: "gemini-2.5-flash-lite")
+    // swiftlint:enable missing_docs
 }
 // swiftlint:enable identifier_name

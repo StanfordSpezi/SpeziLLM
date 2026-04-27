@@ -55,7 +55,7 @@ struct LLMOpenAILikeChatTestView<PlatformDefinition: LLMOpenAILikePlatformDefini
         schema = Platform.Schema(
             parameters: .init(
                 modelType: model,
-                systemPrompt: "You're a helpful assistant that answers questions from users."
+                systemPrompt: "You're a helpful assistant that answers questions from users.",
             )
         ) {
             LLMOpenAIFunctionWeather()

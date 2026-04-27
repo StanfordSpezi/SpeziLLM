@@ -16,9 +16,9 @@ let package = Package(
     name: "SpeziLLM",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v17),
-        .visionOS(.v1),
-        .macOS(.v14)
+        .iOS(.v18),
+        .visionOS(.v2),
+        .macOS(.v15)
     ],
     products: [
         .library(name: "SpeziLLM", targets: ["SpeziLLM"]),
@@ -38,9 +38,10 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.2.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.4"),
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding.git", from: "2.0.2"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziChat.git", .upToNextMinor(from: "0.2.5")),
+        .package(url: "https://github.com/StanfordSpezi/SpeziChat.git", revision: "e53837b80dc7b880b8b051ba6aaed8da805dae38"),
+//        .package(path: "../SpeziChat"),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews.git", from: "1.12.11"),
-        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.10.4"),
         .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.1.0")
     ],

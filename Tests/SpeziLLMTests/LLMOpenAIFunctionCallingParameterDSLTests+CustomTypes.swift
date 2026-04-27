@@ -78,7 +78,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     @Test("Test Custom Type Parameters")
     func testLLMFunctionCustomParameters() async throws {
         let llm = LLMOpenAISchema(
-            parameters: .init(modelType: "gpt-4o")
+            parameters: .init(modelType: .gpt4o)
         ) {
             LLMFunctionTestCustom(someInitArg: "testArg")
         }
@@ -89,8 +89,8 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // Validate parameter metadata
         #expect(llmFunctionPair.key == LLMFunctionTestCustom.name)
         let llmFunction = llmFunctionPair.value
-        #expect(try #require(llmFunction.parameterValueCollectors["customArrayParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["customOptionalArrayParameter"]).isOptional)
+        #expect(try #require(llmFunction.parameters["customArrayParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["customOptionalArrayParameter"]).isOptional)
         
         // Validate parameter schema
         let schemaCustomArray = try #require(llmFunction.schemaValueCollectors["customArrayParameter"])
@@ -125,8 +125,8 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersCustom.shared)
         
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "testArg")
+        let arguments = try LLMFunctionCallArguments(from: parameterData, for: llmFunction)
+        let response = try await llmFunction._execute(arguments)
+        #expect(response == "testArg")
     }
 }

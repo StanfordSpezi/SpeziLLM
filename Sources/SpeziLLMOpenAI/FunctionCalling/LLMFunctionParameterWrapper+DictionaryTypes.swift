@@ -35,9 +35,9 @@ extension _LLMFunctionParameterWrapper {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
-                                             T.Key: StringProtocol & Hashable,
-                                             T.Value: BinaryInteger {
+extension _LLMFunctionParameterWrapper where Value: ExpressibleByDictionaryLiteral,
+                                             Value.Key: StringProtocol & Hashable,
+                                             Value.Value: BinaryInteger {
     /// Declares a ``LLMFunction/Parameter``  of type `object`
     /// representing a dictionary with `String`-based keys and `Int`-based values.
     ///
@@ -52,9 +52,9 @@ extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
-                                             T.Key: StringProtocol & Hashable,
-                                             T.Value: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where Value: ExpressibleByDictionaryLiteral,
+                                             Value.Key: StringProtocol & Hashable,
+                                             Value.Value: BinaryFloatingPoint {
     /// Declares a ``LLMFunction/Parameter``  of type `object`
     /// representing a dictionary with `String`-based keys and `Float` or `Double` (`BinaryFloatingPoint`) -based values.
     ///
@@ -69,9 +69,9 @@ extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
-                                             T.Key: StringProtocol & Hashable,
-                                             T.Value == Bool {
+extension _LLMFunctionParameterWrapper where Value: ExpressibleByDictionaryLiteral,
+                                             Value.Key: StringProtocol & Hashable,
+                                             Value.Value == Bool {
     /// Declares a ``LLMFunction/Parameter``  of type `object`
     /// representing a dictionary with `String`-based keys and `boolean` values.
     ///
@@ -87,9 +87,9 @@ extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
 }
 
 
-extension _LLMFunctionParameterWrapper where T: ExpressibleByDictionaryLiteral,
-                                             T.Key: StringProtocol & Hashable,
-                                             T.Value: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: ExpressibleByDictionaryLiteral,
+                                             Value.Key: StringProtocol & Hashable,
+                                             Value.Value: StringProtocol {
     /// Declares a ``LLMFunction/Parameter``  of type `object`
     /// representing a dictionary with `String`-based keys and `String`-based values.
     ///

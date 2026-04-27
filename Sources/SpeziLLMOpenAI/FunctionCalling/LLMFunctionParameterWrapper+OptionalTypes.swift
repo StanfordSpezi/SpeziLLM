@@ -10,7 +10,7 @@ import SpeziFoundation
 
 // swiftlint:disable discouraged_optional_boolean discouraged_optional_collection
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryInteger {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: BinaryInteger {
     /// Declares an ``LLMFunction/Parameter`` of the type `Int?` defining a integer parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -23,8 +23,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
-        minimum: T.Wrapped? = nil,
-        maximum: T.Wrapped? = nil
+        minimum: Value.Wrapped? = nil,
+        maximum: Value.Wrapped? = nil
     ) {
         do {
             try self.init(schema: .init(unvalidatedValue: [
@@ -41,7 +41,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryIn
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: BinaryFloatingPoint {
     /// Declares an ``LLMFunction/Parameter`` of the type `Float?` or `Double?` (`FloatingPoint?`)  defining a floating-point parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -52,8 +52,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
     public convenience init(
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
-        minimum: T.Wrapped? = nil,
-        maximum: T.Wrapped? = nil
+        minimum: Value.Wrapped? = nil,
+        maximum: Value.Wrapped? = nil
     ) {
         do {
             try self.init(schema: .init(unvalidatedValue: [
@@ -69,7 +69,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: BinaryFl
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped == Bool {
     /// Declares an ``LLMFunction/Parameter`` of the type `Bool?` defining a binary parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -91,7 +91,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped == Bool {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: StringProtocol {
     /// Declares an ``LLMFunction/Parameter`` of the type `String?` defining a text-based parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -122,8 +122,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: StringPr
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
-    T.Wrapped.Element: BinaryInteger {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: AnyArray,
+    Value.Wrapped.Element: BinaryInteger {
     /// Declares an optional `Int`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -139,8 +139,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
-        minimum: T.Wrapped.Element? = nil,
-        maximum: T.Wrapped.Element? = nil,
+        minimum: Value.Wrapped.Element? = nil,
+        maximum: Value.Wrapped.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
@@ -166,8 +166,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
-    T.Wrapped.Element: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: AnyArray,
+    Value.Wrapped.Element: BinaryFloatingPoint {
     /// Declares an optional `Float` or `Double` (`BinaryFloatingPoint`) -based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -181,8 +181,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     public convenience init(
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
-        minimum: T.Wrapped.Element? = nil,
-        maximum: T.Wrapped.Element? = nil,
+        minimum: Value.Wrapped.Element? = nil,
+        maximum: Value.Wrapped.Element? = nil,
         minItems: Int? = nil,
         maxItems: Int? = nil,
         uniqueItems: Bool? = nil
@@ -207,7 +207,7 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray, T.Wrapped.Element == Bool {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: AnyArray, Value.Wrapped.Element == Bool {
     /// Declares an optional `Bool`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:
@@ -241,8 +241,8 @@ extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: AnyOptional, T.Wrapped: AnyArray,
-    T.Wrapped.Element: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: AnyOptional, Value.Wrapped: AnyArray,
+    Value.Wrapped.Element: StringProtocol {
     /// Declares an optional `String`-based ``LLMFunction/Parameter`` `array`.
     ///
     /// - Parameters:

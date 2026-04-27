@@ -29,16 +29,8 @@ extension LLMFunction {
     /// Aggregates the individual parameter schemas of all ``LLMFunction/Parameter``s and combines them into the complete parameter schema of the ``LLMFunction``.
     package var schema: LLMFunctionParameterSchema {
         get throws {
-            let requiredPropertyNames = Array(
-                parameterValueCollectors
-                    .filter {
-                        !$0.value.isOptional
-                    }
-                    .keys
-            )
-
+            let requiredPropertyNames = Array(parameters.filter { !$0.value.isOptional }.keys)
             let properties = schemaValueCollectors.compactMapValues { $0.schema }
-
             var functionParameterSchema: LLMFunctionParameterSchema = .init()
             do {
                 functionParameterSchema.additionalProperties = try .init(

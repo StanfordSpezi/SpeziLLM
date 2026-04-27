@@ -66,7 +66,8 @@ public struct LLMChatView<Session: LLMSession>: View {
             self.$llm.context.chat,
             disableInput: self.inputDisabled,
             exportFormat: self.exportFormat,
-            messagePendingAnimation: .automatic
+            messagePendingAnimation: .automatic,
+            messagesVisibility: .init(hiddenMessages: .custom([]))
         )
             .viewStateAlert(state: self.llm.state)
             .onChange(of: self.llm.context) { oldValue, newValue in
@@ -86,24 +87,25 @@ public struct LLMChatView<Session: LLMSession>: View {
                 guard self.messageTaskIdentifier != nil else {
                     return
                 }
-                
                 do {
                     // Trigger an output generation based on the `LLMSession/context`.
                     let stream = try await self.llm.generate()
-
                     // If injectIntoContext is true, the session manages context automatically.
                     // We still need to consume the stream to allow the generation to complete.
                     if let schemaProvider = llm as? any SchemaProvidingLLMSession,
                        schemaProvider.schema.injectIntoContext {
                         for try await _ in stream { }
-                        return
+                    } else {
+                        let interactionId = LLMInteractionId()
+                        for try await token in stream {
+                            self.llm.context.append(
+                                assistantOutputDelta: token,
+                                isComplete: false,
+                                interactionId: interactionId
+                            )
+                        }
+                        self.llm.context.markAssistantOutputCompleted()
                     }
-
-                    for try await token in stream {
-                        self.llm.context.append(assistantOutput: token)
-                    }
-
-                    self.llm.context.completeAssistantStreaming()
                 } catch is CancellationError {
                     // noop
                 } catch let error as any LLMError {

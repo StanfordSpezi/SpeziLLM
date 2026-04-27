@@ -36,8 +36,8 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILike
                 String(localized: "\(PlatformDefinition.platformName) Model", bundle: .module),
                 selection: $selection
             ) {
-                ForEach(models) { model in
-                    Text(model.rawValue)
+                ForEach(models, id: \.self) { model in
+                    Text(model.modelId)
                         .tag(model)
                 }
             }
@@ -87,38 +87,5 @@ public struct LLMOpenAILikeModelOnboardingStep<PlatformDefinition: LLMOpenAILike
         self.models = models
         self._selection = .init(initialValue: initial ?? .default)
         self.action = action
-    }
-}
-
-
-extension LLMOpenAILikeModelOnboardingStep {
-    /// - Parameters:
-    ///   - actionText: Localized text that should appear on the action button.
-    ///   - models: The models that should be displayed in the picker user interface.
-    ///   - initial: The initial model which should be selected.
-    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
-    @available(*, deprecated, renamed: "init(_:models:initial:action:)")
-    public init(
-        actionText: LocalizedStringResource?,
-        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
-        initial: PlatformDefinition.ModelType? = nil,
-        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
-    ) {
-        self.init(actionText, models: models, initial: initial, action: action)
-    }
-    
-    /// - Parameters:
-    ///   - actionText: Localized text that should appear on the action button.
-    ///   - models: The models that should be displayed in the picker user interface.
-    ///   - initial: The initial model which should be selected.
-    ///   - action: Action that should be performed after the OpenAI model selection has been done, selection is passed as closure argument.
-    @available(*, deprecated, renamed: "init(_:models:initial:action:)")
-    public init(
-        actionText: some StringProtocol,
-        models: [PlatformDefinition.ModelType] = PlatformDefinition.ModelType.wellKnownModels,
-        initial: PlatformDefinition.ModelType? = nil,
-        action: @escaping @MainActor (PlatformDefinition.ModelType) -> Void
-    ) {
-        self.init(actionText, models: models, initial: initial, action: action)
     }
 }

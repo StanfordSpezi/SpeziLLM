@@ -127,7 +127,7 @@ public final class LLMLocalSession: LLMSession, Sendable {
         if await self.context.isEmpty {
             await MainActor.run {
                 if let prompt = self.schema.parameters.systemPrompt {
-                    self.context.append(systemMessage: prompt)
+                    self.context.append(systemMessage: prompt, to: .leadingSystemMessages)
                 }
             }
         }

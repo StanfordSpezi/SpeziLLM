@@ -82,7 +82,7 @@ extension LLMOpenAILikeSession {
     private func modelAccessTest(continuation: AsyncThrowingStream<String, any Error>.Continuation) async -> Bool {
         do {
             if case let .undocumented(statusCode, _) = try await openAiClient
-                .retrieveModel(.init(path: .init(model: schema.parameters.modelType.rawValue))) {
+                .retrieveModel(.init(path: .init(model: schema.parameters.modelType.modelId))) {
                 let llmError = handleErrorCode(statusCode)
                 await finishGenerationWithError(llmError, on: continuation)
                 return false

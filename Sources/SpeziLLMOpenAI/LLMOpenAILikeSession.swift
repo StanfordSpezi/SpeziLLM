@@ -16,6 +16,8 @@ import SpeziChat
 import SpeziFoundation
 import SpeziKeychainStorage
 import SpeziLLM
+import Synchronization
+
 
 /// Represents an ``LLMOpenAILikeSchema`` in execution.
 ///
@@ -70,34 +72,33 @@ import SpeziLLM
 /// }
 /// ```
 @Observable
-public final class LLMOpenAILikeSession<
-    PlatformDefinition: LLMOpenAILikePlatformDefinition
->: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable {
+public final class LLMOpenAILikeSession<PlatformDefinition>: LLMSession, FunctionCallLLMSession, SchemaProvidingLLMSession, Sendable
+where PlatformDefinition: LLMOpenAILikePlatformDefinition {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     package static var logger: Logger {
-        Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+        Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAISession<\(PlatformDefinition.self)>")
     }
     
     let platform: LLMOpenAILikePlatform<PlatformDefinition>
     package let schema: LLMOpenAILikeSchema<PlatformDefinition>
     let keychainStorage: KeychainStorage
- 
-    private let clientLock = RWLock()
+    
     /// Counter for tracking nested tool calls
     package let toolCallCounter = ManagedAtomic<Int>(0)
     package let toolCallCompletionState = LLMState.generating
     /// The wrapped client instance communicating with the OpenAI API
-    @ObservationIgnored nonisolated(unsafe) var wrappedClient: (any LLMOpenAIChatClientProtocol)?
+    @ObservationIgnored private let client = Mutex<(any LLMOpenAIChatClientProtocol)?>(nil)
     /// Holds the currently generating continuations so that we can cancel them if required.
     let continuationHolder = LLMInferenceQueueContinuationHolder()
+    /// The ID of the last completed Responses API response, used for multi-turn via `previous_response_id`.
+    @ObservationIgnored nonisolated(unsafe) var lastResponseId: String?
 
     @MainActor public var state: LLMState = .uninitialized
     @MainActor public var context: LLMContext = []
 
     var openAiClient: any LLMOpenAIChatClientProtocol {
         get {
-            let client = self.clientLock.withReadLock { self.wrappedClient }
-
+            let client = self.client.withLock { $0 }
             guard let client else {
                 fatalError("""
                 SpeziLLMOpenAI: Illegal Access - Tried to access the wrapped OpenAI client of `LLMOpenAISession` before being initialized.
@@ -106,14 +107,14 @@ public final class LLMOpenAILikeSession<
             }
             return client
         }
-
         set {
-            self.clientLock.withWriteLock {
-                self.wrappedClient = newValue
-            }
+            self.client.withLock { $0 = newValue }
         }
     }
     
+    var hasClient: Bool {
+        client.withLock { $0 != nil }
+    }
     
     /// Creates an instance of a ``LLMOpenAISession`` responsible for LLM inference.
     ///
@@ -140,11 +141,10 @@ public final class LLMOpenAILikeSession<
         if await self.context.isEmpty {
             await MainActor.run {
                 for prompt in self.schema.parameters.systemPrompts {
-                    self.context.append(systemMessage: prompt)
+                    self.context.append(systemMessage: prompt, to: .leadingSystemMessages)
                 }
             }
         }
-
         return try self.platform.queue.submit { continuation in
             // starts tracking the continuation for cancellation
             let continuationObserver = ContinuationObserver(track: continuation)
@@ -152,23 +152,25 @@ public final class LLMOpenAILikeSession<
                 // To be on the safe side, finish the continuation (has no effect if multiple finish calls)
                 continuationObserver.continuation.finish()
             }
-
             // Retains the continuation during inference for potential cancellation
             await self.continuationHolder.withContinuationHold(continuation: continuation) {
-                if continuationObserver.isCancelled {
+                guard !continuationObserver.isCancelled else {
                     Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
                     return
                 }
-
                 // Setup the model, if not already done
-                if self.wrappedClient == nil {
+                if !self.hasClient {
                     guard await self.setup(with: continuationObserver) else {
                         return
                     }
                 }
-
-                // Execute the inference
-                await self._generate(with: continuationObserver)
+                // Execute the inference using the appropriate API
+                switch self.schema.parameters.modelType.apiMode {
+                case .chatCompletions:
+                    await self._generate(with: continuationObserver)
+                case .responses:
+                    await self._generateWithResponses(with: continuationObserver)
+                }
             }
         }
     }

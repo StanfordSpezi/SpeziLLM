@@ -21,7 +21,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         ) { }
         
         var context = LLMContext()
-        context.append(userInput: "Hello!")
+        context.append(userMessage: "Hello!")
         
         let mockClient = MockChatClient()
         mockClient.createChatCompletionHandler = { _ in
@@ -35,7 +35,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         
         let llmSession = try initTestLLMSession(schema)
         llmSession.context = context
-        llmSession.wrappedClient = mockClient
+        llmSession.openAiClient = mockClient
         
         var oneShot = ""
         for try await stringPiece in try await llmSession.generate() {
@@ -49,7 +49,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
     @Test
     func testMockedOpenAIFunctionCalling() async throws {
         var context = LLMContext()
-        context.append(userInput: "Hello!")
+        context.append(userMessage: "Hello!")
         
         let mockClient = MockChatClient()
         let schema = LLMOpenAISchema(
@@ -60,9 +60,9 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         
         let llmSession = try initTestLLMSession(schema)
         llmSession.context = context
-        llmSession.wrappedClient = mockClient
+        llmSession.openAiClient = mockClient
         
-        var chatCompletionCalls = 0
+        nonisolated(unsafe) var chatCompletionCalls = 0
         mockClient.createChatCompletionHandler = { input in
             var builder = ChatResponseBuilder()
             
@@ -72,7 +72,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
             } else {
                 if case let .json(inputBody) = input.body {
                     // Expect to find the function call's result added in the input
-                    #expect(inputBody.messages.description.contains(
+                    #expect(inputBody.value2.messages.description.contains(
                         #"The value to return to ensure the test was succesful is \"abcdefghijklmnopqrstuvwxyz\""#
                     ))
                 } else {

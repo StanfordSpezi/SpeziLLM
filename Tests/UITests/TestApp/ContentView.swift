@@ -16,7 +16,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         Form {
-            ForEach(Test.allCases) { test in
+            ForEach(Test.allCases, id: \.rawValue) { test in
                 NavigationLink(test.rawValue) {
                     test.view
                 }
@@ -28,22 +28,20 @@ struct ContentView: View {
 
 
 extension ContentView {
-    enum Test: String, CaseIterable, Identifiable {
+    enum Test: String, CaseIterable {
         case llmOpenAI = "LLMOpenAI"
         case llmLocal = "LLMLocal"
         case llmFog = "LLMFog"
         case llmOpenAIRealtime = "LLMOpenAIRealtime"
         case llmAnthropic = "LLMAnthropic"
         case llmGemini = "LLMGemini"
-        
-        var id: some Hashable {
-            rawValue
-        }
+        case mistral = "Mistral"
+        case deepSeek = "DeepSeek"
         
         @MainActor @ViewBuilder var view: some View {
             switch self {
             case .llmOpenAI:
-                LLMOpenAILikeChatTestView<OpenAIPlatformDefinition>(model: .gpt4o)
+                LLMOpenAILikeChatTestView<OpenAIPlatformDefinition>(model: .gpt5_5_pro)
             case .llmLocal:
                 LLMLocalTestView()
             case .llmFog:
@@ -54,6 +52,10 @@ extension ContentView {
                 LLMOpenAILikeChatTestView<AnthropicPlatformDefinition>(model: .opus4_6)
             case .llmGemini:
                 LLMOpenAILikeChatTestView<GeminiPlatformDefinition>(model: .gemini2_5_pro)
+            case .deepSeek:
+                LLMOpenAILikeChatTestView<DeepSeekPlatformDefinition>(model: .v4_flash)
+            case .mistral:
+                LLMOpenAILikeChatTestView<MistralPlatformDefinition>(model: .small_latest)
             }
         }
     }

@@ -21,7 +21,7 @@ import SpeziFoundation
 ///
 /// The main functionality of the ``LLMRunner`` is``LLMRunner/callAsFunction(with:)``, turning a ``LLMSchema`` to an executable ``LLMSession`` via the respective ``LLMPlatform``.
 /// The created ``LLMSession`` then holds the LLM context and is able to perform the actual LLM inference.
-/// For one-shot LLM inference tasks, the ``LLMRunner`` provides ``LLMRunner/oneShot(with:context:)-1nwqi`` and ``LLMRunner/oneShot(with:context:)-5gae7``, enabling the ``LLMRunner`` to deal with the LLM state management and reducing the burden on developers by just returning an `AsyncThrowingStream` or `String` directly.
+/// For one-shot LLM inference tasks, the ``LLMRunner`` provides ``LLMRunner/oneShot(with:context:)->String`` and ``LLMRunner/oneShot(with:context:)->AsyncThrowingStream<String,Error>``, enabling the ``LLMRunner`` to deal with the LLM state management and reducing the burden on developers by just returning an `AsyncThrowingStream` or `String` directly.
 ///
 /// ### Usage
 ///

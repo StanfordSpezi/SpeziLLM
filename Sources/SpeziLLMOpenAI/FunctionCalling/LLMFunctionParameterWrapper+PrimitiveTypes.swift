@@ -8,7 +8,7 @@
 
 // swiftlint:disable discouraged_optional_collection
 
-extension _LLMFunctionParameterWrapper where T: BinaryInteger {
+extension _LLMFunctionParameterWrapper where Value: BinaryInteger {
     /// Declares an ``LLMFunction/Parameter`` of the type `Int` defining a integer parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -21,8 +21,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
         multipleOf: Int? = nil,
-        minimum: T? = nil,
-        maximum: T? = nil
+        minimum: Value? = nil,
+        maximum: Value? = nil
     ) {
         do {
             try self.init(schema: .init(unvalidatedValue: [
@@ -39,7 +39,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryInteger {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
+extension _LLMFunctionParameterWrapper where Value: BinaryFloatingPoint {
     /// Declares an ``LLMFunction/Parameter`` of the type `Float` or `Double` (`BinaryFloatingPoint`) defining a
     /// floating-point parameter of the ``LLMFunction``.
     ///
@@ -51,8 +51,8 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
     public convenience init(
         description: some StringProtocol,
         const: (any StringProtocol)? = nil,
-        minimum: T? = nil,
-        maximum: T? = nil
+        minimum: Value? = nil,
+        maximum: Value? = nil
     ) {
         do {
             try self.init(schema: .init(unvalidatedValue: [
@@ -68,7 +68,7 @@ extension _LLMFunctionParameterWrapper where T: BinaryFloatingPoint {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T == Bool {
+extension _LLMFunctionParameterWrapper where Value == Bool {
     /// Declares an ``LLMFunction/Parameter`` of the type `Bool` defining a binary parameter of the ``LLMFunction``.
     ///
     /// - Parameters:
@@ -91,7 +91,7 @@ extension _LLMFunctionParameterWrapper where T == Bool {
     }
 }
 
-extension _LLMFunctionParameterWrapper where T: StringProtocol {
+extension _LLMFunctionParameterWrapper where Value: StringProtocol {
     /// Declares an ``LLMFunction/Parameter`` of the type `String` defining a text-based parameter of the
     /// ``LLMFunction``.
     ///

@@ -52,7 +52,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
     @Test("Test Dictionary Parameters")
     func testLLMFunctionDictionaryParameters() async throws {
         let llm = LLMOpenAISchema(
-            parameters: .init(modelType: "gpt-4o")
+            parameters: .init(modelType: .gpt4o)
         ) {
             LLMFunctionTestDictionary()
         }
@@ -63,10 +63,10 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         // Validate parameter metadata
         #expect(llmFunctionPair.key == LLMFunctionTestDictionary.name)
         let llmFunction = llmFunctionPair.value
-        #expect(try #require(llmFunction.parameterValueCollectors["intDictionaryParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["doubleDictionaryParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["boolDictionaryParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["stringDictionaryParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["intDictionaryParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["doubleDictionaryParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["boolDictionaryParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["stringDictionaryParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaDictionaryInt = try #require(llmFunction.schemaValueCollectors["intDictionaryParameter"])
@@ -100,9 +100,8 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
         
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersDictionary.shared)
-        
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "Test completed")
+        let arguments = try LLMFunctionCallArguments(from: parameterData, for: llmFunction)
+        let response = try await llmFunction._execute(arguments)
+        #expect(response == "Test completed")
     }
 }

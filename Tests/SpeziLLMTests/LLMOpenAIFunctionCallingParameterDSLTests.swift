@@ -57,7 +57,7 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
     @Test("Test Primitive Type Parameters")
     func testLLMFunctionPrimitiveParameters() async throws {
         let llm = LLMOpenAISchema(
-            parameters: .init(modelType: "gpt-4o")
+            parameters: .init(modelType: .gpt4o)
         ) {
             LLMFunctionTestPrimitive(someInitArg: "testArg")
         }
@@ -68,10 +68,10 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         // Validate parameter metadata
         #expect(llmFunctionPair.key == LLMFunctionTestPrimitive.name)
         let llmFunction = llmFunctionPair.value
-        #expect(try #require(llmFunction.parameterValueCollectors["intParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["doubleParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["boolParameter"]).isOptional == false)
-        #expect(try #require(llmFunction.parameterValueCollectors["stringParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["intParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["doubleParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["boolParameter"]).isOptional == false)
+        #expect(try #require(llmFunction.parameters["stringParameter"]).isOptional == false)
         
         // Validate parameter schema
         let schemaPrimitiveInt = try #require(llmFunction.schemaValueCollectors["intParameter"])
@@ -99,9 +99,8 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersPrimitive.shared)
-        
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
-        #expect(llmFunctionResponse == "testArg")
+        let arguments = try LLMFunctionCallArguments(from: parameterData, for: llmFunction)
+        let response = try await llmFunction._execute(arguments)
+        #expect(response == "testArg")
     }
 }
