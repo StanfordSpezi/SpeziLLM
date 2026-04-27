@@ -76,7 +76,7 @@ public final class LLMOpenAILikeSession<PlatformDefinition>: LLMSession, Functio
 where PlatformDefinition: LLMOpenAILikePlatformDefinition {
     /// A Swift Logger that logs important information from the ``LLMOpenAISession``.
     package static var logger: Logger {
-        Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAI")
+        Logger(subsystem: "edu.stanford.spezi", category: "SpeziLLMOpenAISession<\(PlatformDefinition.self)>")
     }
     
     let platform: LLMOpenAILikePlatform<PlatformDefinition>

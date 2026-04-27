@@ -82,7 +82,7 @@ class LLMOpenAIInferenceTests {
         }
         
         var context = LLMContext()
-        context.append(userInput: "Hello! Return me the value needed for this test")
+        context.append(userMessage: "Hello! Return me the value needed for this test")
         
         let llmSession = try initTestLLMSession(schema)
         var oneShot = ""

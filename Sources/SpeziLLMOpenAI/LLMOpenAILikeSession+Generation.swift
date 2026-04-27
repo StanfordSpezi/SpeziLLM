@@ -44,7 +44,7 @@ extension LLMOpenAILikeSession {
             var llmStreamResults: [Int: LLMOpenAIStreamResult] = [:]
             
             do {
-                let response = try await openAiClient.createChatCompletion(openAIChatQuery)
+                let response = try await openAiClient.createChatCompletion(openAIChatQuery())
 
                 if case let .undocumented(statusCode: statusCode, payload) = response {
                     let llmError = handleErrorCode(statusCode)

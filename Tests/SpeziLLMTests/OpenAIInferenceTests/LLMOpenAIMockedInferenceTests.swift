@@ -21,7 +21,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         ) { }
         
         var context = LLMContext()
-        context.append(userInput: "Hello!")
+        context.append(userMessage: "Hello!")
         
         let mockClient = MockChatClient()
         mockClient.createChatCompletionHandler = { _ in
@@ -49,7 +49,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
     @Test
     func testMockedOpenAIFunctionCalling() async throws {
         var context = LLMContext()
-        context.append(userInput: "Hello!")
+        context.append(userMessage: "Hello!")
         
         let mockClient = MockChatClient()
         let schema = LLMOpenAISchema(

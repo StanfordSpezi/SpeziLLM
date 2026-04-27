@@ -23,7 +23,7 @@ extension LLMOpenAILikeSession {
     func _generateWithResponses( // swiftlint:disable:this identifier_name function_body_length cyclomatic_complexity
         with continuationObserver: ContinuationObserver<String, any Error>
     ) async {
-        if continuationObserver.isCancelled {
+        guard !continuationObserver.isCancelled else {
             Self.logger.warning("SpeziLLMOpenAI: Generation cancelled by the user.")
             return
         }
@@ -45,7 +45,7 @@ extension LLMOpenAILikeSession {
             }
             var functionCalls: [LLMOpenAIStreamResult.FunctionCall] = []
             do {
-                let response = try await openAiClient.createResponse(openAIResponsesQuery)
+                let response = try await openAiClient.createResponse(openAIResponsesQuery())
                 if case let .undocumented(statusCode: statusCode, payload) = response {
                     let llmError = handleErrorCode(statusCode)
                     #if DEBUG

@@ -30,8 +30,8 @@ struct LLMOpenAILikeChatTestView<PlatformDefinition: LLMOpenAILikePlatformDefini
                 
                 // Otherwise use the LLMChatView and pass a LLMSession Binding in there. Use the @LLMSessionProvider wrapper to instantiate the LLMSession
                 LLMChatView(session: $llm)
-//                    .speak(llm.context.chat, muted: muted)
-//                    .speechToolbarButton(muted: $muted)
+                    .speak(llm.context.chat, muted: muted)
+                    .speechToolbarButton(muted: $muted)
             }
         }
         .navigationTitle("LLM \(PlatformDefinition.platformName) Chat")
@@ -39,11 +39,6 @@ struct LLMOpenAILikeChatTestView<PlatformDefinition: LLMOpenAILikePlatformDefini
             ToolbarItem {
                 Button("Onboarding") {
                     showOnboarding.toggle()
-                }
-            }
-            ToolbarItem {
-                Button("W") {
-                    llm.context.append(userInput: "What's the weather in Munich, Berlin, and SF? (in Celsuis)")
                 }
             }
         }
