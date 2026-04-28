@@ -46,7 +46,7 @@ extension LLMFoundationModelsSession {
     public func streamStructured<T: Generable>(
         generating type: T.Type
     ) async throws -> AsyncThrowingStream<T.PartiallyGenerated, any Error> where T.PartiallyGenerated: Sendable {
-        let prompt = await MainActor.run { self.buildPrompt() }
+        let prompt = await MainActor.run { self.lastUnsentUserPrompt() }
         guard let prompt else {
             throw LLMFoundationModelsError.missingPrompt
         }
@@ -58,6 +58,7 @@ extension LLMFoundationModelsSession {
         }
 
         let session = try await MainActor.run { try self.resolvedLanguageModelSession() }
+        try await replayUnsentContext(on: session)
 
         let (outputStream, outputContinuation) = AsyncThrowingStream<T.PartiallyGenerated, any Error>.makeStream()
 
@@ -78,6 +79,7 @@ extension LLMFoundationModelsSession {
                 outputContinuation.finish()
 
                 await MainActor.run {
+                    self.sentContextCount = self.context.count
                     self.state = .ready
                 }
             } catch {
@@ -103,7 +105,7 @@ extension LLMFoundationModelsSession {
     public func generate<T: Generable>(
         generating type: T.Type
     ) async throws -> T {
-        let prompt = await MainActor.run { self.buildPrompt() }
+        let prompt = await MainActor.run { self.lastUnsentUserPrompt() }
         guard let prompt else {
             throw LLMFoundationModelsError.missingPrompt
         }
@@ -116,6 +118,7 @@ extension LLMFoundationModelsSession {
 
         do {
             let session = try await MainActor.run { try self.resolvedLanguageModelSession() }
+            try await replayUnsentContext(on: session)
             let response = try await session.respond(
                 to: prompt,
                 generating: type,
@@ -123,6 +126,7 @@ extension LLMFoundationModelsSession {
             )
 
             await MainActor.run {
+                self.sentContextCount = self.context.count
                 self.state = .ready
             }
 

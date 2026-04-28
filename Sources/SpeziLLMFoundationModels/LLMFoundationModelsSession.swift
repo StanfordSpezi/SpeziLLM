@@ -44,6 +44,9 @@ public final class LLMFoundationModelsSession: LLMSession, Sendable {
 #if canImport(FoundationModels)
     /// The underlying framework session, lazily created on first use.
     @MainActor private var languageModelSession: AnyObject?
+    /// Number of context entries already sent to the `LanguageModelSession`.
+    /// Used to replay only new messages on subsequent `generate()` calls.
+    @MainActor var sentContextCount: Int = 0
 #endif
 
 
@@ -96,7 +99,20 @@ extension LLMFoundationModelsSession {
             session = LanguageModelSession(model: model)
         }
         languageModelSession = session
+        sentContextCount = 0
         return session
+    }
+
+    /// Invalidates and recreates the underlying session.
+    ///
+    /// Called when the SpeziLLM context has been modified in a way that's
+    /// incompatible with the `LanguageModelSession`'s internal history
+    /// (e.g. messages were removed or edited).
+    @MainActor
+    func resetLanguageModelSession() throws -> LanguageModelSession {
+        languageModelSession = nil
+        sentContextCount = 0
+        return try resolvedLanguageModelSession()
     }
 }
 #endif
