@@ -28,7 +28,8 @@ let package = Package(
         .library(name: "SpeziLLMFog", targets: ["SpeziLLMFog"]),
         .library(name: "SpeziLLMOpenAIRealtime", targets: ["SpeziLLMOpenAIRealtime"]),
         .library(name: "SpeziLLMAnthropic", targets: ["SpeziLLMAnthropic"]),
-        .library(name: "SpeziLLMGemini", targets: ["SpeziLLMGemini"])
+        .library(name: "SpeziLLMGemini", targets: ["SpeziLLMGemini"]),
+        .library(name: "SpeziLLMFoundationModels", targets: ["SpeziLLMFoundationModels"])
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift.git", .upToNextMinor(from: "0.29.1")),
@@ -151,6 +152,19 @@ let package = Package(
                 .product(name: "SpeziKeychainStorage", package: "SpeziStorage")
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")]
+        ),
+        .target(
+            name: "SpeziLLMFoundationModels",
+            dependencies: [
+                .target(name: "SpeziLLM"),
+                .product(name: "SpeziChat", package: "SpeziChat"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
+                .product(name: "Spezi", package: "Spezi")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny")
+            ],
+            plugins: [] + swiftLintPlugin()
         ),
         .target(
             name: "SpeziLLMFog",
