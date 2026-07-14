@@ -80,9 +80,9 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         app.buttons["Continue"].tap()
         
         #if !os(macOS)
-        XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["gpt-4.1"].waitForExistence(timeout: 2))
         #else
-        XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
+        XCTAssert(app.popUpButtons["gpt-4.1"].waitForExistence(timeout: 2))
         #endif
         app.buttons["Continue"].tap()
         
@@ -90,7 +90,7 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         let alert2 = app.alerts["Model Selected"]
 
         XCTAssertTrue(alert2.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(alert2.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert2.staticTexts["gpt-4.1"].exists, "The correct model was not registered.")
 
         let okButton2 = alert.buttons["OK"]
         XCTAssertTrue(okButton2.exists, "The OK button on the alert was not found.")
@@ -117,9 +117,9 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         app.buttons["Continue"].tap()
         
         #if !os(macOS)
-        XCTAssert(app.pickerWheels["gpt-4o"].waitForExistence(timeout: 2))
+        XCTAssert(app.pickerWheels["gpt-4.1"].waitForExistence(timeout: 2))
         #else
-        XCTAssert(app.popUpButtons["gpt-4o"].waitForExistence(timeout: 2))
+        XCTAssert(app.popUpButtons["gpt-4.1"].waitForExistence(timeout: 2))
         #endif
     }
     
