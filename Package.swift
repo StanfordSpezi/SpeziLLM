@@ -202,7 +202,8 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziTesting", package: "Spezi"),
                 .target(name: "SpeziLLM"),
-                .target(name: "SpeziLLMOpenAI")
+                .target(name: "SpeziLLMOpenAI"),
+                .target(name: "SpeziLLMAnthropic")
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny")
