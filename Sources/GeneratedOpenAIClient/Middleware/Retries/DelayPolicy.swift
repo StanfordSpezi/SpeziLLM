@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
+public import Foundation
 
 /// Defines delay between retries.
 public enum DelayPolicy: Hashable, Sendable {

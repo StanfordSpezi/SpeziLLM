@@ -6,11 +6,11 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
-import HTTPTypes
-import OpenAPIRuntime
-import SpeziKeychainStorage
-import SpeziLLM
+package import Foundation
+package import HTTPTypes
+package import OpenAPIRuntime
+package import SpeziKeychainStorage
+package import SpeziLLM
 
 
 /// Middleware for injecting an Bearer API token into outgoing requests based on the ``RemoteLLMInferenceAuthToken``.

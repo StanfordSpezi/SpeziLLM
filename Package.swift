@@ -190,7 +190,12 @@ let package = Package(
                 .process("Resources")
             ],
             swiftSettings: [
-                .enableUpcomingFeature("ExistentialAny")
+                .enableUpcomingFeature("ExistentialAny"),
+                // The swift-openapi-generator emits `package import` (accessModifier: package), while the
+                // hand-written and SwiftPM-generated files use plain imports. That mix trips the stricter
+                // build used by `swift package diagnose-api-breaking-changes` with an "ambiguous implicit
+                // access level for import" error. Making unmarked imports explicitly internal resolves it.
+                .enableUpcomingFeature("InternalImportsByDefault")
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")

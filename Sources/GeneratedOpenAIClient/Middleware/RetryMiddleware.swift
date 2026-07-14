@@ -6,9 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
-import HTTPTypes
-import OpenAPIRuntime
+package import Foundation
+package import HTTPTypes
+package import OpenAPIRuntime
 
 /// Middleware that retries HTTP requests based on defined conditions.
 package struct RetryMiddleware: Sendable {
