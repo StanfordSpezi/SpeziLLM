@@ -28,15 +28,15 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         #if os(macOS)
         XCTAssert(app.popUpButtons["modelPicker"].waitForExistence(timeout: 2))
         app.popUpButtons["modelPicker"].tap()
-        XCTAssert(app.menuItems["gpt-5-chat-latest"].waitForExistence(timeout: 2))
-        app.menuItems["gpt-5-chat-latest"].tap()
-        XCTAssert(app.popUpButtons["gpt-5-chat-latest"].waitForExistence(timeout: 2))
+        XCTAssert(app.menuItems["gpt-5"].waitForExistence(timeout: 2))
+        app.menuItems["gpt-5"].tap()
+        XCTAssert(app.popUpButtons["gpt-5"].waitForExistence(timeout: 2))
         #elseif os(visionOS)
         app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).swipeUp()
         XCTAssert(app.pickerWheels["gpt-3.5-turbo"].waitForExistence(timeout: 2))     // swipe down to the gpt-3.5-turbo model
         #else
-        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-5-chat-latest")
-        XCTAssert(app.pickerWheels["gpt-5-chat-latest"].waitForExistence(timeout: 2))
+        app.pickers["modelPicker"].pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "gpt-5")
+        XCTAssert(app.pickerWheels["gpt-5"].waitForExistence(timeout: 2))
         #endif
         
         sleep(1)
@@ -51,7 +51,7 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         #if os(visionOS)
         XCTAssertTrue(alert.staticTexts["gpt-3.5-turbo"].exists, "The correct model was not registered.")
         #else
-        XCTAssertTrue(alert.staticTexts["gpt-5-chat-latest"].exists, "The correct model was not registered.")
+        XCTAssertTrue(alert.staticTexts["gpt-5"].exists, "The correct model was not registered.")
         #endif
 
         let okButton = alert.buttons["OK"]
@@ -59,7 +59,7 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         okButton.tap()
         #else
         XCTAssertTrue(app.staticTexts["Model Selected"].waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
-        XCTAssertTrue(app.staticTexts["gpt-5-chat-latest"].exists, "The correct model was not registered.")
+        XCTAssertTrue(app.staticTexts["gpt-5"].exists, "The correct model was not registered.")
         XCTAssert(app.buttons["OK"].firstMatch.waitForExistence(timeout: 2))
         app.buttons["OK"].firstMatch.tap()
         #endif
