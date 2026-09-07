@@ -18,18 +18,19 @@ struct LLMOpenAIModelTypeTests {
     /// Referenced by raw value on purpose so the test target does not trigger deprecation warnings.
     private static let deprecatedRawValues: Set<String> = [
         "gpt-5-chat-latest",
-        "gpt-4-turbo",
+        "gpt-5", "gpt-5-mini", "gpt-5-nano",
+        "gpt-4-turbo", "gpt-4.1-nano",
         "o4-mini",
-        "o3-mini",
-        "o3-mini-high",
-        "o1",
-        "o1-mini"
+        "o3", "o3-pro", "o3-mini", "o3-mini-high",
+        "o1-pro", "o1", "o1-mini",
+        "gpt-3.5-turbo"
     ]
 
 
     @Test("Newly added models map to the expected raw identifiers")
     func newModelRawValues() {
         let expected: [(OpenAIPlatformDefinition.ModelType, String)] = [
+            (.gpt6_astra, "gpt-6-astra"),
             (.gpt5_6, "gpt-5.6"),
             (.gpt5_6_sol, "gpt-5.6-sol"),
             (.gpt5_6_terra, "gpt-5.6-terra"),
@@ -51,6 +52,7 @@ struct LLMOpenAIModelTypeTests {
     func wellKnownModelsContainsNewModels() {
         let rawValues = Set(OpenAIPlatformDefinition.ModelType.wellKnownModels.map(\.rawValue))
         let newModels = [
+            "gpt-6-astra",
             "gpt-5.6", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna",
             "gpt-5.5", "gpt-5.5-pro",
             "gpt-5.4", "gpt-5.4-pro", "gpt-5.4-mini", "gpt-5.4-nano"
@@ -79,7 +81,7 @@ struct LLMOpenAIModelTypeTests {
     @Test("The default model is supported and non-deprecated")
     func defaultModelIsSupported() {
         let defaultModel = OpenAIPlatformDefinition.ModelType.default
-        #expect(defaultModel.rawValue == "gpt-4.1")
+        #expect(defaultModel.rawValue == "gpt-5.6")
         #expect(OpenAIPlatformDefinition.ModelType.wellKnownModels.contains(defaultModel))
         #expect(!Self.deprecatedRawValues.contains(defaultModel.rawValue))
     }
@@ -90,6 +92,21 @@ struct LLMOpenAIModelTypeTests {
         for rawValue in Self.deprecatedRawValues {
             #expect(OpenAIPlatformDefinition.ModelType(rawValue: rawValue).rawValue == rawValue)
         }
+    }
+
+    @Test("Reasoning models are marked as refusing sampling parameters")
+    func samplingParameterSupport() {
+        for model in [OpenAIPlatformDefinition.ModelType.gpt6_astra, .gpt5_6, .gpt5_6_sol, .gpt5_5, .gpt5_4_mini] {
+            #expect(!model.acceptsSamplingParameters, "\(model.rawValue) should refuse sampling parameters")
+        }
+        for rawValue in ["o1", "o3", "o4-mini"] {
+            #expect(!OpenAIPlatformDefinition.ModelType(rawValue: rawValue).acceptsSamplingParameters)
+        }
+        for model in [OpenAIPlatformDefinition.ModelType.gpt4o, .gpt4o_mini, .gpt4_1, .gpt4_1_mini] {
+            #expect(model.acceptsSamplingParameters, "\(model.rawValue) should still accept sampling parameters")
+        }
+        // The non-reasoning chat variant of its family kept them.
+        #expect(OpenAIPlatformDefinition.ModelType(rawValue: "gpt-5-chat-latest").acceptsSamplingParameters)
     }
 
     @Test("Arbitrary identifiers are accepted (open model set)")
