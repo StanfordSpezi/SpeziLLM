@@ -10,5 +10,8 @@ dirs:
 useGitIgnore: true
 ignorePatterns:
   - pattern: '^https://platform.openai.com/docs/guides/.*$' # Causes false positives
+  # Swift Package Index rate-limits the CI runner and answers some requests with a 403 even though the
+  # pages resolve fine in a browser; the same URLs pass on one run and fail on the next.
+  - pattern: '^https://swiftpackageindex.com/.*$'
   - pattern: '^doc:.*$'
   - pattern: '^http://localhost.*$'
