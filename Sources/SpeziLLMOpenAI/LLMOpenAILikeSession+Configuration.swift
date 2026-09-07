@@ -36,10 +36,12 @@ extension LLMOpenAILikeSession {
                 )
             }
             
-            let stop: Components.Schemas.CreateChatCompletionRequest.stopPayload? = if schema.modelParameters.stopSequence.isEmpty {
+            let modelParameters = schema.modelParameters.accepted(by: schema.parameters.modelType)
+
+            let stop: Components.Schemas.CreateChatCompletionRequest.stopPayload? = if modelParameters.stopSequence.isEmpty {
                 nil
             } else {
-                Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence)
+                Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(modelParameters.stopSequence)
             }
 
             return await Operations.createChatCompletion
@@ -48,21 +50,21 @@ extension LLMOpenAILikeSession {
                         Components.Schemas.CreateChatCompletionRequest(
                             messages: openAIContext,
                             model: .init(value1: schema.parameters.modelType.rawValue),
-                            frequency_penalty: schema.modelParameters.frequencyPenalty,
-                            logit_bias: schema.modelParameters.logitBias.additionalProperties.isEmpty ? nil : schema
-                                .modelParameters
-                                .logitBias,
-                            max_completion_tokens: schema.modelParameters.maxOutputLength,
-                            n: schema.modelParameters.completionsPerOutput,
-                            presence_penalty: schema.modelParameters.presencePenalty,
-                            response_format: schema.modelParameters.responseFormat,
-                            seed: schema.modelParameters.seed.map { Int64($0) },
+                            frequency_penalty: modelParameters.frequencyPenalty,
+                            logit_bias: modelParameters.logitBias.additionalProperties.isEmpty
+                                ? nil
+                                : modelParameters.logitBias,
+                            max_completion_tokens: modelParameters.maxOutputLength,
+                            n: modelParameters.completionsPerOutput,
+                            presence_penalty: modelParameters.presencePenalty,
+                            response_format: modelParameters.responseFormat,
+                            seed: modelParameters.seed.map { Int64($0) },
                             stop: stop,
                             stream: true,
-                            temperature: schema.modelParameters.temperature,
-                            top_p: schema.modelParameters.topP,
+                            temperature: modelParameters.temperature,
+                            top_p: modelParameters.topP,
                             tools: functions.isEmpty ? nil : functions,
-                            user: schema.modelParameters.user
+                            user: modelParameters.user
                         )
                     )
                 )
