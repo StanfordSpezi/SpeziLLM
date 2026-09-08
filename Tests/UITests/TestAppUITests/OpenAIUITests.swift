@@ -92,9 +92,9 @@ final class TestAppLLMOpenAIUITests: TestAppTestCase {
         XCTAssertTrue(alert2.waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
         XCTAssertTrue(alert2.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
 
-        let okButton2 = alert.buttons["OK"]
+        let okButton2 = alert2.buttons["OK"]
         XCTAssertTrue(okButton2.exists, "The OK button on the alert was not found.")
-        okButton.tap()
+        okButton2.tap()
         #else
         XCTAssertTrue(app.staticTexts["Model Selected"].waitForExistence(timeout: 2), "The `Model Selected` alert did not appear.")
         XCTAssertTrue(app.staticTexts["gpt-4o"].exists, "The correct model was not registered.")
