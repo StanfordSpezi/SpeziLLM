@@ -171,42 +171,103 @@ extension CredentialsTag {
 // swiftlint:disable identifier_name missing_docs
 extension OpenAIPlatformDefinition.ModelType {
     public static let `default`: Self = .gpt4o
-    
+
+    /// The list of currently supported, non-deprecated models shown in model pickers.
+    ///
+    /// Models that OpenAI has retired or scheduled for shutdown are intentionally excluded here; they remain
+    /// available as deprecated constants further below for source compatibility.
     public static let wellKnownModels: [Self] = [
-        .gpt5, .gpt5_mini, .gpt5_nano, .gpt5_chat,
+        .gpt6_astra,
+        .gpt5_6, .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna,
+        .gpt5_5, .gpt5_5_pro,
+        .gpt5_4, .gpt5_4_pro, .gpt5_4_mini, .gpt5_4_nano,
         .gpt4o, .gpt4o_mini,
-        .gpt4_turbo,
-        .gpt4_1, .gpt4_1_mini, .gpt4_1_nano,
-        .o4_mini,
-        .o3, .o3_pro, .o3_mini, .o3_mini_high,
-        .o1_pro, .o1, .o1_mini,
-        .gpt3_5_turbo
+        .gpt4_1, .gpt4_1_mini
     ]
-    
-    // GPT-5 series
-    public static let gpt5 = Self(rawValue: "gpt-5")
-    public static let gpt5_mini = Self(rawValue: "gpt-5-mini")
-    public static let gpt5_nano = Self(rawValue: "gpt-5-nano")
-    public static let gpt5_chat = Self(rawValue: "gpt-5-chat-latest")
+
+    // GPT-6 series
+    public static let gpt6_astra = Self(rawValue: "gpt-6-astra")
+
+    // GPT-5.6 series (alias `gpt-5.6` routes to `gpt-5.6-sol`)
+    public static let gpt5_6 = Self(rawValue: "gpt-5.6")
+    public static let gpt5_6_sol = Self(rawValue: "gpt-5.6-sol")
+    public static let gpt5_6_terra = Self(rawValue: "gpt-5.6-terra")
+    public static let gpt5_6_luna = Self(rawValue: "gpt-5.6-luna")
+
+    // GPT-5.5 series
+    public static let gpt5_5 = Self(rawValue: "gpt-5.5")
+    public static let gpt5_5_pro = Self(rawValue: "gpt-5.5-pro")
+
+    // GPT-5.4 series
+    public static let gpt5_4 = Self(rawValue: "gpt-5.4")
+    public static let gpt5_4_pro = Self(rawValue: "gpt-5.4-pro")
+    public static let gpt5_4_mini = Self(rawValue: "gpt-5.4-mini")
+    public static let gpt5_4_nano = Self(rawValue: "gpt-5.4-nano")
 
     // GPT-4 series
     public static let gpt4o = Self(rawValue: "gpt-4o")
     public static let gpt4o_mini = Self(rawValue: "gpt-4o-mini")
-    public static let gpt4_turbo = Self(rawValue: "gpt-4-turbo")
     public static let gpt4_1 = Self(rawValue: "gpt-4.1")
     public static let gpt4_1_mini = Self(rawValue: "gpt-4.1-mini")
+
+    // MARK: Deprecated & retired models
+    //
+    // OpenAI has retired these models or scheduled them for shutdown. They are kept here (and excluded from
+    // `wellKnownModels`) so existing code keeps compiling, but new code should use the suggested replacement.
+    // Reference: https://developers.openai.com/api/docs/deprecations
+
+    @available(*, deprecated, message: "OpenAI retired gpt-5-chat-latest on 2026-07-23; use `.gpt5_6_sol`.")
+    public static let gpt5_chat = Self(rawValue: "gpt-5-chat-latest")
+
+    @available(*, deprecated, message: "OpenAI shuts down gpt-5 on 2026-12-11; use `.gpt5_6_sol`.")
+    public static let gpt5 = Self(rawValue: "gpt-5")
+
+    @available(*, deprecated, message: "OpenAI shuts down gpt-5-mini on 2026-12-11; use `.gpt5_6_terra`.")
+    public static let gpt5_mini = Self(rawValue: "gpt-5-mini")
+
+    @available(*, deprecated, message: "OpenAI shuts down gpt-5-nano on 2026-12-11; use `.gpt5_6_luna`.")
+    public static let gpt5_nano = Self(rawValue: "gpt-5-nano")
+
+    @available(*, deprecated, message: "OpenAI shuts down gpt-4-turbo on 2026-10-23; use `.gpt5_6_sol`.")
+    public static let gpt4_turbo = Self(rawValue: "gpt-4-turbo")
+
+    @available(*, deprecated, message: "OpenAI shuts down gpt-4.1-nano on 2026-10-23; use `.gpt5_6_luna`.")
     public static let gpt4_1_nano = Self(rawValue: "gpt-4.1-nano")
 
-    // o-series
+    @available(*, deprecated, message: "OpenAI shuts down o4-mini on 2026-10-23; use `.gpt5_6_terra`.")
     public static let o4_mini = Self(rawValue: "o4-mini")
+
+    @available(*, deprecated, message: "OpenAI shuts down o3 on 2026-12-11; use `.gpt5_6_sol`.")
     public static let o3 = Self(rawValue: "o3")
+
+    @available(*, deprecated, message: "OpenAI shuts down o3-pro on 2026-12-11; use `.gpt5_6_sol`.")
     public static let o3_pro = Self(rawValue: "o3-pro")
+
+    @available(*, deprecated, message: "OpenAI shuts down o3-mini on 2026-10-23; use `.gpt5_6_sol`.")
     public static let o3_mini = Self(rawValue: "o3-mini")
+
+    @available(*, deprecated, message: "o3-mini-high is not a valid API model id (ChatGPT-only label); use `.o3_mini`.")
     public static let o3_mini_high = Self(rawValue: "o3-mini-high")
+
+    @available(*, deprecated, message: "OpenAI shuts down o1-pro on 2026-10-23; use `.gpt5_6_sol`.")
     public static let o1_pro = Self(rawValue: "o1-pro")
+
+    @available(*, deprecated, message: "OpenAI shuts down o1 on 2026-10-23; use `.gpt5_6_sol`.")
     public static let o1 = Self(rawValue: "o1")
+
+    @available(*, deprecated, message: "OpenAI retired o1-mini on 2025-10-27; use `.gpt5_6_terra`.")
     public static let o1_mini = Self(rawValue: "o1-mini")
 
-    // Others
+    @available(*, deprecated, message: "OpenAI shuts down the gpt-3.5-turbo snapshots by 2026-10-23; use `.gpt5_6_terra`.")
     public static let gpt3_5_turbo = Self(rawValue: "gpt-3.5-turbo")
+
+    public var acceptsSamplingParameters: Bool {
+        // The reasoning models answer a sampling parameter with a `400` instead of applying it, and every current
+        // family — the o-series, GPT-5.x and GPT-6 — reasons. `gpt-5-chat-latest` was the non-reasoning chat
+        // variant of its family and kept them.
+        guard rawValue != "gpt-5-chat-latest" else {
+            return true
+        }
+        return !["o1", "o3", "o4", "gpt-5", "gpt-6"].contains { rawValue.hasPrefix($0) }
+    }
 }
