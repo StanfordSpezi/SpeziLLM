@@ -81,7 +81,7 @@ struct LLMOpenAIModelTypeTests {
     @Test("The default model is supported and non-deprecated")
     func defaultModelIsSupported() {
         let defaultModel = OpenAIPlatformDefinition.ModelType.default
-        #expect(defaultModel.rawValue == "gpt-5.6")
+        #expect(defaultModel.rawValue == "gpt-4o")
         #expect(OpenAIPlatformDefinition.ModelType.wellKnownModels.contains(defaultModel))
         #expect(!Self.deprecatedRawValues.contains(defaultModel.rawValue))
     }

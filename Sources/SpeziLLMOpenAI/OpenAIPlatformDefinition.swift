@@ -170,7 +170,7 @@ extension CredentialsTag {
 
 // swiftlint:disable identifier_name missing_docs
 extension OpenAIPlatformDefinition.ModelType {
-    public static let `default`: Self = .gpt5_6
+    public static let `default`: Self = .gpt4o
 
     /// The list of currently supported, non-deprecated models shown in model pickers.
     ///
