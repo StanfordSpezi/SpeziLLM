@@ -32,9 +32,9 @@ public struct LLMOpenAIModelParameters: Sendable {
     /// The format for model responses.
     let responseFormat: Components.Schemas.CreateChatCompletionRequest.response_formatPayload?
     /// The sampling temperature (0 to 2). Higher values increase randomness, lower values enhance focus.
-    let temperature: Double?
+    var temperature: Double?
     /// Nucleus sampling threshold. Considers tokens with top_p probability mass. Alternative to temperature sampling.
-    let topP: Double?
+    var topP: Double?
     /// The number of generated chat completions per input.
     let completionsPerOutput: Int?
     /// Sequences (up to 4) where generation stops. Output doesn't include these sequences.
@@ -44,11 +44,11 @@ public struct LLMOpenAIModelParameters: Sendable {
     /// OpenAI will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result. Determinism is not guaranteed.
     let seed: Int?
     /// Adjusts new topic exploration (-2.0 to 2.0). Higher values encourage novelty.
-    let presencePenalty: Double?
+    var presencePenalty: Double?
     /// Controls repetition (-2.0 to 2.0). Higher values reduce the likelihood of repeating content.
-    let frequencyPenalty: Double?
+    var frequencyPenalty: Double?
     /// Alters specific token's likelihood in completion.
-    let logitBias: Components.Schemas.CreateChatCompletionRequest.logit_biasPayload
+    var logitBias: Components.Schemas.CreateChatCompletionRequest.logit_biasPayload
     /// Unique identifier for the end-user, aiding in abuse monitoring.
     let user: String?
     

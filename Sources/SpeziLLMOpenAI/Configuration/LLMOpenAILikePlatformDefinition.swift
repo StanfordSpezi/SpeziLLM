@@ -49,7 +49,17 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
     ///
     /// Used e.g. when picking a model in the UI.
     static var wellKnownModels: [Self] { get }
-    
+
+    /// Whether this model accepts the sampling parameters of the completions API.
+    ///
+    /// A model that has moved past them rejects `temperature`, `top_p`, the penalties and `logit_bias` with a
+    /// `400` rather than ignoring them, so a caller that sets one fails every request. Reasoning models were the
+    /// first to do this and the other vendors have followed, model by model rather than family by family — which
+    /// is why each platform answers for its own models instead of the answer being inferred from the identifier.
+    ///
+    /// Defaults to `true`.
+    var acceptsSamplingParameters: Bool { get }
+
     /// Creates a `ModelType` from a raw string value
     init(rawValue: String)
 }
@@ -58,5 +68,9 @@ public protocol LLMOpenAILikePlatformModelType: Hashable, RawRepresentable<Strin
 extension LLMOpenAILikePlatformModelType {
     public var id: some Hashable { // swiftlint:disable:this missing_docs
         rawValue
+    }
+
+    public var acceptsSamplingParameters: Bool { // swiftlint:disable:this missing_docs
+        true
     }
 }

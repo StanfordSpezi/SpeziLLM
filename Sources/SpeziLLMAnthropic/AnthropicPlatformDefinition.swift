@@ -28,7 +28,7 @@ public struct AnthropicPlatformDefinition: LLMOpenAILikePlatformDefinition {
     public static let platformName = "Anthropic"
     public static let platformServiceIdentifier = "api.anthropic.com"
     
-    public static let defaultServerUrl = URL(string: "https://api.anthropic.com/v1")! // swiftlint:disable:this force_unwrapping
+    public static let defaultServerUrl = URL(string: "https://api.anthropic.com/v1")!
     
     public static let platformDeveloperConsoleUrl = URL(string: "https://platform.claude.com/settings/keys")
 }
@@ -105,7 +105,7 @@ public typealias LLMAnthropicSchema = LLMOpenAILikeSchema<AnthropicPlatformDefin
 ///                 let llmSession: LLMAnthropicSession = runner(
 ///                     with: LLMAnthropicSchema(
 ///                         parameters: .init(
-///                             modelType: .opus4_6,
+///                             modelType: .opus5,
 ///                             systemPrompt: "You're a helpful assistant that answers questions from users.",
 ///                             overwritingAuthToken: "abc123"
 ///                         )
@@ -149,17 +149,51 @@ extension CredentialsTag {
 // swiftlint:disable identifier_name
 extension AnthropicPlatformDefinition.ModelType {
     /// The default model to be used with Anthropic.
-    public static let `default`: Self = .opus4_6
-    
+    public static let `default`: Self = .opus5
+
     public static let wellKnownModels: [Self] = [ // swiftlint:disable:this missing_docs
-        .opus4_6, .sonnet4_6, .haiku4_6
+        .fable5_1, .fable5,
+        .opus5, .opus4_8, .opus4_7, .opus4_6,
+        .sonnet5, .sonnet4_6,
+        .haiku4_5
     ]
-    
+
+    /// Claude Fable 5.1
+    ///
+    /// - Note: Fable models always think, never accept sampling parameters, and are unavailable to organizations
+    ///     that have not been authorized for the required 30-day data retention.
+    public static let fable5_1 = Self(rawValue: "claude-fable-5-1")
+    /// Claude Fable 5
+    public static let fable5 = Self(rawValue: "claude-fable-5")
+
+    /// Claude Opus 5
+    public static let opus5 = Self(rawValue: "claude-opus-5")
+    /// Claude Opus 4.8
+    public static let opus4_8 = Self(rawValue: "claude-opus-4-8")
+    /// Claude Opus 4.7
+    public static let opus4_7 = Self(rawValue: "claude-opus-4-7")
     /// Claude Opus 4.6
     public static let opus4_6 = Self(rawValue: "claude-opus-4-6")
+
+    /// Claude Sonnet 5
+    public static let sonnet5 = Self(rawValue: "claude-sonnet-5")
     /// Claude Sonnet 4.6
     public static let sonnet4_6 = Self(rawValue: "claude-sonnet-4-6")
+
     /// Claude Haiku 4.5
+    public static let haiku4_5 = Self(rawValue: "claude-haiku-4-5")
+
+    /// Claude Haiku 4.5
+    ///
+    /// - Warning: This constant was incorrectly named; use ``haiku4_5`` instead.
+    @available(*, deprecated, renamed: "haiku4_5")
     public static let haiku4_6 = Self(rawValue: "claude-haiku-4-5")
+
+    public var acceptsSamplingParameters: Bool { // swiftlint:disable:this missing_docs
+        // Anthropic stopped accepting non-default sampling from Opus 4.7 onwards, and Fable and Sonnet 5 followed;
+        // asking for one is a `400`. Opus 4.6, Sonnet 4.6 and Haiku 4.5 still take them. Steer the models that
+        // don't through the prompt instead.
+        ![Self.fable5_1, .fable5, .opus5, .opus4_8, .opus4_7, .sonnet5].contains(self)
+    }
 }
 // swiftlint:enable identifier_name
