@@ -18,6 +18,10 @@ import OpenAPIRuntime
 // speaks the beta protocol it was written against. Defining the beta shapes here keeps the bytes on the wire
 // unchanged until the target moves to the GA protocol. The remaining client events and the server events have the
 // same shape under both protocols and stay generated.
+//
+// OpenAI has since stopped serving the beta protocol altogether: the endpoint answers a beta connection with
+// `beta_api_shape_disabled` before any event is sent, and accepts the GA session shape without the beta header.
+// Moving the target to the GA protocol replaces this file.
 
 
 /// The `session.update` event, configuring the session after the socket has opened.

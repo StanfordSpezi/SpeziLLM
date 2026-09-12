@@ -203,7 +203,9 @@ let package = Package(
                 .product(name: "SpeziTesting", package: "Spezi"),
                 .target(name: "SpeziLLM"),
                 .target(name: "SpeziLLMOpenAI"),
-                .target(name: "SpeziLLMAnthropic")
+                .target(name: "SpeziLLMOpenAIRealtime"),
+                .target(name: "SpeziLLMAnthropic"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
             ],
             resources: [
                 .copy("Resources")
