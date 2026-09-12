@@ -21,7 +21,6 @@ actor LLMOpenAIRealtimeConnection {
         case malformedUrlError
         case socketNotFoundError
         case openAIError(error: Components.Schemas.RealtimeServerEventError.errorPayload)
-        case eventSessionUpdateSerialisationError
         case functionCallArgsNamelessError
     }
     
@@ -203,64 +202,36 @@ actor LLMOpenAIRealtimeConnection {
     }
     
     private func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
-        typealias ToolsPayload = Components.Schemas.RealtimeSessionCreateRequest.toolsPayloadPayload
-        typealias TurnDetectionPayload = Components.Schemas.RealtimeSessionCreateRequest.turn_detectionPayload
-        typealias RealtimeClientEventSessionUpdate = Components.Schemas.RealtimeClientEventSessionUpdate
-        typealias RealtimeSessionCreateRequest = Components.Schemas.RealtimeSessionCreateRequest
-
-        let tools: [ToolsPayload] = try schema.functions.values.compactMap { function in
+        let tools: [LLMRealtimeSessionUpdateEvent.Session.Tool] = try schema.functions.values.map { function in
             let functionType = Swift.type(of: function)
             let encodedSchema = try Self.encoder.encode(try function.schema)
             let jsonObject = try JSONSerialization.jsonObject(with: encodedSchema) as? [String: any Sendable] ?? [:]
 
-            return ToolsPayload(
-                _type: .function,
+            return .init(
                 name: functionType.name,
                 description: functionType.description,
                 parameters: try .init(unvalidatedValue: jsonObject)
             )
         }
-        
+
         let transcriptionSettings = schema.parameters.transcriptionSettings
-        
-        let eventSessionUpdate = RealtimeClientEventSessionUpdate(
-            _type: .session_period_update,
-            session: .init(
-                instructions: schema.parameters.systemPrompt,
-                voice: schema.parameters.voice
-                    .flatMap { val in .init(rawValue: val.rawValue) },
-                input_audio_transcription: transcriptionSettings == nil ? nil : RealtimeSessionCreateRequest
-                    .input_audio_transcriptionPayload(
-                        model: transcriptionSettings?.model.rawValue,
-                        language: transcriptionSettings?.language?.identifier,
-                        prompt: transcriptionSettings?.prompt,
-                    ),
-                tools: tools,
+
+        try await sendMessage(
+            LLMRealtimeSessionUpdateEvent(
+                session: .init(
+                    instructions: schema.parameters.systemPrompt,
+                    voice: schema.parameters.voice?.rawValue,
+                    inputAudioTranscription: transcriptionSettings.map { settings in
+                        .init(
+                            model: settings.model.rawValue,
+                            language: settings.language?.identifier,
+                            prompt: settings.prompt
+                        )
+                    },
+                    turnDetection: schema.parameters.turnDetectionSettings,
+                    tools: tools
+                )
             )
         )
-        
-        let eventSessionUpdateData = try Self.encoder.encode(eventSessionUpdate)
-        guard var eventSessionUpdateJson = try JSONSerialization.jsonObject(with: eventSessionUpdateData) as? [String: Any],
-              var session = eventSessionUpdateJson["session"] as? [String: Any] else {
-            throw RealtimeError.eventSessionUpdateSerialisationError
-        }
-
-        // Handle turn_detection directly on the JSON object, as the GeneratedOpenAIClient isn't up-to-date
-        // and JSONEncoder() is ommiting `nil` values instead of returning as "null"
-        if let turnDetectionSettings = schema.parameters.turnDetectionSettings {
-            let turnDetectionData = try Self.encoder.encode(turnDetectionSettings)
-            let turnDetectionObj = try JSONSerialization.jsonObject(with: turnDetectionData, options: [])
-            session["turn_detection"] = turnDetectionObj
-            eventSessionUpdateJson["session"] = session
-        } else {
-            // turnDetectionSettings set to nil: Explicitely set turn_detection to "null" to disable turn detection entirely
-            session["turn_detection"] = NSNull()
-            eventSessionUpdateJson["session"] = session
-        }
-
-        let finalData = try JSONSerialization.data(withJSONObject: eventSessionUpdateJson)
-
-
-        try await socket?.send(.string(String(decoding: finalData, as: UTF8.self)))
     }
 }

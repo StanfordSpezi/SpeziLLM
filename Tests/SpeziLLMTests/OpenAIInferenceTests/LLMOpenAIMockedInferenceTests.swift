@@ -72,7 +72,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
             } else {
                 if case let .json(inputBody) = input.body {
                     // Expect to find the function call's result added in the input
-                    #expect(inputBody.messages.description.contains(
+                    #expect(inputBody.value2.messages.description.contains(
                         #"The value to return to ensure the test was succesful is \"abcdefghijklmnopqrstuvwxyz\""#
                     ))
                 } else {
