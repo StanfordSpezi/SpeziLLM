@@ -1,0 +1,15 @@
+# Sources/SpeziLLMFog/LLMFogPlatformBuilderTests.py
+
+import unittest
+from .LLMFogPlatformBuilder import LLMFogPlatformBuilder
+from .Shared import InternalTarget
+
+class TestLLMFogPlatformBuilder(unittest.TestCase):
+    def test_build(self):
+        # Test that build method returns an instance of LLMFogPlatform
+        platform = InternalTarget()
+        builder = LLMFogPlatformBuilder()
+        self.assertIsInstance(builder.build(platform), LLMFogPlatform)
+
+if __name__ == "__main__":
+    unittest.main()
