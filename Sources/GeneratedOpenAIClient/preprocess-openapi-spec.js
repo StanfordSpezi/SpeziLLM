@@ -269,11 +269,11 @@ function normalizeNullability(doc) {
  * a non-optional Swift property cannot hold that.
  */
 function normalizeRequired(node) {
+  const nullable = new Set(node[NULLABLE_PROPERTIES] ?? []);
+  delete node[NULLABLE_PROPERTIES];
   if (!Array.isArray(node.required)) {
     return;
   }
-  const nullable = new Set(node[NULLABLE_PROPERTIES] ?? []);
-  delete node[NULLABLE_PROPERTIES];
   const properties = isObject(node.properties) ? node.properties : {};
   node.required = node.required.filter((name) => name in properties && !nullable.has(name));
   if (node.required.length === 0) {
