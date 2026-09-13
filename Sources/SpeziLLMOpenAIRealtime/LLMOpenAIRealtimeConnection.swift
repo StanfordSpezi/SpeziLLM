@@ -202,36 +202,6 @@ actor LLMOpenAIRealtimeConnection {
     }
     
     private func sendSessionUpdate(schema: LLMOpenAIRealtimeSchema) async throws {
-        let tools: [LLMRealtimeSessionUpdateEvent.Session.Tool] = try schema.functions.values.map { function in
-            let functionType = Swift.type(of: function)
-            let encodedSchema = try Self.encoder.encode(try function.schema)
-            let jsonObject = try JSONSerialization.jsonObject(with: encodedSchema) as? [String: any Sendable] ?? [:]
-
-            return .init(
-                name: functionType.name,
-                description: functionType.description,
-                parameters: try .init(unvalidatedValue: jsonObject)
-            )
-        }
-
-        let transcriptionSettings = schema.parameters.transcriptionSettings
-
-        try await sendMessage(
-            LLMRealtimeSessionUpdateEvent(
-                session: .init(
-                    instructions: schema.parameters.systemPrompt,
-                    voice: schema.parameters.voice?.rawValue,
-                    inputAudioTranscription: transcriptionSettings.map { settings in
-                        .init(
-                            model: settings.model.rawValue,
-                            language: settings.language?.identifier,
-                            prompt: settings.prompt
-                        )
-                    },
-                    turnDetection: schema.parameters.turnDetectionSettings,
-                    tools: tools
-                )
-            )
-        )
+        try await sendMessage(LLMRealtimeSessionUpdateEvent(schema: schema))
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SpeziLLMOpenAI
 @testable import SpeziLLMOpenAIRealtime
 import Testing
 
@@ -81,5 +82,33 @@ struct LLMRealtimeClientEventTests {
         #expect(outputItem["type"] as? String == "function_call_output")
         #expect(outputItem["call_id"] as? String == "call_1")
         #expect(outputItem["output"] as? String == "42")
+    }
+
+    @Test("A session update is built from the schema's parameters and functions")
+    func sessionUpdateFromSchema() throws {
+        let schema = LLMOpenAIRealtimeSchema(
+            parameters: .init(
+                modelType: .gptRealtime,
+                systemPrompt: "Be brief.",
+                turnDetectionSettings: nil,
+                transcriptionSettings: .init(model: .whisper1, prompt: "Medical terms"),
+                voice: .verse
+            )
+        ) {
+            LLMOpenAIInferenceTests.LLMOpenAITestFunction()
+        }
+
+        let session = try #require(try Self.json(try LLMRealtimeSessionUpdateEvent(schema: schema))["session"] as? [String: Any])
+        #expect(session["instructions"] as? String == "Be brief.")
+        #expect(session["voice"] as? String == "verse")
+        #expect(session["turn_detection"] is NSNull)
+        let transcription = try #require(session["input_audio_transcription"] as? [String: Any])
+        #expect(transcription["model"] as? String == "whisper-1")
+        #expect(transcription["prompt"] as? String == "Medical terms")
+        #expect(transcription["language"] == nil)
+        let tool = try #require((session["tools"] as? [[String: Any]])?.first)
+        #expect(tool["type"] as? String == "function")
+        #expect(tool["name"] as? String == "perform_test")
+        #expect((tool["parameters"] as? [String: Any])?["type"] as? String == "object")
     }
 }
