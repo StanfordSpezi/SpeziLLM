@@ -64,7 +64,7 @@ struct GeneratedOpenAIClientDecodingTests {
 
     private static func fixture(named name: String, in file: String) throws -> Data {
         let url = try #require(
-            Bundle.module.url(forResource: file, withExtension: "json", subdirectory: "Resources"),
+            Bundle.module.url(forResource: file, withExtension: "json", subdirectory: "Fixtures"),
             "Missing fixture file \(file).json"
         )
         let fixtures = try #require(try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])

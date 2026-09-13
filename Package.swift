@@ -208,7 +208,7 @@ let package = Package(
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
             ],
             resources: [
-                .copy("Resources")
+                .copy("Fixtures")
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny")
