@@ -71,8 +71,13 @@ extension LLMFogSession {
                 }
                 
                 guard let choices = chatStreamResult.data?.choices else {
-                    Self.logger.error("SpeziLLMFog: Couldn't obtain choices from stream response.")
-                    return
+                    // Skip SSE events with no `choices` payload — keep-alive / comment events.
+                    // Returning here would abort the entire generation method on the first
+                    // empty event. See sibling change in LLMOpenAILikeSession+Generation.swift.
+                    Self.logger.debug(
+                        "SpeziLLMFog: skipping SSE event with no choices (likely a keep-alive)."
+                    )
+                    continue
                 }
 
                 // Only consider the first found assistant content result
