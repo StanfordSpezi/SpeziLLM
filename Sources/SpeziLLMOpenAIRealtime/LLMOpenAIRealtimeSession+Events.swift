@@ -103,7 +103,6 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
     
     @MainActor
     private func handleFunctionCall(functionCall: LLMOpenAIStreamResult.FunctionCall) async {
-        typealias ConversationItemCreateEvent = Components.Schemas.RealtimeClientEventConversationItemCreate
         typealias RealtimeClientEventResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
 
         let functionCallResponse = try? await self.callFunction(
@@ -120,13 +119,8 @@ extension LLMOpenAIRealtimeSession: FunctionCallLLMSession {
 
         do {
             try await self.apiConnection.sendMessage(
-                ConversationItemCreateEvent(
-                    _type: .conversation_period_item_period_create,
-                    item: .init(
-                        _type: .function_call_output,
-                        call_id: functionCallResponse.functionID,
-                        output: functionCallResponse.response
-                    )
+                LLMRealtimeConversationItemCreateEvent(
+                    item: .functionCallOutput(callId: functionCallResponse.functionID, output: functionCallResponse.response)
                 )
             )
             

@@ -15,7 +15,7 @@ extension LLMFogSession {
     /// Map the ``LLMFogSession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
     private var openAIContext: [Components.Schemas.ChatCompletionRequestMessage] {
         get async {
-            await context.compactMap { contextEntity in
+            await context.map { contextEntity in
                 getChatMessage(contextEntity)
             }
         }
@@ -28,21 +28,23 @@ extension LLMFogSession {
             await .init(
                 body: .json(
                     Components.Schemas.CreateChatCompletionRequest(
-                        messages: openAIContext,
-                        model: .init(value1: schema.parameters.modelType),
-                        frequency_penalty: schema.modelParameters.frequencyPenalty,
-                        logit_bias: nil,
-                        max_completion_tokens: schema.modelParameters.maxOutputLength,
-                        n: nil,
-                        presence_penalty: schema.modelParameters.presencePenalty,
-                        response_format: schema.modelParameters.responseFormat,
-                        seed: schema.modelParameters.seed.map { Int64($0) },
-                        stop: Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(schema.modelParameters.stopSequence),
-                        stream: true,
-                        temperature: schema.modelParameters.temperature,
-                        top_p: schema.modelParameters.topP,
-                        tools: nil,
-                        user: nil
+                        value1: .init(
+                            value1: .init(
+                                temperature: schema.modelParameters.temperature,
+                                top_p: schema.modelParameters.topP
+                            ),
+                            value2: .init()
+                        ),
+                        value2: .init(
+                            messages: openAIContext,
+                            model: .init(value1: schema.parameters.modelType),
+                            max_completion_tokens: schema.modelParameters.maxOutputLength,
+                            frequency_penalty: schema.modelParameters.frequencyPenalty,
+                            presence_penalty: schema.modelParameters.presencePenalty,
+                            response_format: schema.modelParameters.responseFormat,
+                            stream: true,
+                            stop: .case2(schema.modelParameters.stopSequence)
+                        )
                     )
                 )
             )
@@ -50,12 +52,10 @@ extension LLMFogSession {
     }
 
 
-    private func getChatMessage( // swiftlint:disable:this function_body_length
-        _ contextEntity: LLMContextEntity
-    ) -> Components.Schemas.ChatCompletionRequestMessage? {
+    private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage {
         switch contextEntity.role {
         case let .tool(id: functionID, name: _):
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
+            return .tool(.init(
                 role: .tool,
                 content: .case1(contextEntity.content),
                 tool_call_id: functionID
@@ -63,52 +63,40 @@ extension LLMFogSession {
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
             if toolCalls.isEmpty {
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                return .assistant(.init(
                     content: .case1(contextEntity.content),
                     role: .assistant
                 ))
             } else {
                 // Function calls present
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                return .assistant(.init(
                     role: .assistant,
                     tool_calls: toolCalls.map { toolCall in
-                            .init(
-                                id: toolCall.id,
-                                _type: .function,
-                                function: .init(name: toolCall.name, arguments: toolCall.arguments)
-                            )
+                        .function(.init(
+                            id: toolCall.id,
+                            _type: .function,
+                            function: .init(name: toolCall.name, arguments: toolCall.arguments)
+                        ))
                     }
                 ))
             }
         case .system:
-            // No function calls present -> regular assistant message
-            guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            else {
-                Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
-                return nil
-            }
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
-                .init(
-                    content: .case1(contextEntity.content),
-                    role: role
-                )
-            )
+            return .system(.init(
+                content: .case1(contextEntity.content),
+                role: .system
+            ))
         case .user:
             if let imageContent = contextEntity._imageContent {
-                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
-                    .image_urlPayload(url: .init("data:\(imageContent.contentType);base64,\(imageContent.base64Image)"))
                 let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
                     _type: .image_url,
-                    image_url: imgPayload
+                    image_url: .init(url: "data:\(imageContent.contentType);base64,\(imageContent.base64Image)")
                 )
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case2([
-                        .ChatCompletionRequestMessageContentPartImage(imgContent)
-                    ]), role: .user))
+                return .user(.init(
+                    content: .case2([.ChatCompletionRequestMessageContentPartImage(imgContent)]),
+                    role: .user
+                ))
             } else {
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+                return .user(.init(content: .case1(contextEntity.content), role: .user))
             }
         }
     }
