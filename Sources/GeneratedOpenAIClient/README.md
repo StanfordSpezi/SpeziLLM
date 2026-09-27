@@ -22,10 +22,11 @@ Only the operations and schemas that SpeziLLM uses are generated. The `filter` s
 
 The upstream document is written for OpenAI's documentation tooling rather than for code generators. `preprocess-openapi-spec.js` applies a set of general rules to the whole document, each documented in the script, so that a newer upstream revision needs no changes to the script:
 
-- Deprecated operations, schemas, and properties are removed, so the generated code carries no deprecation warnings.
+- Deprecated operations, schemas, and properties are removed, so the generated code carries no deprecation warnings. The deprecated properties SpeziLLM still sends, such as the chat completion `seed` that Fog nodes honor, are listed in `RETAINED_DEPRECATED_PROPERTIES` and kept.
 - The `webhooks` section is removed. The generator produces nothing for it, and its references would dangle once the document is filtered.
 - `$recursiveRef` is rewritten into a plain self reference, which the generator understands.
 - OpenAPI 3.0 boolean `exclusiveMinimum`/`exclusiveMaximum` are converted to the 3.1 numeric form.
+- Integer `minimum`/`maximum` bounds that spell out the 64-bit range are removed. JavaScript rounds them to a float, which the generator rejects on an integer, and Swift's `Int` has the same bounds.
 - Every spelling of a nullable schema (`nullable: true`, `type: [T, "null"]`, and `anyOf`/`oneOf` with a `null` branch) collapses to the non-null schema, and nullable properties are removed from `required`, so they become Swift optionals rather than wrapper types.
 - `required` only keeps names that exist on the same object. The document lists properties as required that live on a sibling `allOf` member or do not exist at all.
 - Composition constraints that only express which keys must be present are removed, and array constraints misplaced on element schemas are moved to the array.

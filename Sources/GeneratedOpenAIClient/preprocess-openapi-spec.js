@@ -12,7 +12,8 @@
 // OpenAPI 3.0 and 3.1 spellings, carries constraints that no static type system can express, and leaves
 // discriminated unions without the mapping a decoder needs. Every transform below is a general rule, applied to the
 // whole document, rather than a patch for one named schema, so re-running the script on a newer upstream revision
-// needs no changes here.
+// needs no changes here. The one exception is `RETAINED_DEPRECATED_PROPERTIES`, a short list of deprecated properties
+// that SpeziLLM still sends.
 //
 // Usage: `npm run update` fetches the latest upstream document and preprocesses it, `npm run preprocess` only
 // preprocesses the document already on disk. See README.md.
@@ -79,6 +80,39 @@ function resolveRef(doc, ref) {
 
 // MARK: - Transforms
 
+/// Deprecated properties that are kept in the document, by the component schema that declares them.
+///
+/// OpenAI deprecating a property does not retire it for the other servers that implement the same API.
+/// - `CreateChatCompletionRequest.seed`: Fog nodes, such as Ollama, still sample deterministically with it.
+const RETAINED_DEPRECATED_PROPERTIES = {
+  CreateChatCompletionRequest: ["seed"],
+};
+
+/**
+ * Clears the `deprecated` flag on the properties listed in `RETAINED_DEPRECATED_PROPERTIES`, so that
+ * `removeDeprecated` keeps them and the generator emits them without a deprecation attribute.
+ *
+ * The properties are looked up anywhere inside the named schema, including its `allOf` members. A listed property
+ * that is no longer in the document fails the script, so the list cannot silently outlive what it keeps.
+ */
+function retainDeprecatedProperties(doc) {
+  for (const [schemaName, propertyNames] of Object.entries(RETAINED_DEPRECATED_PROPERTIES)) {
+    const found = new Set();
+    walk(doc.components?.schemas?.[schemaName], (node) => {
+      for (const propertyName of propertyNames) {
+        if (isObject(node.properties?.[propertyName])) {
+          delete node.properties[propertyName].deprecated;
+          found.add(propertyName);
+        }
+      }
+    });
+    const missing = propertyNames.filter((propertyName) => !found.has(propertyName));
+    if (missing.length > 0) {
+      throw new Error(`${schemaName} no longer declares ${missing.join(", ")}; update RETAINED_DEPRECATED_PROPERTIES.`);
+    }
+  }
+}
+
 /**
  * Removes everything marked `deprecated`, along with any `$ref` that pointed at a removed schema.
  *
@@ -131,6 +165,24 @@ function normalizeExclusiveBounds(node) {
       delete node[inclusive];
     } else {
       delete node[exclusive];
+    }
+  }
+}
+
+/**
+ * Removes `minimum`/`maximum` bounds on integers that lie outside the range JavaScript represents exactly.
+ *
+ * Such bounds spell out the 64-bit integer range. Parsing them into a JavaScript number rounds them to a float
+ * (`9223372036854775807` becomes `9.223372036854776e+18`), which the generator's parser rejects on an integer schema,
+ * and the Swift `Int` the generator emits is bounded to that range anyway.
+ */
+function removeUnrepresentableIntegerBounds(node) {
+  if (node.type !== "integer") {
+    return;
+  }
+  for (const bound of ["minimum", "maximum"]) {
+    if (typeof node[bound] === "number" && !Number.isSafeInteger(node[bound])) {
+      delete node[bound];
     }
   }
 }
@@ -401,10 +453,12 @@ function removeWebhooks(doc) {
 
 let doc = yaml.load(fs.readFileSync(openapiPath, "utf8"));
 
+retainDeprecatedProperties(doc);
 doc = removeDeprecated(doc);
 removeWebhooks(doc);
 resolveRecursiveReferences(doc);
 walk(doc, normalizeExclusiveBounds);
+walk(doc, removeUnrepresentableIntegerBounds);
 normalizeNullability(doc);
 walk(doc, normalizeRequired);
 walk(doc, removeKeyPresenceConstraints);

@@ -43,7 +43,8 @@ extension LLMFogSession {
                             presence_penalty: schema.modelParameters.presencePenalty,
                             response_format: schema.modelParameters.responseFormat,
                             stream: true,
-                            stop: .case2(schema.modelParameters.stopSequence)
+                            stop: .case2(schema.modelParameters.stopSequence),
+                            seed: schema.modelParameters.seed
                         )
                     )
                 )

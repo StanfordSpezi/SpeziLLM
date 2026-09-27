@@ -40,6 +40,8 @@ public struct LLMFogModelParameters: Sendable {
     let stopSequence: [String]
     /// Maximum token count for each completion.
     let maxOutputLength: Int?
+    /// The fog node will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result. Determinism is not guaranteed.
+    let seed: Int?
     /// Adjusts new topic exploration (-2.0 to 2.0). Higher values encourage novelty.
     let presencePenalty: Double?
     /// Controls repetition (-2.0 to 2.0). Higher values reduce the likelihood of repeating content.
@@ -54,6 +56,7 @@ public struct LLMFogModelParameters: Sendable {
     ///   - topP: Nucleus sampling threshold; considers tokens with top_p probability mass. Alternative to temperature sampling.
     ///   - stopSequence: Sequences (up to 4) where generation stops; output doesn't include these sequences.
     ///   - maxOutputLength: Maximum token count for each completion.
+    ///   - seed: The fog node will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result. Determinism is not guaranteed.
     ///   - presencePenalty: Adjusts new topic exploration (-2.0 to 2.0); higher values encourage novelty.
     ///   - frequencyPenalty: Controls repetition (-2.0 to 2.0); higher values reduce likelihood of repeating content.
     public init(
@@ -62,6 +65,7 @@ public struct LLMFogModelParameters: Sendable {
         topP: Double? = nil,
         stopSequence: [String] = [],
         maxOutputLength: Int? = nil,
+        seed: Int? = nil,
         presencePenalty: Double? = nil,
         frequencyPenalty: Double? = nil
     ) {
@@ -70,42 +74,8 @@ public struct LLMFogModelParameters: Sendable {
         self.topP = topP
         self.stopSequence = stopSequence
         self.maxOutputLength = maxOutputLength
+        self.seed = seed
         self.presencePenalty = presencePenalty
         self.frequencyPenalty = frequencyPenalty
     }
-
-    /// Initializes ``LLMFogModelParameters`` for Fog LLM model configuration.
-    ///
-    /// - Parameters:
-    ///   - responseFormat: Format for model responses.
-    ///   - temperature: Sampling temperature (0 to 2); higher values (e.g., 0.8) increase randomness, lower values (e.g., 0.2) enhance focus. Adjust this or topP, not both.
-    ///   - topP: Nucleus sampling threshold; considers tokens with top_p probability mass. Alternative to temperature sampling.
-    ///   - stopSequence: Sequences (up to 4) where generation stops; output doesn't include these sequences.
-    ///   - maxOutputLength: Maximum token count for each completion.
-    ///   - seed: No longer sent. OpenAI has retired the `seed` parameter from the API the fog node implements.
-    ///   - presencePenalty: Adjusts new topic exploration (-2.0 to 2.0); higher values encourage novelty.
-    ///   - frequencyPenalty: Controls repetition (-2.0 to 2.0); higher values reduce likelihood of repeating content.
-    @available(*, deprecated, message: "OpenAI has retired the `seed` parameter, which is no longer sent. Use the initializer without it.")
-    // swiftlint:disable function_default_parameter_at_end
-    public init(
-        responseFormat: ResponseFormat? = nil,
-        temperature: Double? = nil,
-        topP: Double? = nil,
-        stopSequence: [String] = [],
-        maxOutputLength: Int? = nil,
-        seed: Int?,
-        presencePenalty: Double? = nil,
-        frequencyPenalty: Double? = nil
-    ) {
-        self.init(
-            responseFormat: responseFormat,
-            temperature: temperature,
-            topP: topP,
-            stopSequence: stopSequence,
-            maxOutputLength: maxOutputLength,
-            presencePenalty: presencePenalty,
-            frequencyPenalty: frequencyPenalty
-        )
-    }
-    // swiftlint:enable function_default_parameter_at_end
 }
