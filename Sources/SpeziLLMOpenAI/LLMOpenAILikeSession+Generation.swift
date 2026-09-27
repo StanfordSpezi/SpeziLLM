@@ -43,13 +43,16 @@ extension LLMOpenAILikeSession {
             do {
                 let response = try await openAiClient.createChatCompletion(openAIChatQuery)
 
-                if case let .undocumented(statusCode: statusCode, payload) = response {
-                    let llmError = handleErrorCode(statusCode)
+                if let failure = response.failure {
+                    let llmError = handleErrorCode(failure.statusCode)
+                    if let message = failure.message {
+                        Self.logger.error("SpeziLLMOpenAI: The OpenAI API answered: \(message)")
+                    }
                     #if DEBUG
-                    if let body = payload.body, case let .known(length) = body.length {
+                    if let body = failure.undocumentedBody, case let .known(length) = body.length {
                         let buffer = try await Data(collecting: body, upTo: Int(length))
                         let text = String(data: buffer, encoding: .utf8) ?? "<non-UTF8 body>"
-                        Self.logger.warning("SpeziLLMOpenAI: Undocumented request body:\n\(text)")
+                        Self.logger.warning("SpeziLLMOpenAI: Undocumented response body:\n\(text)")
                     }
                     #endif
                     await finishGenerationWithError(llmError, on: continuationObserver.continuation)

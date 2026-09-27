@@ -129,7 +129,6 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
     @discardableResult
     public func generate() async -> AsyncThrowingStream<String, any Error> {
         typealias ResponseCreate = Components.Schemas.RealtimeClientEventResponseCreate
-        typealias ConversationItemCreate = Components.Schemas.RealtimeClientEventConversationItemCreate
 
         // Stream the text response back to the `generate()` caller.
         // Is done by filtering assistant transcript events in `events()`.
@@ -145,14 +144,7 @@ public final class LLMOpenAIRealtimeSession: LLMSession, SchemaProvidingLLMSessi
 
                     // Send the conversation.item.create event with the message
                     try await apiConnection.sendMessage(
-                        ConversationItemCreate(
-                            _type: .conversation_period_item_period_create,
-                            item: .init(
-                                _type: .message,
-                                role: .user,
-                                content: [.init(_type: .input_text, text: lastContext?.content ?? "")]
-                            )
-                        )
+                        LLMRealtimeConversationItemCreateEvent(item: .userMessage(text: lastContext?.content ?? ""))
                     )
 
                     // Trigger a response

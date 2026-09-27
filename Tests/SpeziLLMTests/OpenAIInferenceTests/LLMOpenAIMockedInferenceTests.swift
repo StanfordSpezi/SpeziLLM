@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+import GeneratedOpenAIClient
+import OpenAPIRuntime
 @testable import SpeziLLM
 @testable import SpeziLLMOpenAI
 import Testing
@@ -72,7 +74,7 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
             } else {
                 if case let .json(inputBody) = input.body {
                     // Expect to find the function call's result added in the input
-                    #expect(inputBody.messages.description.contains(
+                    #expect(inputBody.value2.messages.description.contains(
                         #"The value to return to ensure the test was succesful is \"abcdefghijklmnopqrstuvwxyz\""#
                     ))
                 } else {
@@ -96,5 +98,47 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         #expect(chatCompletionCalls == 2, "Chat completion handler was not called twice")
         // Expect that the (mocked) LLM returned an answer
         #expect(oneShot == "Function should have been called!")
+    }
+
+    @Test("A documented rate limit surfaces as the quota error")
+    func rateLimitIsQuotaError() async throws {
+        try await expectGenerationFailure(
+            .tooManyRequests(.init(body: .json(.init(error: .init(code: "rate_limit_exceeded", message: "Slow down", _type: "requests"))))),
+            toBe: .insufficientQuota
+        )
+    }
+
+    @Test("A documented outage surfaces as a generation error")
+    func outageIsGenerationError() async throws {
+        try await expectGenerationFailure(
+            .serviceUnavailable(.init(body: .json(.init(error: .init(message: "Try again later", _type: "server_error"))))),
+            toBe: .generationError
+        )
+    }
+
+    @Test("An undocumented status keeps its mapping, body included")
+    func undocumentedStatusKeepsMapping() async throws {
+        try await expectGenerationFailure(
+            .undocumented(statusCode: 401, .init(body: HTTPBody(#"{"error": {"message": "bad key"}}"#))),
+            toBe: .invalidAPIToken
+        )
+    }
+
+    /// Runs one generation against a client that answers with `response`, and checks the error the session reports.
+    @MainActor
+    private func expectGenerationFailure(_ response: Operations.createChatCompletion.Output, toBe expected: LLMOpenAIError) async throws {
+        let mockClient = MockChatClient()
+        mockClient.createChatCompletionHandler = { _ in response }
+
+        let llmSession = try initTestLLMSession(LLMOpenAISchema(parameters: .init(modelType: .gpt4o_mini)))
+        llmSession.context.append(userInput: "Hello!")
+        llmSession.openAiClient = mockClient
+
+        do {
+            for try await _ in try await llmSession.generate() { }
+            Issue.record("Expected \(expected) to be thrown")
+        } catch let error as LLMOpenAIError {
+            #expect(error == expected)
+        }
     }
 }

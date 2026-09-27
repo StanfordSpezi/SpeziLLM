@@ -47,14 +47,12 @@ struct LLMSamplingParameterTests {
             temperature: 0.7,
             stopSequence: ["stop"],
             maxOutputLength: 512,
-            seed: 42,
             user: "test-user"
         )
         let accepted = parameters.accepted(by: AnthropicPlatformDefinition.ModelType.opus5)
 
         #expect(accepted.maxOutputLength == 512)
         #expect(accepted.stopSequence == ["stop"])
-        #expect(accepted.seed == 42)
         #expect(accepted.user == "test-user")
         #expect(accepted.temperature == nil)
     }

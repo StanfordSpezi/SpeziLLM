@@ -15,7 +15,7 @@ extension LLMOpenAILikeSession {
     /// Map the ``LLMOpenAISession/context`` to the OpenAI `[ChatQuery.ChatCompletionMessageParam]` representation.
     private var openAIContext: [Components.Schemas.ChatCompletionRequestMessage] {
         get async {
-            await context.compactMap { contextEntity in
+            await context.map { contextEntity in
                 getChatMessage(contextEntity)
             }
         }
@@ -25,58 +25,64 @@ extension LLMOpenAILikeSession {
     /// in an OpenAI `Operations.createChatCompletion.Input` representation used for querying the OpenAI API.
     var openAIChatQuery: Operations.createChatCompletion.Input {
         get async throws {
-            let functions: [Components.Schemas.ChatCompletionTool] = try schema.functions.values.compactMap { function in
-                try Components.Schemas.ChatCompletionTool(
-                    _type: .function,
-                    function: Components.Schemas.FunctionObject(
-                        description: Swift.type(of: function).description,
-                        name: Swift.type(of: function).name,
-                        parameters: function.schema
+            let tools: Components.Schemas.CreateChatCompletionRequest.Value2Payload.toolsPayload = try schema.functions.values.map { function in
+                .ChatCompletionTool(
+                    Components.Schemas.ChatCompletionTool(
+                        _type: .function,
+                        function: Components.Schemas.FunctionObject(
+                            description: Swift.type(of: function).description,
+                            name: Swift.type(of: function).name,
+                            parameters: try function.schema
+                        )
                     )
                 )
             }
-            
+
             let modelParameters = schema.modelParameters.accepted(by: schema.parameters.modelType)
 
-            let stop: Components.Schemas.CreateChatCompletionRequest.stopPayload? = if modelParameters.stopSequence.isEmpty {
+            let stop: Components.Schemas.StopConfiguration? = if modelParameters.stopSequence.isEmpty {
                 nil
             } else {
-                Components.Schemas.CreateChatCompletionRequest.stopPayload.case2(modelParameters.stopSequence)
+                .case2(modelParameters.stopSequence)
             }
 
             return await Operations.createChatCompletion
                 .Input(
                     body: .json(
                         Components.Schemas.CreateChatCompletionRequest(
-                            messages: openAIContext,
-                            model: .init(value1: schema.parameters.modelType.rawValue),
-                            frequency_penalty: modelParameters.frequencyPenalty,
-                            logit_bias: modelParameters.logitBias.additionalProperties.isEmpty
-                                ? nil
-                                : modelParameters.logitBias,
-                            max_completion_tokens: modelParameters.maxOutputLength,
-                            n: modelParameters.completionsPerOutput,
-                            presence_penalty: modelParameters.presencePenalty,
-                            response_format: modelParameters.responseFormat,
-                            seed: modelParameters.seed.map { Int64($0) },
-                            stop: stop,
-                            stream: true,
-                            temperature: modelParameters.temperature,
-                            top_p: modelParameters.topP,
-                            tools: functions.isEmpty ? nil : functions,
-                            user: modelParameters.user
+                            value1: .init(
+                                value1: .init(
+                                    temperature: modelParameters.temperature,
+                                    top_p: modelParameters.topP,
+                                    safety_identifier: modelParameters.user
+                                ),
+                                value2: .init()
+                            ),
+                            value2: .init(
+                                messages: openAIContext,
+                                model: .init(value1: schema.parameters.modelType.rawValue),
+                                max_completion_tokens: modelParameters.maxOutputLength,
+                                frequency_penalty: modelParameters.frequencyPenalty,
+                                presence_penalty: modelParameters.presencePenalty,
+                                response_format: modelParameters.responseFormat,
+                                stream: true,
+                                stop: stop,
+                                logit_bias: modelParameters.logitBias.additionalProperties.isEmpty
+                                    ? nil
+                                    : modelParameters.logitBias,
+                                n: modelParameters.completionsPerOutput,
+                                tools: tools.isEmpty ? nil : tools
+                            )
                         )
                     )
                 )
         }
     }
 
-    private func getChatMessage( // swiftlint:disable:this function_body_length
-        _ contextEntity: LLMContextEntity
-    ) -> Components.Schemas.ChatCompletionRequestMessage? {
+    private func getChatMessage(_ contextEntity: LLMContextEntity) -> Components.Schemas.ChatCompletionRequestMessage {
         switch contextEntity.role {
         case let .tool(id: functionID, name: _):
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestToolMessage(.init(
+            return .tool(.init(
                 role: .tool,
                 content: .case1(contextEntity.content),
                 tool_call_id: functionID
@@ -84,52 +90,40 @@ extension LLMOpenAILikeSession {
         case let .assistant(toolCalls: toolCalls):
             // No function calls present -> regular assistant message
             if toolCalls.isEmpty {
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                return .assistant(.init(
                     content: .case1(contextEntity.content),
                     role: .assistant
                 ))
             } else {
                 // Function calls present
-                return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestAssistantMessage(.init(
+                return .assistant(.init(
                     role: .assistant,
                     tool_calls: toolCalls.map { toolCall in
-                            .init(
-                                id: toolCall.id,
-                                _type: .function,
-                                function: .init(name: toolCall.name, arguments: toolCall.arguments)
-                            )
+                        .function(.init(
+                            id: toolCall.id,
+                            _type: .function,
+                            function: .init(name: toolCall.name, arguments: toolCall.arguments)
+                        ))
                     }
                 ))
             }
         case .system:
-            // No function calls present -> regular assistant message
-            guard let role = Components.Schemas.ChatCompletionRequestSystemMessage
-                .rolePayload(rawValue: contextEntity.role.openAIRepresentation.rawValue)
-            else {
-                Self.logger.error("Could not create ChatCompletionRequestSystemMessage payload")
-                return nil
-            }
-            return Components.Schemas.ChatCompletionRequestMessage.ChatCompletionRequestSystemMessage(
-                .init(
-                    content: .case1(contextEntity.content),
-                    role: role
-                )
-            )
+            return .system(.init(
+                content: .case1(contextEntity.content),
+                role: .system
+            ))
         case .user:
             if let imageContent = contextEntity._imageContent {
-                let imgPayload = Components.Schemas.ChatCompletionRequestMessageContentPartImage
-                    .image_urlPayload(url: .init("data:\(imageContent.contentType);base64,\(imageContent.base64Image)"), detail: .low)
                 let imgContent = Components.Schemas.ChatCompletionRequestMessageContentPartImage(
                     _type: .image_url,
-                    image_url: imgPayload
+                    image_url: .init(url: "data:\(imageContent.contentType);base64,\(imageContent.base64Image)", detail: .low)
                 )
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case2([
-                        .ChatCompletionRequestMessageContentPartImage(imgContent)
-                    ]), role: .user))
+                return .user(.init(
+                    content: .case2([.ChatCompletionRequestMessageContentPartImage(imgContent)]),
+                    role: .user
+                ))
             } else {
-                return Components.Schemas.ChatCompletionRequestMessage
-                    .ChatCompletionRequestUserMessage(.init(content: .case1(contextEntity.content), role: .user))
+                return .user(.init(content: .case1(contextEntity.content), role: .user))
             }
         }
     }

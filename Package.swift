@@ -40,7 +40,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziOnboarding.git", from: "2.0.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziChat.git", .upToNextMinor(from: "0.2.5")),
         .package(url: "https://github.com/StanfordSpezi/SpeziViews.git", from: "1.12.11"),
-        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.13.0"),
         .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.8.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession.git", from: "1.1.0")
     ],
@@ -203,7 +203,12 @@ let package = Package(
                 .product(name: "SpeziTesting", package: "Spezi"),
                 .target(name: "SpeziLLM"),
                 .target(name: "SpeziLLMOpenAI"),
-                .target(name: "SpeziLLMAnthropic")
+                .target(name: "SpeziLLMOpenAIRealtime"),
+                .target(name: "SpeziLLMAnthropic"),
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
+            ],
+            resources: [
+                .copy("Fixtures")
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny")
