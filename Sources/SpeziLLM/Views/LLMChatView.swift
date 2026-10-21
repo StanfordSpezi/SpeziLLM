@@ -68,8 +68,25 @@ public struct LLMChatView<Session: LLMSession>: View {
             exportFormat: self.exportFormat,
             messagePendingAnimation: .automatic
         )
-            .viewStateAlert(state: self.llm.state)
-            .onChange(of: self.llm.context) { oldValue, newValue in
+                .viewStateAlert(state: self.llm.state)
+                .overlay(alignment: .bottom) {
+                    if llm.state == .callingTools {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                            Text("Processing function call...")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(.regularMaterial)
+                        .clipShape(Capsule())
+                        .padding(.bottom, 70)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+                .animation(.easeInOut, value: llm.state)
+                .onChange(of: self.llm.context) { oldValue, newValue in
                 // Once the user enters a message in the chat, increase `messageTaskIdentifier` that triggers LLM inference
                 //
                 // Checking `lastChat.complete == true` to differentiate user initiated messages (complete == true, default)
@@ -133,7 +150,6 @@ public struct LLMChatView<Session: LLMSession>: View {
 #if DEBUG
 #Preview {
     @Previewable @State var llm = LLMMockSession(.init(), schema: .init())
-
 
     return NavigationStack {
         LLMChatView(session: $llm)
