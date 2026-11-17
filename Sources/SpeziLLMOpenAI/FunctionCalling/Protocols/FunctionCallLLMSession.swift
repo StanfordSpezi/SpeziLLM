@@ -82,8 +82,9 @@ extension FunctionCallLLMSession {
     
     /// Executes a function call.
     ///
-    /// This method validates the function name and arguments, injects them into the target function,
-    /// executes it asynchronously, and returns the response. It also ensures the tool call counter
+    /// This method validates the function name and arguments, decodes the arguments for this invocation,
+    /// executes the target function with them asynchronously, and returns the response.
+    /// Concurrent invocations of the same function each observe only their own arguments. It also ensures the tool call counter
     /// is incremented/decremented appropriately for tracking concurrent executions.
     ///
     /// - Throws:
@@ -104,9 +105,10 @@ extension FunctionCallLLMSession {
             throw LLMOpenAIError.invalidFunctionCallName
         }
         
-        // Inject parameters into the @Parameters of the function call
+        // Decode the arguments of this function call; they are bound to this invocation only, not stored in the shared function instance
+        let arguments: LLMFunctionArguments
         do {
-            try function.injectParameters(from: functionArgument)
+            arguments = try function.decodeArguments(from: functionArgument)
         } catch {
             Self.logger.error(
                 "FunctionCallLLMSession: Invalid function call arguments - \(error)"
@@ -120,7 +122,7 @@ extension FunctionCallLLMSession {
         do {
             // Execute function
             // Errors thrown by the functions are surfaced to the user as an LLM generation error
-            functionCallResponseStr = try await function.execute()
+            functionCallResponseStr = try await function.execute(with: arguments)
         } catch {
             Self.logger.error("FunctionCallLLMSession: Function call execution error - \(error)")
             await self.decrementToolCallCounter()

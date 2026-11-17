@@ -64,7 +64,7 @@ extension LLMOpenAIMockedInferenceTests {
             ), as: UTF8.self)
         }
         
-        private let createMockFunctionCallResponse: (String, String) throws -> String = { name, arguments in
+        private let createMockFunctionCallResponse: (String, String, Int) throws -> String = { name, arguments, toolCallIndex in
             String(decoding: try JSONEncoder().encode(
                 Components.Schemas.CreateChatCompletionStreamResponse(
                     id: Self.responseChunkId,
@@ -72,7 +72,7 @@ extension LLMOpenAIMockedInferenceTests {
                         .init(
                             delta: .init(
                                 content: .none,
-                                tool_calls: [.init(index: 0, id: UUID().uuidString, function: .init(name: name, arguments: arguments))]
+                                tool_calls: [.init(index: toolCallIndex, id: UUID().uuidString, function: .init(name: name, arguments: arguments))]
                             ),
                             logprobs: .none,
                             finish_reason: nil,
@@ -98,8 +98,9 @@ extension LLMOpenAIMockedInferenceTests {
         /// - Parameters:
         ///   - functionName: The name of the function being "called".
         ///   - arguments: The stringified arguments passed to the function.
-        mutating func append(functionName: String, arguments: String) throws {
-            try data.append("data: \(createMockFunctionCallResponse(functionName, arguments))\n\n")
+        ///   - toolCallIndex: The index of the tool call within the response; use distinct indices to request multiple tool calls at once.
+        mutating func append(functionName: String, arguments: String, toolCallIndex: Int = 0) throws {
+            try data.append("data: \(createMockFunctionCallResponse(functionName, arguments, toolCallIndex))\n\n")
         }
         
         /// Appends the `[DONE]` marker to signify the end of the stream.

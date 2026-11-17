@@ -9,15 +9,18 @@
 import Foundation
 
 
-/// Defines the `LLMFunctionParameterValueCollector/retrieve(_:)` requirement so that the ``LLMFunction/Parameter``s retrieve the function calling parameter values.
-protocol LLMFunctionParameterValueCollector {
+/// Defines the `LLMFunctionParameterValueCollector/decodeValue(from:)` requirement so that the ``LLMFunction/Parameter``s decode the function calling parameter values.
+protocol LLMFunctionParameterValueCollector: AnyObject {
     /// Indicates if the ``LLMFunction/Parameter`` that retrieves the parameter value is optional.
     var isOptional: Bool { get }
     
-    /// This method is called to retrieve the requested parameter value given the passed `Data`.
+    /// Decodes the requested parameter value given the passed `Data`.
+    ///
+    /// The value isn't stored in the ``LLMFunction/Parameter``, as the ``LLMFunction`` is shared by all of its invocations.
     ///
     /// - Parameter data: JSON-based parameter data.
-    func retrieve(from data: Data) throws
+    /// - Returns: The decoded parameter value.
+    func decodeValue(from data: Data) throws -> any Sendable
 }
 
 
@@ -28,8 +31,8 @@ extension _LLMFunctionParameterWrapper: LLMFunctionParameterValueCollector {
     }
     
     
-    func retrieve(from data: Data) throws {
-        self.inject(try JSONDecoder().decode(T.self, from: data))
+    func decodeValue(from data: Data) throws -> any Sendable {
+        try JSONDecoder().decode(T.self, from: data)
     }
 }
 
@@ -57,15 +60,21 @@ extension LLMFunction {
         }
     }
     
-    /// Injects the requested function call argument from the LLM into the ``LLMFunction``.
+    /// Decodes the requested function call arguments from the LLM for a single invocation of the ``LLMFunction``.
+    ///
+    /// The returned arguments are passed to ``LLMFunction/execute(with:)``; they aren't stored in the shared ``LLMFunction`` instance.
+    /// Optional parameters that are missing in `parameterData` are `nil` for this invocation.
     ///
     /// - Parameters:
     ///    - parameterData: JSON-based parameter data of the ``LLMFunction``.
-    package func injectParameters(from parameterData: Data) throws {
+    /// - Returns: The decoded arguments of the invocation.
+    package func decodeArguments(from parameterData: Data) throws -> LLMFunctionArguments {
         let topLayerParameterData = try JSONDecoder().decode(
             LLMFunctionParameterIntermediary.self,
             from: parameterData
         ).topLayerJSONRepresentation
+        
+        var values: [ObjectIdentifier: any Sendable] = [:]
         
         for (propertyName, propertyValue) in parameterValueCollectors {
             guard let propertyData = topLayerParameterData[propertyName] else {
@@ -85,7 +94,9 @@ extension LLMFunction {
                 )
             }
             
-            try propertyValue.retrieve(from: propertyData)
+            values[ObjectIdentifier(propertyValue)] = try propertyValue.decodeValue(from: propertyData)
         }
+        
+        return LLMFunctionArguments(values: values)
     }
 }
