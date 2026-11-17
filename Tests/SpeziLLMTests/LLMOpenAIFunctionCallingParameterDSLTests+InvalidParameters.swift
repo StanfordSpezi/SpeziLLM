@@ -70,7 +70,7 @@ extension LLMOpenAIFunctionCallingParameterDSLTests {
             throws: DecodingError.self,
             "Mismatch between the defined values of the LLM Function and the requested values by the LLM"
         ) {
-            try llmFunction.injectParameters(from: parameterData)
+            try llmFunction.decodeArguments(from: parameterData)
         }
     }
 }

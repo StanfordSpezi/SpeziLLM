@@ -8,8 +8,6 @@
 
 import OpenAPIRuntime
 import OSLog
-import SpeziFoundation
-import Synchronization
 
 
 // NOTE: OpenAPIRuntime.OpenAPIObjectContainer is the underlying type for Components.Schemas.FunctionParameters.additionalProperties
@@ -28,25 +26,35 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
 
     let schema: LLMFunctionParameterItemSchema
 
-    nonisolated(unsafe) private var injectedValue: T?
-    private let lock = RWLock()
-
+    /// The argument of the ``LLMFunction`` invocation that is executed by the current task.
+    ///
+    /// The ``LLMFunction`` (and with it this property wrapper) is shared by all invocations of the function, so the value is not
+    /// stored here but read from the arguments bound to the task that executes ``LLMFunction/execute()``.
+    /// Accessing the value outside of the task executing ``LLMFunction/execute()`` (or one of its child tasks or unstructured `Task`s
+    /// created from it) is a programming error.
     public var wrappedValue: T {
-        self.lock.withReadLock {
-            // If the unwrapped injectedValue is not nil, return the non-nil value
-            if let injectedValue {
-                return injectedValue
-            // If the unwrapped injectedValue is nil, return nil
-            } else if let selfCasted = self as? any NilValueProtocol {
-                return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
-            // Fail if not injected yet
-            } else {
-                fatalError("""
-                Tried to access @Parameter for value [\(T.self)] which wasn't injected yet. \
-                Are you sure that you declared the function call within the respective SpeziLLM functions and
-                only access the @Parameter within the `LLMFunction/execute()` method?
-                """)
+        guard let arguments = LLMFunctionArguments.current else {
+            fatalError("""
+            Tried to access @Parameter for value [\(T.self)] outside of an LLM function invocation. \
+            @Parameters can only be accessed from within the `LLMFunction/execute()` method, including child tasks and \
+            `Task`s created there, but not from `Task.detached` or from code that runs after `execute()` returned.
+            """)
+        }
+
+        // The argument was sent by the LLM
+        if let value = arguments.value(for: ObjectIdentifier(self)) {
+            guard let value = value as? T else {
+                fatalError("Inconsistent code: Stored argument of type [\(type(of: value))] doesn't match @Parameter type [\(T.self)].")
             }
+            return value
+        // The LLM omitted the argument, only valid for optional parameters
+        } else if let selfCasted = self as? any NilValueProtocol {
+            return selfCasted.nilValue(T.self)  // Need an indirection to enable to return nil as type T
+        } else {
+            fatalError("""
+            Tried to access @Parameter for value [\(T.self)] which wasn't passed for the current LLM function invocation. \
+            Are you sure that you declared the function call within the respective SpeziLLM functions?
+            """)
         }
     }
 
@@ -68,13 +76,6 @@ public final class _LLMFunctionParameterWrapper<T: Decodable & Sendable>: LLMFun
     init(schema: LLMFunctionParameterItemSchema) {
         self.schema = schema
     }
-
-
-    func inject(_ value: T) where T: Decodable {
-        self.lock.withWriteLock {
-            self.injectedValue = value
-        }
-    }
 }
 
 
@@ -83,6 +84,14 @@ extension LLMFunction {
     ///
     /// The `@Parameter` property wrapper (``LLMFunction/Parameter``) can be used within an ``LLMFunction`` to declare that the function takes a number of arguments of specific type.
     /// As the function is called by the LLM, the function parameters that are sent by the LLM are automatically injected into the ``LLMFunction`` by ``SpeziLLMOpenAI``.
+    ///
+    /// Every invocation of the ``LLMFunction`` observes exactly the arguments the LLM sent for that invocation, even if the LLM requests
+    /// the same function multiple times and the invocations are executed in parallel. Optional parameters that the LLM omitted are `nil`.
+    ///
+    /// > Important: The arguments are bound to the task executing ``LLMFunction/execute()``. Access `@Parameter`s only from within
+    /// ``LLMFunction/execute()``, including its child tasks and `Task`s created within it. Accessing them from a `Task.detached`,
+    /// from callbacks that are invoked outside of Swift concurrency (e.g., on a `DispatchQueue`), or after ``LLMFunction/execute()``
+    /// returned results in a runtime error. If you need the values in such a context, copy them into local constants first.
     ///
     /// The wrapper contains various initializers for the respective wrapped types of the parameter, such as `Int`, `Float`, `Double`, `Bool` or `String`, as well as `Optional`, `array`, and `enum` data types.
     /// For these types, ``SpeziLLMOpenAI`` is able to automatically synthezise the OpenAI function parameter schema from the declared ``LLMFunction/Parameter``s.

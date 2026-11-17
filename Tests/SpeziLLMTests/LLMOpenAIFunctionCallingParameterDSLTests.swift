@@ -100,8 +100,8 @@ struct LLMOpenAIFunctionCallingParameterDSLTests { // swiftlint:disable:this typ
         // Validate parameter injection
         let parameterData = try JSONEncoder().encode(ParametersPrimitive.shared)
         
-        try llmFunction.injectParameters(from: parameterData)
-        let llmFunctionResponse = try await llmFunction.execute()
+        let arguments = try llmFunction.decodeArguments(from: parameterData)
+        let llmFunctionResponse = try await llmFunction.execute(with: arguments)
         #expect(llmFunctionResponse == "testArg")
     }
 }
