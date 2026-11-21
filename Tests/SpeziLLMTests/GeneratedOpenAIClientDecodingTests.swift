@@ -28,7 +28,7 @@ struct GeneratedOpenAIClientDecodingTests {
             type
         }
 
-        static func event<Event: Decodable>(_ type: String, as _: Event.Type) -> Self {
+        static func event<Event: Decodable & Sendable>(_ type: String, as _: Event.Type) -> Self {
             Self(type: type) { data in
                 _ = try JSONDecoder().decode(Event.self, from: data)
             }
