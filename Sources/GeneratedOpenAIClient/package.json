@@ -1,10 +1,11 @@
 {
   "name": "openapi-preprocessor",
   "version": "1.0.0",
-  "description": "A script to preprocess and clean the OpenAPI specification file for SpeziLLM usage.",
+  "description": "Fetches and preprocesses the OpenAI OpenAPI specification for use in SpeziLLM.",
   "main": "preprocess-openapi-spec.js",
   "scripts": {
-    "preprocess": "node preprocess-openapi-spec.js"
+    "preprocess": "node preprocess-openapi-spec.js",
+    "update": "curl -fsSL https://raw.githubusercontent.com/openai/openai-openapi/main/openapi.yaml -o openapi.yaml && npm run preprocess"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

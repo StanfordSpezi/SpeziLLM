@@ -10,3 +10,18 @@ generate:
   - types
   - client
 accessModifier: public
+
+# Only the parts of the OpenAI API that SpeziLLM uses are generated. Everything the listed operations and schemas
+# reference is included transitively. Add an operation ID or a schema name here before using it from a target.
+filter:
+  operations:
+    - createChatCompletion
+    - createResponse
+    - retrieveModel
+  schemas:
+    # Realtime API events, sent and received over a WebSocket rather than through a generated operation.
+    - RealtimeClientEventInputAudioBufferAppend
+    - RealtimeClientEventInputAudioBufferCommit
+    - RealtimeClientEventResponseCreate
+    - RealtimeServerEventError
+    - RealtimeServerEventResponseFunctionCallArgumentsDone

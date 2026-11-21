@@ -13,5 +13,9 @@ ignorePatterns:
   # Swift Package Index rate-limits the CI runner and answers some requests with a 403 even though the
   # pages resolve fine in a browser; the same URLs pass on one run and fail on the next.
   - pattern: '^https://swiftpackageindex.com/.*$'
+  # Zenodo serves the DOI badge and the DOI resolver's redirect slower than the checker's 30-second limit, so the
+  # citation links in the README time out on some days and pass on others.
+  - pattern: '^https://zenodo.org/.*$'
+  - pattern: '^https://doi.org/.*$'
   - pattern: '^doc:.*$'
   - pattern: '^http://localhost.*$'

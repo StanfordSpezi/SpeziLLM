@@ -85,6 +85,7 @@ class LLMOpenAIInferenceTests {
         context.append(userInput: "Hello! Return me the value needed for this test")
         
         let llmSession = try initTestLLMSession(schema)
+        llmSession.context = context
         var oneShot = ""
         for try await stringPiece in try await llmSession.generate() {
             oneShot.append(stringPiece)
