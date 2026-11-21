@@ -100,28 +100,29 @@ class LLMOpenAIMockedInferenceTests: LLMOpenAIInferenceTests {
         #expect(oneShot == "Function should have been called!")
     }
 
-    @Test("A documented rate limit surfaces as the quota error")
+    @Test("A rate limit surfaces as the quota error")
     func rateLimitIsQuotaError() async throws {
         try await expectGenerationFailure(
-            .tooManyRequests(.init(body: .json(.init(error: .init(code: "rate_limit_exceeded", message: "Slow down", _type: "requests"))))),
+            .undocumented(statusCode: 429, .init(body: HTTPBody(#"{"error": {"message": "Slow down", "type": "requests"}}"#))),
             toBe: .insufficientQuota
         )
     }
 
-    @Test("A documented outage surfaces as a generation error")
+    @Test("An outage answered by a proxy in HTML surfaces as a generation error")
     func outageIsGenerationError() async throws {
         try await expectGenerationFailure(
-            .serviceUnavailable(.init(body: .json(.init(error: .init(message: "Try again later", _type: "server_error"))))),
+            .undocumented(statusCode: 503, .init(body: HTTPBody("<html><body>503 Service Temporarily Unavailable</body></html>"))),
             toBe: .generationError
         )
     }
 
-    @Test("An undocumented status keeps its mapping, body included")
-    func undocumentedStatusKeepsMapping() async throws {
+    @Test("A rejected key surfaces as the invalid token error, whatever the body")
+    func rejectedKeyIsInvalidToken() async throws {
         try await expectGenerationFailure(
             .undocumented(statusCode: 401, .init(body: HTTPBody(#"{"error": {"message": "bad key"}}"#))),
             toBe: .invalidAPIToken
         )
+        try await expectGenerationFailure(.undocumented(statusCode: 401, .init()), toBe: .invalidAPIToken)
     }
 
     /// Runs one generation against a client that answers with `response`, and checks the error the session reports.

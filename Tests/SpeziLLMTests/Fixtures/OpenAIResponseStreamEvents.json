@@ -4,6 +4,7 @@
     "response": {
       "id": "resp_123",
       "object": "response",
+      "access_programs": null,
       "created_at": 1740855869,
       "status": "completed",
       "completed_at": 1740855870,
@@ -12,7 +13,7 @@
       "input": [],
       "instructions": null,
       "max_output_tokens": null,
-      "model": "gpt-6-astra",
+      "model": "gpt-6.2-astra",
       "output": [
         {
           "id": "msg_123",
@@ -22,9 +23,11 @@
             {
               "type": "output_text",
               "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-              "annotations": []
+              "annotations": [],
+              "logprobs": []
             }
-          ]
+          ],
+          "status": "completed"
         }
       ],
       "previous_response_id": null,
@@ -46,10 +49,15 @@
         "output_tokens_details": {
           "reasoning_tokens": 0
         },
-        "total_tokens": 0
+        "total_tokens": 0,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        }
       },
       "user": null,
-      "metadata": {}
+      "metadata": {},
+      "parallel_tool_calls": true
     },
     "sequence_number": 1
   },
@@ -61,7 +69,8 @@
     "part": {
       "type": "output_text",
       "text": "",
-      "annotations": []
+      "annotations": [],
+      "logprobs": []
     },
     "sequence_number": 1
   },
@@ -74,7 +83,8 @@
     "part": {
       "type": "output_text",
       "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-      "annotations": []
+      "annotations": [],
+      "logprobs": []
     }
   },
   "response.created": {
@@ -82,6 +92,7 @@
     "response": {
       "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
       "object": "response",
+      "access_programs": null,
       "created_at": 1741487325,
       "status": "in_progress",
       "completed_at": null,
@@ -89,7 +100,7 @@
       "incomplete_details": null,
       "instructions": null,
       "max_output_tokens": null,
-      "model": "gpt-6-astra",
+      "model": "gpt-6.2-astra",
       "output": [],
       "parallel_tool_calls": true,
       "previous_response_id": null,
@@ -126,6 +137,7 @@
     "response": {
       "id": "resp_123",
       "object": "response",
+      "access_programs": null,
       "created_at": 1740855869,
       "status": "failed",
       "completed_at": null,
@@ -136,7 +148,7 @@
       "incomplete_details": null,
       "instructions": null,
       "max_output_tokens": null,
-      "model": "gpt-6-astra",
+      "model": "gpt-6.2-astra",
       "output": [],
       "previous_response_id": null,
       "reasoning_effort": null,
@@ -153,8 +165,10 @@
       "truncation": "disabled",
       "usage": null,
       "user": null,
-      "metadata": {}
-    }
+      "metadata": {},
+      "parallel_tool_calls": true
+    },
+    "sequence_number": 1
   },
   "response.function_call_arguments.done": {
     "type": "response.function_call_arguments.done",
@@ -168,6 +182,7 @@
     "response": {
       "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
       "object": "response",
+      "access_programs": null,
       "created_at": 1741487325,
       "status": "in_progress",
       "completed_at": null,
@@ -175,7 +190,7 @@
       "incomplete_details": null,
       "instructions": null,
       "max_output_tokens": null,
-      "model": "gpt-6-astra",
+      "model": "gpt-6.2-astra",
       "output": [],
       "parallel_tool_calls": true,
       "previous_response_id": null,
@@ -205,16 +220,17 @@
     "response": {
       "id": "resp_123",
       "object": "response",
+      "access_programs": null,
       "created_at": 1740855869,
       "status": "incomplete",
       "completed_at": null,
       "error": null,
       "incomplete_details": {
-        "reason": "max_tokens"
+        "reason": "max_output_tokens"
       },
       "instructions": null,
       "max_output_tokens": null,
-      "model": "gpt-6-astra",
+      "model": "gpt-6.2-astra",
       "output": [],
       "previous_response_id": null,
       "reasoning_effort": null,
@@ -231,7 +247,8 @@
       "truncation": "disabled",
       "usage": null,
       "user": null,
-      "metadata": {}
+      "metadata": {},
+      "parallel_tool_calls": true
     },
     "sequence_number": 1
   },
@@ -259,7 +276,8 @@
         {
           "type": "output_text",
           "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-          "annotations": []
+          "annotations": [],
+          "logprobs": []
         }
       ]
     },
@@ -327,13 +345,17 @@
     "item_id": "msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654",
     "output_index": 0,
     "content_index": 0,
-    "delta": "Hi"
+    "delta": "Hi",
+    "sequence_number": 4,
+    "logprobs": []
   },
   "response.output_text.done": {
     "type": "response.output_text.done",
     "item_id": "msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654",
     "output_index": 0,
     "content_index": 0,
-    "text": "Hi there! How can I assist you today?"
+    "text": "Hi there! How can I assist you today?",
+    "sequence_number": 10,
+    "logprobs": []
   }
 }

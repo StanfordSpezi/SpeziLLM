@@ -45,16 +45,9 @@ extension LLMOpenAILikeSession {
 
                 if let failure = response.failure {
                     let llmError = handleErrorCode(failure.statusCode)
-                    if let message = failure.message {
-                        Self.logger.error("SpeziLLMOpenAI: The OpenAI API answered: \(message)")
+                    if let message = await failure.message() {
+                        Self.logger.error("SpeziLLMOpenAI: The API answered \(failure.statusCode): \(message)")
                     }
-                    #if DEBUG
-                    if let body = failure.undocumentedBody, case let .known(length) = body.length {
-                        let buffer = try await Data(collecting: body, upTo: Int(length))
-                        let text = String(data: buffer, encoding: .utf8) ?? "<non-UTF8 body>"
-                        Self.logger.warning("SpeziLLMOpenAI: Undocumented response body:\n\(text)")
-                    }
-                    #endif
                     await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                     return
                 }

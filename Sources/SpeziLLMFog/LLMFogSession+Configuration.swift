@@ -44,7 +44,7 @@ extension LLMFogSession {
                             response_format: schema.modelParameters.responseFormat,
                             stream: true,
                             stop: .case2(schema.modelParameters.stopSequence),
-                            seed: schema.modelParameters.seed
+                            seed: schema.modelParameters.seed.map { Int64($0) }
                         )
                     )
                 )

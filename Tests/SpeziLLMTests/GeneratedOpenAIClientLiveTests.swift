@@ -60,11 +60,7 @@ struct GeneratedOpenAIClientLiveTests {
 
     /// The status and message of a failed request, for the failure message.
     private static func describe(_ failure: OpenAIOperationFailure) async -> String {
-        var text = failure.message ?? ""
-        if text.isEmpty, let body = failure.undocumentedBody, let data = try? await Data(collecting: body, upTo: 4096) {
-            text = String(decoding: data, as: UTF8.self)
-        }
-        return "HTTP \(failure.statusCode): \(text)"
+        "HTTP \(failure.statusCode): \(await failure.message() ?? "")"
     }
 
     private static func chatCompletionRequest(

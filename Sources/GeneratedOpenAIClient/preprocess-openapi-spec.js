@@ -174,10 +174,12 @@ function normalizeExclusiveBounds(node) {
  *
  * Such bounds spell out the 64-bit integer range. Parsing them into a JavaScript number rounds them to a float
  * (`9223372036854775807` becomes `9.223372036854776e+18`), which the generator's parser rejects on an integer schema,
- * and the Swift `Int` the generator emits is bounded to that range anyway.
+ * and the Swift `Int` the generator emits is bounded to that range anyway. This runs before nullability is
+ * normalized, so a nullable integer still spells its type as `[integer, "null"]`.
  */
 function removeUnrepresentableIntegerBounds(node) {
-  if (node.type !== "integer") {
+  const types = Array.isArray(node.type) ? node.type : [node.type];
+  if (!types.includes("integer")) {
     return;
   }
   for (const bound of ["minimum", "maximum"]) {
@@ -449,13 +451,41 @@ function removeWebhooks(doc) {
   delete doc.webhooks;
 }
 
+/**
+ * Removes every response other than a success from the operations, so that failures reach callers undecoded.
+ *
+ * For a documented status, the generated client decodes the body before returning, and throws when the body is not
+ * the documented shape or arrives in an undocumented content type. SpeziLLM sends the same requests to OpenAI-compatible
+ * servers and fog nodes, whose error bodies differ from OpenAI's and whose proxies answer with HTML, so a documented
+ * `401` or `503` would surface as a decoding error instead of its status code. Without these entries every failure
+ * arrives as `undocumented` with its status code and raw body, however the server spells it. The list also grows with
+ * each upstream revision, which would otherwise change the generated outputs every time.
+ */
+function removeFailureResponses(doc) {
+  for (const pathItem of Object.values(doc.paths ?? {})) {
+    for (const operation of Object.values(pathItem ?? {})) {
+      if (!isObject(operation?.responses)) {
+        continue;
+      }
+      for (const status of Object.keys(operation.responses)) {
+        if (!/^2(\d\d|XX)$/.test(status)) {
+          delete operation.responses[status];
+        }
+      }
+    }
+  }
+}
+
 // MARK: - Pipeline
 
-let doc = yaml.load(fs.readFileSync(openapiPath, "utf8"));
+// The YAML 1.2 core schema, as OpenAPI 3.1 specifies. js-yaml's default schema follows YAML 1.1 and reads an
+// unquoted date such as an enum value `2026-10-08` as a timestamp, which would be written back as `{}`.
+let doc = yaml.load(fs.readFileSync(openapiPath, "utf8"), { schema: yaml.CORE_SCHEMA });
 
 retainDeprecatedProperties(doc);
 doc = removeDeprecated(doc);
 removeWebhooks(doc);
+removeFailureResponses(doc);
 resolveRecursiveReferences(doc);
 walk(doc, normalizeExclusiveBounds);
 walk(doc, removeUnrepresentableIntegerBounds);

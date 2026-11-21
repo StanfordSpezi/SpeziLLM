@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 
 This SPM target uses the [`swift-openapi-generator`](https://github.com/apple/swift-openapi-generator) to generate Swift client code from the [OpenAI OpenAPI specification](https://github.com/openai/openai-openapi) and provides the generated code to other SpeziLLM targets. The generator's configuration is defined in `openapi-generator-config.yaml`, while the specification is located in `openapi.yaml`.
 
-The specification corresponds to upstream commit [`38170fd`](https://github.com/openai/openai-openapi/commit/38170fdddbb6a1813eae6c6587ee17cf2987185b) from 2026-09-11, after preprocessing.
+The specification corresponds to upstream commit [`2a24dea`](https://github.com/openai/openai-openapi/commit/2a24deae6f89f84d0e88ce3c9d96c00304dca0b8) from 2026-11-21, after preprocessing.
 
 ### What gets generated
 
@@ -20,10 +20,11 @@ Only the operations and schemas that SpeziLLM uses are generated. The `filter` s
 
 ### Why preprocessing is needed
 
-The upstream document is written for OpenAI's documentation tooling rather than for code generators. `preprocess-openapi-spec.js` applies a set of general rules to the whole document, each documented in the script, so that a newer upstream revision needs no changes to the script:
+The upstream document is written for OpenAI's documentation tooling rather than for code generators. The script reads it with the YAML 1.2 core schema, so an unquoted value such as `2026-10-08` stays a string rather than becoming a timestamp. `preprocess-openapi-spec.js` applies a set of general rules to the whole document, each documented in the script, so that a newer upstream revision needs no changes to the script:
 
 - Deprecated operations, schemas, and properties are removed, so the generated code carries no deprecation warnings. The deprecated properties SpeziLLM still sends, such as the chat completion `seed` that Fog nodes honor, are listed in `RETAINED_DEPRECATED_PROPERTIES` and kept.
 - The `webhooks` section is removed. The generator produces nothing for it, and its references would dangle once the document is filtered.
+- Every response other than a success is removed from the operations, so failures arrive as `undocumented` with their status code and raw body. A documented failure would be decoded as OpenAI's error shape, and the error bodies of OpenAI-compatible servers, fog nodes, and the proxies in front of them would turn a `401` or `503` into a decoding error. `OpenAIOperationFailure` reads the message from the raw body.
 - `$recursiveRef` is rewritten into a plain self reference, which the generator understands.
 - OpenAPI 3.0 boolean `exclusiveMinimum`/`exclusiveMaximum` are converted to the 3.1 numeric form.
 - Integer `minimum`/`maximum` bounds that spell out the 64-bit range are removed. JavaScript rounds them to a float, which the generator rejects on an integer, and Swift's `Int` has the same bounds.

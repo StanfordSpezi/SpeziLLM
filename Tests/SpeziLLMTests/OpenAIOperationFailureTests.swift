@@ -7,70 +7,61 @@
 //
 
 import Foundation
-import GeneratedOpenAIClient
+@testable import GeneratedOpenAIClient
 import OpenAPIRuntime
 import Testing
 
 
-/// Pins that every non-success output of the generated operations reduces to the status code the API answered with.
+/// Pins that every non-success output of the generated operations reduces to its status code and raw body.
 @Suite("OpenAI Operation Failures")
 struct OpenAIOperationFailureTests {
-    private static func rateLimited(_ message: String) -> Components.Responses.InferenceRateLimited {
-        .init(body: .json(.init(error: .init(code: "rate_limit_exceeded", message: message, _type: "requests"))))
-    }
-
-    private static func unavailable(_ message: String) -> Components.Responses.InferenceServiceUnavailable {
-        .init(body: .json(.init(error: .init(message: message, _type: "server_error"))))
-    }
-
     @Test("Chat completion outputs reduce to their status")
-    func chatCompletionOutputs() throws {
+    func chatCompletionOutputs() async throws {
         typealias Output = Operations.createChatCompletion.Output
 
         #expect(Output.ok(.init(body: .text_event_hyphen_stream(HTTPBody()))).failure == nil)
 
-        let limited = try #require(Output.tooManyRequests(Self.rateLimited("Slow down")).failure)
+        let limited = try #require(Output.undocumented(statusCode: 429, .init(body: HTTPBody(#"{"error": {"message": "Slow down"}}"#))).failure)
         #expect(limited.statusCode == 429)
-        #expect(limited.message == "Slow down")
-
-        let down = try #require(Output.serviceUnavailable(Self.unavailable("Later")).failure)
-        #expect(down.statusCode == 503)
-        #expect(down.message == "Later")
+        #expect(await limited.message() == "Slow down")
 
         let odd = try #require(Output.undocumented(statusCode: 418, .init(body: HTTPBody("teapot"))).failure)
         #expect(odd.statusCode == 418)
-        #expect(odd.message == nil)
-        #expect(odd.undocumentedBody != nil)
+        #expect(await odd.message() == "teapot")
     }
 
     @Test("Responses outputs reduce to their status")
-    func responseOutputs() throws {
+    func responseOutputs() async throws {
         typealias Output = Operations.createResponse.Output
 
         #expect(Output.ok(.init(body: .text_event_hyphen_stream(HTTPBody()))).failure == nil)
 
-        let limited = try #require(Output.tooManyRequests(Self.rateLimited("Slow down")).failure)
-        #expect(limited.statusCode == 429)
-        #expect(limited.message == "Slow down")
-
-        let down = try #require(Output.serviceUnavailable(Self.unavailable("Later")).failure)
+        let down = try #require(Output.undocumented(statusCode: 503, .init()).failure)
         #expect(down.statusCode == 503)
-        #expect(down.message == "Later")
-
-        let odd = try #require(Output.undocumented(statusCode: 500, .init()).failure)
-        #expect(odd.statusCode == 500)
-        #expect(odd.undocumentedBody == nil)
+        #expect(down.body == nil)
+        #expect(await down.message() == nil)
     }
 
     @Test("Model retrieval outputs reduce to their status")
-    func retrieveModelOutputs() throws {
+    func retrieveModelOutputs() async throws {
         typealias Output = Operations.retrieveModel.Output
 
         let model = Components.Schemas.Model(id: "gpt-4.1-mini", created: 0, object: .model, owned_by: "openai")
         #expect(Output.ok(.init(body: .json(model))).failure == nil)
 
-        let missing = try #require(Output.undocumented(statusCode: 404, .init()).failure)
+        let missing = try #require(Output.undocumented(statusCode: 404, .init(body: HTTPBody(#"{"error": "model 'x' not found"}"#))).failure)
         #expect(missing.statusCode == 404)
-        #expect(missing.message == nil)
+        #expect(await missing.message() == "model 'x' not found")
+    }
+
+    @Test("The message is read from every common error body", arguments: [
+        (#"{"error": {"message": "Incorrect API key", "type": "invalid_request_error"}}"#, "Incorrect API key"),
+        (#"{"error": "model 'llama3' not found, try pulling it first"}"#, "model 'llama3' not found, try pulling it first"),
+        (#"{"detail": "Not Found"}"#, #"{"detail": "Not Found"}"#),
+        ("<html><body>502 Bad Gateway</body></html>\n", "<html><body>502 Bad Gateway</body></html>"),
+        ("   ", nil)
+    ])
+    func messages(body: String, expected: String?) {
+        #expect(OpenAIOperationFailure.message(from: Data(body.utf8)) == expected)
     }
 }

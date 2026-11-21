@@ -43,15 +43,7 @@ extension LLMFogSession {
             }
 
             if let failure = response.failure {
-                var errorMessage = failure.message
-                if errorMessage == nil,
-                   let body = failure.undocumentedBody,
-                   let bodyData = try? await ArraySlice(collecting: body, upTo: 8 * 1024),
-                   let bodyString = String(data: Data(bodyData), encoding: .utf8) {
-                    errorMessage = bodyString
-                }
-
-                let llmError = handleErrorCode(statusCode: failure.statusCode, message: errorMessage)
+                let llmError = handleErrorCode(statusCode: failure.statusCode, message: await failure.message())
                 await finishGenerationWithError(llmError, on: continuationObserver.continuation)
                 return
             }
